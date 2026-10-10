@@ -1,0 +1,23 @@
+{
+	"name": "luci-app-fttr",
+	"private": true,
+	"version": "0.1.0",
+	"license": "Apache-2.0",
+	"type": "module",
+	"engines": { "node": ">=18" },
+	"packageManager": "pnpm@10.12.4",
+	"scripts": {
+		"build": "rsbuild build",
+		"build:watch": "rsbuild build --watch",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"dev:remote": "dotenvx run -- luci-types dev"
+	},
+	"devDependencies": {
+		"@dotenvx/dotenvx": "^2.19.1",
+		"@lazulikao/luci-types": "github:LazuliKao/luci-types#90a8e40b9bd5258262394209bccac6b0320549db",
+		"@rsbuild/core": "^2.1.9",
+		"@types/node": "^22.19.21",
+		"tsx": "^4.22.4",
+		"typescript": "^6.0.3"
+	}
+}

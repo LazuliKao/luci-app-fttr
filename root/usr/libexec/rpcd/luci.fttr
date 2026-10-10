@@ -1,0 +1,25 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+
+case "$1" in
+	list)
+		printf '{"get_status":{}}\n'
+		exit 0
+		;;
+	call)
+		case "$2" in
+			get_status)
+				status="$(/usr/sbin/fttrctl status --json 2>/dev/null)"
+				rc=$?
+				if [ "$rc" -ne 0 ] || [ -z "$status" ]; then
+					printf '{"error":"FTTR status is unavailable"}\n'
+					exit 1
+				fi
+				printf '%s\n' "$status"
+				exit 0
+				;;
+		esac
+		;;
+esac
+
+exit 1

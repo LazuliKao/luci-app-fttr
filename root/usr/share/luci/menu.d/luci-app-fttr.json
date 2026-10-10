@@ -1,0 +1,36 @@
+{
+	"admin/network/fttr": {
+		"title": "FTTR",
+		"order": 80,
+		"action": {
+			"type": "firstchild"
+		},
+		"depends": {
+			"acl": [ "luci-app-fttr" ]
+		}
+	},
+	"admin/network/fttr/status": {
+		"title": "Status",
+		"order": 10,
+		"action": {
+			"type": "view",
+			"path": "fttr/index"
+		}
+	},
+	"admin/network/fttr/config": {
+		"title": "Configuration",
+		"order": 20,
+		"action": {
+			"type": "view",
+			"path": "fttr/config"
+		}
+	},
+	"admin/network/fttr/hardware": {
+		"title": "Hardware status",
+		"order": 30,
+		"action": {
+			"type": "view",
+			"path": "fttr/hardware"
+		}
+	}
+}

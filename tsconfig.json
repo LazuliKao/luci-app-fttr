@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"jsxImportSource": "@lazulikao/luci-types",
+		"types": [ "@lazulikao/luci-types" ],
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": [ "src/**/*.ts", "src/**/*.tsx" ],
+	"exclude": [ "node_modules", "htdocs" ]
+}
