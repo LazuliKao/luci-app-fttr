@@ -140,32 +140,32 @@ function renderHardware(status) {
                     }),
                     rows([
                         [
-                            _('FPGA status'),
+                            _("FPGA status"),
                             status.fpga_status
                         ],
                         [
-                            _('Optical transceiver'),
+                            _("Optical transceiver"),
                             optical.model
                         ],
                         [
-                            _('TX wavelength'),
+                            _("TX wavelength"),
                             optical.wavelength_tx_nm === undefined ? undefined : `${optical.wavelength_tx_nm} nm`
                         ],
                         [
-                            _('RX wavelength'),
+                            _("RX wavelength"),
                             optical.wavelength_rx_nm === undefined ? undefined : `${optical.wavelength_rx_nm} nm`
                         ],
                         [
-                            _('Downlink PHY rate'),
+                            _("Downlink PHY rate"),
                             optical.phy_rate_downlink_gbps === undefined ? undefined : `${optical.phy_rate_downlink_gbps} Gbps`
                         ],
                         [
-                            _('Uplink PHY rate'),
+                            _("Uplink PHY rate"),
                             optical.phy_rate_uplink_gbps === undefined ? undefined : `${optical.phy_rate_uplink_gbps} Gbps`
                         ],
                         [
-                            _('CDR lock'),
-                            optical.cdr_locked === undefined ? undefined : optical.cdr_locked ? _('Locked') : _('Unlocked')
+                            _("CDR lock"),
+                            optical.cdr_locked === undefined ? undefined : optical.cdr_locked ? _("Locked") : _("Unlocked")
                         ]
                     ])
                 ]
@@ -182,47 +182,47 @@ function renderHardware(status) {
                         }),
                         rows([
                             [
-                                _('Vendor'),
+                                _("Vendor"),
                                 onu.vendor
                             ],
                             [
-                                _('Optical serial'),
+                                _("Optical serial"),
                                 onu.serial_number
                             ],
                             [
-                                _('Registration state'),
+                                _("Registration state"),
                                 onu.state
                             ],
                             [
-                                _('Identity source'),
+                                _("Identity source"),
                                 freshness
                             ],
                             [
-                                _('Identity age'),
+                                _("Identity age"),
                                 onu.identity_age_seconds === undefined ? undefined : `${onu.identity_age_seconds} s`
                             ],
                             [
-                                _('Equipment ID'),
+                                _("Equipment ID"),
                                 identity.equipment_id ?? onu.model
                             ],
                             [
-                                _('Hardware version'),
+                                _("Hardware version"),
                                 identity.hardware_version ?? onu.hardware_version
                             ],
                             [
-                                _('Firmware version'),
+                                _("Firmware version"),
                                 onu.firmware_version
                             ],
                             [
-                                _('Software images'),
+                                _("Software images"),
                                 softwareImages.length ? softwareImages.join(", ") : undefined
                             ],
                             [
-                                _('OMCC version'),
+                                _("OMCC version"),
                                 identity.omcc_version === undefined ? undefined : `0x${identity.omcc_version.toString(16).padStart(2, "0")}`
                             ],
                             [
-                                _('Identity read errors'),
+                                _("Identity read errors"),
                                 identity.errors?.length ? identity.errors.join("; ") : undefined
                             ]
                         ])

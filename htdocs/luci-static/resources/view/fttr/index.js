@@ -182,7 +182,9 @@ function renderPorts(status, devices) {
                     class: "ifacebox-body",
                     children: [
                         /*#__PURE__*/ jsx("img", {
-                            src: `/luci-static/resources/icons/${icon}`
+                            src: `/luci-static/resources/icons/${icon}`,
+                            alt: "",
+                            "aria-hidden": "true"
                         }),
                         /*#__PURE__*/ jsx("br", {}),
                         connected ? /*#__PURE__*/ jsx("span", {
@@ -465,14 +467,14 @@ function renderStatus(status, devices) {
                         children: _("Sub-gateways")
                     }),
                     renderTable([
-                        _('ONU ID'),
-                        _('Vendor'),
-                        _('Model'),
-                        _('Optical serial'),
-                        _('Registration'),
-                        _('Business'),
-                        _('Firmware'),
-                        _('Data interface')
+                        _("ONU ID"),
+                        _("Vendor"),
+                        _("Model"),
+                        _("Optical serial"),
+                        _("Registration"),
+                        _("Business"),
+                        _("Firmware"),
+                        _("Data interface")
                     ], onus.map((onu)=>[
                             onu.onu_id,
                             view_text(onu.vendor),

@@ -9,14 +9,27 @@
 	"scripts": {
 		"build": "rsbuild build",
 		"build:watch": "rsbuild build --watch",
+		"lint": "biome check --no-errors-on-unmatched src rsbuild.config.ts",
+		"format": "biome format --write --no-errors-on-unmatched src rsbuild.config.ts",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"dev:remote": "dotenvx run -- luci-types dev"
+		"dev:remote": "dotenvx run -- luci-types dev",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"src/**/*.{js,ts,tsx,jsx,json}": [
+			"biome check --write --no-errors-on-unmatched"
+		]
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^2.5.0",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
 		"@dotenvx/dotenvx": "^2.19.1",
 		"@lazulikao/luci-types": "github:LazuliKao/luci-types#90a8e40b9bd5258262394209bccac6b0320549db",
 		"@rsbuild/core": "^2.1.9",
 		"@types/node": "^22.19.21",
+		"husky": "^9.1.7",
+		"lint-staged": "^14.0.1",
 		"tsx": "^4.22.4",
 		"typescript": "^6.0.3"
 	}

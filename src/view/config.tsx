@@ -33,9 +33,7 @@ const main = (view as any).extend({
 		option.default = "/cwmp";
 		option.rmempty = false;
 		option.validate = (_sectionId: string, value: unknown) =>
-			typeof value === "string" && value.startsWith("/")
-				? true
-				: _("The path must start with '/'.");
+			typeof value === "string" && value.startsWith("/") ? true : _("The path must start with '/'.");
 
 		option = section.option(form.Value, "listen", _("Listen address"));
 		option.optional = true;
@@ -48,9 +46,7 @@ const main = (view as any).extend({
 		option.default = "/var/lib/fttr/acs-state.json";
 		option.rmempty = false;
 		option.validate = (_sectionId: string, value: unknown) =>
-			typeof value === "string" && value.startsWith("/")
-				? true
-				: _("The state file path must be absolute.");
+			typeof value === "string" && value.startsWith("/") ? true : _("The state file path must be absolute.");
 
 		option = section.option(form.Value, "username", _("HTTP Basic username"));
 		option.optional = true;

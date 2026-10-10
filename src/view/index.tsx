@@ -63,8 +63,7 @@ const getNetworkDevices = rpc.declare<NetworkDevice[]>({
 	reject: true,
 });
 
-const text = (value: unknown): string =>
-	value === null || value === undefined || value === "" ? "—" : String(value);
+const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
 
 const badge = (value: boolean, label: string): HTMLElement => (
 	<span class={value ? "label success" : "label warning"}>{label}</span>
@@ -110,7 +109,8 @@ function renderPorts(status: FttrStatus, devices: NetworkDevice[]): HTMLElement 
 		const stats = device?.stats ?? device?.statistics;
 		const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
 		const onu = (status.sub_gateways ?? []).find((item) => item.onu_id === port?.onu_id);
-		const state = port?.link_state ?? port?.status ?? (device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable"));
+		const state =
+			port?.link_state ?? port?.status ?? (device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable"));
 		const connected = carrier === true;
 		const icon = connected ? "port_up.svg" : "port_down.svg";
 		const barColor = connected ? "144, 240, 144" : "240, 144, 144";
@@ -118,37 +118,91 @@ function renderPorts(status: FttrStatus, devices: NetworkDevice[]): HTMLElement 
 		const txBytes = stats?.tx_bytes;
 		return (
 			<div class="ifacebox" style="margin:.25em;width:100px">
-				<div class="ifacebox-head" style="font-weight:bold">{ifname}</div>
+				<div class="ifacebox-head" style="font-weight:bold">
+					{ifname}
+				</div>
 				<div class="ifacebox-body">
-					<img src={`/luci-static/resources/icons/${icon}`} />
+					<img src={`/luci-static/resources/icons/${icon}`} alt="" aria-hidden="true" />
 					<br />
-					{connected
-						? <span title={_('速度：%s Mbit/s，双工：%s').format(text(device?.link?.speed), text(device?.link?.duplex))}>{formatLinkSpeed(device?.link?.speed)}</span>
-						: <span>{carrier === false ? _("Disconnected") : _("Unknown")}</span>}
+					{connected ? (
+						<span
+							title={_("速度：%s Mbit/s，双工：%s").format(
+								text(device?.link?.speed),
+								text(device?.link?.duplex),
+							)}
+						>
+							{formatLinkSpeed(device?.link?.speed)}
+						</span>
+					) : (
+						<span>{carrier === false ? _("Disconnected") : _("Unknown")}</span>
+					)}
 				</div>
 				<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
-					<div style={`flex:1;height:3px;opacity:${connected ? 1 : 0.25};background-color:rgb(${barColor})`}></div>
+					<div
+						style={`flex:1;height:3px;opacity:${connected ? 1 : 0.25};background-color:rgb(${barColor})`}
+					></div>
 					<span class="cbi-tooltip left">
-						<strong>{_("Port status")}: </strong>{text(state)}<br />
-						<strong>{_("ONU")}: </strong>{text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id)}<br />
-						<strong>{_("MAC address")}: </strong>{text(device?.mac)}
+						<strong>{_("Port status")}: </strong>
+						{text(state)}
+						<br />
+						<strong>{_("ONU")}: </strong>
+						{text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id)}
+						<br />
+						<strong>{_("MAC address")}: </strong>
+						{text(device?.mac)}
 					</span>
 				</div>
 				<div class="ifacebox-body">
 					<div class="cbi-tooltip-container" style="text-align:left;font-size:80%">
-						▲ {formatBytes(txBytes)}<br />
+						▲ {formatBytes(txBytes)}
+						<br />
 						▼ {formatBytes(rxBytes)}
 						<span class="cbi-tooltip">
 							<span>
-								<span class="nowrap"><strong>{_("Received bytes")}: </strong>{formatBytes(rxBytes)}</span><br />
-								<span class="nowrap"><strong>{_("Received packets")}: </strong>{formatPackets(stats?.rx_packets)}</span><br />
-								<span class="nowrap"><strong>{_("Received multicast")}: </strong>{formatPackets(stats?.rx_multicast ?? stats?.multicast)}</span><br />
-								<span class="nowrap"><strong>{_("Receive errors")}: </strong>{formatPackets(stats?.rx_errors)}</span><br />
-								<span class="nowrap"><strong>{_("Receive dropped")}: </strong>{formatPackets(stats?.rx_dropped)}</span><br />
-								<span class="nowrap"><strong>{_("Transmitted bytes")}: </strong>{formatBytes(txBytes)}</span><br />
-								<span class="nowrap"><strong>{_("Transmitted packets")}: </strong>{formatPackets(stats?.tx_packets)}</span><br />
-								<span class="nowrap"><strong>{_("Transmit errors")}: </strong>{formatPackets(stats?.tx_errors)}</span><br />
-								<span class="nowrap"><strong>{_("Transmit dropped")}: </strong>{formatPackets(stats?.tx_dropped)}</span>
+								<span class="nowrap">
+									<strong>{_("Received bytes")}: </strong>
+									{formatBytes(rxBytes)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Received packets")}: </strong>
+									{formatPackets(stats?.rx_packets)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Received multicast")}: </strong>
+									{formatPackets(stats?.rx_multicast ?? stats?.multicast)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Receive errors")}: </strong>
+									{formatPackets(stats?.rx_errors)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Receive dropped")}: </strong>
+									{formatPackets(stats?.rx_dropped)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Transmitted bytes")}: </strong>
+									{formatBytes(txBytes)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Transmitted packets")}: </strong>
+									{formatPackets(stats?.tx_packets)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Transmit errors")}: </strong>
+									{formatPackets(stats?.tx_errors)}
+								</span>
+								<br />
+								<span class="nowrap">
+									<strong>{_("Transmit dropped")}: </strong>
+									{formatPackets(stats?.tx_dropped)}
+								</span>
 							</span>
 						</span>
 					</div>
@@ -172,13 +226,25 @@ function renderTable(
 		<div class="table-wrapper">
 			<table class="table">
 				<thead>
-					<tr>{headings.map((heading) => <th>{heading}</th>)}</tr>
+					<tr>
+						{headings.map((heading) => (
+							<th>{heading}</th>
+						))}
+					</tr>
 				</thead>
 				<tbody>
 					{rows.length ? (
-						rows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)
+						rows.map((row) => (
+							<tr>
+								{row.map((cell) => (
+									<td>{cell}</td>
+								))}
+							</tr>
+						))
 					) : (
-						<tr><td colSpan={headings.length}>{empty}</td></tr>
+						<tr>
+							<td colSpan={headings.length}>{empty}</td>
+						</tr>
 					)}
 				</tbody>
 			</table>
@@ -197,8 +263,14 @@ function renderStatus(status: FttrStatus, devices: NetworkDevice[]): HTMLElement
 				<h3>{_("Controller")}</h3>
 				<table class="table">
 					<tbody>
-						<tr><th>{_("FPGA")}</th><td>{text(status.fpga_status)}</td></tr>
-						<tr><th>{_("Optical module")}</th><td>{text(optical.model)}</td></tr>
+						<tr>
+							<th>{_("FPGA")}</th>
+							<td>{text(status.fpga_status)}</td>
+						</tr>
+						<tr>
+							<th>{_("Optical module")}</th>
+							<td>{text(optical.model)}</td>
+						</tr>
 						<tr>
 							<th>{_("CDR lock")}</th>
 							<td>
@@ -213,7 +285,16 @@ function renderStatus(status: FttrStatus, devices: NetworkDevice[]): HTMLElement
 			<div class="cbi-section">
 				<h3>{_("Sub-gateways")}</h3>
 				{renderTable(
-					[_('ONU ID'), _('Vendor'), _('Model'), _('Optical serial'), _('Registration'), _('Business'), _('Firmware'), _('Data interface')],
+					[
+						_("ONU ID"),
+						_("Vendor"),
+						_("Model"),
+						_("Optical serial"),
+						_("Registration"),
+						_("Business"),
+						_("Firmware"),
+						_("Data interface"),
+					],
 					onus.map((onu) => [
 						onu.onu_id,
 						text(onu.vendor),
@@ -253,10 +334,7 @@ export const main = (view as any).extend({
 		poll.add(async () => {
 			if (!pageRoot?.isConnected) return;
 			try {
-				const [status, devices] = await Promise.all([
-					getStatus(),
-					getNetworkDevices().catch(() => []),
-				]);
+				const [status, devices] = await Promise.all([getStatus(), getNetworkDevices().catch(() => [])]);
 				const next = renderStatus(status, devices);
 				pageRoot.replaceWith(next);
 				pageRoot = next;
