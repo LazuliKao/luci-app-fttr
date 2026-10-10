@@ -1,75 +1,120 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { addBasic } from "./config/basic";
+import { addDevices } from "./config/devices";
+import { addServices } from "./config/services";
+
 const view = L.view;
 const uci = L.uci;
 const form = L.form;
+const rpc = L.rpc;
+const checkConfig = rpc.declare<any>({ object: "luci.fttr", method: "config_check", reject: true });
+const reloadConfig = rpc.declare<any>({ object: "luci.fttr", method: "config_reload", reject: true });
+const restartService = rpc.declare<any>({ object: "luci.fttr", method: "restart_service", reject: true });
+const getStatus = rpc.declare<any>({ object: "luci.fttr", method: "get_status", reject: true });
+
+async function command(fn: () => Promise<any>, output: HTMLElement, onResult?: (result: any) => void): Promise<void> {
+	try {
+		const result = await fn();
+		output.textContent = result.error ? String(result.error) : JSON.stringify(result, null, 2);
+		onResult?.(result);
+	} catch (error) {
+		output.textContent = String(error);
+		onResult?.({ error: String(error) });
+	}
+}
 
 const main = (view as any).extend({
-	load(): Promise<unknown> {
-		return uci.load("fttr");
+	async load(): Promise<any> {
+		await uci.load("fttr");
+		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
+		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
+		try {
+			const [check, status]: any[] = await Promise.all([
+				checkConfig(),
+				getStatus().catch(() => ({ sub_gateways: [] })),
+			]);
+			return { ...check, connectedDevices: status.sub_gateways ?? [] };
+		} catch (error) {
+			return { error: String(error) };
+		}
 	},
-	render(): Promise<Node> {
-		const map = new form.Map(
-			"fttr",
-			_("FTTR configuration"),
-			_("ACS settings are read by fttrd at startup. Save and apply changes to restart the FTTR service."),
-		);
-		const section = map.section(form.NamedSection, "acs", "acs", _("Embedded ACS"));
+	render(initialCheck: any): Promise<Node> {
+		const map = new form.Map("fttr", _("FTTR configuration"));
+		const section = map.section(form.NamedSection, "acs", "acs", "acs");
 		section.addremove = false;
 		section.anonymous = false;
 
-		let option: any = section.option(form.Flag, "enabled", _("Enable ACS"));
-		option.default = "0";
-		option.rmempty = false;
-		option.description = _("The backend must be built with ACS support. The default is disabled.");
+		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
+		addBasic(section, _("Basic"), globalId);
+		addDevices(section, initialCheck.connectedDevices ?? []);
+		addServices(section);
 
-		option = section.option(form.Value, "port", _("Listen port"));
-		option.datatype = "port";
-		option.default = "7547";
-		option.rmempty = false;
-		option.description = _("TCP port used by the embedded CWMP ACS.");
-
-		option = section.option(form.Value, "path", _("CWMP path"));
-		option.default = "/cwmp";
-		option.rmempty = false;
-		option.validate = (_sectionId: string, value: unknown) =>
-			typeof value === "string" && value.startsWith("/") ? true : _("The path must start with '/'.");
-
-		option = section.option(form.Value, "listen", _("Listen address"));
-		option.optional = true;
-		option.rmempty = true;
-		option.datatype = "ipaddr";
-		option.placeholder = _("Use the LAN address");
-		option.description = _("Leave empty to use the current LAN IP address.");
-
-		option = section.option(form.Value, "state_file", _("ACS state file"));
-		option.default = "/var/lib/fttr/acs-state.json";
-		option.rmempty = false;
-		option.validate = (_sectionId: string, value: unknown) =>
-			typeof value === "string" && value.startsWith("/") ? true : _("The state file path must be absolute.");
-
-		option = section.option(form.Value, "username", _("HTTP Basic username"));
-		option.optional = true;
-		option.rmempty = true;
-
-		option = section.option(form.Value, "password", _("HTTP Basic password"));
-		option.password = true;
-		option.optional = true;
-		option.rmempty = true;
-		option.description = _("Stored in UCI and passed to fttrd when the service starts.");
-
-		option = section.option(form.Flag, "provision_k155", _("Enable experimental K155 OMCI ACS provisioning"));
-		option.default = "0";
-		option.rmempty = false;
-		option.description = _("Opt-in only. Requires ACS and the HWTC K155 device adapter in the backend build.");
-
-		option = section.option(form.Value, "k155_vlan", _("K155 ACS management VLAN"));
-		option.datatype = "range(0,4094)";
-		option.default = "0";
-		option.rmempty = false;
-		option.description = _("Use 0 for untagged management traffic, or a VLAN ID from 1 to 4094.");
-
-		return map.render();
+		const output = <pre style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite" />;
+		let checkNotification: Node | null = null;
+		const showCheck = (result: any): void => {
+			checkNotification?.parentNode?.removeChild(checkNotification);
+			checkNotification = null;
+			if (result?.error) {
+				checkNotification = L.ui.addNotification(
+					_("FTTR configuration check failed"),
+					<p>{String(result.error)}</p>,
+					"error",
+				);
+			}
+		};
+		showCheck(initialCheck);
+		const actions = (
+			<div class="cbi-section">
+				<p>
+					{_(
+						"Saving configuration does not synchronize devices in Manual mode. After Save & Apply, open Synchronization and choose Apply differences. Preview differences is read-only.",
+					)}{" "}
+					<a href={L.url("admin", "network", "fttr", "sync")}>{_("Open Synchronization")}</a>
+				</p>
+				<h3>{_("Configuration diagnostics")}</h3>
+				<button
+					class="cbi-button cbi-button-action"
+					type="button"
+					onclick={() => command(checkConfig, output, showCheck)}
+				>
+					{_("Check")}
+				</button>{" "}
+				<button
+					class="cbi-button cbi-button-action"
+					type="button"
+					disabled={!L.hasViewPermission()}
+					onclick={() =>
+						command(
+							async () => {
+								const reload: any = await reloadConfig();
+								if (reload.error) return reload;
+								return await checkConfig();
+							},
+							output,
+							showCheck,
+						)
+					}
+				>
+					{_("Reload")}
+				</button>{" "}
+				<button
+					class="cbi-button cbi-button-negative"
+					type="button"
+					disabled={!L.hasViewPermission()}
+					onclick={() => command(restartService, output)}
+				>
+					{_("Restart")}
+				</button>
+				{output}
+			</div>
+		);
+		return map.render().then((node: Node) => (
+			<div>
+				{node}
+				{actions}
+			</div>
+		));
 	},
 });
 

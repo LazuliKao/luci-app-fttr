@@ -6,6 +6,7 @@ export default defineConfig({
 			index: "./src/view/index.tsx",
 			config: "./src/view/config.tsx",
 			hardware: "./src/view/hardware.tsx",
+			sync: "./src/view/sync.tsx",
 		},
 		tsconfigPath: "./tsconfig.json",
 	},

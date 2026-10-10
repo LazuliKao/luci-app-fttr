@@ -25,6 +25,11 @@
 			"path": "fttr/config"
 		}
 	},
+	"admin/network/fttr/sync": {
+		"title": "Synchronization",
+		"order": 25,
+		"action": { "type": "view", "path": "fttr/sync" }
+	},
 	"admin/network/fttr/hardware": {
 		"title": "Hardware status",
 		"order": 30,

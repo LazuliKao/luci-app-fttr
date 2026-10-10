@@ -19,6 +19,9 @@ interface SubGateway {
 		omcc_version?: number;
 	};
 	data_path?: { interface?: string };
+	management?: { state?: string };
+	provisioning?: { state?: string; current_revision?: boolean; management_fresh?: boolean };
+	wifi_sync?: string;
 }
 
 interface FttrStatus {
@@ -37,6 +40,7 @@ interface FttrStatus {
 		link_state?: string;
 	}>;
 	sub_gateways?: SubGateway[];
+	provisioning?: { enabled?: boolean; mode?: string; revision?: string; error?: string };
 }
 
 interface NetworkDevice {
@@ -94,189 +98,361 @@ function formatLinkSpeed(speed: number | undefined): string {
 	return `${speed} MbE`;
 }
 
-function renderPorts(status: FttrStatus, devices: NetworkDevice[]): HTMLElement {
-	const portByNumber = new Map((status.switch_ports ?? []).map((port) => [port.port, port]));
-	const deviceByName = new Map<string, NetworkDevice>();
-	for (const device of devices) {
-		const name = device.device ?? device.name ?? device.ifname;
-		if (name) deviceByName.set(name, device);
-	}
-	const ports = Array.from({ length: 16 }, (_port, index) => {
-		const number = index + 1;
-		const port = portByNumber.get(number);
-		const ifname = port?.interface ?? `fttr${number}`;
-		const device = deviceByName.get(ifname);
-		const stats = device?.stats ?? device?.statistics;
-		const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
-		const onu = (status.sub_gateways ?? []).find((item) => item.onu_id === port?.onu_id);
-		const state =
-			port?.link_state ?? port?.status ?? (device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable"));
-		const connected = carrier === true;
-		const icon = connected ? "port_up.svg" : "port_down.svg";
-		const barColor = connected ? "144, 240, 144" : "240, 144, 144";
-		const rxBytes = stats?.rx_bytes;
-		const txBytes = stats?.tx_bytes;
-		return (
-			<div class="ifacebox" style="margin:.25em;width:100px">
-				<div class="ifacebox-head" style="font-weight:bold">
-					{ifname}
-				</div>
-				<div class="ifacebox-body">
-					<img src={`/luci-static/resources/icons/${icon}`} alt="" aria-hidden="true" />
-					<br />
-					{connected ? (
-						<span
-							title={_("速度：%s Mbit/s，双工：%s").format(
-								text(device?.link?.speed),
-								text(device?.link?.duplex),
-							)}
-						>
-							{formatLinkSpeed(device?.link?.speed)}
-						</span>
-					) : (
-						<span>{carrier === false ? _("Disconnected") : _("Unknown")}</span>
-					)}
-				</div>
-				<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
-					<div
-						style={`flex:1;height:3px;opacity:${connected ? 1 : 0.25};background-color:rgb(${barColor})`}
-					></div>
-					<span class="cbi-tooltip left">
-						<strong>{_("Port status")}: </strong>
-						{text(state)}
-						<br />
-						<strong>{_("ONU")}: </strong>
-						{text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id)}
-						<br />
-						<strong>{_("MAC address")}: </strong>
-						{text(device?.mac)}
-					</span>
-				</div>
-				<div class="ifacebox-body">
-					<div class="cbi-tooltip-container" style="text-align:left;font-size:80%">
-						▲ {formatBytes(txBytes)}
-						<br />
-						▼ {formatBytes(rxBytes)}
-						<span class="cbi-tooltip">
-							<span>
-								<span class="nowrap">
-									<strong>{_("Received bytes")}: </strong>
-									{formatBytes(rxBytes)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Received packets")}: </strong>
-									{formatPackets(stats?.rx_packets)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Received multicast")}: </strong>
-									{formatPackets(stats?.rx_multicast ?? stats?.multicast)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Receive errors")}: </strong>
-									{formatPackets(stats?.rx_errors)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Receive dropped")}: </strong>
-									{formatPackets(stats?.rx_dropped)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Transmitted bytes")}: </strong>
-									{formatBytes(txBytes)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Transmitted packets")}: </strong>
-									{formatPackets(stats?.tx_packets)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Transmit errors")}: </strong>
-									{formatPackets(stats?.tx_errors)}
-								</span>
-								<br />
-								<span class="nowrap">
-									<strong>{_("Transmit dropped")}: </strong>
-									{formatPackets(stats?.tx_dropped)}
-								</span>
-							</span>
-						</span>
-					</div>
-				</div>
-			</div>
-		);
-	});
-	return (
-		<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:1em;align-items:center;justify-items:center;text-align:center">
-			{ports}
-		</div>
-	);
+interface PortCard {
+	element: HTMLElement;
+	update(status: FttrStatus, devices: Map<string, NetworkDevice>): void;
 }
 
-function renderTable(
-	headings: string[],
-	rows: Array<Array<string | number | HTMLElement>>,
-	empty: string,
-): HTMLElement {
-	return (
+function createPortCard(number: number): PortCard {
+	const element = (
+		<div class="ifacebox" style="margin:.25em;width:100px">
+			<div class="ifacebox-head" style="font-weight:bold">
+				<span></span>
+			</div>
+			<div class="ifacebox-body">
+				<img src="/luci-static/resources/icons/port_down.svg" alt="" aria-hidden="true" />
+				<br />
+				<span>{_("Unknown")}</span>
+			</div>
+			<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
+				<div style="flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"></div>
+				<span class="cbi-tooltip left">
+					<strong>{_("Port status")}: </strong>
+					<span />
+					<br />
+					<strong>{_("ONU")}: </strong>
+					<span />
+					<br />
+					<strong>{_("MAC address")}: </strong>
+					<span />
+				</span>
+			</div>
+			<div class="ifacebox-body">
+				<div class="cbi-tooltip-container" style="text-align:left;font-size:80%">
+					▲ 
+					<span />
+					<br />
+					▼ 
+					<span />
+					<span class="cbi-tooltip">
+						<span>
+							<span class="nowrap">
+								<strong>{_("Received bytes")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Received packets")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Received multicast")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Receive errors")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Receive dropped")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Transmitted bytes")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Transmitted packets")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Transmit errors")}: </strong>
+								<span />
+							</span>
+							<br />
+							<span class="nowrap">
+								<strong>{_("Transmit dropped")}: </strong>
+								<span />
+							</span>
+						</span>
+					</span>
+				</div>
+			</div>
+		</div>
+	);
+	const spans = element.querySelectorAll("span");
+	const ifnameNode = spans[0];
+	const speedNode = spans[1];
+	const portStateNode = spans[3];
+	const onuNode = spans[4];
+	const macNode = spans[5];
+	const txSummaryNode = spans[6];
+	const rxSummaryNode = spans[7];
+	const rxBytesNode = spans[11];
+	const rxPacketsNode = spans[12];
+	const rxMulticastNode = spans[13];
+	const rxErrorsNode = spans[14];
+	const rxDroppedNode = spans[15];
+	const txBytesNode = spans[16];
+	const txPacketsNode = spans[17];
+	const txErrorsNode = spans[18];
+	const txDroppedNode = spans[19];
+	const iconNode = element.getElementsByTagName("img").item(0);
+	if (!iconNode) throw new Error("Port card icon is missing");
+	const linkBarNode = (element.children.item(2) as HTMLElement).children.item(0) as HTMLElement;
+
+	return {
+		element,
+		update(status, devices) {
+			const port = (status.switch_ports ?? []).find((item) => item.port === number);
+			const ifname = port?.interface ?? `fttr${number}`;
+			const device = devices.get(ifname);
+			const stats = device?.stats ?? device?.statistics;
+			const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
+			const onu = (status.sub_gateways ?? []).find((item) => item.onu_id === port?.onu_id);
+			const connected = carrier === true;
+			const rxBytes = stats?.rx_bytes;
+			const txBytes = stats?.tx_bytes;
+
+			ifnameNode.textContent = ifname;
+			iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
+			speedNode.textContent = connected
+				? formatLinkSpeed(device?.link?.speed)
+				: carrier === false
+					? _("Disconnected")
+					: _("Unknown");
+			speedNode.setAttribute(
+				"title",
+				_("速度：%s Mbit/s，双工：%s").format(text(device?.link?.speed), text(device?.link?.duplex)),
+			);
+			linkBarNode.style.opacity = connected ? "1" : "0.25";
+			linkBarNode.style.backgroundColor = connected ? "rgb(144, 240, 144)" : "rgb(240, 144, 144)";
+			portStateNode.textContent = text(
+				port?.link_state ??
+					port?.status ??
+					(device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable")),
+			);
+			onuNode.textContent = text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id);
+			macNode.textContent = text(device?.mac);
+			txSummaryNode.textContent = formatBytes(txBytes);
+			rxSummaryNode.textContent = formatBytes(rxBytes);
+			rxBytesNode.textContent = formatBytes(rxBytes);
+			rxPacketsNode.textContent = formatPackets(stats?.rx_packets);
+			rxMulticastNode.textContent = formatPackets(stats?.rx_multicast ?? stats?.multicast);
+			rxErrorsNode.textContent = formatPackets(stats?.rx_errors);
+			rxDroppedNode.textContent = formatPackets(stats?.rx_dropped);
+			txBytesNode.textContent = formatBytes(txBytes);
+			txPacketsNode.textContent = formatPackets(stats?.tx_packets);
+			txErrorsNode.textContent = formatPackets(stats?.tx_errors);
+			txDroppedNode.textContent = formatPackets(stats?.tx_dropped);
+		},
+	};
+}
+
+interface OnuRow {
+	element: HTMLElement;
+	update(onu: SubGateway): void;
+}
+
+function createOnuRow(onu: SubGateway): OnuRow {
+	const element = (
+		<tr>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+			<td>
+				<span />
+			</td>
+		</tr>
+	);
+	const cells = Array.from(element.querySelectorAll("td > span"));
+	const registrationNode = cells[4];
+	const row: OnuRow = {
+		element,
+		update(value) {
+			cells[0].textContent = String(value.onu_id);
+			cells[1].textContent = text(value.vendor);
+			cells[2].textContent = text(value.identity?.equipment_id ?? value.model);
+			cells[3].textContent = text(value.serial_number);
+			registrationNode.textContent = text(value.state);
+			registrationNode.className = value.state === "O5Operation" ? "label success" : "label warning";
+			cells[5].textContent = text(value.business_status);
+			cells[6].textContent = text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
+			cells[7].textContent = text(value.data_path?.interface);
+			cells[8].textContent = text(value.management?.state);
+			cells[9].textContent = text(value.provisioning?.state);
+			cells[9].setAttribute(
+				"title",
+				value.provisioning?.current_revision === false
+					? _("Previous configuration")
+					: value.provisioning?.management_fresh === false
+						? _("Management stale")
+						: "",
+			);
+			cells[10].textContent = text(value.wifi_sync);
+		},
+	};
+	row.update(onu);
+	return row;
+}
+
+interface OnuTable {
+	element: HTMLElement;
+	update(onus: SubGateway[]): void;
+}
+
+function createOnuTable(onus: SubGateway[]): OnuTable {
+	const rows = new Map<number, OnuRow>();
+	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu));
+	const emptyRow = (
+		<tr>
+			<td colSpan={11}>{_("No registered sub-gateways.")}</td>
+		</tr>
+	);
+	let showingEmpty = onus.length === 0;
+	const body = <tbody>{showingEmpty ? emptyRow : [...rows.values()].map((row) => row.element)}</tbody>;
+	const element = (
 		<div class="table-wrapper">
 			<table class="table">
 				<thead>
 					<tr>
-						{headings.map((heading) => (
-							<th>{heading}</th>
-						))}
+						<th>{_("ONU ID")}</th>
+						<th>{_("Vendor")}</th>
+						<th>{_("Model")}</th>
+						<th>{_("Optical serial")}</th>
+						<th>{_("Registration")}</th>
+						<th>{_("Business")}</th>
+						<th>{_("Firmware")}</th>
+						<th>{_("Data interface")}</th>
+						<th>{_("CWMP")}</th>
+						<th>{_("Synchronization")}</th>
+						<th>{_("Wi-Fi sync")}</th>
 					</tr>
 				</thead>
-				<tbody>
-					{rows.length ? (
-						rows.map((row) => (
-							<tr>
-								{row.map((cell) => (
-									<td>{cell}</td>
-								))}
-							</tr>
-						))
-					) : (
-						<tr>
-							<td colSpan={headings.length}>{empty}</td>
-						</tr>
-					)}
-				</tbody>
+				{body}
 			</table>
 		</div>
 	);
+
+	return {
+		element,
+		update(nextOnus) {
+			const nextIds = new Set(nextOnus.map((onu) => onu.onu_id));
+			for (const [onuId, row] of rows) {
+				if (!nextIds.has(onuId)) {
+					row.element.remove();
+					rows.delete(onuId);
+				}
+			}
+
+			if (nextOnus.length === 0) {
+				if (!showingEmpty) body.append(emptyRow);
+				showingEmpty = true;
+				return;
+			}
+
+			if (showingEmpty) {
+				emptyRow.remove();
+				showingEmpty = false;
+			}
+
+			for (const [index, onu] of nextOnus.entries()) {
+				let row = rows.get(onu.onu_id);
+				if (!row) {
+					row = createOnuRow(onu);
+					rows.set(onu.onu_id, row);
+				}
+				row.update(onu);
+				const current = body.children.item(index);
+				if (current !== row.element) body.insertBefore(row.element, current);
+			}
+		},
+	};
 }
 
-function renderStatus(status: FttrStatus, devices: NetworkDevice[]): HTMLElement {
-	const onus = Array.isArray(status.sub_gateways) ? status.sub_gateways : [];
-	const optical = status.optical_transceiver ?? {};
+interface StatusView {
+	element: HTMLElement;
+	update(status: FttrStatus, devices: NetworkDevice[]): void;
+}
 
-	return (
+function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevice[]): StatusView {
+	const initialOptical = initialStatus.optical_transceiver ?? {};
+	const onuTable = createOnuTable(initialStatus.sub_gateways ?? []);
+	const ports = Array.from({ length: 16 }, (_port, index) => createPortCard(index + 1));
+	const deviceMap = new Map<string, NetworkDevice>();
+	const updateDevices = (devices: NetworkDevice[]) => {
+		deviceMap.clear();
+		for (const device of devices) {
+			const name = device.device ?? device.name ?? device.ifname;
+			if (name) deviceMap.set(name, device);
+		}
+	};
+	updateDevices(initialDevices);
+
+	const element = (
 		<div class="cbi-map">
 			<h2>{_("FTTR overview")}</h2>
+			<p data-provisioning-summary="true" />
 			<div class="cbi-section">
 				<h3>{_("Controller")}</h3>
 				<table class="table">
 					<tbody>
 						<tr>
 							<th>{_("FPGA")}</th>
-							<td>{text(status.fpga_status)}</td>
+							<td>
+								<span>{text(initialStatus.fpga_status)}</span>
+							</td>
 						</tr>
 						<tr>
 							<th>{_("Optical module")}</th>
-							<td>{text(optical.model)}</td>
+							<td>
+								<span>{text(initialOptical.model)}</span>
+							</td>
 						</tr>
 						<tr>
 							<th>{_("CDR lock")}</th>
 							<td>
-								{optical.cdr_locked === undefined
-									? "—"
-									: badge(optical.cdr_locked, optical.cdr_locked ? _("Locked") : _("Unlocked"))}
+								{initialOptical.cdr_locked === undefined ? (
+									<span>—</span>
+								) : (
+									badge(
+										initialOptical.cdr_locked,
+										initialOptical.cdr_locked ? _("Locked") : _("Unlocked"),
+									)
+								)}
 							</td>
 						</tr>
 					</tbody>
@@ -284,39 +460,45 @@ function renderStatus(status: FttrStatus, devices: NetworkDevice[]): HTMLElement
 			</div>
 			<div class="cbi-section">
 				<h3>{_("Sub-gateways")}</h3>
-				{renderTable(
-					[
-						_("ONU ID"),
-						_("Vendor"),
-						_("Model"),
-						_("Optical serial"),
-						_("Registration"),
-						_("Business"),
-						_("Firmware"),
-						_("Data interface"),
-					],
-					onus.map((onu) => [
-						onu.onu_id,
-						text(onu.vendor),
-						text(onu.identity?.equipment_id ?? onu.model),
-						text(onu.serial_number),
-						badge(onu.state === "O5Operation", onu.state),
-						text(onu.business_status),
-						text(onu.identity?.software_images?.join(", ") ?? onu.firmware_version),
-						text(onu.data_path?.interface),
-					]),
-					_("No registered sub-gateways."),
-				)}
+				{onuTable.element}
 			</div>
 			<div class="cbi-section">
 				<h3>{_("Downstream ports")}</h3>
-				{renderPorts(status, devices)}
+				<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:1em;align-items:center;justify-items:center;text-align:center">
+					{ports.map((port) => port.element)}
+				</div>
 			</div>
 		</div>
 	);
+	const controllerCells = element.querySelectorAll("table tbody td > span");
+	const fpgaNode = controllerCells[0];
+	const opticalNode = controllerCells[1];
+	const cdrNode = controllerCells[2];
+	const provisioningNode = element.querySelector("[data-provisioning-summary]") as HTMLElement;
+
+	const update = (status: FttrStatus, devices: NetworkDevice[]) => {
+		const optical = status.optical_transceiver ?? {};
+		const provisioning = status.provisioning;
+		provisioningNode.textContent = provisioning
+			? `${_("Provisioning")}: ${provisioning.enabled ? _("Enabled") : _("Disabled")} / ${text(provisioning.mode)} / ${text(provisioning.revision)}${provisioning.error ? ` — ${provisioning.error}` : ""}`
+			: _("Provisioning status unavailable");
+		fpgaNode.textContent = text(status.fpga_status);
+		opticalNode.textContent = text(optical.model);
+		cdrNode.textContent = optical.cdr_locked === undefined ? "—" : optical.cdr_locked ? _("Locked") : _("Unlocked");
+		cdrNode.className =
+			optical.cdr_locked === undefined ? "" : optical.cdr_locked ? "label success" : "label warning";
+		onuTable.update(status.sub_gateways ?? []);
+		updateDevices(devices);
+		for (const port of ports) port.update(status, deviceMap);
+	};
+
+	update(initialStatus, initialDevices);
+	return { element, update };
 }
 
 let pageRoot: HTMLElement | null = null;
+let pageView: StatusView | null = null;
+let refreshing = false;
 
 export const main = (view as any).extend({
 	async load(): Promise<{ status: FttrStatus; devices: NetworkDevice[] }> {
@@ -330,16 +512,19 @@ export const main = (view as any).extend({
 		return { status, devices: deviceResult };
 	},
 	render(data: { status: FttrStatus; devices: NetworkDevice[] }): HTMLElement {
-		pageRoot = renderStatus(data.status, data.devices);
+		pageView = createStatusView(data.status, data.devices);
+		pageRoot = pageView.element;
 		poll.add(async () => {
-			if (!pageRoot?.isConnected) return;
+			if (refreshing || !pageRoot?.isConnected || !pageView) return;
+			const activeView = pageView;
+			refreshing = true;
 			try {
 				const [status, devices] = await Promise.all([getStatus(), getNetworkDevices().catch(() => [])]);
-				const next = renderStatus(status, devices);
-				pageRoot.replaceWith(next);
-				pageRoot = next;
+				if (pageView === activeView && activeView.element.isConnected) activeView.update(status, devices);
 			} catch (error) {
 				console.error("Failed to refresh FTTR status", error);
+			} finally {
+				refreshing = false;
 			}
 		}, 10);
 		return pageRoot;

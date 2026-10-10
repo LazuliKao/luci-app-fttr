@@ -16,6 +16,7 @@ define Package/luci-app-fttr/install
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/fttr/index.js $(1)/www/luci-static/resources/view/fttr/index.js
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/fttr/config.js $(1)/www/luci-static/resources/view/fttr/config.js
 	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/fttr/hardware.js $(1)/www/luci-static/resources/view/fttr/hardware.js
+	$(INSTALL_DATA) ./htdocs/luci-static/resources/view/fttr/sync.js $(1)/www/luci-static/resources/view/fttr/sync.js
 	$(INSTALL_DIR) $(1)/usr/share/luci/menu.d
 	$(INSTALL_DATA) ./root/usr/share/luci/menu.d/luci-app-fttr.json $(1)/usr/share/luci/menu.d/luci-app-fttr.json
 	$(INSTALL_DIR) $(1)/usr/share/rpcd/acl.d

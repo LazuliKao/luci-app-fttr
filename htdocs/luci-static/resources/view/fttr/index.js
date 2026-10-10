@@ -143,277 +143,440 @@ function formatLinkSpeed(speed) {
     if (speed >= 1000) return `${speed / 1000}\u{202F}GbE`;
     return `${speed}\u{202F}MbE`;
 }
-function renderPorts(status, devices) {
-    const portByNumber = new Map((status.switch_ports ?? []).map((port)=>[
-            port.port,
-            port
-        ]));
-    const deviceByName = new Map();
-    for (const device of devices){
-        const name = device.device ?? device.name ?? device.ifname;
-        if (name) deviceByName.set(name, device);
-    }
-    const ports = Array.from({
-        length: 16
-    }, (_port, index)=>{
-        const number = index + 1;
-        const port = portByNumber.get(number);
-        const ifname = port?.interface ?? `fttr${number}`;
-        const device = deviceByName.get(ifname);
-        const stats = device?.stats ?? device?.statistics;
-        const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
-        const onu = (status.sub_gateways ?? []).find((item)=>item.onu_id === port?.onu_id);
-        const state = port?.link_state ?? port?.status ?? (device ? carrier ? _("Link up") : _("Link down") : _("Unavailable"));
-        const connected = carrier === true;
-        const icon = connected ? "port_up.svg" : "port_down.svg";
-        const barColor = connected ? "144, 240, 144" : "240, 144, 144";
-        const rxBytes = stats?.rx_bytes;
-        const txBytes = stats?.tx_bytes;
-        return /*#__PURE__*/ jsxs("div", {
-            class: "ifacebox",
-            style: "margin:.25em;width:100px",
-            children: [
-                /*#__PURE__*/ jsx("div", {
-                    class: "ifacebox-head",
-                    style: "font-weight:bold",
-                    children: ifname
-                }),
-                /*#__PURE__*/ jsxs("div", {
-                    class: "ifacebox-body",
-                    children: [
-                        /*#__PURE__*/ jsx("img", {
-                            src: `/luci-static/resources/icons/${icon}`,
-                            alt: "",
-                            "aria-hidden": "true"
-                        }),
-                        /*#__PURE__*/ jsx("br", {}),
-                        connected ? /*#__PURE__*/ jsx("span", {
-                            title: _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(view_text(device?.link?.speed), view_text(device?.link?.duplex)),
-                            children: formatLinkSpeed(device?.link?.speed)
-                        }) : /*#__PURE__*/ jsx("span", {
-                            children: carrier === false ? _("Disconnected") : _("Unknown")
-                        })
-                    ]
-                }),
-                /*#__PURE__*/ jsxs("div", {
-                    class: "ifacebox-head cbi-tooltip-container",
-                    style: "display:flex",
-                    children: [
-                        /*#__PURE__*/ jsx("div", {
-                            style: `flex:1;height:3px;opacity:${connected ? 1 : 0.25};background-color:rgb(${barColor})`
-                        }),
-                        /*#__PURE__*/ jsxs("span", {
-                            class: "cbi-tooltip left",
-                            children: [
-                                /*#__PURE__*/ jsxs("strong", {
-                                    children: [
-                                        _("Port status"),
-                                        ": "
-                                    ]
-                                }),
-                                view_text(state),
-                                /*#__PURE__*/ jsx("br", {}),
-                                /*#__PURE__*/ jsxs("strong", {
-                                    children: [
-                                        _("ONU"),
-                                        ": "
-                                    ]
-                                }),
-                                view_text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id),
-                                /*#__PURE__*/ jsx("br", {}),
-                                /*#__PURE__*/ jsxs("strong", {
-                                    children: [
-                                        _("MAC address"),
-                                        ": "
-                                    ]
-                                }),
-                                view_text(device?.mac)
-                            ]
-                        })
-                    ]
-                }),
-                /*#__PURE__*/ jsx("div", {
-                    class: "ifacebox-body",
-                    children: /*#__PURE__*/ jsxs("div", {
-                        class: "cbi-tooltip-container",
-                        style: "text-align:left;font-size:80%",
+function createPortCard(number) {
+    const element = /*#__PURE__*/ jsxs("div", {
+        class: "ifacebox",
+        style: "margin:.25em;width:100px",
+        children: [
+            /*#__PURE__*/ jsx("div", {
+                class: "ifacebox-head",
+                style: "font-weight:bold",
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsxs("div", {
+                class: "ifacebox-body",
+                children: [
+                    /*#__PURE__*/ jsx("img", {
+                        src: "/luci-static/resources/icons/port_down.svg",
+                        alt: "",
+                        "aria-hidden": "true"
+                    }),
+                    /*#__PURE__*/ jsx("br", {}),
+                    /*#__PURE__*/ jsx("span", {
+                        children: _("Unknown")
+                    })
+                ]
+            }),
+            /*#__PURE__*/ jsxs("div", {
+                class: "ifacebox-head cbi-tooltip-container",
+                style: "display:flex",
+                children: [
+                    /*#__PURE__*/ jsx("div", {
+                        style: "flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"
+                    }),
+                    /*#__PURE__*/ jsxs("span", {
+                        class: "cbi-tooltip left",
                         children: [
-                            "\u25B2\u202F",
-                            formatBytes(txBytes),
+                            /*#__PURE__*/ jsxs("strong", {
+                                children: [
+                                    _("Port status"),
+                                    ": "
+                                ]
+                            }),
+                            /*#__PURE__*/ jsx("span", {}),
                             /*#__PURE__*/ jsx("br", {}),
-                            "\u25BC\u202F",
-                            formatBytes(rxBytes),
-                            /*#__PURE__*/ jsx("span", {
-                                class: "cbi-tooltip",
-                                children: /*#__PURE__*/ jsxs("span", {
-                                    children: [
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Received bytes"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatBytes(rxBytes)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Received packets"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.rx_packets)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Received multicast"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.rx_multicast ?? stats?.multicast)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Receive errors"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.rx_errors)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Receive dropped"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.rx_dropped)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Transmitted bytes"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatBytes(txBytes)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Transmitted packets"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.tx_packets)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Transmit errors"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.tx_errors)
-                                            ]
-                                        }),
-                                        /*#__PURE__*/ jsx("br", {}),
-                                        /*#__PURE__*/ jsxs("span", {
-                                            class: "nowrap",
-                                            children: [
-                                                /*#__PURE__*/ jsxs("strong", {
-                                                    children: [
-                                                        _("Transmit dropped"),
-                                                        ": "
-                                                    ]
-                                                }),
-                                                formatPackets(stats?.tx_dropped)
-                                            ]
-                                        })
-                                    ]
-                                })
-                            })
+                            /*#__PURE__*/ jsxs("strong", {
+                                children: [
+                                    _("ONU"),
+                                    ": "
+                                ]
+                            }),
+                            /*#__PURE__*/ jsx("span", {}),
+                            /*#__PURE__*/ jsx("br", {}),
+                            /*#__PURE__*/ jsxs("strong", {
+                                children: [
+                                    _("MAC address"),
+                                    ": "
+                                ]
+                            }),
+                            /*#__PURE__*/ jsx("span", {})
                         ]
                     })
+                ]
+            }),
+            /*#__PURE__*/ jsx("div", {
+                class: "ifacebox-body",
+                children: /*#__PURE__*/ jsxs("div", {
+                    class: "cbi-tooltip-container",
+                    style: "text-align:left;font-size:80%",
+                    children: [
+                        "\u25B2\u202F",
+                        /*#__PURE__*/ jsx("span", {}),
+                        /*#__PURE__*/ jsx("br", {}),
+                        "\u25BC\u202F",
+                        /*#__PURE__*/ jsx("span", {}),
+                        /*#__PURE__*/ jsx("span", {
+                            class: "cbi-tooltip",
+                            children: /*#__PURE__*/ jsxs("span", {
+                                children: [
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Received bytes"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Received packets"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Received multicast"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Receive errors"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Receive dropped"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Transmitted bytes"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Transmitted packets"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Transmit errors"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    }),
+                                    /*#__PURE__*/ jsx("br", {}),
+                                    /*#__PURE__*/ jsxs("span", {
+                                        class: "nowrap",
+                                        children: [
+                                            /*#__PURE__*/ jsxs("strong", {
+                                                children: [
+                                                    _("Transmit dropped"),
+                                                    ": "
+                                                ]
+                                            }),
+                                            /*#__PURE__*/ jsx("span", {})
+                                        ]
+                                    })
+                                ]
+                            })
+                        })
+                    ]
                 })
-            ]
-        });
+            })
+        ]
     });
-    return /*#__PURE__*/ jsx("div", {
-        style: "display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:1em;align-items:center;justify-items:center;text-align:center",
-        children: ports
-    });
+    const spans = element.querySelectorAll("span");
+    const ifnameNode = spans[0];
+    const speedNode = spans[1];
+    const portStateNode = spans[3];
+    const onuNode = spans[4];
+    const macNode = spans[5];
+    const txSummaryNode = spans[6];
+    const rxSummaryNode = spans[7];
+    const rxBytesNode = spans[11];
+    const rxPacketsNode = spans[12];
+    const rxMulticastNode = spans[13];
+    const rxErrorsNode = spans[14];
+    const rxDroppedNode = spans[15];
+    const txBytesNode = spans[16];
+    const txPacketsNode = spans[17];
+    const txErrorsNode = spans[18];
+    const txDroppedNode = spans[19];
+    const iconNode = element.getElementsByTagName("img").item(0);
+    if (!iconNode) throw new Error("Port card icon is missing");
+    const linkBarNode = element.children.item(2).children.item(0);
+    return {
+        element,
+        update (status, devices) {
+            const port = (status.switch_ports ?? []).find((item)=>item.port === number);
+            const ifname = port?.interface ?? `fttr${number}`;
+            const device = devices.get(ifname);
+            const stats = device?.stats ?? device?.statistics;
+            const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
+            const onu = (status.sub_gateways ?? []).find((item)=>item.onu_id === port?.onu_id);
+            const connected = carrier === true;
+            const rxBytes = stats?.rx_bytes;
+            const txBytes = stats?.tx_bytes;
+            ifnameNode.textContent = ifname;
+            iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
+            speedNode.textContent = connected ? formatLinkSpeed(device?.link?.speed) : carrier === false ? _("Disconnected") : _("Unknown");
+            speedNode.setAttribute("title", _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(view_text(device?.link?.speed), view_text(device?.link?.duplex)));
+            linkBarNode.style.opacity = connected ? "1" : "0.25";
+            linkBarNode.style.backgroundColor = connected ? "rgb(144, 240, 144)" : "rgb(240, 144, 144)";
+            portStateNode.textContent = view_text(port?.link_state ?? port?.status ?? (device ? carrier ? _("Link up") : _("Link down") : _("Unavailable")));
+            onuNode.textContent = view_text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id);
+            macNode.textContent = view_text(device?.mac);
+            txSummaryNode.textContent = formatBytes(txBytes);
+            rxSummaryNode.textContent = formatBytes(rxBytes);
+            rxBytesNode.textContent = formatBytes(rxBytes);
+            rxPacketsNode.textContent = formatPackets(stats?.rx_packets);
+            rxMulticastNode.textContent = formatPackets(stats?.rx_multicast ?? stats?.multicast);
+            rxErrorsNode.textContent = formatPackets(stats?.rx_errors);
+            rxDroppedNode.textContent = formatPackets(stats?.rx_dropped);
+            txBytesNode.textContent = formatBytes(txBytes);
+            txPacketsNode.textContent = formatPackets(stats?.tx_packets);
+            txErrorsNode.textContent = formatPackets(stats?.tx_errors);
+            txDroppedNode.textContent = formatPackets(stats?.tx_dropped);
+        }
+    };
 }
-function renderTable(headings, rows, empty) {
-    return /*#__PURE__*/ jsx("div", {
+function createOnuRow(onu) {
+    const element = /*#__PURE__*/ jsxs("tr", {
+        children: [
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            }),
+            /*#__PURE__*/ jsx("td", {
+                children: /*#__PURE__*/ jsx("span", {})
+            })
+        ]
+    });
+    const cells = Array.from(element.querySelectorAll("td > span"));
+    const registrationNode = cells[4];
+    const row = {
+        element,
+        update (value) {
+            cells[0].textContent = String(value.onu_id);
+            cells[1].textContent = view_text(value.vendor);
+            cells[2].textContent = view_text(value.identity?.equipment_id ?? value.model);
+            cells[3].textContent = view_text(value.serial_number);
+            registrationNode.textContent = view_text(value.state);
+            registrationNode.className = value.state === "O5Operation" ? "label success" : "label warning";
+            cells[5].textContent = view_text(value.business_status);
+            cells[6].textContent = view_text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
+            cells[7].textContent = view_text(value.data_path?.interface);
+            cells[8].textContent = view_text(value.management?.state);
+            cells[9].textContent = view_text(value.provisioning?.state);
+            cells[9].setAttribute("title", value.provisioning?.current_revision === false ? _("Previous configuration") : value.provisioning?.management_fresh === false ? _("Management stale") : "");
+            cells[10].textContent = view_text(value.wifi_sync);
+        }
+    };
+    row.update(onu);
+    return row;
+}
+function createOnuTable(onus) {
+    const rows = new Map();
+    for (const onu of onus)rows.set(onu.onu_id, createOnuRow(onu));
+    const emptyRow = /*#__PURE__*/ jsx("tr", {
+        children: /*#__PURE__*/ jsx("td", {
+            colSpan: 11,
+            children: _("No registered sub-gateways.")
+        })
+    });
+    let showingEmpty = onus.length === 0;
+    const body = /*#__PURE__*/ jsx("tbody", {
+        children: showingEmpty ? emptyRow : [
+            ...rows.values()
+        ].map((row)=>row.element)
+    });
+    const element = /*#__PURE__*/ jsx("div", {
         class: "table-wrapper",
         children: /*#__PURE__*/ jsxs("table", {
             class: "table",
             children: [
                 /*#__PURE__*/ jsx("thead", {
-                    children: /*#__PURE__*/ jsx("tr", {
-                        children: headings.map((heading)=>/*#__PURE__*/ jsx("th", {
-                                children: heading
-                            }))
+                    children: /*#__PURE__*/ jsxs("tr", {
+                        children: [
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("ONU ID")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Vendor")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Model")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Optical serial")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Registration")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Business")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Firmware")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Data interface")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("CWMP")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Synchronization")
+                            }),
+                            /*#__PURE__*/ jsx("th", {
+                                children: _("Wi-Fi sync")
+                            })
+                        ]
                     })
                 }),
-                /*#__PURE__*/ jsx("tbody", {
-                    children: rows.length ? rows.map((row)=>/*#__PURE__*/ jsx("tr", {
-                            children: row.map((cell)=>/*#__PURE__*/ jsx("td", {
-                                    children: cell
-                                }))
-                        })) : /*#__PURE__*/ jsx("tr", {
-                        children: /*#__PURE__*/ jsx("td", {
-                            colSpan: headings.length,
-                            children: empty
-                        })
-                    })
-                })
+                body
             ]
         })
     });
+    return {
+        element,
+        update (nextOnus) {
+            const nextIds = new Set(nextOnus.map((onu)=>onu.onu_id));
+            for (const [onuId, row] of rows){
+                if (!nextIds.has(onuId)) {
+                    row.element.remove();
+                    rows.delete(onuId);
+                }
+            }
+            if (nextOnus.length === 0) {
+                if (!showingEmpty) body.append(emptyRow);
+                showingEmpty = true;
+                return;
+            }
+            if (showingEmpty) {
+                emptyRow.remove();
+                showingEmpty = false;
+            }
+            for (const [index, onu] of nextOnus.entries()){
+                let row = rows.get(onu.onu_id);
+                if (!row) {
+                    row = createOnuRow(onu);
+                    rows.set(onu.onu_id, row);
+                }
+                row.update(onu);
+                const current = body.children.item(index);
+                if (current !== row.element) body.insertBefore(row.element, current);
+            }
+        }
+    };
 }
-function renderStatus(status, devices) {
-    const onus = Array.isArray(status.sub_gateways) ? status.sub_gateways : [];
-    const optical = status.optical_transceiver ?? {};
-    return /*#__PURE__*/ jsxs("div", {
+function createStatusView(initialStatus, initialDevices) {
+    const initialOptical = initialStatus.optical_transceiver ?? {};
+    const onuTable = createOnuTable(initialStatus.sub_gateways ?? []);
+    const ports = Array.from({
+        length: 16
+    }, (_port, index)=>createPortCard(index + 1));
+    const deviceMap = new Map();
+    const updateDevices = (devices)=>{
+        deviceMap.clear();
+        for (const device of devices){
+            const name = device.device ?? device.name ?? device.ifname;
+            if (name) deviceMap.set(name, device);
+        }
+    };
+    updateDevices(initialDevices);
+    const element = /*#__PURE__*/ jsxs("div", {
         class: "cbi-map",
         children: [
             /*#__PURE__*/ jsx("h2", {
                 children: _("FTTR overview")
+            }),
+            /*#__PURE__*/ jsx("p", {
+                "data-provisioning-summary": "true"
             }),
             /*#__PURE__*/ jsxs("div", {
                 class: "cbi-section",
@@ -431,7 +594,9 @@ function renderStatus(status, devices) {
                                             children: _("FPGA")
                                         }),
                                         /*#__PURE__*/ jsx("td", {
-                                            children: view_text(status.fpga_status)
+                                            children: /*#__PURE__*/ jsx("span", {
+                                                children: view_text(initialStatus.fpga_status)
+                                            })
                                         })
                                     ]
                                 }),
@@ -441,7 +606,9 @@ function renderStatus(status, devices) {
                                             children: _("Optical module")
                                         }),
                                         /*#__PURE__*/ jsx("td", {
-                                            children: view_text(optical.model)
+                                            children: /*#__PURE__*/ jsx("span", {
+                                                children: view_text(initialOptical.model)
+                                            })
                                         })
                                     ]
                                 }),
@@ -451,7 +618,9 @@ function renderStatus(status, devices) {
                                             children: _("CDR lock")
                                         }),
                                         /*#__PURE__*/ jsx("td", {
-                                            children: optical.cdr_locked === undefined ? "\u2014" : badge(optical.cdr_locked, optical.cdr_locked ? _("Locked") : _("Unlocked"))
+                                            children: initialOptical.cdr_locked === undefined ? /*#__PURE__*/ jsx("span", {
+                                                children: "\u2014"
+                                            }) : badge(initialOptical.cdr_locked, initialOptical.cdr_locked ? _("Locked") : _("Unlocked"))
                                         })
                                     ]
                                 })
@@ -466,25 +635,7 @@ function renderStatus(status, devices) {
                     /*#__PURE__*/ jsx("h3", {
                         children: _("Sub-gateways")
                     }),
-                    renderTable([
-                        _("ONU ID"),
-                        _("Vendor"),
-                        _("Model"),
-                        _("Optical serial"),
-                        _("Registration"),
-                        _("Business"),
-                        _("Firmware"),
-                        _("Data interface")
-                    ], onus.map((onu)=>[
-                            onu.onu_id,
-                            view_text(onu.vendor),
-                            view_text(onu.identity?.equipment_id ?? onu.model),
-                            view_text(onu.serial_number),
-                            badge(onu.state === "O5Operation", onu.state),
-                            view_text(onu.business_status),
-                            view_text(onu.identity?.software_images?.join(", ") ?? onu.firmware_version),
-                            view_text(onu.data_path?.interface)
-                        ]), _("No registered sub-gateways."))
+                    onuTable.element
                 ]
             }),
             /*#__PURE__*/ jsxs("div", {
@@ -493,13 +644,40 @@ function renderStatus(status, devices) {
                     /*#__PURE__*/ jsx("h3", {
                         children: _("Downstream ports")
                     }),
-                    renderPorts(status, devices)
+                    /*#__PURE__*/ jsx("div", {
+                        style: "display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:1em;align-items:center;justify-items:center;text-align:center",
+                        children: ports.map((port)=>port.element)
+                    })
                 ]
             })
         ]
     });
+    const controllerCells = element.querySelectorAll("table tbody td > span");
+    const fpgaNode = controllerCells[0];
+    const opticalNode = controllerCells[1];
+    const cdrNode = controllerCells[2];
+    const provisioningNode = element.querySelector("[data-provisioning-summary]");
+    const update = (status, devices)=>{
+        const optical = status.optical_transceiver ?? {};
+        const provisioning = status.provisioning;
+        provisioningNode.textContent = provisioning ? `${_("Provisioning")}: ${provisioning.enabled ? _("Enabled") : _("Disabled")} / ${view_text(provisioning.mode)} / ${view_text(provisioning.revision)}${provisioning.error ? ` \u{2014} ${provisioning.error}` : ""}` : _("Provisioning status unavailable");
+        fpgaNode.textContent = view_text(status.fpga_status);
+        opticalNode.textContent = view_text(optical.model);
+        cdrNode.textContent = optical.cdr_locked === undefined ? "\u2014" : optical.cdr_locked ? _("Locked") : _("Unlocked");
+        cdrNode.className = optical.cdr_locked === undefined ? "" : optical.cdr_locked ? "label success" : "label warning";
+        onuTable.update(status.sub_gateways ?? []);
+        updateDevices(devices);
+        for (const port of ports)port.update(status, deviceMap);
+    };
+    update(initialStatus, initialDevices);
+    return {
+        element,
+        update
+    };
 }
 let pageRoot = null;
+let pageView = null;
+let refreshing = false;
 const main = view.extend({
     async load () {
         const [status, deviceResult] = await Promise.all([
@@ -515,19 +693,22 @@ const main = view.extend({
         };
     },
     render (data) {
-        pageRoot = renderStatus(data.status, data.devices);
+        pageView = createStatusView(data.status, data.devices);
+        pageRoot = pageView.element;
         poll.add(async ()=>{
-            if (!pageRoot?.isConnected) return;
+            if (refreshing || !pageRoot?.isConnected || !pageView) return;
+            const activeView = pageView;
+            refreshing = true;
             try {
                 const [status, devices] = await Promise.all([
                     getStatus(),
                     getNetworkDevices().catch(()=>[])
                 ]);
-                const next = renderStatus(status, devices);
-                pageRoot.replaceWith(next);
-                pageRoot = next;
+                if (pageView === activeView && activeView.element.isConnected) activeView.update(status, devices);
             } catch (error) {
                 console.error("Failed to refresh FTTR status", error);
+            } finally{
+                refreshing = false;
             }
         }, 10);
         return pageRoot;

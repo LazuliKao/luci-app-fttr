@@ -1,13 +1,42 @@
 #!/bin/sh
 # SPDX-License-Identifier: Apache-2.0
 
+. /usr/share/libubox/jshn.sh
+
+error() {
+	printf '{"error":"%s"}\n' "$1"
+	exit 0
+}
+
+identifier() {
+	case "$1" in ''|-*|*[!a-zA-Z0-9_-]*) return 1;; esac
+	[ "${#1}" -le 128 ]
+}
+
 case "$1" in
 	list)
-		printf '{"get_status":{}}\n'
+		printf '{"get_status":{},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{}}\n'
 		exit 0
 		;;
 	call)
 		case "$2" in
+			get_sync) set -- sync status ;;
+			config_check) set -- config check ;;
+			config_reload) set -- config reload ;;
+			sync)
+				read -r request
+				json_load "$request" || error 'Invalid JSON request'
+				json_get_var action action
+				json_get_var target target
+				case "$action" in plan|apply) ;; *) error 'Invalid synchronization action';; esac
+				case "$target" in group:*) identifier "${target#group:}" || error 'Invalid group';; *) identifier "$target" || error 'Invalid device';; esac
+				set -- sync "$action" "$target"
+				;;
+			restart_service)
+				/etc/init.d/fttr restart >/dev/null 2>&1 </dev/null &
+				printf '{"restarting":true}\n'
+				exit 0
+				;;
 			get_status)
 				status="$(/usr/sbin/fttrctl status --json 2>/dev/null)"
 				rc=$?
@@ -18,7 +47,14 @@ case "$1" in
 				printf '%s\n' "$status"
 				exit 0
 				;;
+			*) exit 1 ;;
 		esac
+		# These commands return sanitized provisioning JSON, including backend errors.
+		# Never wait for CWMP here: rpcd starts the asynchronous job and returns its IDs.
+		result="$(/usr/sbin/fttrctl "$@" 2>/dev/null)"
+		[ -n "$result" ] || error 'FTTR provisioning is unavailable'
+		printf '%s\n' "$result"
+		exit 0
 		;;
 esac
 

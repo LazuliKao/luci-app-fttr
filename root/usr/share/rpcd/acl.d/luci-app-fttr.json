@@ -1,15 +1,18 @@
 {
 	"luci-app-fttr": {
-		"description": "Read FTTR status and manage FTTR ACS configuration",
+		"description": "Read FTTR synchronization status and manage FTTR provisioning",
 		"read": {
 			"uci": [ "fttr" ],
 			"ubus": {
-				"luci.fttr": [ "get_status" ],
+				"luci.fttr": [ "get_status", "get_sync", "config_check" ],
 				"luci-rpc": [ "getNetworkDevices" ]
 			}
 		},
 		"write": {
-			"uci": [ "fttr" ]
+			"uci": [ "fttr" ],
+			"ubus": {
+				"luci.fttr": [ "config_reload", "sync", "restart_service" ]
+			}
 		}
 	}
 }
