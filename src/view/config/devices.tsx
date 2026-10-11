@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { field, grid, preview, reference } from "./form";
+import { choice, field, grid, preview, reference } from "./form";
 
 interface ConnectedDevice {
 	serial_number: string;
@@ -67,5 +67,15 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 			if (adapter) L.uci.set("fttr", id, "adapter", adapter);
 		};
 		reference(s, "group", _("Group"), "group").modalonly = true;
+		const cleanup = choice(s, "wifi_cleanup", _("Unconfigured WLANs"), [
+			["disable", _("Disable (keep the WLAN object)")],
+			["preserve", _("Leave unchanged")],
+			["delete", _("Delete the WLAN object")],
+		]);
+		cleanup.modalonly = true;
+		cleanup.default = "disable";
+		cleanup.description = _(
+			"By default, extra WLANs are disabled and retained. Deleting objects is destructive and should only be selected deliberately.",
+		);
 	});
 }
