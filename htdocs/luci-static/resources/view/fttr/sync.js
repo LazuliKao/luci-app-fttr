@@ -118,7 +118,7 @@ const sync_text = (value)=>value === null || value === undefined || value === ""
 const date = (value)=>value ? new Date(value * 1000).toLocaleString() : "\u2014";
 function state(value) {
     return /*#__PURE__*/ jsx("span", {
-        class: value === "verified" || value === "online" || value === "deleted" ? "label success" : "label warning",
+        class: value === "verified" || value === "online" || value === "deleted" || value === "ready" ? "label success" : "label warning",
         children: sync_text(value)
     });
 }
@@ -207,7 +207,137 @@ function itemTable(items) {
         })
     });
 }
-function deviceCard(device, opened) {
+function bootstrapCard(bootstrap) {
+    if (!bootstrap) return null;
+    return /*#__PURE__*/ jsxs("div", {
+        children: [
+            /*#__PURE__*/ jsx("h4", {
+                children: _("ACS bootstrap")
+            }),
+            /*#__PURE__*/ jsxs("p", {
+                children: [
+                    state(bootstrap.state),
+                    " \xb7 ",
+                    _("Method"),
+                    ": ",
+                    sync_text(bootstrap.method),
+                    " \xb7 ",
+                    _("Attempts"),
+                    ":",
+                    " ",
+                    sync_text(bootstrap.attempts),
+                    bootstrap.inflight ? ` \xb7 ${_("Command in progress")}` : ""
+                ]
+            }),
+            /*#__PURE__*/ jsx("p", {
+                style: "overflow-wrap:anywhere",
+                children: sync_text(bootstrap.reason)
+            }),
+            /*#__PURE__*/ jsxs("p", {
+                children: [
+                    _("MQTT target"),
+                    ": ",
+                    /*#__PURE__*/ jsx("code", {
+                        children: sync_text(bootstrap.mqtt_target)
+                    }),
+                    " \xb7 ",
+                    _("Last telemetry"),
+                    ":",
+                    " ",
+                    date(bootstrap.mqtt_last_seen),
+                    ` \xb7 ${_("Identity source")}: ${sync_text(bootstrap.binding_source)}`,
+                    /*#__PURE__*/ jsx("br", {}),
+                    _("Settings verified"),
+                    ": ",
+                    date(bootstrap.settings_verified_at),
+                    " \xb7 ",
+                    _("Last Inform"),
+                    ":",
+                    " ",
+                    date(bootstrap.last_inform),
+                    /*#__PURE__*/ jsx("br", {}),
+                    _("Next retry"),
+                    ": ",
+                    date(bootstrap.next_retry_at),
+                    " \xb7 ",
+                    _("Generation"),
+                    ": ",
+                    sync_text(bootstrap.generation),
+                    " \xb7",
+                    " ",
+                    _("Updated"),
+                    ": ",
+                    date(bootstrap.updated_at)
+                ]
+            }),
+            bootstrap.desired ? /*#__PURE__*/ jsxs("p", {
+                style: "overflow-wrap:anywhere",
+                children: [
+                    _("Management VLAN"),
+                    ": ",
+                    sync_text(bootstrap.desired.vlan),
+                    " \xb7 ",
+                    _("Priority"),
+                    ":",
+                    " ",
+                    sync_text(bootstrap.desired.priority),
+                    /*#__PURE__*/ jsx("br", {}),
+                    _("ACS URL"),
+                    ": ",
+                    /*#__PURE__*/ jsx("code", {
+                        children: sync_text(bootstrap.desired.acs_url)
+                    })
+                ]
+            }) : null,
+            bootstrap.listener ? /*#__PURE__*/ jsxs("p", {
+                children: [
+                    _("Local ACS listener"),
+                    ":",
+                    " ",
+                    /*#__PURE__*/ jsxs("code", {
+                        children: [
+                            sync_text(bootstrap.listener.listen),
+                            bootstrap.listener.path || ""
+                        ]
+                    }),
+                    " ",
+                    "\xb7 ",
+                    _("Enabled"),
+                    ": ",
+                    sync_text(bootstrap.listener.enabled)
+                ]
+            }) : null,
+            [
+                bootstrap.last_error,
+                bootstrap.link_identity_error,
+                bootstrap.persistence_error,
+                bootstrap.listener?.error,
+                bootstrap.endpoint_notice
+            ].filter(Boolean).map((message)=>/*#__PURE__*/ jsx("p", {
+                    class: "alert-message warning",
+                    style: "overflow-wrap:anywhere",
+                    children: message
+                })),
+            bootstrap.manual_steps?.length ? /*#__PURE__*/ jsxs("details", {
+                children: [
+                    /*#__PURE__*/ jsx("summary", {
+                        children: _("Management setup / reachability guidance")
+                    }),
+                    /*#__PURE__*/ jsx("div", {
+                        children: bootstrap.manual_steps.map((step, index)=>/*#__PURE__*/ jsxs("p", {
+                                children: [
+                                    index + 1,
+                                    ". ",
+                                    step
+                                ]
+                            }))
+                    })
+                ]
+            }) : null
+        ]
+    });
+}
+function deviceCard(device, opened, reset, busy) {
     const op = device.provisioning;
     const lifecycle = [
         ...Object.entries(op.wan_lifecycle ?? {}).map((param)=>{
@@ -238,6 +368,19 @@ function deviceCard(device, opened) {
                     ")"
                 ]
             }),
+            L.hasViewPermission() ? /*#__PURE__*/ jsxs("p", {
+                children: [
+                    /*#__PURE__*/ jsx("button", {
+                        type: "button",
+                        class: "cbi-button cbi-button-action",
+                        disabled: busy,
+                        onclick: ()=>reset(device),
+                        children: _("Reset synchronization state")
+                    }),
+                    " ",
+                    _("Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again.")
+                ]
+            }) : null,
             /*#__PURE__*/ jsxs("p", {
                 children: [
                     sync_text(device.group_name),
@@ -286,6 +429,7 @@ function deviceCard(device, opened) {
                 ]
             }),
             itemTable(op.items ?? []),
+            bootstrapCard(device.acs_bootstrap),
             lifecycle.length ? /*#__PURE__*/ jsxs("div", {
                 children: [
                     /*#__PURE__*/ jsx("h4", {
@@ -355,19 +499,37 @@ const main = L.view.extend({
             ]
         });
         const content = /*#__PURE__*/ jsx("div", {});
+        const managementContent = /*#__PURE__*/ jsx("div", {});
         let current = initial;
         let committed = initialCheck;
         let busy = false;
         let refreshing = false;
         const buttons = [];
+        const reset = async (device)=>{
+            if (busy) return;
+            busy = true;
+            update(current);
+            try {
+                const reply = await sync("reset_state", device.device);
+                if (!reply || reply.error) throw new Error(String(reply?.error ?? "Empty synchronization reply"));
+                result.textContent = _("Synchronization state reset for %s. Preview differences to read the current device state.").format(device.name || device.optical_sn);
+                update(await getSync());
+            } catch (failure) {
+                result.textContent = String(failure);
+            } finally{
+                busy = false;
+                update(current);
+            }
+        };
         const run = async (action)=>{
             if (busy) return;
             busy = true;
             for (const button of buttons)button.disabled = true;
+            update(current);
             try {
                 const reply = await sync(action, target.value);
                 if (!reply || reply.error) throw new Error(String(reply?.error ?? "Empty synchronization reply"));
-                result.textContent = _("Started: %s").format((reply.operation_ids ?? []).join(", "));
+                result.textContent = action.startsWith("management_") ? _("Management operation started; status is refreshed below.") : _("Started: %s").format((reply.operation_ids ?? []).join(", "));
                 update(await getSync());
             } catch (failure) {
                 result.textContent = String(failure);
@@ -389,6 +551,35 @@ const main = L.view.extend({
             children: _("Apply differences")
         });
         buttons.push(plan, apply);
+        const managementPlan = /*#__PURE__*/ jsx("button", {
+            type: "button",
+            class: "cbi-button cbi-button-action",
+            onclick: ()=>run("management_plan"),
+            children: _("Check management differences (read-only)")
+        });
+        const managementApply = /*#__PURE__*/ jsx("button", {
+            type: "button",
+            class: "cbi-button cbi-button-positive",
+            onclick: ()=>run("management_apply"),
+            children: _("Apply management configuration")
+        });
+        buttons.push(managementPlan, managementApply);
+        const managementPanel = /*#__PURE__*/ jsxs("div", {
+            class: "cbi-section",
+            children: [
+                /*#__PURE__*/ jsx("h3", {
+                    children: _("Isolated TR069 management network")
+                }),
+                managementContent,
+                /*#__PURE__*/ jsxs("p", {
+                    children: [
+                        managementPlan,
+                        " ",
+                        managementApply
+                    ]
+                })
+            ]
+        });
         const manual = /*#__PURE__*/ jsxs("div", {
             class: "cbi-section",
             children: [
@@ -416,6 +607,7 @@ const main = L.view.extend({
                 }),
                 heading,
                 error,
+                managementPanel,
                 manual,
                 result,
                 content
@@ -451,8 +643,53 @@ const main = L.view.extend({
                 ].includes(d.provisioning.state ?? "not_started"));
             plan.disabled = busy || active || !!committed.error || !!committed.revision && committed.revision !== status.revision || !(status.devices ?? []).length;
             apply.disabled = plan.disabled || !status.enabled;
+            const host = status.management_network;
+            managementPlan.disabled = busy || !!host?.inflight || !!committed.error || !L.hasViewPermission();
+            managementApply.disabled = managementPlan.disabled;
+            managementContent.replaceChildren(/*#__PURE__*/ jsxs("div", {
+                children: [
+                    /*#__PURE__*/ jsxs("p", {
+                        children: [
+                            _("State"),
+                            ": ",
+                            sync_text(host?.state),
+                            " \xb7 ",
+                            _("Desired version"),
+                            ": ",
+                            sync_text(host?.desired_version),
+                            " \xb7",
+                            " ",
+                            _("Applied version"),
+                            ": ",
+                            sync_text(host?.applied_version)
+                        ]
+                    }),
+                    /*#__PURE__*/ jsxs("p", {
+                        children: [
+                            _("Next retry"),
+                            ": ",
+                            date(host?.next_retry_at)
+                        ]
+                    }),
+                    host?.error ? /*#__PURE__*/ jsx("p", {
+                        class: "alert-message warning",
+                        children: host.error
+                    }) : null,
+                    /*#__PURE__*/ jsx("p", {
+                        children: _("Saving in manual mode does not create interfaces, change firewall rules or configure child devices. Apply explicitly to authorize the current management configuration.")
+                    }),
+                    /*#__PURE__*/ jsx("pre", {
+                        style: "white-space:pre-wrap;overflow-wrap:anywhere",
+                        children: JSON.stringify({
+                            desired: host?.desired,
+                            applied: host?.applied,
+                            plan: host?.plan ?? []
+                        }, null, 2)
+                    })
+                ]
+            }));
             const opened = new Set(Array.from(content.querySelectorAll("details[open]")).map((d)=>d.getAttribute("data-device")));
-            content.replaceChildren(...(status.devices ?? []).map((d)=>deviceCard(d, opened.has(d.device))));
+            content.replaceChildren(...(status.devices ?? []).map((d)=>deviceCard(d, opened.has(d.device), reset, busy)));
         }
         target.addEventListener("change", ()=>update(current));
         update(initial);

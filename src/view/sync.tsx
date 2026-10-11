@@ -15,6 +15,31 @@ interface SyncItem {
 	changes?: Array<{ name: string; desired: string }>;
 }
 
+interface AcsBootstrap {
+	state?: string;
+	method?: string;
+	reason?: string;
+	mqtt_target?: string;
+	binding_source?: string;
+	link_identity_error?: string;
+	mqtt_last_seen?: number;
+	cwmp_id?: string;
+	desired_version?: string;
+	generation?: number;
+	inflight?: boolean;
+	attempts?: number;
+	next_retry_at?: number;
+	updated_at?: number;
+	settings_verified_at?: number;
+	last_inform?: number;
+	last_error?: string;
+	persistence_error?: string;
+	desired?: { vlan?: number; priority?: number; acs_url?: string };
+	listener?: { enabled?: boolean; listen?: string; path?: string; error?: string };
+	endpoint_notice?: string;
+	manual_steps?: string[];
+}
+
 interface DeviceSync {
 	device: string;
 	name?: string;
@@ -27,6 +52,7 @@ interface DeviceSync {
 	adapter: string;
 	wifi_sync?: string;
 	management?: { state?: string; age_seconds?: number; last_inform?: number };
+	acs_bootstrap?: AcsBootstrap;
 	provisioning: {
 		state?: string;
 		operation_id?: number;
@@ -46,6 +72,18 @@ interface DeviceSync {
 }
 
 interface SyncStatus {
+	management_network?: {
+		state?: string;
+		error?: string;
+		inflight?: boolean;
+		ready?: boolean;
+		desired_version?: string;
+		applied_version?: string;
+		next_retry_at?: number;
+		desired?: Record<string, unknown>;
+		applied?: Record<string, unknown>;
+		plan?: Array<{ operation: string; key: string; value: string[] }>;
+	};
 	enabled?: boolean;
 	mode?: string;
 	revision?: string;
@@ -76,7 +114,9 @@ function state(value?: string): HTMLElement {
 	return (
 		<span
 			class={
-				value === "verified" || value === "online" || value === "deleted" ? "label success" : "label warning"
+				value === "verified" || value === "online" || value === "deleted" || value === "ready"
+					? "label success"
+					: "label warning"
 			}
 		>
 			{text(value)}
@@ -144,7 +184,81 @@ function itemTable(items: SyncItem[]): HTMLElement {
 	);
 }
 
-function deviceCard(device: DeviceSync, opened: boolean): HTMLElement {
+function bootstrapCard(bootstrap?: AcsBootstrap): HTMLElement | null {
+	if (!bootstrap) return null;
+	return (
+		<div>
+			<h4>{_("ACS bootstrap")}</h4>
+			<p>
+				{state(bootstrap.state)} · {_("Method")}: {text(bootstrap.method)} · {_("Attempts")}:{" "}
+				{text(bootstrap.attempts)}
+				{bootstrap.inflight ? ` · ${_("Command in progress")}` : ""}
+			</p>
+			<p style="overflow-wrap:anywhere">{text(bootstrap.reason)}</p>
+			<p>
+				{_("MQTT target")}: <code>{text(bootstrap.mqtt_target)}</code> · {_("Last telemetry")}:{" "}
+				{date(bootstrap.mqtt_last_seen)}
+				{` · ${_("Identity source")}: ${text(bootstrap.binding_source)}`}
+				<br />
+				{_("Settings verified")}: {date(bootstrap.settings_verified_at)} · {_("Last Inform")}:{" "}
+				{date(bootstrap.last_inform)}
+				<br />
+				{_("Next retry")}: {date(bootstrap.next_retry_at)} · {_("Generation")}: {text(bootstrap.generation)} ·{" "}
+				{_("Updated")}: {date(bootstrap.updated_at)}
+			</p>
+			{bootstrap.desired ? (
+				<p style="overflow-wrap:anywhere">
+					{_("Management VLAN")}: {text(bootstrap.desired.vlan)} · {_("Priority")}:{" "}
+					{text(bootstrap.desired.priority)}
+					<br />
+					{_("ACS URL")}: <code>{text(bootstrap.desired.acs_url)}</code>
+				</p>
+			) : null}
+			{bootstrap.listener ? (
+				<p>
+					{_("Local ACS listener")}:{" "}
+					<code>
+						{text(bootstrap.listener.listen)}
+						{bootstrap.listener.path || ""}
+					</code>{" "}
+					· {_("Enabled")}: {text(bootstrap.listener.enabled)}
+				</p>
+			) : null}
+			{[
+				bootstrap.last_error,
+				bootstrap.link_identity_error,
+				bootstrap.persistence_error,
+				bootstrap.listener?.error,
+				bootstrap.endpoint_notice,
+			]
+				.filter(Boolean)
+				.map((message) => (
+					<p class="alert-message warning" style="overflow-wrap:anywhere">
+						{message}
+					</p>
+				))}
+			{bootstrap.manual_steps?.length ? (
+				<details>
+					<summary>{_("Management setup / reachability guidance")}</summary>
+					<div>
+						{bootstrap.manual_steps.map((step, index) => (
+							<p>
+								{index + 1}. {step}
+							</p>
+						))}
+					</div>
+				</details>
+			) : null}
+		</div>
+	);
+}
+
+function deviceCard(
+	device: DeviceSync,
+	opened: boolean,
+	reset: (device: DeviceSync) => Promise<void>,
+	busy: boolean,
+): HTMLElement {
 	const op = device.provisioning;
 	const lifecycle = [
 		...Object.entries(op.wan_lifecycle ?? {}).map(([id, item]) => ({
@@ -163,6 +277,21 @@ function deviceCard(device: DeviceSync, opened: boolean): HTMLElement {
 			<h3>
 				{device.name || device.optical_sn} ({device.adapter})
 			</h3>
+			{L.hasViewPermission() ? (
+				<p>
+					<button
+						type="button"
+						class="cbi-button cbi-button-action"
+						disabled={busy}
+						onclick={() => reset(device)}
+					>
+						{_("Reset synchronization state")}
+					</button>{" "}
+					{_(
+						"Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again.",
+					)}
+				</p>
+			) : null}
 			<p>
 				{text(device.group_name)} · {text(device.template_name)} · OMCI: {state(device.omci_management?.state)}{" "}
 				{device.omci_management?.reason || ""}
@@ -176,6 +305,7 @@ function deviceCard(device: DeviceSync, opened: boolean): HTMLElement {
 				{_("Revision")}: <code>{text(op.revision)}</code>
 			</p>
 			{itemTable(op.items ?? [])}
+			{bootstrapCard(device.acs_bootstrap)}
 			{lifecycle.length ? (
 				<div>
 					<h4>{_("WAN / WLAN lifecycle results")}</h4>
@@ -216,19 +346,41 @@ const main = (L.view as any).extend({
 			</select>
 		) as HTMLSelectElement;
 		const content = <div />;
+		const managementContent = <div />;
 		let current = initial;
 		let committed = initialCheck;
 		let busy = false;
 		let refreshing = false;
 		const buttons: HTMLButtonElement[] = [];
+		const reset = async (device: DeviceSync) => {
+			if (busy) return;
+			busy = true;
+			update(current);
+			try {
+				const reply = await sync("reset_state", device.device);
+				if (!reply || reply.error) throw new Error(String(reply?.error ?? "Empty synchronization reply"));
+				result.textContent = _(
+					"Synchronization state reset for %s. Preview differences to read the current device state.",
+				).format(device.name || device.optical_sn);
+				update(await getSync());
+			} catch (failure) {
+				result.textContent = String(failure);
+			} finally {
+				busy = false;
+				update(current);
+			}
+		};
 		const run = async (action: string) => {
 			if (busy) return;
 			busy = true;
 			for (const button of buttons) button.disabled = true;
+			update(current);
 			try {
 				const reply = await sync(action, target.value);
 				if (!reply || reply.error) throw new Error(String(reply?.error ?? "Empty synchronization reply"));
-				result.textContent = _("Started: %s").format((reply.operation_ids ?? []).join(", "));
+				result.textContent = action.startsWith("management_")
+					? _("Management operation started; status is refreshed below.")
+					: _("Started: %s").format((reply.operation_ids ?? []).join(", "));
 				update(await getSync());
 			} catch (failure) {
 				result.textContent = String(failure);
@@ -248,6 +400,26 @@ const main = (L.view as any).extend({
 			</button>
 		) as HTMLButtonElement;
 		buttons.push(plan, apply);
+		const managementPlan = (
+			<button type="button" class="cbi-button cbi-button-action" onclick={() => run("management_plan")}>
+				{_("Check management differences (read-only)")}
+			</button>
+		) as HTMLButtonElement;
+		const managementApply = (
+			<button type="button" class="cbi-button cbi-button-positive" onclick={() => run("management_apply")}>
+				{_("Apply management configuration")}
+			</button>
+		) as HTMLButtonElement;
+		buttons.push(managementPlan, managementApply);
+		const managementPanel = (
+			<div class="cbi-section">
+				<h3>{_("Isolated TR069 management network")}</h3>
+				{managementContent}
+				<p>
+					{managementPlan} {managementApply}
+				</p>
+			</div>
+		);
 		const manual = (
 			<div class="cbi-section">
 				<h3>{_("Manual synchronization")}</h3>
@@ -263,6 +435,7 @@ const main = (L.view as any).extend({
 				<h2>{_("FTTR synchronization")}</h2>
 				{heading}
 				{error}
+				{managementPanel}
 				{manual}
 				{result}
 				{content}
@@ -325,10 +498,39 @@ const main = (L.view as any).extend({
 				(!!committed.revision && committed.revision !== status.revision) ||
 				!(status.devices ?? []).length;
 			apply.disabled = plan.disabled || !status.enabled;
+			const host = status.management_network;
+			managementPlan.disabled = busy || !!host?.inflight || !!committed.error || !L.hasViewPermission();
+			managementApply.disabled = managementPlan.disabled;
+			managementContent.replaceChildren(
+				<div>
+					<p>
+						{_("State")}: {text(host?.state)} · {_("Desired version")}: {text(host?.desired_version)} ·{" "}
+						{_("Applied version")}: {text(host?.applied_version)}
+					</p>
+					<p>
+						{_("Next retry")}: {date(host?.next_retry_at)}
+					</p>
+					{host?.error ? <p class="alert-message warning">{host.error}</p> : null}
+					<p>
+						{_(
+							"Saving in manual mode does not create interfaces, change firewall rules or configure child devices. Apply explicitly to authorize the current management configuration.",
+						)}
+					</p>
+					<pre style="white-space:pre-wrap;overflow-wrap:anywhere">
+						{JSON.stringify(
+							{ desired: host?.desired, applied: host?.applied, plan: host?.plan ?? [] },
+							null,
+							2,
+						)}
+					</pre>
+				</div>,
+			);
 			const opened = new Set(
 				Array.from(content.querySelectorAll("details[open]")).map((d) => d.getAttribute("data-device")),
 			);
-			content.replaceChildren(...(status.devices ?? []).map((d) => deviceCard(d, opened.has(d.device))));
+			content.replaceChildren(
+				...(status.devices ?? []).map((d) => deviceCard(d, opened.has(d.device), reset, busy)),
+			);
 		}
 		target.addEventListener("change", () => update(current));
 		update(initial);

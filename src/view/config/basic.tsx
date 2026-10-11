@@ -19,10 +19,6 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.rmempty = false;
 	option.validate = (_id: string, value: string) =>
 		value.startsWith("/") ? true : _("The path must start with '/'.");
-	option = field(a, L.form.Value, "listen", _("Listen address"), "ipaddr");
-	option.optional = true;
-	option.rmempty = true;
-	option.placeholder = _("Use the LAN address");
 	option = field(a, L.form.Value, "state_file", _("ACS state file"));
 	option.default = "/var/lib/fttr/acs-state.json";
 	option.rmempty = false;
@@ -44,14 +40,49 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 		"management",
 	).subsection;
 	management.addremove = false;
-	option = field(management, L.form.Value, "vlan", _("TR069 VLAN"), "range(0,4094)");
+	option = field(management, L.form.Flag, "enabled", _("Enable management network"));
+	option.default = "1";
+	option.rmempty = false;
+	option = choice(management, "mode", _("Management application mode"), [
+		["manual", _("Manual")],
+		["auto", _("Automatic")],
+	]);
+	option.default = "manual";
+	option.rmempty = false;
+	option.description = _(
+		"Manual mode only discovers and plans. Use Apply management configuration on the Synchronization page to create or update the isolated network, ACS listener and child TR069 settings.",
+	);
+	option = field(management, L.form.Value, "address", _("Management IPv4 address/prefix"), "cidr4");
+	option.default = "192.168.46.1/24";
+	option.rmempty = false;
+	option.description = _(
+		"The local ACS binds to this address. The child ACS URL is generated from this address, the ACS port and CWMP path.",
+	);
+	option = field(management, L.form.DummyValue, "_generated_acs_url", _("Generated ACS URL"));
+	option.cfgvalue = () => {
+		const data = section.map.data;
+		const address = String(data.get("fttr", "management", "address") || "192.168.46.1/24").split("/")[0];
+		return `http://${address}:${data.get("fttr", "acs", "port") || "7547"}${data.get("fttr", "acs", "path") || "/cwmp"}`;
+	};
+	option = field(management, L.form.Value, "vlan", _("TR069 VLAN"), "range(1,4094)");
 	option.default = "46";
 	option.rmempty = false;
 	option = field(management, L.form.Value, "priority", _("Priority"), "range(0,7)");
 	option.default = "0";
 	option.rmempty = false;
-	option = field(management, L.form.Value, "acs_url", _("ACS URL"));
+	option = field(management, L.form.Flag, "dhcp_enabled", _("Enable management DHCP"));
+	option.default = "1";
 	option.rmempty = false;
+	for (const [key, label, value] of [
+		["dhcp_start", _("DHCP start offset"), "100"],
+		["dhcp_limit", _("DHCP address count"), "100"],
+		["dhcp_leasetime", _("DHCP lease time"), "12h"],
+	]) {
+		option = field(management, L.form.Value, key, label);
+		option.default = value;
+		option.rmempty = false;
+		option.depends("dhcp_enabled", "1");
+	}
 
 	const policy = section.taboption(
 		"basic",

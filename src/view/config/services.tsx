@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { choice, field, grid, preview, templateGrid } from "./form";
+import { field, grid, preview, templateGrid } from "./form";
 import { addTemplateWifi } from "./wifi";
 export function addServices(section: any): void {
 	section.tab("templates", _("Templates"));
@@ -37,10 +37,17 @@ export function addServices(section: any): void {
 			const name = field(s, L.form.Value, "name", _("Name"));
 			name.modalonly = true;
 			name.rmempty = false;
-			choice(s, "type", _("Type"), [
-				["internet", "INTERNET"],
-				["iptv", "IPTV"],
-			]).modalonly = true;
+			const serviceList = field(
+				s,
+				(L.form as any).MultiValue,
+				"service_list",
+				_("WAN Service List (multi-select)"),
+			);
+			serviceList.modalonly = true;
+			serviceList.description = _(
+				"For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. TR069 is reserved for OMCI.",
+			);
+			for (const value of ["INTERNET", "OTHER", "IPTV", "VOIP"]) serviceList.value(value, value);
 			for (const [key, title, datatype] of [
 				["vlan", _("VLAN"), "range(0,4094)"],
 				["priority", _("Priority"), "range(0,7)"],

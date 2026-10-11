@@ -49,6 +49,12 @@ const main = (view as any).extend({
 		addBasic(section, _("Basic"), globalId);
 		addDevices(section, initialCheck.connectedDevices ?? []);
 		addServices(section);
+		const save = map.save;
+		map.save = function (cb?: () => void, silent?: boolean) {
+			uci.unset("fttr", "acs", "listen");
+			uci.unset("fttr", "management", "acs_url");
+			return save.call(this, cb, silent);
+		};
 
 		const output = <pre style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite" />;
 		let checkNotification: Node | null = null;

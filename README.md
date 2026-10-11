@@ -2,12 +2,40 @@
 
 An Apache-2.0 LuCI application for the HM2004-DU FTTR controller.
 
-The application provides Status, Configuration, and Hardware status tabs.
+The application provides Status, Configuration, Synchronization, and Hardware status tabs.
 Status and Hardware status read the existing `fttrctl status --json`
 interface through the narrowly scoped `luci.fttr.get_status` rpcd method.
-Configuration edits the supported `fttr` UCI ACS options. Its ACL grants UCI
-read/write access only to the `fttr` configuration and does not expose generic
-shell execution or Wi-Fi credential handling.
+Configuration edits the unified `fttr` UCI configuration: ACS, synchronization
+policy, device identities, INTERNET/IPTV/TR069 services, device WANs, shared
+Wi-Fi profiles, SSIDs, and LAN/WLAN bindings. Optional Wi-Fi keys are masked in
+the form; leaving security unset preserves the device's existing security/key.
+The ACL grants UCI read/write access only to `fttr` and exposes fixed,
+validated provisioning commands rather than generic shell or raw ACS tasks.
+
+## Synchronization workflow
+
+- In **automatic** mode, choose configuration-change, online, CWMP boot and/or
+  periodic triggers. Periodic intervals are 30–86400 seconds; 0 disables the
+  timer. Automatic operations and their per-item results appear on the
+  Synchronization tab, refreshed every five seconds. Manual buttons are hidden.
+- In **manual** mode, preview is optional. Apply starts a background operation
+  immediately and returns operation IDs; navigating away does not cancel it.
+  Both actions inspect the actual device state; Apply does not reuse a cached
+  preview. Item-only operations do not prune other WAN/WLAN objects.
+- **Save & Apply** commits and reloads provisioning without restarting PON.
+  Configuration diagnostics check committed settings and can retry loading if
+  an active operation prevented reload. ACS listener/startup settings require
+  the explicit FTTR / ACS service restart, which interrupts PON.
+- Completed operations may contain blocked or failed items. Inspect reasons,
+  revision/freshness indicators and lifecycle results. CWMP `verified` is not
+  evidence of radio association or working business traffic.
+- WAN allocation and Wi-Fi cleanup use the existing backend ownership rules.
+  Deletion of unconfigured WLANs can include factory/mesh WLANs; use preserved
+  instance lists when necessary. Arbitrary WLAN slot creation and K155 port
+  bindings are limited by the verified device contract, not inferred by the UI.
+
+The backend must include the provisioning implementation and ACS support.
+The UI never exposes raw ACS task arguments, which can contain credentials.
 
 ## Package
 

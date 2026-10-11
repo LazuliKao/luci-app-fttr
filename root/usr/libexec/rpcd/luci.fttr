@@ -28,7 +28,7 @@ case "$1" in
 				json_load "$request" || error 'Invalid JSON request'
 				json_get_var action action
 				json_get_var target target
-				case "$action" in plan|apply) ;; *) error 'Invalid synchronization action';; esac
+                case "$action" in plan|apply|management_plan|management_apply|reset_state) ;; *) error 'Invalid synchronization action';; esac
 				case "$target" in group:*) identifier "${target#group:}" || error 'Invalid group';; *) identifier "$target" || error 'Invalid device';; esac
 				set -- sync "$action" "$target"
 				;;
