@@ -107,7 +107,7 @@ const getNetworkDevices = rpc.declare({
     object: "luci-rpc",
     method: "getNetworkDevices",
     expect: {
-        "": []
+        "": {}
     },
     reject: true
 });
@@ -144,6 +144,32 @@ function formatLinkSpeed(speed) {
     return `${speed}\u{202F}MbE`;
 }
 function createPortCard(number) {
+    const ifnameNode = /*#__PURE__*/ jsx("span", {});
+    const speedNode = /*#__PURE__*/ jsx("span", {
+        children: _("Unknown")
+    });
+    const iconNode = /*#__PURE__*/ jsx("img", {
+        src: "/luci-static/resources/icons/port_down.svg",
+        alt: "",
+        "aria-hidden": "true"
+    });
+    const linkBarNode = /*#__PURE__*/ jsx("div", {
+        style: "flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"
+    });
+    const portStateNode = /*#__PURE__*/ jsx("span", {});
+    const onuNode = /*#__PURE__*/ jsx("span", {});
+    const macNode = /*#__PURE__*/ jsx("span", {});
+    const txSummaryNode = /*#__PURE__*/ jsx("span", {});
+    const rxSummaryNode = /*#__PURE__*/ jsx("span", {});
+    const rxBytesNode = /*#__PURE__*/ jsx("span", {});
+    const rxPacketsNode = /*#__PURE__*/ jsx("span", {});
+    const rxMulticastNode = /*#__PURE__*/ jsx("span", {});
+    const rxErrorsNode = /*#__PURE__*/ jsx("span", {});
+    const rxDroppedNode = /*#__PURE__*/ jsx("span", {});
+    const txBytesNode = /*#__PURE__*/ jsx("span", {});
+    const txPacketsNode = /*#__PURE__*/ jsx("span", {});
+    const txErrorsNode = /*#__PURE__*/ jsx("span", {});
+    const txDroppedNode = /*#__PURE__*/ jsx("span", {});
     const element = /*#__PURE__*/ jsxs("div", {
         class: "ifacebox",
         style: "margin:.25em;width:100px",
@@ -151,29 +177,21 @@ function createPortCard(number) {
             /*#__PURE__*/ jsx("div", {
                 class: "ifacebox-head",
                 style: "font-weight:bold",
-                children: /*#__PURE__*/ jsx("span", {})
+                children: ifnameNode
             }),
             /*#__PURE__*/ jsxs("div", {
                 class: "ifacebox-body",
                 children: [
-                    /*#__PURE__*/ jsx("img", {
-                        src: "/luci-static/resources/icons/port_down.svg",
-                        alt: "",
-                        "aria-hidden": "true"
-                    }),
+                    iconNode,
                     /*#__PURE__*/ jsx("br", {}),
-                    /*#__PURE__*/ jsx("span", {
-                        children: _("Unknown")
-                    })
+                    speedNode
                 ]
             }),
             /*#__PURE__*/ jsxs("div", {
                 class: "ifacebox-head cbi-tooltip-container",
                 style: "display:flex",
                 children: [
-                    /*#__PURE__*/ jsx("div", {
-                        style: "flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"
-                    }),
+                    linkBarNode,
                     /*#__PURE__*/ jsxs("span", {
                         class: "cbi-tooltip left",
                         children: [
@@ -183,7 +201,7 @@ function createPortCard(number) {
                                     ": "
                                 ]
                             }),
-                            /*#__PURE__*/ jsx("span", {}),
+                            portStateNode,
                             /*#__PURE__*/ jsx("br", {}),
                             /*#__PURE__*/ jsxs("strong", {
                                 children: [
@@ -191,7 +209,7 @@ function createPortCard(number) {
                                     ": "
                                 ]
                             }),
-                            /*#__PURE__*/ jsx("span", {}),
+                            onuNode,
                             /*#__PURE__*/ jsx("br", {}),
                             /*#__PURE__*/ jsxs("strong", {
                                 children: [
@@ -199,7 +217,7 @@ function createPortCard(number) {
                                     ": "
                                 ]
                             }),
-                            /*#__PURE__*/ jsx("span", {})
+                            macNode
                         ]
                     })
                 ]
@@ -211,10 +229,10 @@ function createPortCard(number) {
                     style: "text-align:left;font-size:80%",
                     children: [
                         "\u25B2\u202F",
-                        /*#__PURE__*/ jsx("span", {}),
+                        txSummaryNode,
                         /*#__PURE__*/ jsx("br", {}),
                         "\u25BC\u202F",
-                        /*#__PURE__*/ jsx("span", {}),
+                        rxSummaryNode,
                         /*#__PURE__*/ jsx("span", {
                             class: "cbi-tooltip",
                             children: /*#__PURE__*/ jsxs("span", {
@@ -228,7 +246,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            rxBytesNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -241,7 +259,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            rxPacketsNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -254,7 +272,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            rxMulticastNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -267,7 +285,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            rxErrorsNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -280,7 +298,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            rxDroppedNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -293,7 +311,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            txBytesNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -306,7 +324,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            txPacketsNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -319,7 +337,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            txErrorsNode
                                         ]
                                     }),
                                     /*#__PURE__*/ jsx("br", {}),
@@ -332,7 +350,7 @@ function createPortCard(number) {
                                                     ": "
                                                 ]
                                             }),
-                                            /*#__PURE__*/ jsx("span", {})
+                                            txDroppedNode
                                         ]
                                     })
                                 ]
@@ -343,33 +361,13 @@ function createPortCard(number) {
             })
         ]
     });
-    const spans = element.querySelectorAll("span");
-    const ifnameNode = spans[0];
-    const speedNode = spans[1];
-    const portStateNode = spans[3];
-    const onuNode = spans[4];
-    const macNode = spans[5];
-    const txSummaryNode = spans[6];
-    const rxSummaryNode = spans[7];
-    const rxBytesNode = spans[11];
-    const rxPacketsNode = spans[12];
-    const rxMulticastNode = spans[13];
-    const rxErrorsNode = spans[14];
-    const rxDroppedNode = spans[15];
-    const txBytesNode = spans[16];
-    const txPacketsNode = spans[17];
-    const txErrorsNode = spans[18];
-    const txDroppedNode = spans[19];
-    const iconNode = element.getElementsByTagName("img").item(0);
-    if (!iconNode) throw new Error("Port card icon is missing");
-    const linkBarNode = element.children.item(2).children.item(0);
     return {
         element,
         update (status, devices) {
             const port = (status.switch_ports ?? []).find((item)=>item.port === number);
             const ifname = port?.interface ?? `fttr${number}`;
-            const device = devices.get(ifname);
-            const stats = device?.stats ?? device?.statistics;
+            const device = devices[ifname];
+            const stats = device?.stats;
             const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
             const onu = (status.sub_gateways ?? []).find((item)=>item.onu_id === port?.onu_id);
             const connected = carrier === true;
@@ -377,7 +375,7 @@ function createPortCard(number) {
             const txBytes = stats?.tx_bytes;
             ifnameNode.textContent = ifname;
             iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
-            speedNode.textContent = connected ? formatLinkSpeed(device?.link?.speed) : carrier === false ? _("Disconnected") : _("Unknown");
+            speedNode.textContent = connected ? device?.link?.speed !== undefined ? formatLinkSpeed(device.link.speed) : _("Connected") : carrier === false ? _("Disconnected") : _("Unknown");
             speedNode.setAttribute("title", _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(view_text(device?.link?.speed), view_text(device?.link?.duplex)));
             linkBarNode.style.opacity = connected ? "1" : "0.25";
             linkBarNode.style.backgroundColor = connected ? "rgb(144, 240, 144)" : "rgb(240, 144, 144)";
@@ -399,61 +397,70 @@ function createPortCard(number) {
     };
 }
 function createOnuRow(onu) {
+    const onuIdNode = /*#__PURE__*/ jsx("span", {});
+    const vendorNode = /*#__PURE__*/ jsx("span", {});
+    const modelNode = /*#__PURE__*/ jsx("span", {});
+    const serialNode = /*#__PURE__*/ jsx("span", {});
+    const registrationNode = /*#__PURE__*/ jsx("span", {});
+    const businessNode = /*#__PURE__*/ jsx("span", {});
+    const firmwareNode = /*#__PURE__*/ jsx("span", {});
+    const dataInterfaceNode = /*#__PURE__*/ jsx("span", {});
+    const cwmpNode = /*#__PURE__*/ jsx("span", {});
+    const provisioningNode = /*#__PURE__*/ jsx("span", {});
+    const wifiSyncNode = /*#__PURE__*/ jsx("span", {});
     const element = /*#__PURE__*/ jsxs("tr", {
         children: [
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: onuIdNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: vendorNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: modelNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: serialNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: registrationNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: businessNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: firmwareNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: dataInterfaceNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: cwmpNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: provisioningNode
             }),
             /*#__PURE__*/ jsx("td", {
-                children: /*#__PURE__*/ jsx("span", {})
+                children: wifiSyncNode
             })
         ]
     });
-    const cells = Array.from(element.querySelectorAll("td > span"));
-    const registrationNode = cells[4];
     const row = {
         element,
         update (value) {
-            cells[0].textContent = String(value.onu_id);
-            cells[1].textContent = view_text(value.vendor);
-            cells[2].textContent = view_text(value.identity?.equipment_id ?? value.model);
-            cells[3].textContent = view_text(value.serial_number);
+            onuIdNode.textContent = String(value.onu_id);
+            vendorNode.textContent = view_text(value.vendor);
+            modelNode.textContent = view_text(value.identity?.equipment_id ?? value.model);
+            serialNode.textContent = view_text(value.serial_number);
             registrationNode.textContent = view_text(value.state);
             registrationNode.className = value.state === "O5Operation" ? "label success" : "label warning";
-            cells[5].textContent = view_text(value.business_status);
-            cells[6].textContent = view_text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
-            cells[7].textContent = view_text(value.data_path?.interface);
-            cells[8].textContent = view_text(value.management?.state);
-            cells[9].textContent = view_text(value.provisioning?.state);
-            cells[9].setAttribute("title", value.provisioning?.current_revision === false ? _("Previous configuration") : value.provisioning?.management_fresh === false ? _("Management stale") : "");
-            cells[10].textContent = view_text(value.wifi_sync);
+            businessNode.textContent = view_text(value.business_status);
+            firmwareNode.textContent = view_text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
+            dataInterfaceNode.textContent = view_text(value.data_path?.interface);
+            cwmpNode.textContent = view_text(value.management?.state);
+            provisioningNode.textContent = view_text(value.provisioning?.state);
+            provisioningNode.setAttribute("title", value.provisioning?.current_revision === false ? _("Previous configuration") : value.provisioning?.management_fresh === false ? _("Management stale") : "");
+            wifiSyncNode.textContent = view_text(value.wifi_sync);
         }
     };
     row.update(onu);
@@ -560,24 +567,25 @@ function createStatusView(initialStatus, initialDevices) {
     const ports = Array.from({
         length: 16
     }, (_port, index)=>createPortCard(index + 1));
-    const deviceMap = new Map();
-    const updateDevices = (devices)=>{
-        deviceMap.clear();
-        for (const device of devices){
-            const name = device.device ?? device.name ?? device.ifname;
-            if (name) deviceMap.set(name, device);
-        }
-    };
-    updateDevices(initialDevices);
+    const provisioningNode = /*#__PURE__*/ jsx("p", {
+        "data-provisioning-summary": "true"
+    });
+    const fpgaNode = /*#__PURE__*/ jsx("span", {
+        children: view_text(initialStatus.fpga_status)
+    });
+    const opticalNode = /*#__PURE__*/ jsx("span", {
+        children: view_text(initialOptical.model)
+    });
+    const cdrNode = initialOptical.cdr_locked === undefined ? /*#__PURE__*/ jsx("span", {
+        children: "\u2014"
+    }) : badge(initialOptical.cdr_locked, initialOptical.cdr_locked ? _("Locked") : _("Unlocked"));
     const element = /*#__PURE__*/ jsxs("div", {
         class: "cbi-map",
         children: [
             /*#__PURE__*/ jsx("h2", {
                 children: _("FTTR overview")
             }),
-            /*#__PURE__*/ jsx("p", {
-                "data-provisioning-summary": "true"
-            }),
+            provisioningNode,
             /*#__PURE__*/ jsxs("div", {
                 class: "cbi-section",
                 children: [
@@ -594,9 +602,7 @@ function createStatusView(initialStatus, initialDevices) {
                                             children: _("FPGA")
                                         }),
                                         /*#__PURE__*/ jsx("td", {
-                                            children: /*#__PURE__*/ jsx("span", {
-                                                children: view_text(initialStatus.fpga_status)
-                                            })
+                                            children: fpgaNode
                                         })
                                     ]
                                 }),
@@ -606,9 +612,7 @@ function createStatusView(initialStatus, initialDevices) {
                                             children: _("Optical module")
                                         }),
                                         /*#__PURE__*/ jsx("td", {
-                                            children: /*#__PURE__*/ jsx("span", {
-                                                children: view_text(initialOptical.model)
-                                            })
+                                            children: opticalNode
                                         })
                                     ]
                                 }),
@@ -618,9 +622,7 @@ function createStatusView(initialStatus, initialDevices) {
                                             children: _("CDR lock")
                                         }),
                                         /*#__PURE__*/ jsx("td", {
-                                            children: initialOptical.cdr_locked === undefined ? /*#__PURE__*/ jsx("span", {
-                                                children: "\u2014"
-                                            }) : badge(initialOptical.cdr_locked, initialOptical.cdr_locked ? _("Locked") : _("Unlocked"))
+                                            children: cdrNode
                                         })
                                     ]
                                 })
@@ -652,11 +654,6 @@ function createStatusView(initialStatus, initialDevices) {
             })
         ]
     });
-    const controllerCells = element.querySelectorAll("table tbody td > span");
-    const fpgaNode = controllerCells[0];
-    const opticalNode = controllerCells[1];
-    const cdrNode = controllerCells[2];
-    const provisioningNode = element.querySelector("[data-provisioning-summary]");
     const update = (status, devices)=>{
         const optical = status.optical_transceiver ?? {};
         const provisioning = status.provisioning;
@@ -666,8 +663,7 @@ function createStatusView(initialStatus, initialDevices) {
         cdrNode.textContent = optical.cdr_locked === undefined ? "\u2014" : optical.cdr_locked ? _("Locked") : _("Unlocked");
         cdrNode.className = optical.cdr_locked === undefined ? "" : optical.cdr_locked ? "label success" : "label warning";
         onuTable.update(status.sub_gateways ?? []);
-        updateDevices(devices);
-        for (const port of ports)port.update(status, deviceMap);
+        for (const port of ports)port.update(status, devices);
     };
     update(initialStatus, initialDevices);
     return {
@@ -684,7 +680,7 @@ const main = view.extend({
             getStatus(),
             getNetworkDevices().catch((error)=>{
                 console.warn("Failed to load network device details", error);
-                return [];
+                return {};
             })
         ]);
         return {
@@ -702,7 +698,7 @@ const main = view.extend({
             try {
                 const [status, devices] = await Promise.all([
                     getStatus(),
-                    getNetworkDevices().catch(()=>[])
+                    getNetworkDevices().catch(()=>({}))
                 ]);
                 if (pageView === activeView && activeView.element.isConnected) activeView.update(status, devices);
             } catch (error) {

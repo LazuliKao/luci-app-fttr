@@ -44,15 +44,13 @@ interface FttrStatus {
 }
 
 interface NetworkDevice {
-	device?: string;
-	name?: string;
-	ifname?: string;
 	carrier?: boolean;
 	mac?: string;
 	link?: { speed?: number; duplex?: string; autoneg?: boolean };
 	stats?: Record<string, number>;
-	statistics?: Record<string, number>;
 }
+
+type NetworkDevices = Record<string, NetworkDevice>;
 
 const getStatus = rpc.declare<FttrStatus>({
 	object: "luci.fttr",
@@ -60,10 +58,10 @@ const getStatus = rpc.declare<FttrStatus>({
 	reject: true,
 });
 
-const getNetworkDevices = rpc.declare<NetworkDevice[]>({
+const getNetworkDevices = rpc.declare<NetworkDevices>({
 	object: "luci-rpc",
 	method: "getNetworkDevices",
-	expect: { "": [] },
+	expect: { "": {} },
 	reject: true,
 });
 
@@ -100,85 +98,103 @@ function formatLinkSpeed(speed: number | undefined): string {
 
 interface PortCard {
 	element: HTMLElement;
-	update(status: FttrStatus, devices: Map<string, NetworkDevice>): void;
+	update(status: FttrStatus, devices: NetworkDevices): void;
 }
 
 function createPortCard(number: number): PortCard {
+	const ifnameNode = <span />;
+	const speedNode = <span>{_("Unknown")}</span>;
+	const iconNode = <img src="/luci-static/resources/icons/port_down.svg" alt="" aria-hidden="true" />;
+	const linkBarNode = <div style="flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)" />;
+	const portStateNode = <span />;
+	const onuNode = <span />;
+	const macNode = <span />;
+	const txSummaryNode = <span />;
+	const rxSummaryNode = <span />;
+	const rxBytesNode = <span />;
+	const rxPacketsNode = <span />;
+	const rxMulticastNode = <span />;
+	const rxErrorsNode = <span />;
+	const rxDroppedNode = <span />;
+	const txBytesNode = <span />;
+	const txPacketsNode = <span />;
+	const txErrorsNode = <span />;
+	const txDroppedNode = <span />;
 	const element = (
 		<div class="ifacebox" style="margin:.25em;width:100px">
 			<div class="ifacebox-head" style="font-weight:bold">
-				<span></span>
+				{ifnameNode}
 			</div>
 			<div class="ifacebox-body">
-				<img src="/luci-static/resources/icons/port_down.svg" alt="" aria-hidden="true" />
+				{iconNode}
 				<br />
-				<span>{_("Unknown")}</span>
+				{speedNode}
 			</div>
 			<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
-				<div style="flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"></div>
+				{linkBarNode}
 				<span class="cbi-tooltip left">
 					<strong>{_("Port status")}: </strong>
-					<span />
+					{portStateNode}
 					<br />
 					<strong>{_("ONU")}: </strong>
-					<span />
+					{onuNode}
 					<br />
 					<strong>{_("MAC address")}: </strong>
-					<span />
+					{macNode}
 				</span>
 			</div>
 			<div class="ifacebox-body">
 				<div class="cbi-tooltip-container" style="text-align:left;font-size:80%">
 					▲ 
-					<span />
+					{txSummaryNode}
 					<br />
 					▼ 
-					<span />
+					{rxSummaryNode}
 					<span class="cbi-tooltip">
 						<span>
 							<span class="nowrap">
 								<strong>{_("Received bytes")}: </strong>
-								<span />
+								{rxBytesNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Received packets")}: </strong>
-								<span />
+								{rxPacketsNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Received multicast")}: </strong>
-								<span />
+								{rxMulticastNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Receive errors")}: </strong>
-								<span />
+								{rxErrorsNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Receive dropped")}: </strong>
-								<span />
+								{rxDroppedNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Transmitted bytes")}: </strong>
-								<span />
+								{txBytesNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Transmitted packets")}: </strong>
-								<span />
+								{txPacketsNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Transmit errors")}: </strong>
-								<span />
+								{txErrorsNode}
 							</span>
 							<br />
 							<span class="nowrap">
 								<strong>{_("Transmit dropped")}: </strong>
-								<span />
+								{txDroppedNode}
 							</span>
 						</span>
 					</span>
@@ -186,34 +202,13 @@ function createPortCard(number: number): PortCard {
 			</div>
 		</div>
 	);
-	const spans = element.querySelectorAll("span");
-	const ifnameNode = spans[0];
-	const speedNode = spans[1];
-	const portStateNode = spans[3];
-	const onuNode = spans[4];
-	const macNode = spans[5];
-	const txSummaryNode = spans[6];
-	const rxSummaryNode = spans[7];
-	const rxBytesNode = spans[11];
-	const rxPacketsNode = spans[12];
-	const rxMulticastNode = spans[13];
-	const rxErrorsNode = spans[14];
-	const rxDroppedNode = spans[15];
-	const txBytesNode = spans[16];
-	const txPacketsNode = spans[17];
-	const txErrorsNode = spans[18];
-	const txDroppedNode = spans[19];
-	const iconNode = element.getElementsByTagName("img").item(0);
-	if (!iconNode) throw new Error("Port card icon is missing");
-	const linkBarNode = (element.children.item(2) as HTMLElement).children.item(0) as HTMLElement;
-
 	return {
 		element,
 		update(status, devices) {
 			const port = (status.switch_ports ?? []).find((item) => item.port === number);
 			const ifname = port?.interface ?? `fttr${number}`;
-			const device = devices.get(ifname);
-			const stats = device?.stats ?? device?.statistics;
+			const device = devices[ifname];
+			const stats = device?.stats;
 			const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
 			const onu = (status.sub_gateways ?? []).find((item) => item.onu_id === port?.onu_id);
 			const connected = carrier === true;
@@ -223,7 +218,9 @@ function createPortCard(number: number): PortCard {
 			ifnameNode.textContent = ifname;
 			iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
 			speedNode.textContent = connected
-				? formatLinkSpeed(device?.link?.speed)
+				? device?.link?.speed !== undefined
+					? formatLinkSpeed(device.link.speed)
+					: _("Connected")
 				: carrier === false
 					? _("Disconnected")
 					: _("Unknown");
@@ -261,60 +258,47 @@ interface OnuRow {
 }
 
 function createOnuRow(onu: SubGateway): OnuRow {
+	const onuIdNode = <span />;
+	const vendorNode = <span />;
+	const modelNode = <span />;
+	const serialNode = <span />;
+	const registrationNode = <span />;
+	const businessNode = <span />;
+	const firmwareNode = <span />;
+	const dataInterfaceNode = <span />;
+	const cwmpNode = <span />;
+	const provisioningNode = <span />;
+	const wifiSyncNode = <span />;
 	const element = (
 		<tr>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
-			<td>
-				<span />
-			</td>
+			<td>{onuIdNode}</td>
+			<td>{vendorNode}</td>
+			<td>{modelNode}</td>
+			<td>{serialNode}</td>
+			<td>{registrationNode}</td>
+			<td>{businessNode}</td>
+			<td>{firmwareNode}</td>
+			<td>{dataInterfaceNode}</td>
+			<td>{cwmpNode}</td>
+			<td>{provisioningNode}</td>
+			<td>{wifiSyncNode}</td>
 		</tr>
 	);
-	const cells = Array.from(element.querySelectorAll("td > span"));
-	const registrationNode = cells[4];
 	const row: OnuRow = {
 		element,
 		update(value) {
-			cells[0].textContent = String(value.onu_id);
-			cells[1].textContent = text(value.vendor);
-			cells[2].textContent = text(value.identity?.equipment_id ?? value.model);
-			cells[3].textContent = text(value.serial_number);
+			onuIdNode.textContent = String(value.onu_id);
+			vendorNode.textContent = text(value.vendor);
+			modelNode.textContent = text(value.identity?.equipment_id ?? value.model);
+			serialNode.textContent = text(value.serial_number);
 			registrationNode.textContent = text(value.state);
 			registrationNode.className = value.state === "O5Operation" ? "label success" : "label warning";
-			cells[5].textContent = text(value.business_status);
-			cells[6].textContent = text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
-			cells[7].textContent = text(value.data_path?.interface);
-			cells[8].textContent = text(value.management?.state);
-			cells[9].textContent = text(value.provisioning?.state);
-			cells[9].setAttribute(
+			businessNode.textContent = text(value.business_status);
+			firmwareNode.textContent = text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
+			dataInterfaceNode.textContent = text(value.data_path?.interface);
+			cwmpNode.textContent = text(value.management?.state);
+			provisioningNode.textContent = text(value.provisioning?.state);
+			provisioningNode.setAttribute(
 				"title",
 				value.provisioning?.current_revision === false
 					? _("Previous configuration")
@@ -322,7 +306,7 @@ function createOnuRow(onu: SubGateway): OnuRow {
 						? _("Management stale")
 						: "",
 			);
-			cells[10].textContent = text(value.wifi_sync);
+			wifiSyncNode.textContent = text(value.wifi_sync);
 		},
 	};
 	row.update(onu);
@@ -405,55 +389,42 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 
 interface StatusView {
 	element: HTMLElement;
-	update(status: FttrStatus, devices: NetworkDevice[]): void;
+	update(status: FttrStatus, devices: NetworkDevices): void;
 }
 
-function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevice[]): StatusView {
+function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevices): StatusView {
 	const initialOptical = initialStatus.optical_transceiver ?? {};
 	const onuTable = createOnuTable(initialStatus.sub_gateways ?? []);
 	const ports = Array.from({ length: 16 }, (_port, index) => createPortCard(index + 1));
-	const deviceMap = new Map<string, NetworkDevice>();
-	const updateDevices = (devices: NetworkDevice[]) => {
-		deviceMap.clear();
-		for (const device of devices) {
-			const name = device.device ?? device.name ?? device.ifname;
-			if (name) deviceMap.set(name, device);
-		}
-	};
-	updateDevices(initialDevices);
+	const provisioningNode = <p data-provisioning-summary="true" />;
+	const fpgaNode = <span>{text(initialStatus.fpga_status)}</span>;
+	const opticalNode = <span>{text(initialOptical.model)}</span>;
+	const cdrNode =
+		initialOptical.cdr_locked === undefined ? (
+			<span>—</span>
+		) : (
+			badge(initialOptical.cdr_locked, initialOptical.cdr_locked ? _("Locked") : _("Unlocked"))
+		);
 
 	const element = (
 		<div class="cbi-map">
 			<h2>{_("FTTR overview")}</h2>
-			<p data-provisioning-summary="true" />
+			{provisioningNode}
 			<div class="cbi-section">
 				<h3>{_("Controller")}</h3>
 				<table class="table">
 					<tbody>
 						<tr>
 							<th>{_("FPGA")}</th>
-							<td>
-								<span>{text(initialStatus.fpga_status)}</span>
-							</td>
+							<td>{fpgaNode}</td>
 						</tr>
 						<tr>
 							<th>{_("Optical module")}</th>
-							<td>
-								<span>{text(initialOptical.model)}</span>
-							</td>
+							<td>{opticalNode}</td>
 						</tr>
 						<tr>
 							<th>{_("CDR lock")}</th>
-							<td>
-								{initialOptical.cdr_locked === undefined ? (
-									<span>—</span>
-								) : (
-									badge(
-										initialOptical.cdr_locked,
-										initialOptical.cdr_locked ? _("Locked") : _("Unlocked"),
-									)
-								)}
-							</td>
+							<td>{cdrNode}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -470,13 +441,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			</div>
 		</div>
 	);
-	const controllerCells = element.querySelectorAll("table tbody td > span");
-	const fpgaNode = controllerCells[0];
-	const opticalNode = controllerCells[1];
-	const cdrNode = controllerCells[2];
-	const provisioningNode = element.querySelector("[data-provisioning-summary]") as HTMLElement;
-
-	const update = (status: FttrStatus, devices: NetworkDevice[]) => {
+	const update = (status: FttrStatus, devices: NetworkDevices) => {
 		const optical = status.optical_transceiver ?? {};
 		const provisioning = status.provisioning;
 		provisioningNode.textContent = provisioning
@@ -488,8 +453,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 		cdrNode.className =
 			optical.cdr_locked === undefined ? "" : optical.cdr_locked ? "label success" : "label warning";
 		onuTable.update(status.sub_gateways ?? []);
-		updateDevices(devices);
-		for (const port of ports) port.update(status, deviceMap);
+		for (const port of ports) port.update(status, devices);
 	};
 
 	update(initialStatus, initialDevices);
@@ -501,17 +465,17 @@ let pageView: StatusView | null = null;
 let refreshing = false;
 
 export const main = (view as any).extend({
-	async load(): Promise<{ status: FttrStatus; devices: NetworkDevice[] }> {
+	async load(): Promise<{ status: FttrStatus; devices: NetworkDevices }> {
 		const [status, deviceResult] = await Promise.all([
 			getStatus(),
 			getNetworkDevices().catch((error) => {
 				console.warn("Failed to load network device details", error);
-				return [];
+				return {};
 			}),
 		]);
 		return { status, devices: deviceResult };
 	},
-	render(data: { status: FttrStatus; devices: NetworkDevice[] }): HTMLElement {
+	render(data: { status: FttrStatus; devices: NetworkDevices }): HTMLElement {
 		pageView = createStatusView(data.status, data.devices);
 		pageRoot = pageView.element;
 		poll.add(async () => {
@@ -519,7 +483,7 @@ export const main = (view as any).extend({
 			const activeView = pageView;
 			refreshing = true;
 			try {
-				const [status, devices] = await Promise.all([getStatus(), getNetworkDevices().catch(() => [])]);
+				const [status, devices] = await Promise.all([getStatus(), getNetworkDevices().catch(() => ({}))]);
 				if (pageView === activeView && activeView.element.isConnected) activeView.update(status, devices);
 			} catch (error) {
 				console.error("Failed to refresh FTTR status", error);
