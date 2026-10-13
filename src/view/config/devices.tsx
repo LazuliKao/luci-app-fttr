@@ -10,8 +10,9 @@ interface ConnectedDevice {
 }
 
 function adapterFor(device?: ConnectedDevice): string | undefined {
+	const vendor = device?.vendor || device?.serial_number.slice(0, 4);
+	if (vendor === "HWTC") return "hwtc";
 	if (device?.model?.startsWith("HL202")) return "hl202";
-	if (device?.model?.startsWith("K155")) return "k155";
 	return undefined;
 }
 
@@ -37,6 +38,9 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 		const serial = field(s, L.form.ListValue, "optical_sn", _("Connected device"));
 		serial.modalonly = true;
 		serial.rmempty = false;
+		serial.description = _(
+			"Lists supported devices registered on the optical link, including devices that have not sent an ACS Inform. Devices already configured are omitted when adding a new device.",
+		);
 		const render = serial.renderWidget;
 		serial.renderWidget = function (id: string, index: number, configured: string | null): any {
 			this.keylist = [];
@@ -67,6 +71,28 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 			if (adapter) L.uci.set("fttr", id, "adapter", adapter);
 		};
 		reference(s, "group", _("Group"), "group").modalonly = true;
+		const contract = choice(s, "cwmp_contract", _("CWMP contract"), [
+			["auto", _("Automatic (read-only capability discovery)")],
+			["hl202-cu", "HL202 · CU"],
+			["hwtc-hw", "HWTC · HW"],
+			["vendor-cu-parent-vlan", `CU · ${_("Unverified candidate")}`],
+			["vendor-hw-connection-vlan", `HW · ${_("Unverified candidate")}`],
+			["vendor-cm-candidate", `CM · ${_("Unverified candidate")}`],
+			["vendor-ct-candidate", `CT · ${_("Unverified candidate")}`],
+		]);
+		contract.modalonly = true;
+		contract.default = "auto";
+		contract.rmempty = false;
+		contract.description = _(
+			"Independent of the optical adapter. Parameter paths, types and writable evidence are discovered before synchronization. Unverified candidates do not authorize writes.",
+		);
+		const omci = field(s, L.form.Flag, "omci_management", _("Provision management VLAN and ACS via OMCI"));
+		omci.modalonly = true;
+		omci.default = "0";
+		omci.rmempty = false;
+		omci.description = _(
+			"Disabled by default. Uses the global management VLAN, priority and ACS URL for this device only, subject to management application authorization. Disabling skips future OMCI management writes and retains existing ONU settings. ME readback does not prove WAN creation or successful Inform; K155 may clear its local ACS URL when enabled.",
+		);
 		const cleanup = choice(s, "wifi_cleanup", _("Unconfigured WLANs"), [
 			["disable", _("Disable (keep the WLAN object)")],
 			["preserve", _("Leave unchanged")],

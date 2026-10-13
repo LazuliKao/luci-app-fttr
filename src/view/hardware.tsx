@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { showOnuDetails } from "./components/onu-details";
+
 const view = L.view;
 const rpc = L.rpc;
 
@@ -109,6 +111,15 @@ function renderHardware(status: FttrHardwareStatus): HTMLElement {
 					return (
 						<div class="cbi-section">
 							<h3>{_("Sub-gateway %s — %s").format(String(onu.onu_id), text(onu.model))}</h3>
+							<p>
+								<button
+									type="button"
+									class="cbi-button cbi-button-action"
+									onclick={() => showOnuDetails(onu, "mib")}
+								>
+									{_("View OMCI / MIB")}
+								</button>
+							</p>
 							{rows([
 								[_("Vendor"), onu.vendor],
 								[_("Optical serial"), onu.serial_number],

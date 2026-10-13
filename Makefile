@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=FTTR management interface
-LUCI_DEPENDS:=+luci-base +rpcd +h3c-fttr-tools
+LUCI_DEPENDS:=+luci-base +rpcd +ucode +ucode-mod-fs +h3c-fttr-tools
 LUCI_DESCRIPTION:=LuCI overview for the FTTR controller and downstream ONUs.
 LUCI_MAINTAINER:=LazuliKao
 

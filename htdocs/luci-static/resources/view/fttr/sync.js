@@ -429,6 +429,56 @@ function deviceCard(device, opened, reset, busy) {
                 ]
             }),
             itemTable(op.items ?? []),
+            op.cwmp_contract ? /*#__PURE__*/ jsxs("div", {
+                children: [
+                    /*#__PURE__*/ jsx("h4", {
+                        children: _("CWMP contract")
+                    }),
+                    /*#__PURE__*/ jsxs("p", {
+                        children: [
+                            sync_text(op.cwmp_contract.requested),
+                            " \u2192 ",
+                            /*#__PURE__*/ jsx("code", {
+                                children: sync_text(op.cwmp_contract.contract)
+                            }),
+                            " \xb7",
+                            " ",
+                            state(op.cwmp_contract.state)
+                        ]
+                    }),
+                    /*#__PURE__*/ jsxs("p", {
+                        children: [
+                            "WAN: ",
+                            state(op.cwmp_contract.capabilities?.wan),
+                            " \xb7 WLAN:",
+                            " ",
+                            state(op.cwmp_contract.capabilities?.wlan),
+                            " \xb7 ",
+                            _("Bindings"),
+                            ":",
+                            " ",
+                            state(op.cwmp_contract.capabilities?.binding)
+                        ]
+                    }),
+                    /*#__PURE__*/ jsx("p", {
+                        children: op.cwmp_contract.reason || ""
+                    }),
+                    /*#__PURE__*/ jsxs("p", {
+                        children: [
+                            _("Schema"),
+                            ": ",
+                            /*#__PURE__*/ jsx("code", {
+                                children: sync_text(op.cwmp_contract.schema)
+                            }),
+                            " \xb7 ",
+                            _("Cache"),
+                            ":",
+                            " ",
+                            op.cwmp_contract.cache_hit ? _("Matched") : _("Fresh discovery")
+                        ]
+                    })
+                ]
+            }) : null,
             bootstrapCard(device.acs_bootstrap),
             lifecycle.length ? /*#__PURE__*/ jsxs("div", {
                 children: [

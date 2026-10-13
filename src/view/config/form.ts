@@ -77,7 +77,7 @@ export function templateGrid(
 	s.handleAdd = function (): Promise<any> {
 		const id = L.uci.add("fttr", kind);
 		L.uci.set("fttr", id, "template", template);
-		return this.map.save(null, true).then(() => this.renderMoreOptionsModal(id));
+		return this.renderMoreOptionsModal(id);
 	};
 	return s;
 }

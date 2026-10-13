@@ -29,15 +29,11 @@ const main = (view as any).extend({
 		await uci.load("fttr");
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
-		try {
-			const [check, status]: any[] = await Promise.all([
-				checkConfig(),
-				getStatus().catch(() => ({ sub_gateways: [] })),
-			]);
-			return { ...check, connectedDevices: status.sub_gateways ?? [] };
-		} catch (error) {
-			return { error: String(error) };
-		}
+		const [check, status]: any[] = await Promise.all([
+			checkConfig().catch((error: unknown) => ({ error: String(error) })),
+			getStatus().catch((error: unknown) => ({ error: String(error), sub_gateways: [] })),
+		]);
+		return { ...check, error: check.error || status.error, connectedDevices: status.sub_gateways ?? [] };
 	},
 	render(initialCheck: any): Promise<Node> {
 		const map = new form.Map("fttr", _("FTTR configuration"));

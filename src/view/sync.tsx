@@ -54,6 +54,15 @@ interface DeviceSync {
 	management?: { state?: string; age_seconds?: number; last_inform?: number };
 	acs_bootstrap?: AcsBootstrap;
 	provisioning: {
+		cwmp_contract?: {
+			state?: string;
+			requested?: string;
+			contract?: string;
+			reason?: string;
+			cache_hit?: boolean;
+			schema?: string;
+			capabilities?: { wan?: string; wlan?: string; binding?: string };
+		};
 		state?: string;
 		operation_id?: number;
 		revision?: string;
@@ -305,6 +314,25 @@ function deviceCard(
 				{_("Revision")}: <code>{text(op.revision)}</code>
 			</p>
 			{itemTable(op.items ?? [])}
+			{op.cwmp_contract ? (
+				<div>
+					<h4>{_("CWMP contract")}</h4>
+					<p>
+						{text(op.cwmp_contract.requested)} → <code>{text(op.cwmp_contract.contract)}</code> ·{" "}
+						{state(op.cwmp_contract.state)}
+					</p>
+					<p>
+						WAN: {state(op.cwmp_contract.capabilities?.wan)} · WLAN:{" "}
+						{state(op.cwmp_contract.capabilities?.wlan)} · {_("Bindings")}:{" "}
+						{state(op.cwmp_contract.capabilities?.binding)}
+					</p>
+					<p>{op.cwmp_contract.reason || ""}</p>
+					<p>
+						{_("Schema")}: <code>{text(op.cwmp_contract.schema)}</code> · {_("Cache")}:{" "}
+						{op.cwmp_contract.cache_hit ? _("Matched") : _("Fresh discovery")}
+					</p>
+				</div>
+			) : null}
 			{bootstrapCard(device.acs_bootstrap)}
 			{lifecycle.length ? (
 				<div>

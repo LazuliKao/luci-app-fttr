@@ -13,13 +13,108 @@ identifier() {
 	[ "${#1}" -le 128 ]
 }
 
+# Return registration identity only for the requested online optical device.
+registration() {
+	local status keys key id sn state generation
+	status="$(/usr/sbin/fttrctl status --json 2>/dev/null)" || return 1
+	json_load "$status" || return 1
+	json_select sub_gateways || return 1
+	json_get_keys keys
+	for key in $keys; do
+		json_select "$key"
+		json_get_var id onu_id
+		json_get_var sn serial_number
+		json_get_var state state
+		json_get_var generation business_status
+		json_select ..
+		if [ "$id" = "$1" ] && [ "$sn" = "$2" ] && [ "$state" = O5Operation ]; then
+			printf '%s:%s\n' "$sn" "$generation"
+			return 0
+		fi
+	done
+	return 1
+}
+
+if [ "$1" = worker ]; then
+	dir="$2"; onu="$3"; sn="$4"; tables="$5"; expected="$6"
+	if [ "$(registration "$onu" "$sn")" != "$expected" ]; then
+		printf '{"error":"Device registration changed; reopen device details"}\n' >"$dir/result.new"
+	else
+		set -- /usr/sbin/fttrctl mib "$onu" --json
+		[ "$tables" = 1 ] && set -- "$@" --tables
+		if "$@" >"$dir/report" 2>/dev/null; then
+			if [ "$(registration "$onu" "$sn")" = "$expected" ]; then
+				printf '{"status":"ready","report":' >"$dir/result.new"
+				cat "$dir/report" >>"$dir/result.new"
+				printf '}\n' >>"$dir/result.new"
+			else
+				printf '{"error":"Device registration changed during MIB read"}\n' >"$dir/result.new"
+			fi
+		else
+			printf '{"error":"MIB read failed or timed out; check device registration and retry"}\n' >"$dir/result.new"
+		fi
+	fi
+	rm -f "$dir/report"
+	mv "$dir/result.new" "$dir/result"
+	exit 0
+fi
+
 case "$1" in
 	list)
-		printf '{"get_status":{},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{}}\n'
+		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{}}\n'
 		exit 0
 		;;
 	call)
 		case "$2" in
+			mib_start)
+				read -r request
+				json_load "$request" || error 'Invalid JSON request'
+				json_get_var onu onu_id
+				json_get_var sn optical_sn
+				json_get_var tables tables
+				case "$onu" in 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15) ;; *) error 'Invalid ONU ID';; esac
+				identifier "$sn" || error 'Invalid optical serial'
+				case "$tables" in 0|1) ;; *) error 'Invalid tables option';; esac
+				expected="$(registration "$onu" "$sn")" || error 'Device is offline or its ONU ID changed'
+				# Private snapshots expire after ten minutes, including abandoned jobs.
+				find /tmp -maxdepth 1 -type d -name 'fttr-mib.*' -mmin +10 -exec rm -rf '{}' ';' 2>/dev/null
+				umask 077
+				dir="$(mktemp -d /tmp/fttr-mib.XXXXXXXX)" || error 'Cannot create MIB job'
+				date +%s >"$dir/created"
+				"$0" worker "$dir" "$onu" "$sn" "$tables" "$expected" >/dev/null 2>&1 </dev/null &
+				printf '{"job":"%s","status":"pending"}\n' "${dir##*/}"
+				exit 0
+				;;
+			mib_result)
+				read -r request
+				json_load "$request" || error 'Invalid JSON request'
+				json_get_var job job
+				json_get_var chunk chunk
+				case "$chunk" in ''|*[!0-9]*) error 'Invalid MIB chunk';; esac
+				[ "${#chunk}" -le 4 ] || error 'Invalid MIB chunk'
+				case "$chunk" in 0|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]) ;; *) error 'Invalid MIB chunk';; esac
+				case "$job" in fttr-mib.*) ;; *) error 'Invalid MIB job';; esac
+				identifier "${job#fttr-mib.}" || error 'Invalid MIB job'
+				dir="/tmp/$job"
+				[ -d "$dir" ] && [ ! -L "$dir" ] || error 'MIB snapshot expired; read again'
+				[ -f "$dir/created" ] && [ ! -L "$dir/created" ] || error 'Invalid MIB job'
+				created="$(cat "$dir/created")"
+				case "$created" in ''|*[!0-9]*) error 'Invalid MIB job';; esac
+				if [ "$(( $(date +%s) - created ))" -gt 600 ]; then
+					rm -rf "$dir"
+					error 'MIB snapshot expired; read again'
+				fi
+				if [ -f "$dir/result" ] && [ ! -L "$dir/result" ]; then
+					# Keep every reply below ubus message limits; encode arbitrary UTF-8 safely.
+					bytes="$(wc -c <"$dir/result")"
+					chunks="$(( (bytes + 32767) / 32768 ))"
+					[ "$chunk" -lt "$chunks" ] || error 'Invalid MIB chunk'
+					encoded="$(dd if="$dir/result" bs=32768 skip="$chunk" count=1 2>/dev/null | ucode -e 'import { stdin } from "fs"; print(b64enc(stdin.read("all")));')" || error 'Cannot encode MIB chunk'
+					[ -n "$encoded" ] || error 'Cannot read MIB chunk'
+					printf '{"status":"ready","chunk":%s,"chunks":%s,"bytes":%s,"data":"%s"}\n' "$chunk" "$chunks" "$bytes" "$encoded"
+				else printf '{"status":"pending"}\n'; fi
+				exit 0
+				;;
 			get_sync) set -- sync status ;;
 			config_check) set -- config check ;;
 			config_reload) set -- config reload ;;

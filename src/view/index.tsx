@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { showOnuDetails } from "./components/onu-details";
+
 const view = L.view;
 const rpc = L.rpc;
 const poll = L.Poll;
@@ -17,7 +19,10 @@ interface SubGateway {
 		hardware_version?: string;
 		software_images?: string[];
 		omcc_version?: number;
+		errors?: string[];
 	};
+	identity_age_seconds?: number;
+	identity_current?: boolean;
 	data_path?: { interface?: string };
 	management?: { state?: string };
 	provisioning?: { state?: string; current_revision?: boolean; management_fresh?: boolean };
@@ -258,6 +263,7 @@ interface OnuRow {
 }
 
 function createOnuRow(onu: SubGateway): OnuRow {
+	let current = onu;
 	const onuIdNode = <span />;
 	const vendorNode = <span />;
 	const modelNode = <span />;
@@ -282,11 +288,17 @@ function createOnuRow(onu: SubGateway): OnuRow {
 			<td>{cwmpNode}</td>
 			<td>{provisioningNode}</td>
 			<td>{wifiSyncNode}</td>
+			<td>
+				<button type="button" class="cbi-button cbi-button-action" onclick={() => showOnuDetails(current)}>
+					{_("Details")}
+				</button>
+			</td>
 		</tr>
 	);
 	const row: OnuRow = {
 		element,
 		update(value) {
+			current = value;
 			onuIdNode.textContent = String(value.onu_id);
 			vendorNode.textContent = text(value.vendor);
 			modelNode.textContent = text(value.identity?.equipment_id ?? value.model);
@@ -323,7 +335,7 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu));
 	const emptyRow = (
 		<tr>
-			<td colSpan={11}>{_("No registered sub-gateways.")}</td>
+			<td colSpan={12}>{_("No registered sub-gateways.")}</td>
 		</tr>
 	);
 	let showingEmpty = onus.length === 0;
@@ -344,6 +356,7 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 						<th>{_("CWMP")}</th>
 						<th>{_("Synchronization")}</th>
 						<th>{_("Wi-Fi sync")}</th>
+						<th>{_("Details")}</th>
 					</tr>
 				</thead>
 				{body}

@@ -4,7 +4,7 @@
 		"read": {
 			"uci": [ "fttr" ],
 			"ubus": {
-				"luci.fttr": [ "get_status", "get_sync", "config_check" ],
+				"luci.fttr": [ "get_status", "get_sync", "config_check", "mib_start", "mib_result" ],
 				"luci-rpc": [ "getNetworkDevices" ]
 			}
 		},
