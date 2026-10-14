@@ -207,7 +207,7 @@ function itemTable(items) {
         })
     });
 }
-function bootstrapCard(bootstrap) {
+function bootstrapCard(bootstrap, applyManagement, managementApplyDisabled) {
     if (!bootstrap) return null;
     return /*#__PURE__*/ jsxs("div", {
         children: [
@@ -233,6 +233,19 @@ function bootstrapCard(bootstrap) {
                 style: "overflow-wrap:anywhere",
                 children: sync_text(bootstrap.reason)
             }),
+            bootstrap.state === "awaiting_apply" ? /*#__PURE__*/ jsxs("p", {
+                children: [
+                    /*#__PURE__*/ jsx("button", {
+                        type: "button",
+                        class: "cbi-button cbi-button-positive",
+                        disabled: managementApplyDisabled,
+                        onclick: applyManagement,
+                        children: _("Authorize and apply management settings")
+                    }),
+                    " ",
+                    _("Required after management drift or service restart; verifies the child ACS settings before business synchronization.")
+                ]
+            }) : null,
             /*#__PURE__*/ jsxs("p", {
                 children: [
                     _("MQTT target"),
@@ -337,7 +350,7 @@ function bootstrapCard(bootstrap) {
         ]
     });
 }
-function deviceCard(device, opened, reset, busy) {
+function deviceCard(device, opened, reset, applyManagement, managementApplyDisabled, busy) {
     const op = device.provisioning;
     const lifecycle = [
         ...Object.entries(op.wan_lifecycle ?? {}).map((param)=>{
@@ -479,7 +492,7 @@ function deviceCard(device, opened, reset, busy) {
                     })
                 ]
             }) : null,
-            bootstrapCard(device.acs_bootstrap),
+            bootstrapCard(device.acs_bootstrap, applyManagement, managementApplyDisabled),
             lifecycle.length ? /*#__PURE__*/ jsxs("div", {
                 children: [
                     /*#__PURE__*/ jsx("h4", {
@@ -739,7 +752,7 @@ const main = L.view.extend({
                 ]
             }));
             const opened = new Set(Array.from(content.querySelectorAll("details[open]")).map((d)=>d.getAttribute("data-device")));
-            content.replaceChildren(...(status.devices ?? []).map((d)=>deviceCard(d, opened.has(d.device), reset, busy)));
+            content.replaceChildren(...(status.devices ?? []).map((d)=>deviceCard(d, opened.has(d.device), reset, ()=>run("management_apply"), managementApply.disabled, busy)));
         }
         target.addEventListener("change", ()=>update(current));
         update(initial);

@@ -193,7 +193,11 @@ function itemTable(items: SyncItem[]): HTMLElement {
 	);
 }
 
-function bootstrapCard(bootstrap?: AcsBootstrap): HTMLElement | null {
+function bootstrapCard(
+	bootstrap: AcsBootstrap | undefined,
+	applyManagement: () => Promise<void>,
+	managementApplyDisabled: boolean,
+): HTMLElement | null {
 	if (!bootstrap) return null;
 	return (
 		<div>
@@ -204,6 +208,21 @@ function bootstrapCard(bootstrap?: AcsBootstrap): HTMLElement | null {
 				{bootstrap.inflight ? ` · ${_("Command in progress")}` : ""}
 			</p>
 			<p style="overflow-wrap:anywhere">{text(bootstrap.reason)}</p>
+			{bootstrap.state === "awaiting_apply" ? (
+				<p>
+					<button
+						type="button"
+						class="cbi-button cbi-button-positive"
+						disabled={managementApplyDisabled}
+						onclick={applyManagement}
+					>
+						{_("Authorize and apply management settings")}
+					</button>{" "}
+					{_(
+						"Required after management drift or service restart; verifies the child ACS settings before business synchronization.",
+					)}
+				</p>
+			) : null}
 			<p>
 				{_("MQTT target")}: <code>{text(bootstrap.mqtt_target)}</code> · {_("Last telemetry")}:{" "}
 				{date(bootstrap.mqtt_last_seen)}
@@ -266,6 +285,8 @@ function deviceCard(
 	device: DeviceSync,
 	opened: boolean,
 	reset: (device: DeviceSync) => Promise<void>,
+	applyManagement: () => Promise<void>,
+	managementApplyDisabled: boolean,
 	busy: boolean,
 ): HTMLElement {
 	const op = device.provisioning;
@@ -333,7 +354,7 @@ function deviceCard(
 					</p>
 				</div>
 			) : null}
-			{bootstrapCard(device.acs_bootstrap)}
+			{bootstrapCard(device.acs_bootstrap, applyManagement, managementApplyDisabled)}
 			{lifecycle.length ? (
 				<div>
 					<h4>{_("WAN / WLAN lifecycle results")}</h4>
@@ -557,7 +578,16 @@ const main = (L.view as any).extend({
 				Array.from(content.querySelectorAll("details[open]")).map((d) => d.getAttribute("data-device")),
 			);
 			content.replaceChildren(
-				...(status.devices ?? []).map((d) => deviceCard(d, opened.has(d.device), reset, busy)),
+				...(status.devices ?? []).map((d) =>
+					deviceCard(
+						d,
+						opened.has(d.device),
+						reset,
+						() => run("management_apply"),
+						managementApply.disabled,
+						busy,
+					),
+				),
 			);
 		}
 		target.addEventListener("change", () => update(current));
