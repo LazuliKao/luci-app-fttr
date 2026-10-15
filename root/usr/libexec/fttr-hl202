@@ -1,0 +1,78 @@
+#!/bin/sh
+. /usr/share/libubox/jshn.sh
+fail() { printf '{"error":"%s"}\n' "$1"; exit 0; }
+if [ "$1" = worker ]; then
+	dir="$2"; method="$3"
+	trap 'rm -f "$dir/request.json"' EXIT
+	if [ "$method" = hl202_report ]; then
+		json_load "$(cat "$dir/request.json")" && json_select target || exit 1
+		json_get_var sn optical_sn; json_get_var onu onu_id; json_get_var generation binding_generation
+		json_get_var source mqtt_mac
+		if [ -n "$source" ]; then
+			/usr/sbin/fttrctl hl202 source-report --source "$source" --generation "$generation" --json >"$dir/result.new" 2>/dev/null
+		else
+			/usr/sbin/fttrctl hl202 report --optical-sn "$sn" --onu-id "$onu" --generation "$generation" --json >"$dir/result.new" 2>/dev/null
+		fi
+	else
+		/usr/sbin/fttrctl hl202 run --request-file "$dir/request.json" --json >"$dir/result.new" 2>/dev/null
+	fi
+	rm -f "$dir/request.json"
+	[ -s "$dir/result.new" ] || printf '{"error":"HL202 worker failed; execution outcome may be unknown"}\n' >"$dir/result.new"
+	bytes="$(wc -c <"$dir/result.new")"
+	[ "$bytes" -le 4194304 ] || printf '{"error":"HL202 result exceeds transport limit"}\n' >"$dir/result.new"
+	mv "$dir/result.new" "$dir/result"
+	exit 0
+fi
+case "$1" in
+	hl202_list) /usr/sbin/fttrctl hl202 list --json 2>/dev/null; exit $? ;;
+	hl202_job_result)
+		read -r request
+		json_load "$request" || fail 'Invalid JSON'
+		json_get_var job job; json_get_var chunk chunk
+		case "$job" in fttr-hl202.????????) ;; *) fail 'Invalid job';; esac
+		case "${job#fttr-hl202.}" in *[!a-zA-Z0-9]*) fail 'Invalid job';; esac
+		case "$chunk" in 0|[1-9]|[1-9][0-9]|1[01][0-9]|12[0-7]) ;; *) fail 'Invalid chunk';; esac
+		dir="/tmp/$job"
+		[ -d "$dir" ] && [ ! -L "$dir" ] && [ -f "$dir/created" ] && [ ! -L "$dir/created" ] || fail 'Job expired'
+		created="$(cat "$dir/created")"; now="$(date +%s)"
+		case "$created" in ''|*[!0-9]*) fail 'Invalid job';; esac
+		if [ "$now" -lt "$created" ] || [ "$((now-created))" -gt 600 ]; then rm -rf "$dir"; fail 'Job expired'; fi
+		if [ ! -f "$dir/result" ]; then
+			if [ -f "$dir/pid" ] && ! kill -0 "$(cat "$dir/pid")" 2>/dev/null; then
+				rm -f "$dir/request.json"
+				printf '{"error":"Worker stopped; execution outcome is unknown"}\n' >"$dir/result.new"
+				mv "$dir/result.new" "$dir/result"
+			else printf '{"status":"pending"}\n'; exit 0; fi
+		fi
+		[ ! -L "$dir/result" ] || fail 'Invalid result'
+		bytes="$(wc -c <"$dir/result")"; chunks="$(((bytes+32767)/32768))"
+		[ "$chunks" -le 128 ] && [ "$chunk" -lt "$chunks" ] || fail 'Invalid result chunk'
+		encoded="$(dd if="$dir/result" bs=32768 skip="$chunk" count=1 2>/dev/null | ucode -e 'import { stdin } from "fs"; print(b64enc(stdin.read("all")));')" || fail 'Cannot encode result'
+		printf '{"status":"ready","chunk":%s,"chunks":%s,"bytes":%s,"data":"%s"}\n' "$chunk" "$chunks" "$bytes" "$encoded"
+		[ "$chunk" -ne "$((chunks-1))" ] || : >"$dir/consumed"
+		exit 0 ;;
+	hl202_exec_start|hl202_accounts_start|hl202_account_update|hl202_report)
+		find /tmp -maxdepth 1 -type d -name 'fttr-hl202.*' -mmin +10 -exec rm -rf '{}' ';' 2>/dev/null
+		umask 077
+		if ! mkdir /tmp/fttr-hl202-job-lock 2>/dev/null; then
+			if [ -f /tmp/fttr-hl202-job-lock/pid ] && ! kill -0 "$(cat /tmp/fttr-hl202-job-lock/pid)" 2>/dev/null; then
+				rm -f /tmp/fttr-hl202-job-lock/pid; rmdir /tmp/fttr-hl202-job-lock 2>/dev/null
+				mkdir /tmp/fttr-hl202-job-lock 2>/dev/null || fail 'Job queue busy'
+			else fail 'Job queue busy'; fi
+		fi
+		printf '%s\n' "$$" >/tmp/fttr-hl202-job-lock/pid
+		trap 'rm -f /tmp/fttr-hl202-job-lock/pid; rmdir /tmp/fttr-hl202-job-lock 2>/dev/null' EXIT
+		for completed in /tmp/fttr-hl202.????????; do
+			[ -f "$completed/consumed" ] && [ ! -L "$completed" ] && rm -rf "$completed"
+		done
+		count="$(find /tmp -maxdepth 1 -type d -name 'fttr-hl202.*' | wc -l)"
+		[ "$count" -lt 32 ] || fail 'Job capacity reached'
+		dir="$(mktemp -d /tmp/fttr-hl202.XXXXXXXX)" || fail 'Cannot create job'
+		if ! ucode /usr/share/fttr/hl202-request.uc "$1" "$dir/request.json" 2>/dev/null; then rm -rf "$dir"; fail 'Invalid HL202 request'; fi
+		date +%s >"$dir/created"
+		"$0" worker "$dir" "$1" >/dev/null 2>&1 </dev/null &
+		printf '%s\n' "$!" >"$dir/pid"
+		printf '{"status":"pending","job":"%s"}\n' "${dir##*/}"
+		exit 0 ;;
+	*) exit 1 ;;
+esac

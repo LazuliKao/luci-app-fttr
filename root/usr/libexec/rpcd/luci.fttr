@@ -61,11 +61,13 @@ fi
 
 case "$1" in
 	list)
-		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{}}\n'
+		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{"target":{}},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0}}\n'
 		exit 0
 		;;
 	call)
 		case "$2" in
+			hl202_list|hl202_report|hl202_exec_start|hl202_accounts_start|hl202_account_update|hl202_job_result)
+				exec /usr/libexec/fttr-hl202 "$2" ;;
 			mib_start)
 				read -r request
 				json_load "$request" || error 'Invalid JSON request'

@@ -70,11 +70,17 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.description = _(
 		"All listed VLANs share one management bridge and DHCP pool. Retain an existing listed management VLAN; the first VLAN is the fallback.",
 	);
-	option.validate = (_id: string, value: string[]) => {
-		const values = Array.isArray(value) ? value : [value];
-		if (!values.length || values.some((v) => !/^\d+$/.test(v) || Number(v) < 1 || Number(v) > 4094))
-			return _("Enter at least one VLAN ID in 1–4094.");
-		return new Set(values.map(Number)).size === values.length ? true : _("Duplicate VLAN IDs are not allowed.");
+	option.validate = (_id: string, value: string) =>
+		value === "" || (/^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 4094)
+			? true
+			: _("Enter a VLAN ID in 1–4094.");
+	const parseVlans = option.parse;
+	option.parse = function (id: string) {
+		const values: string[] = this.formvalue(id) || [];
+		if (!values.length) return Promise.reject(new Error(_("Enter at least one VLAN ID in 1–4094.")));
+		if (new Set(values.map(Number)).size !== values.length)
+			return Promise.reject(new Error(_("Duplicate VLAN IDs are not allowed.")));
+		return parseVlans.call(this, id);
 	};
 	option = field(management, L.form.Value, "priority", _("Priority"), "range(0,7)");
 	option.default = "0";
