@@ -1,3 +1,11 @@
+'use strict';
+'require view as __fttr_view';
+'require rpc as __fttr_rpc';
+'require ui as __fttr_ui';
+'require uci as __fttr_uci';
+'require form as __fttr_form';
+'require poll as __fttr_poll';
+'require dom as __fttr_dom';
 
 // UNUSED EXPORTS: main
 

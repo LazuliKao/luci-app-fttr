@@ -1,0 +1,687 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-fttr\n"
+"POT-Creation-Date: 2026-10-16 23:32+0800\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "ACS state file"
+msgstr ""
+
+msgid ""
+"All listed VLANs share one management bridge and DHCP pool. Retain an "
+"existing listed management VLAN; the first VLAN is the fallback."
+msgstr ""
+
+msgid "Attention required"
+msgstr ""
+
+msgid "Attribute"
+msgstr ""
+
+msgid "Automatic"
+msgstr ""
+
+msgid "Automatic (read-only capability discovery)"
+msgstr ""
+
+msgid "Automatic triggers"
+msgstr ""
+
+msgid "Band"
+msgstr ""
+
+msgid "Basic"
+msgstr ""
+
+msgid "Basic display only; raw records are preserved."
+msgstr ""
+
+msgid "Basic information"
+msgstr ""
+
+msgid "Binding"
+msgstr ""
+
+msgid "Blocked"
+msgstr ""
+
+msgid "Business"
+msgstr ""
+
+msgid ""
+"By default, extra WLANs are disabled and retained. Deleting objects is "
+"destructive and should only be selected deliberately."
+msgstr ""
+
+msgid "Cached identity"
+msgstr ""
+
+msgid "Cannot start MIB query"
+msgstr ""
+
+msgid "Check"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid ""
+"Committed configuration has not been loaded. Check Configuration "
+"diagnostics; an active operation may have prevented reload."
+msgstr ""
+
+msgid "Committed configuration is invalid: %s"
+msgstr ""
+
+msgid "Completed"
+msgstr ""
+
+msgid "Configuration"
+msgstr ""
+
+msgid "Configuration changed"
+msgstr ""
+
+msgid "Configuration diagnostics"
+msgstr ""
+
+msgid "Conflicting values; inspect observations"
+msgstr ""
+
+msgid "Connected"
+msgstr ""
+
+msgid "Connected device"
+msgstr ""
+
+msgid "Copied"
+msgstr ""
+
+msgid "Copy JSON"
+msgstr ""
+
+msgid "Current registration"
+msgstr ""
+
+msgid "CWMP boot"
+msgstr ""
+
+msgid "CWMP contract"
+msgstr ""
+
+msgid "CWMP freshness (seconds)"
+msgstr ""
+
+msgid "CWMP interface references"
+msgstr ""
+
+msgid "CWMP path"
+msgstr ""
+
+msgid "Data interface"
+msgstr ""
+
+msgid "Decoded / partial / basic"
+msgstr ""
+
+msgid "Definition"
+msgstr ""
+
+msgid "Delete entry"
+msgstr ""
+
+msgid "Delete the WLAN object"
+msgstr ""
+
+msgid "Device"
+msgstr ""
+
+msgid "Device already configured."
+msgstr ""
+
+msgid "Device is offline; reopen details after registration."
+msgstr ""
+
+msgid "Device online"
+msgstr ""
+
+msgid "Devices"
+msgstr ""
+
+msgid "Devices & groups"
+msgstr ""
+
+msgid "DHCP address count"
+msgstr ""
+
+msgid "DHCP lease time"
+msgstr ""
+
+msgid "DHCP start offset"
+msgstr ""
+
+msgid "Disable (keep the WLAN object)"
+msgstr ""
+
+msgid ""
+"Disabled by default. Uses the global management VLAN, priority and ACS URL "
+"for this device only, subject to management application authorization. "
+"Disabling skips future OMCI management writes and retains existing ONU "
+"settings. ME readback does not prove WAN creation or successful Inform; K155 "
+"may clear its local ACS URL when enabled."
+msgstr ""
+
+msgid "Disabling"
+msgstr ""
+
+msgid "Disabling read"
+msgstr ""
+
+msgid "Discovering"
+msgstr ""
+
+msgid "Download JSON"
+msgstr ""
+
+msgid "Downloading MIB snapshot"
+msgstr ""
+
+msgid "Duplicate VLAN IDs are not allowed."
+msgstr ""
+
+msgid "Enable ACS"
+msgstr ""
+
+msgid "Enable management DHCP"
+msgstr ""
+
+msgid "Enable management network"
+msgstr ""
+
+msgid "Enable provisioning"
+msgstr ""
+
+msgid ""
+"Enter a complete LANDevice.1 interface reference, without trailing dot or "
+"comma."
+msgstr ""
+
+msgid "Enter a VLAN ID in 1–4094."
+msgstr ""
+
+msgid "Enter at least one VLAN ID in 1–4094."
+msgstr ""
+
+msgid "Entity"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "EtherType code"
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid ""
+"For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
+"TR069 is reserved for OMCI."
+msgstr ""
+
+msgid "FTTR"
+msgstr ""
+
+msgid "FTTR configuration"
+msgstr ""
+
+msgid "FTTR configuration check failed"
+msgstr ""
+
+msgid "G.988 encoded field values"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Generated ACS URL"
+msgstr ""
+
+msgid "Group"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Hardware status"
+msgstr ""
+
+msgid "Hardware version"
+msgstr ""
+
+msgid "HL202 management"
+msgstr ""
+
+msgid "HTTP Basic password"
+msgstr ""
+
+msgid "HTTP Basic username"
+msgstr ""
+
+msgid "Identity age"
+msgstr ""
+
+msgid "Identity read errors"
+msgstr ""
+
+msgid "Identity source"
+msgstr ""
+
+msgid "Incomplete MIB snapshot"
+msgstr ""
+
+msgid ""
+"Independent of the optical adapter. Parameter paths, types and writable "
+"evidence are discovered before synchronization. Unverified candidates do not "
+"authorize writes."
+msgstr ""
+
+msgid "Inner filter (priority / VID / TPID-DEI)"
+msgstr ""
+
+msgid "Inner treatment (priority / VID / TPID-DEI)"
+msgstr ""
+
+msgid "Interrupted"
+msgstr ""
+
+msgid "Invalid job result"
+msgstr ""
+
+msgid "Invalid MIB snapshot"
+msgstr ""
+
+msgid "Invalid MIB snapshot chunk"
+msgstr ""
+
+msgid "Invalid MIB snapshot size"
+msgstr ""
+
+msgid "Invalid response"
+msgstr ""
+
+msgid ""
+"Job polling timed out; execution outcome is unknown. Do not automatically "
+"retry."
+msgstr ""
+
+msgid "Job result exceeds the transport limit"
+msgstr ""
+
+msgid "Keep current key"
+msgstr ""
+
+msgid "LAN / WLAN port bindings"
+msgstr ""
+
+msgid "Leave unchanged"
+msgstr ""
+
+msgid "Listen port"
+msgstr ""
+
+msgid ""
+"Lists supported devices registered on the optical link, including devices "
+"that have not sent an ACS Inform. Devices already configured are omitted "
+"when adding a new device."
+msgstr ""
+
+msgid "Management application mode"
+msgstr ""
+
+msgid "Management IPv4 address/prefix"
+msgstr ""
+
+msgid "Manual"
+msgstr ""
+
+msgid ""
+"Manual mode only discovers and plans. Use Apply management configuration on "
+"the Synchronization page to create or update the isolated network, ACS "
+"listener and child TR069 settings."
+msgstr ""
+
+msgid ""
+"Manual mode only saves configuration; use Apply differences on the "
+"Synchronization page to send it to devices. Automatic mode synchronizes "
+"after Save & Apply when Configuration changed is selected."
+msgstr ""
+
+msgid "MIB query timed out; retry."
+msgstr ""
+
+msgid "Missing job identifier"
+msgstr ""
+
+msgid "Missing MIB report"
+msgstr ""
+
+msgid "Model"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Network"
+msgstr ""
+
+msgid "Networks"
+msgstr ""
+
+msgid "New device"
+msgstr ""
+
+msgid "New network"
+msgstr ""
+
+msgid "New template"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Not collected"
+msgstr ""
+
+msgid "Not configured"
+msgstr ""
+
+msgid "Not started"
+msgstr ""
+
+msgid "O1 Initial"
+msgstr ""
+
+msgid "O2 Standby"
+msgstr ""
+
+msgid "O3 Serial Number"
+msgstr ""
+
+msgid "O4 Ranging"
+msgstr ""
+
+msgid "O5 (Operation)"
+msgstr ""
+
+msgid "O6 POPUP"
+msgstr ""
+
+msgid "O7 Emergency Stop"
+msgstr ""
+
+msgid "Offline"
+msgstr ""
+
+msgid "Offline or stale"
+msgstr ""
+
+msgid "OMCC version"
+msgstr ""
+
+msgid "Online"
+msgstr ""
+
+msgid "ONU ID"
+msgstr ""
+
+msgid "Open Synchronization"
+msgstr ""
+
+msgid "Optical serial"
+msgstr ""
+
+msgid "Outer filter (priority / VID / TPID-DEI)"
+msgstr ""
+
+msgid "Outer treatment (priority / VID / TPID-DEI)"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Password must be 8–63 bytes."
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Periodic"
+msgstr ""
+
+msgid "Periodic synchronization interval (seconds)"
+msgstr ""
+
+msgid "Port bindings"
+msgstr ""
+
+msgid "Ports"
+msgstr ""
+
+msgid "Previous snapshot retained"
+msgstr ""
+
+msgid "Priority"
+msgstr ""
+
+msgid "Provision management VLAN and ACS via OMCI"
+msgstr ""
+
+msgid "Raw data / observations"
+msgstr ""
+
+msgid "Raw JSON"
+msgstr ""
+
+msgid "Read MIB"
+msgstr ""
+
+msgid "Read MIB and VLAN tables"
+msgstr ""
+
+msgid "Read MIB on demand. Results are a snapshot, not live polling."
+msgstr ""
+
+msgid "Reading"
+msgstr ""
+
+msgid "Reading MIB…"
+msgstr ""
+
+msgid "Records / diagnostics"
+msgstr ""
+
+msgid "Registration"
+msgstr ""
+
+msgid "Registration freshness unavailable"
+msgstr ""
+
+msgid "Reload"
+msgstr ""
+
+msgid "Remove tags"
+msgstr ""
+
+msgid "Request failed"
+msgstr ""
+
+msgid "Restart"
+msgstr ""
+
+msgid ""
+"Result polling stopped after leaving the page. The backend job is not "
+"cancelled."
+msgstr ""
+
+msgid "rows"
+msgstr ""
+
+msgid ""
+"Saving configuration does not synchronize devices in Manual mode. After Save "
+"& Apply, open Synchronization and choose Apply differences. Preview "
+"differences is read-only."
+msgstr ""
+
+msgid "Search ME name or Class ID"
+msgstr ""
+
+msgid "Security"
+msgstr ""
+
+msgid "Select and copy the JSON manually."
+msgstr ""
+
+msgid "Select device."
+msgstr ""
+
+msgid "Settling"
+msgstr ""
+
+msgid "Software images"
+msgstr ""
+
+msgid "SSID"
+msgstr ""
+
+msgid "SSID must be 1–32 bytes."
+msgstr ""
+
+msgid "SSIDs"
+msgstr ""
+
+msgid "Stale management"
+msgstr ""
+
+msgid "Stale revision"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Status refresh failed: %s"
+msgstr ""
+
+msgid "Synchronization"
+msgstr ""
+
+msgid "Synchronization mode"
+msgstr ""
+
+msgid "Tables requested / collected"
+msgstr ""
+
+msgid "Template"
+msgstr ""
+
+msgid "Template is in use."
+msgstr ""
+
+msgid "Templates"
+msgstr ""
+
+msgid ""
+"The local ACS binds to this address. The child ACS URL is generated from "
+"this address, the ACS port and CWMP path."
+msgstr ""
+
+msgid "The path must start with '/'."
+msgstr ""
+
+msgid "The state file path must be absolute."
+msgstr ""
+
+msgid "Too many result chunks"
+msgstr ""
+
+msgid "TR069 VLANs"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Unconfigured WLANs"
+msgstr ""
+
+msgid "Unexpected MIB response"
+msgstr ""
+
+msgid "Unknown class"
+msgstr ""
+
+msgid "Unknown model"
+msgstr ""
+
+msgid "Unverified"
+msgstr ""
+
+msgid "Unverified candidate"
+msgstr ""
+
+msgid "Upload complete"
+msgstr ""
+
+msgid "Upload diagnostics"
+msgstr ""
+
+msgid "Use 0 to disable, or 30–86400 seconds."
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Vendor"
+msgstr ""
+
+msgid "Verified"
+msgstr ""
+
+msgid "Verifying"
+msgstr ""
+
+msgid "VLAN"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
+msgid "Waiting Inform"
+msgstr ""
+
+msgid "WAN reconciling"
+msgstr ""
+
+msgid "WAN service"
+msgstr ""
+
+msgid "WAN Service List (multi-select)"
+msgstr ""
+
+msgid "WAN verifying"
+msgstr ""
+
+msgid "Wi-Fi reconciling"
+msgstr ""
+
+msgid "Writing"
+msgstr ""
+
+msgid "速度：%s Mbit/s，双工：%s"
+msgstr ""

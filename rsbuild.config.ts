@@ -14,7 +14,7 @@ export default defineConfig({
 	output: {
 		module: true,
 		charset: "ascii",
-		distPath: { root: "./htdocs/luci-static/resources/view/fttr", js: "." },
+		distPath: { root: "./package/luci-app-fttr/htdocs/luci-static/resources/view/fttr", js: "." },
 		filename: { js: "[name].js" },
 		assetPrefix: "",
 		minify: false,
@@ -39,6 +39,17 @@ export default defineConfig({
 			config.optimization.avoidEntryIife = true;
 			config.plugins = config.plugins || [];
 			config.plugins.push(
+				new rspack.BannerPlugin({
+					// LuCI injects dependency aliases as parameters; avoid bundled local names.
+					banner: [
+						"'use strict';",
+						...["view", "rpc", "ui", "uci", "form", "poll", "dom"].map(
+							(name) => `'require ${name} as __fttr_${name}';`,
+						),
+					].join("\n"),
+					raw: true,
+					entryOnly: true,
+				}),
 				new rspack.BannerPlugin({ banner: "return main;", raw: true, entryOnly: true, footer: true }),
 			);
 			return config;

@@ -6,46 +6,127 @@ const view = L.view;
 const rpc = L.rpc;
 const poll = L.Poll;
 
+/** Optical & physical telemetry from Rust `OpticalTransceiverStatus` */
+interface OpticalTransceiverStatus {
+	model?: string;
+	wavelength_tx_nm?: number;
+	wavelength_rx_nm?: number;
+	phy_rate_downlink_gbps?: number;
+	phy_rate_uplink_gbps?: number;
+	tx_power_dbm?: number;
+	laser_bias_current_ma?: number;
+	temperature_celsius?: number;
+	vcc_voltage?: number;
+	cdr_locked?: boolean;
+}
+
+/** Downstream DSA switch port link telemetry from Rust `SwitchPortStatus` */
+interface SwitchPortStatus {
+	port: number;
+	interface: string;
+	carrier: boolean;
+	status: string;
+	onu_id?: number;
+	onu_sn?: string;
+	link_state: string;
+}
+
+/** Sub-gateway OMCI identity record from Rust `OnuIdentity` */
+interface OnuIdentity {
+	equipment_id?: string;
+	hardware_version?: string;
+	software_images: string[];
+	omcc_version?: number;
+	errors: string[];
+}
+
+/** CWMP management state reported by ACS controller */
+interface SubGatewayManagement {
+	cwmp_id?: string;
+	state?: "online" | "waiting_inform" | "offline_or_stale" | string;
+	optical_online?: boolean;
+	last_inform?: number;
+	age_seconds?: number;
+}
+
+/** Operation state reported by Desired-State Provisioning controller */
+interface SubGatewayProvisioning {
+	state?:
+		| "waiting"
+		| "wan_reconciling"
+		| "wan_verifying"
+		| "wifi_reconciling"
+		| "discovering"
+		| "reading"
+		| "disabling"
+		| "disabling_read"
+		| "writing"
+		| "verifying"
+		| "settling"
+		| "completed"
+		| "interrupted"
+		| "failed"
+		| "error"
+		| "blocked"
+		| "not_started"
+		| string;
+	revision?: string;
+	current_revision?: boolean;
+	management_fresh?: boolean;
+	operation_id?: number;
+	error?: string;
+}
+
+/** Comprehensive sub-gateway record from Rust `SubGatewayStatus` */
 interface SubGateway {
 	onu_id: number;
 	vendor: string;
 	model: string;
 	serial_number: string;
 	state: string;
-	business_status?: string;
-	firmware_version: string;
-	identity?: {
-		equipment_id?: string;
-		hardware_version?: string;
-		software_images?: string[];
-		omcc_version?: number;
-		errors?: string[];
-	};
+	business_status: string;
+	management?: SubGatewayManagement;
+	provisioning?: SubGatewayProvisioning;
+	wifi_sync:
+		| "not_configured"
+		| "stale_revision"
+		| "stale_management"
+		| "verified"
+		| "attention_required"
+		| "accepted_unverified"
+		| "pending"
+		| string;
+	identity?: OnuIdentity;
 	identity_age_seconds?: number;
 	identity_current?: boolean;
-	data_path?: { interface?: string };
-	management?: { state?: string };
-	provisioning?: { state?: string; current_revision?: boolean; management_fresh?: boolean };
-	wifi_sync?: string;
+	fiber_distance_m?: number;
+	ranging_delay_rtd_ns?: number;
+	optical_rx_power_dbm?: number;
+	optical_tx_power_dbm?: number;
+	firmware_version: string;
+	hardware_version: string;
+	uptime_seconds?: number;
+	data_path?: {
+		interface: string;
+		gem_ports?: number[];
+		vlan_id?: number;
+		tx_bytes?: number;
+		rx_bytes?: number;
+	};
 }
 
+/** Global system status from Rust `FttrSystemStatus` */
 interface FttrStatus {
 	fpga_status: string;
-	optical_transceiver?: {
-		model?: string;
-		cdr_locked?: boolean;
+	optical_transceiver: OpticalTransceiverStatus;
+	switch_ports: SwitchPortStatus[];
+	sub_gateways: SubGateway[];
+	provisioning?: {
+		enabled?: boolean;
+		mode?: string;
+		revision?: string;
+		error?: string;
 	};
-	switch_ports?: Array<{
-		port: number;
-		interface: string;
-		carrier: boolean;
-		status?: string;
-		onu_id?: number;
-		onu_sn?: string;
-		link_state?: string;
-	}>;
-	sub_gateways?: SubGateway[];
-	provisioning?: { enabled?: boolean; mode?: string; revision?: string; error?: string };
 }
 
 interface NetworkDevice {
@@ -70,11 +151,132 @@ const getNetworkDevices = rpc.declare<NetworkDevices>({
 	reject: true,
 });
 
+const I18N_DICT: Record<string, string> = {
+	"FTTR overview": "FTTR 总览",
+	Controller: "主控制器",
+	FPGA: "FPGA",
+	"FPGA status": "FPGA 状态",
+	"Optical module": "光模块",
+	"CDR lock": "CDR 锁定",
+	"Sub-gateways": "从网关列表",
+	"Downstream ports": "下行端口",
+	"ONU ID": "ONU ID",
+	Vendor: "供应商",
+	Model: "型号",
+	"Optical serial": "光纤 SN",
+	Registration: "注册状态",
+	Business: "业务状态",
+	Firmware: "固件版本",
+	"Data interface": "数据接口",
+	CWMP: "CWMP",
+	Synchronization: "配置同步",
+	"Wi-Fi sync": "Wi-Fi 同步",
+	Details: "详情",
+	"Port status": "端口状态",
+	ONU: "ONU",
+	"MAC address": "MAC 地址",
+	Locked: "已锁定",
+	Unlocked: "未锁定",
+	Connected: "已连接",
+	Disconnected: "未连接",
+	Ready: "已就绪",
+	Online: "在线",
+	Offline: "离线",
+	"Waiting Inform": "等待 Inform",
+	"Offline or stale": "离线或过期",
+	Discovering: "发现中",
+	Completed: "已完成",
+	Interrupted: "已中断",
+	Blocked: "已阻塞",
+	Reconciling: "调谐中",
+	Pending: "等待中",
+	"Not started": "未开始",
+	Verified: "已校验",
+	"WAN pending": "WAN 引导中",
+	Synced: "已同步",
+	"Not configured": "未配置",
+	"Attention required": "需注意",
+	"Stale revision": "版本过期",
+	"Stale management": "管理过期",
+	Unverified: "下发未校验",
+	Enabled: "已启用",
+	Disabled: "已禁用",
+	Provisioning: "配置下发",
+	Mode: "模式",
+	Revision: "版本号",
+	"No registered sub-gateways.": "无已注册从网关。",
+	"O5 (Operation)": "O5 运行",
+	"Link up": "已连通",
+	"Link down": "已断开",
+	Unavailable: "不可用",
+	Unknown: "未知",
+	"Received bytes": "接收字节数",
+	"Received packets": "接收数据包",
+	"Received multicast": "接收组播包",
+	"Receive errors": "接收错误",
+	"Receive dropped": "接收丢弃",
+	"Transmitted bytes": "发送字节数",
+	"Transmitted packets": "发送数据包",
+	"Transmit errors": "发送错误",
+	"Transmit dropped": "发送丢弃",
+	"Previous configuration": "历史配置",
+	"Management stale": "管理信息过期",
+	"Provisioning status unavailable": "配置下发状态不可用",
+	wan_reconciling: "WAN 调谐中",
+	wan_verifying: "WAN 校验中",
+	wifi_reconciling: "Wi-Fi 调谐中",
+	discovering: "发现中",
+	reading: "读取中",
+	disabling: "禁用中",
+	disabling_read: "禁用校验中",
+	writing: "写入中",
+	verifying: "校验中",
+	settling: "稳定中",
+};
+
+function tr(key: string): string {
+	const translated = _(key);
+	if (translated && translated !== key) return translated;
+	const isZh = /zh/i.test(
+		document.documentElement.getAttribute("lang") ||
+			(window as unknown as { L?: { env?: { lang?: string } } }).L?.env?.lang ||
+			navigator.language ||
+			"",
+	);
+	if (isZh && I18N_DICT[key]) return I18N_DICT[key];
+	return translated || key;
+}
+
 const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
 
-const badge = (value: boolean, label: string): HTMLElement => (
-	<span class={value ? "label success" : "label warning"}>{label}</span>
-);
+function updateBadge(
+	node: HTMLElement,
+	type: "success" | "warning" | "danger" | "info" | "neutral" | "none",
+	label: string,
+	title?: string,
+): void {
+	node.textContent = label;
+	if (type === "none") {
+		node.className = "";
+	} else {
+		node.className = `fttr-badge fttr-badge-${type}`;
+	}
+	if (title) {
+		node.setAttribute("title", title);
+	} else {
+		node.removeAttribute("title");
+	}
+}
+
+/** Extract primary firmware version and preserve all software images for hover tooltip */
+function formatFirmware(raw: string | undefined): { display: string; full?: string } {
+	if (!raw) return { display: "—" };
+	const match = raw.match(/image\s*\d+:\s*([^;,\s]+)/i);
+	if (match?.[1]) {
+		return { display: match[1], full: raw.replace(/;\s*/g, "\n") };
+	}
+	return { display: raw };
+}
 
 function formatBytes(value: number | undefined): string {
 	if (value === undefined || !Number.isFinite(value) || value < 0) return "—";
@@ -91,12 +293,12 @@ function formatBytes(value: number | undefined): string {
 
 function formatPackets(value: number | undefined): string {
 	if (value === undefined || !Number.isFinite(value) || value < 0) return "—";
-	if (value < 1000) return `${value} ${_("Pkts.")}`;
-	return `${(value / 1000).toFixed(2)} K${_("Pkts.")}`;
+	if (value < 1000) return `${value} ${tr("Received packets").includes("包") ? "包" : "Pkts."}`;
+	return `${(value / 1000).toFixed(2)} K${tr("Received packets").includes("包") ? "包" : "Pkts."}`;
 }
 
 function formatLinkSpeed(speed: number | undefined): string {
-	if (speed === undefined || !Number.isFinite(speed) || speed <= 0) return _("Unknown");
+	if (speed === undefined || !Number.isFinite(speed) || speed <= 0) return tr("Unknown");
 	if (speed >= 1000) return `${speed / 1000} GbE`;
 	return `${speed} MbE`;
 }
@@ -108,7 +310,7 @@ interface PortCard {
 
 function createPortCard(number: number): PortCard {
 	const ifnameNode = <span />;
-	const speedNode = <span>{_("Unknown")}</span>;
+	const speedNode = <span>{tr("Unknown")}</span>;
 	const iconNode = <img src="/luci-static/resources/icons/port_down.svg" alt="" aria-hidden="true" />;
 	const linkBarNode = <div style="flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)" />;
 	const portStateNode = <span />;
@@ -125,8 +327,13 @@ function createPortCard(number: number): PortCard {
 	const txPacketsNode = <span />;
 	const txErrorsNode = <span />;
 	const txDroppedNode = <span />;
+
 	const element = (
-		<div class="ifacebox" style="margin:.25em;width:100px">
+		<div
+			class="ifacebox fttr-port-card"
+			data-fttr-port={String(number)}
+			style="box-sizing:border-box;width:100%;margin:0;cursor:pointer"
+		>
 			<div class="ifacebox-head" style="font-weight:bold">
 				{ifnameNode}
 			</div>
@@ -138,67 +345,64 @@ function createPortCard(number: number): PortCard {
 			<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
 				{linkBarNode}
 				<span class="cbi-tooltip left">
-					<strong>{_("Port status")}: </strong>
+					<strong>{tr("Port status")}: </strong>
 					{portStateNode}
 					<br />
-					<strong>{_("ONU")}: </strong>
+					<strong>{tr("ONU")}: </strong>
 					{onuNode}
 					<br />
-					<strong>{_("MAC address")}: </strong>
+					<strong>{tr("MAC address")}: </strong>
 					{macNode}
 				</span>
 			</div>
 			<div class="ifacebox-body">
-				<div class="cbi-tooltip-container" style="text-align:left;font-size:80%">
-					▲ 
-					{txSummaryNode}
-					<br />
-					▼ 
-					{rxSummaryNode}
+				<div class="cbi-tooltip-container" style="text-align:left;font-size:80%;line-height:1.4">
+					<div style="white-space:nowrap">▲ {txSummaryNode}</div>
+					<div style="white-space:nowrap">▼ {rxSummaryNode}</div>
 					<span class="cbi-tooltip">
 						<span>
 							<span class="nowrap">
-								<strong>{_("Received bytes")}: </strong>
+								<strong>{tr("Received bytes")}: </strong>
 								{rxBytesNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Received packets")}: </strong>
+								<strong>{tr("Received packets")}: </strong>
 								{rxPacketsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Received multicast")}: </strong>
+								<strong>{tr("Received multicast")}: </strong>
 								{rxMulticastNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Receive errors")}: </strong>
+								<strong>{tr("Receive errors")}: </strong>
 								{rxErrorsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Receive dropped")}: </strong>
+								<strong>{tr("Receive dropped")}: </strong>
 								{rxDroppedNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Transmitted bytes")}: </strong>
+								<strong>{tr("Transmitted bytes")}: </strong>
 								{txBytesNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Transmitted packets")}: </strong>
+								<strong>{tr("Transmitted packets")}: </strong>
 								{txPacketsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Transmit errors")}: </strong>
+								<strong>{tr("Transmit errors")}: </strong>
 								{txErrorsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{_("Transmit dropped")}: </strong>
+								<strong>{tr("Transmit dropped")}: </strong>
 								{txDroppedNode}
 							</span>
 						</span>
@@ -207,6 +411,33 @@ function createPortCard(number: number): PortCard {
 			</div>
 		</div>
 	);
+
+	element.addEventListener("mouseenter", () => {
+		const currentOnuId = element.getAttribute("data-active-onu-id");
+		if (currentOnuId) {
+			const targetRow = document.querySelector(`[data-fttr-onu-id="${currentOnuId}"]`);
+			targetRow?.classList.add("fttr-row-highlight");
+		}
+	});
+
+	element.addEventListener("mouseleave", () => {
+		document.querySelectorAll(".fttr-row-highlight").forEach((el) => {
+			el.classList.remove("fttr-row-highlight");
+		});
+	});
+
+	element.addEventListener("click", () => {
+		const currentOnuId = element.getAttribute("data-active-onu-id");
+		if (currentOnuId) {
+			const targetRow = document.querySelector(`[data-fttr-onu-id="${currentOnuId}"]`);
+			if (targetRow) {
+				targetRow.scrollIntoView({ behavior: "smooth", block: "nearest" });
+				targetRow.classList.add("fttr-row-highlight");
+				window.setTimeout(() => targetRow.classList.remove("fttr-row-highlight"), 1500);
+			}
+		}
+	});
+
 	return {
 		element,
 		update(status, devices) {
@@ -220,30 +451,45 @@ function createPortCard(number: number): PortCard {
 			const rxBytes = stats?.rx_bytes;
 			const txBytes = stats?.tx_bytes;
 
+			if (port?.onu_id !== undefined) {
+				element.setAttribute("data-active-onu-id", String(port.onu_id));
+			} else {
+				element.removeAttribute("data-active-onu-id");
+			}
+
+			if (connected) {
+				element.classList.add("port-up");
+				element.classList.remove("port-down");
+			} else {
+				element.classList.add("port-down");
+				element.classList.remove("port-up");
+			}
+
 			ifnameNode.textContent = ifname;
 			iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
 			speedNode.textContent = connected
 				? device?.link?.speed !== undefined
 					? formatLinkSpeed(device.link.speed)
-					: _("Connected")
+					: tr("Connected")
 				: carrier === false
-					? _("Disconnected")
-					: _("Unknown");
+					? tr("Disconnected")
+					: tr("Unknown");
 			speedNode.setAttribute(
 				"title",
 				_("速度：%s Mbit/s，双工：%s").format(text(device?.link?.speed), text(device?.link?.duplex)),
 			);
 			linkBarNode.style.opacity = connected ? "1" : "0.25";
-			linkBarNode.style.backgroundColor = connected ? "rgb(144, 240, 144)" : "rgb(240, 144, 144)";
+			linkBarNode.style.backgroundColor = connected ? "rgb(46, 204, 113)" : "rgba(200, 200, 200, 0.4)";
 			portStateNode.textContent = text(
 				port?.link_state ??
 					port?.status ??
-					(device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable")),
+					(device ? (carrier ? tr("Link up") : tr("Link down")) : tr("Unavailable")),
 			);
 			onuNode.textContent = text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id);
 			macNode.textContent = text(device?.mac);
-			txSummaryNode.textContent = formatBytes(txBytes);
-			rxSummaryNode.textContent = formatBytes(rxBytes);
+
+			txSummaryNode.textContent = !connected && !txBytes ? "—" : formatBytes(txBytes);
+			rxSummaryNode.textContent = !connected && !rxBytes ? "—" : formatBytes(rxBytes);
 			rxBytesNode.textContent = formatBytes(rxBytes);
 			rxPacketsNode.textContent = formatPackets(stats?.rx_packets);
 			rxMulticastNode.textContent = formatPackets(stats?.rx_multicast ?? stats?.multicast);
@@ -262,21 +508,133 @@ interface OnuRow {
 	update(onu: SubGateway): void;
 }
 
+const REGISTRATION_STATE_LABELS: Record<string, string> = {
+	O1Initial: _("O1 Initial"),
+	O2Standby: _("O2 Standby"),
+	O3Serial_Number: _("O3 Serial Number"),
+	O4Ranging: _("O4 Ranging"),
+	O5Operation: _("O5 (Operation)"),
+	O6POPUP: _("O6 POPUP"),
+	O7Emergency_Stop: _("O7 Emergency Stop"),
+};
+
+const CWMP_STATE_LABELS: Record<string, string> = {
+	online: _("Online"),
+	waiting_inform: _("Waiting Inform"),
+	offline_or_stale: _("Offline or stale"),
+};
+
+const PROVISIONING_STATE_LABELS: Record<string, string> = {
+	waiting: _("Waiting"),
+	wan_reconciling: _("WAN reconciling"),
+	wan_verifying: _("WAN verifying"),
+	wifi_reconciling: _("Wi-Fi reconciling"),
+	discovering: _("Discovering"),
+	reading: _("Reading"),
+	disabling: _("Disabling"),
+	disabling_read: _("Disabling read"),
+	writing: _("Writing"),
+	verifying: _("Verifying"),
+	settling: _("Settling"),
+	completed: _("Completed"),
+	interrupted: _("Interrupted"),
+	failed: _("Failed"),
+	error: _("Error"),
+	blocked: _("Blocked"),
+	not_started: _("Not started"),
+};
+
+const WIFI_SYNC_STATE_LABELS: Record<string, string> = {
+	not_configured: _("Not configured"),
+	stale_revision: _("Stale revision"),
+	stale_management: _("Stale management"),
+	verified: _("Verified"),
+	attention_required: _("Attention required"),
+	accepted_unverified: _("Unverified"),
+	pending: _("Pending"),
+};
+
+function renderCwmpBadge(node: HTMLElement, state: string | undefined): void {
+	if (!state) {
+		updateBadge(node, "none", "—");
+	} else if (state === "online") {
+		updateBadge(node, "success", tr(CWMP_STATE_LABELS.online));
+	} else if (state === "waiting_inform") {
+		updateBadge(node, "warning", tr(CWMP_STATE_LABELS.waiting_inform));
+	} else if (state === "offline_or_stale") {
+		updateBadge(node, "danger", tr(CWMP_STATE_LABELS.offline_or_stale));
+	} else {
+		updateBadge(node, "neutral", text(state));
+	}
+}
+
+function renderProvisioningBadge(node: HTMLElement, state: string | undefined, title?: string): void {
+	if (!state || state === "not_started") {
+		updateBadge(node, "neutral", tr(PROVISIONING_STATE_LABELS.not_started), title);
+	} else if (state === "completed" || state === "verified") {
+		updateBadge(
+			node,
+			"success",
+			state === "completed" ? tr(PROVISIONING_STATE_LABELS.completed) : tr("Ready"),
+			title,
+		);
+	} else if (
+		state === "wan_reconciling" ||
+		state === "wan_verifying" ||
+		state === "wifi_reconciling" ||
+		state === "discovering" ||
+		state === "reading" ||
+		state === "disabling" ||
+		state === "disabling_read" ||
+		state === "writing" ||
+		state === "verifying" ||
+		state === "settling"
+	) {
+		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? state;
+		updateBadge(node, "info", tr(rawLabel), title);
+	} else if (state === "interrupted" || state === "failed" || state === "error" || state === "blocked") {
+		const rawLabel =
+			state === "blocked" ? PROVISIONING_STATE_LABELS.blocked : PROVISIONING_STATE_LABELS.interrupted;
+		updateBadge(node, "danger", tr(rawLabel), title);
+	} else if (state === "waiting" || state === "pending") {
+		updateBadge(node, "warning", tr(PROVISIONING_STATE_LABELS.waiting), title);
+	} else {
+		updateBadge(node, "neutral", text(state), title);
+	}
+}
+
+function renderWifiSyncBadge(node: HTMLElement, state: string | undefined): void {
+	if (!state || state === "not_configured") {
+		updateBadge(node, "neutral", tr(WIFI_SYNC_STATE_LABELS.not_configured));
+	} else if (state === "verified") {
+		updateBadge(node, "success", tr(WIFI_SYNC_STATE_LABELS.verified));
+	} else if (state === "attention_required") {
+		updateBadge(node, "danger", tr(WIFI_SYNC_STATE_LABELS.attention_required));
+	} else if (state === "stale_revision" || state === "stale_management") {
+		updateBadge(node, "warning", tr(WIFI_SYNC_STATE_LABELS[state]));
+	} else if (state === "accepted_unverified" || state === "pending") {
+		updateBadge(node, "warning", tr(WIFI_SYNC_STATE_LABELS[state]));
+	} else {
+		updateBadge(node, "neutral", text(state));
+	}
+}
+
 function createOnuRow(onu: SubGateway): OnuRow {
 	let current = onu;
 	const onuIdNode = <span />;
 	const vendorNode = <span />;
 	const modelNode = <span />;
-	const serialNode = <span />;
-	const registrationNode = <span />;
-	const businessNode = <span />;
-	const firmwareNode = <span />;
-	const dataInterfaceNode = <span />;
-	const cwmpNode = <span />;
-	const provisioningNode = <span />;
-	const wifiSyncNode = <span />;
+	const serialNode = <code style="font-size:90%" />;
+	const registrationNode = <span class="fttr-badge" />;
+	const businessNode = <span class="fttr-badge" />;
+	const firmwareNode = <span style="font-size:90%" />;
+	const dataInterfaceNode = <code style="font-size:90%" />;
+	const cwmpNode = <span class="fttr-badge" />;
+	const provisioningNode = <span class="fttr-badge" />;
+	const wifiSyncNode = <span class="fttr-badge" />;
+
 	const element = (
-		<tr>
+		<tr data-fttr-onu-id={String(onu.onu_id)}>
 			<td>{onuIdNode}</td>
 			<td>{vendorNode}</td>
 			<td>{modelNode}</td>
@@ -288,37 +646,84 @@ function createOnuRow(onu: SubGateway): OnuRow {
 			<td>{cwmpNode}</td>
 			<td>{provisioningNode}</td>
 			<td>{wifiSyncNode}</td>
-			<td>
-				<button type="button" class="cbi-button cbi-button-action" onclick={() => showOnuDetails(current)}>
-					{_("Details")}
+			<td style="text-align:right">
+				<button type="button" class="cbi-button cbi-button-neutral" onclick={() => showOnuDetails(current)}>
+					{tr("Details")}
 				</button>
 			</td>
 		</tr>
 	);
+
+	element.addEventListener("mouseenter", () => {
+		const ifname = current.data_path?.interface;
+		if (ifname) {
+			const portMatch = ifname.match(/fttr(\d+)/);
+			if (portMatch) {
+				const portEl = document.querySelector(`[data-fttr-port="${portMatch[1]}"]`);
+				portEl?.classList.add("fttr-port-highlight");
+			}
+		}
+	});
+
+	element.addEventListener("mouseleave", () => {
+		document.querySelectorAll(".fttr-port-highlight").forEach((el) => {
+			el.classList.remove("fttr-port-highlight");
+		});
+	});
+
 	const row: OnuRow = {
 		element,
 		update(value) {
 			current = value;
+			element.setAttribute("data-fttr-onu-id", String(value.onu_id));
 			onuIdNode.textContent = String(value.onu_id);
 			vendorNode.textContent = text(value.vendor);
 			modelNode.textContent = text(value.identity?.equipment_id ?? value.model);
 			serialNode.textContent = text(value.serial_number);
-			registrationNode.textContent = text(value.state);
-			registrationNode.className = value.state === "O5Operation" ? "label success" : "label warning";
-			businessNode.textContent = text(value.business_status);
-			firmwareNode.textContent = text(value.identity?.software_images?.join(", ") ?? value.firmware_version);
+
+			if (value.state === "O5Operation") {
+				updateBadge(registrationNode, "success", tr(REGISTRATION_STATE_LABELS.O5Operation), value.state);
+			} else if (value.state) {
+				const rawLabel = REGISTRATION_STATE_LABELS[value.state] ?? value.state;
+				updateBadge(registrationNode, "warning", tr(rawLabel));
+			} else {
+				updateBadge(registrationNode, "none", "—");
+			}
+
+			const bStatus = value.business_status ?? "";
+			if (bStatus.startsWith("Verified")) {
+				updateBadge(businessNode, "success", tr("Verified"), bStatus);
+			} else if (bStatus.includes("pending")) {
+				updateBadge(businessNode, "warning", tr("WAN pending"), bStatus);
+			} else if (bStatus) {
+				updateBadge(businessNode, "neutral", bStatus);
+			} else {
+				updateBadge(businessNode, "none", "—");
+			}
+
+			const fw = formatFirmware(value.firmware_version || value.identity?.software_images?.join("; "));
+			firmwareNode.textContent = fw.display;
+			if (fw.full) {
+				firmwareNode.setAttribute("title", fw.full);
+			} else {
+				firmwareNode.removeAttribute("title");
+			}
+
 			dataInterfaceNode.textContent = text(value.data_path?.interface);
-			cwmpNode.textContent = text(value.management?.state);
-			provisioningNode.textContent = text(value.provisioning?.state);
-			provisioningNode.setAttribute(
-				"title",
+
+			renderCwmpBadge(cwmpNode, value.management?.state);
+
+			const provState = value.provisioning?.state;
+			const provTitle =
 				value.provisioning?.current_revision === false
-					? _("Previous configuration")
+					? tr("Previous configuration")
 					: value.provisioning?.management_fresh === false
-						? _("Management stale")
-						: "",
-			);
-			wifiSyncNode.textContent = text(value.wifi_sync);
+						? tr("Management stale")
+						: value.provisioning?.error;
+
+			renderProvisioningBadge(provisioningNode, provState, provTitle);
+
+			renderWifiSyncBadge(wifiSyncNode, value.wifi_sync);
 		},
 	};
 	row.update(onu);
@@ -335,7 +740,7 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu));
 	const emptyRow = (
 		<tr>
-			<td colSpan={12}>{_("No registered sub-gateways.")}</td>
+			<td colSpan={12}>{tr("No registered sub-gateways.")}</td>
 		</tr>
 	);
 	let showingEmpty = onus.length === 0;
@@ -345,18 +750,18 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 			<table class="table">
 				<thead>
 					<tr>
-						<th>{_("ONU ID")}</th>
-						<th>{_("Vendor")}</th>
-						<th>{_("Model")}</th>
-						<th>{_("Optical serial")}</th>
-						<th>{_("Registration")}</th>
-						<th>{_("Business")}</th>
-						<th>{_("Firmware")}</th>
-						<th>{_("Data interface")}</th>
-						<th>{_("CWMP")}</th>
-						<th>{_("Synchronization")}</th>
-						<th>{_("Wi-Fi sync")}</th>
-						<th>{_("Details")}</th>
+						<th>{tr("ONU ID")}</th>
+						<th>{tr("Vendor")}</th>
+						<th>{tr("Model")}</th>
+						<th>{tr("Optical serial")}</th>
+						<th>{tr("Registration")}</th>
+						<th>{tr("Business")}</th>
+						<th>{tr("Firmware")}</th>
+						<th>{tr("Data interface")}</th>
+						<th>{tr("CWMP")}</th>
+						<th>{tr("Synchronization")}</th>
+						<th>{tr("Wi-Fi sync")}</th>
+						<th style="text-align:right">{tr("Details")}</th>
 					</tr>
 				</thead>
 				{body}
@@ -409,62 +814,250 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 	const initialOptical = initialStatus.optical_transceiver ?? {};
 	const onuTable = createOnuTable(initialStatus.sub_gateways ?? []);
 	const ports = Array.from({ length: 16 }, (_port, index) => createPortCard(index + 1));
-	const provisioningNode = <p data-provisioning-summary="true" />;
-	const fpgaNode = <span>{text(initialStatus.fpga_status)}</span>;
+
+	const provisioningStatusNode = <span class="fttr-badge" />;
+	const provisioningModeNode = <span class="fttr-badge fttr-badge-info" />;
+	const provisioningRevNode = <code style="font-size:90%" />;
+	const provisioningErrorNode = <span class="fttr-badge fttr-badge-danger" style="margin-left:.5em" />;
+	const provisioningNode = (
+		<div
+			data-provisioning-summary="true"
+			style="display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%"
+		>
+			<span>
+				<strong style="margin-right:.4em">{tr("Provisioning")}:</strong>
+				{provisioningStatusNode}
+			</span>
+			<span>
+				<span style="color:#888;margin-right:.3em">{tr("Mode")}:</span>
+				{provisioningModeNode}
+			</span>
+			<span>
+				<span style="color:#888;margin-right:.3em">{tr("Revision")}:</span>
+				{provisioningRevNode}
+			</span>
+			{provisioningErrorNode}
+		</div>
+	);
+
+	const fpgaNode = <span class="fttr-badge" />;
 	const opticalNode = <span>{text(initialOptical.model)}</span>;
-	const cdrNode =
-		initialOptical.cdr_locked === undefined ? (
-			<span>—</span>
-		) : (
-			badge(initialOptical.cdr_locked, initialOptical.cdr_locked ? _("Locked") : _("Unlocked"))
-		);
+	const cdrNode = <span class="fttr-badge" />;
 
 	const element = (
-		<div class="cbi-map">
-			<h2>{_("FTTR overview")}</h2>
+		<div class="cbi-map fttr-overview">
+			<style>
+				{`
+				.fttr-overview {
+					--fttr-success-bg: rgba(46, 204, 113, 0.15);
+					--fttr-success-color: #27ae60;
+					--fttr-success-border: rgba(46, 204, 113, 0.35);
+
+					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
+					--fttr-warning-color: #d35400;
+					--fttr-warning-border: rgba(243, 156, 18, 0.35);
+
+					--fttr-danger-bg: rgba(231, 76, 60, 0.15);
+					--fttr-danger-color: #c0392b;
+					--fttr-danger-border: rgba(231, 76, 60, 0.35);
+
+					--fttr-info-bg: rgba(52, 152, 219, 0.15);
+					--fttr-info-color: #2980b9;
+					--fttr-info-border: rgba(52, 152, 219, 0.35);
+
+					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
+					--fttr-neutral-color: #7f8c8d;
+					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
+				}
+
+				@media (prefers-color-scheme: dark) {
+					.fttr-overview {
+						--fttr-success-color: #2ecc71;
+						--fttr-warning-color: #f39c12;
+						--fttr-danger-color: #e74c3c;
+						--fttr-info-color: #3498db;
+						--fttr-neutral-color: #bdc3c7;
+					}
+				}
+
+				[data-darkmode="true"] .fttr-overview,
+				[data-theme="dark"] .fttr-overview {
+					--fttr-success-color: #2ecc71;
+					--fttr-warning-color: #f39c12;
+					--fttr-danger-color: #e74c3c;
+					--fttr-info-color: #3498db;
+					--fttr-neutral-color: #bdc3c7;
+				}
+
+				.fttr-overview .fttr-badge {
+					display: inline-block;
+					padding: 0.18em 0.55em;
+					font-size: 85%;
+					font-weight: 600;
+					line-height: 1.25;
+					border-radius: 3px;
+					white-space: nowrap;
+					text-align: center;
+				}
+
+				.fttr-overview .fttr-badge-success {
+					background: var(--fttr-success-bg);
+					color: var(--fttr-success-color);
+					border: 1px solid var(--fttr-success-border);
+				}
+
+				.fttr-overview .fttr-badge-warning {
+					background: var(--fttr-warning-bg);
+					color: var(--fttr-warning-color);
+					border: 1px solid var(--fttr-warning-border);
+				}
+
+				.fttr-overview .fttr-badge-danger {
+					background: var(--fttr-danger-bg);
+					color: var(--fttr-danger-color);
+					border: 1px solid var(--fttr-danger-border);
+				}
+
+				.fttr-overview .fttr-badge-info {
+					background: var(--fttr-info-bg);
+					color: var(--fttr-info-color);
+					border: 1px solid var(--fttr-info-border);
+				}
+
+				.fttr-overview .fttr-badge-neutral {
+					background: var(--fttr-neutral-bg);
+					color: var(--fttr-neutral-color);
+					border: 1px solid var(--fttr-neutral-border);
+				}
+
+				.fttr-overview .fttr-ports-grid {
+					display: grid;
+					grid-template-columns: repeat(8, minmax(0, 1fr));
+					gap: 8px;
+					margin-bottom: 1em;
+				}
+
+				@media (max-width: 1200px) {
+					.fttr-overview .fttr-ports-grid {
+						grid-template-columns: repeat(4, minmax(0, 1fr));
+					}
+				}
+
+				@media (max-width: 600px) {
+					.fttr-overview .fttr-ports-grid {
+						grid-template-columns: repeat(2, minmax(0, 1fr));
+					}
+				}
+
+				.fttr-overview .fttr-port-card {
+					box-sizing: border-box;
+					width: 100%;
+					margin: 0;
+					cursor: pointer;
+					transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+				}
+
+				.fttr-overview .fttr-port-card.port-down {
+					opacity: 0.65;
+				}
+
+				.fttr-overview .fttr-port-card.port-down:hover {
+					opacity: 1 !important;
+				}
+
+				.fttr-overview .fttr-row-highlight {
+					background-color: rgba(52, 152, 219, 0.12) !important;
+					outline: 1px solid rgba(52, 152, 219, 0.4);
+				}
+
+				.fttr-overview .fttr-port-highlight {
+					box-shadow: 0 0 0 2px #3498db !important;
+					transform: translateY(-2px);
+				}
+
+				.fttr-overview table.table th {
+					white-space: nowrap;
+					padding: 0.5em 0.7em;
+				}
+
+				.fttr-overview table.table td {
+					white-space: nowrap;
+					padding: 0.5em 0.7em;
+					vertical-align: middle;
+				}
+				`}
+			</style>
+			<h2>{tr("FTTR overview")}</h2>
 			{provisioningNode}
 			<div class="cbi-section">
-				<h3>{_("Controller")}</h3>
+				<h3>{tr("Controller")}</h3>
 				<table class="table">
 					<tbody>
 						<tr>
-							<th>{_("FPGA")}</th>
-							<td>{fpgaNode}</td>
+							<th style="width:15%">{tr("FPGA status")}</th>
+							<td style="width:35%">{fpgaNode}</td>
+							<th style="width:15%">{tr("CDR lock")}</th>
+							<td style="width:35%">{cdrNode}</td>
 						</tr>
 						<tr>
-							<th>{_("Optical module")}</th>
-							<td>{opticalNode}</td>
-						</tr>
-						<tr>
-							<th>{_("CDR lock")}</th>
-							<td>{cdrNode}</td>
+							<th>{tr("Optical module")}</th>
+							<td colSpan={3}>{opticalNode}</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 			<div class="cbi-section">
-				<h3>{_("Sub-gateways")}</h3>
+				<h3>{tr("Sub-gateways")}</h3>
 				{onuTable.element}
 			</div>
 			<div class="cbi-section">
-				<h3>{_("Downstream ports")}</h3>
-				<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:1em;align-items:center;justify-items:center;text-align:center">
-					{ports.map((port) => port.element)}
-				</div>
+				<h3>{tr("Downstream ports")}</h3>
+				<div class="fttr-ports-grid">{ports.map((port) => port.element)}</div>
 			</div>
 		</div>
 	);
+
 	const update = (status: FttrStatus, devices: NetworkDevices) => {
 		const optical = status.optical_transceiver ?? {};
 		const provisioning = status.provisioning;
-		provisioningNode.textContent = provisioning
-			? `${_("Provisioning")}: ${provisioning.enabled ? _("Enabled") : _("Disabled")} / ${text(provisioning.mode)} / ${text(provisioning.revision)}${provisioning.error ? ` — ${provisioning.error}` : ""}`
-			: _("Provisioning status unavailable");
-		fpgaNode.textContent = text(status.fpga_status);
+
+		if (provisioning) {
+			updateBadge(
+				provisioningStatusNode,
+				provisioning.enabled ? "success" : "neutral",
+				provisioning.enabled ? tr("Enabled") : tr("Disabled"),
+			);
+			provisioningModeNode.textContent = text(provisioning.mode);
+			provisioningRevNode.textContent = text(provisioning.revision);
+			if (provisioning.error) {
+				provisioningErrorNode.textContent = provisioning.error;
+				provisioningErrorNode.style.display = "";
+			} else {
+				provisioningErrorNode.style.display = "none";
+			}
+			provisioningNode.style.display = "";
+		} else {
+			provisioningNode.textContent = tr("Provisioning status unavailable");
+		}
+
+		if (status.fpga_status === "ready") {
+			updateBadge(fpgaNode, "success", tr("Ready"));
+		} else if (status.fpga_status) {
+			updateBadge(fpgaNode, "neutral", text(status.fpga_status));
+		} else {
+			updateBadge(fpgaNode, "none", "—");
+		}
+
 		opticalNode.textContent = text(optical.model);
-		cdrNode.textContent = optical.cdr_locked === undefined ? "—" : optical.cdr_locked ? _("Locked") : _("Unlocked");
-		cdrNode.className =
-			optical.cdr_locked === undefined ? "" : optical.cdr_locked ? "label success" : "label warning";
+
+		if (optical.cdr_locked === undefined) {
+			updateBadge(cdrNode, "none", "—");
+		} else if (optical.cdr_locked) {
+			updateBadge(cdrNode, "success", tr("Locked"));
+		} else {
+			updateBadge(cdrNode, "warning", tr("Unlocked"));
+		}
+
 		onuTable.update(status.sub_gateways ?? []);
 		for (const port of ports) port.update(status, devices);
 	};
@@ -477,7 +1070,7 @@ let pageRoot: HTMLElement | null = null;
 let pageView: StatusView | null = null;
 let refreshing = false;
 
-export const main = (view as any).extend({
+export const main = (view as unknown as { extend(obj: unknown): unknown }).extend({
 	async load(): Promise<{ status: FttrStatus; devices: NetworkDevices }> {
 		const [status, deviceResult] = await Promise.all([
 			getStatus(),

@@ -1,0 +1,689 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-fttr\n"
+"POT-Creation-Date: 2026-10-16 23:32+0800\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: LuCI FTTR Team\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "ACS state file"
+msgstr "ACS 状态文件"
+
+msgid ""
+"All listed VLANs share one management bridge and DHCP pool. Retain an "
+"existing listed management VLAN; the first VLAN is the fallback."
+msgstr "所有列出的 VLAN 共享同一个管理网桥和 DHCP 地址池。请保留已列出的管理 VLAN；第一个 VLAN 将作为回退默认值。"
+
+msgid "Attention required"
+msgstr "需注意"
+
+msgid "Attribute"
+msgstr "属性"
+
+msgid "Automatic"
+msgstr "自动"
+
+msgid "Automatic (read-only capability discovery)"
+msgstr "自动（只读能力发现）"
+
+msgid "Automatic triggers"
+msgstr "自动触发机制"
+
+msgid "Band"
+msgstr "频段"
+
+msgid "Basic"
+msgstr "基础"
+
+msgid "Basic display only; raw records are preserved."
+msgstr "仅进行基础展示；原始记录已完整保留。"
+
+msgid "Basic information"
+msgstr "基本信息"
+
+msgid "Binding"
+msgstr "绑定"
+
+msgid "Blocked"
+msgstr "已阻塞"
+
+msgid "Business"
+msgstr "业务状态"
+
+msgid ""
+"By default, extra WLANs are disabled and retained. Deleting objects is "
+"destructive and should only be selected deliberately."
+msgstr "默认情况下，多余的 WLAN 仅被禁用并保留。删除对象属于破坏性操作，请谨慎选择。"
+
+msgid "Cached identity"
+msgstr "已缓存的设备标识"
+
+msgid "Cannot start MIB query"
+msgstr "无法启动 MIB 查询"
+
+msgid "Check"
+msgstr "检查"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid ""
+"Committed configuration has not been loaded. Check Configuration "
+"diagnostics; an active operation may have prevented reload."
+msgstr "已提交的配置尚未加载。请检查配置诊断；当前活动的后台操作可能阻止了重新加载。"
+
+msgid "Committed configuration is invalid: %s"
+msgstr "已提交的配置无效：%s"
+
+msgid "Completed"
+msgstr "已完成"
+
+msgid "Configuration"
+msgstr "配置"
+
+msgid "Configuration changed"
+msgstr "配置发生变更"
+
+msgid "Configuration diagnostics"
+msgstr "配置诊断"
+
+msgid "Conflicting values; inspect observations"
+msgstr "存在冲突数值；请检查观测记录"
+
+msgid "Connected"
+msgstr "已连接"
+
+msgid "Connected device"
+msgstr "已连接设备"
+
+msgid "Copied"
+msgstr "已复制"
+
+msgid "Copy JSON"
+msgstr "复制 JSON"
+
+msgid "Current registration"
+msgstr "当前注册状态"
+
+msgid "CWMP boot"
+msgstr "CWMP 启动状态"
+
+msgid "CWMP contract"
+msgstr "CWMP 契约"
+
+msgid "CWMP freshness (seconds)"
+msgstr "CWMP 新鲜度（秒）"
+
+msgid "CWMP interface references"
+msgstr "CWMP 接口引用"
+
+msgid "CWMP path"
+msgstr "CWMP 路径"
+
+msgid "Data interface"
+msgstr "数据接口"
+
+msgid "Decoded / partial / basic"
+msgstr "已解析 / 部分 / 基础"
+
+msgid "Definition"
+msgstr "定义"
+
+msgid "Delete entry"
+msgstr "删除条目"
+
+msgid "Delete the WLAN object"
+msgstr "删除该 WLAN 对象"
+
+msgid "Device"
+msgstr "设备"
+
+msgid "Device already configured."
+msgstr "设备已配置。"
+
+msgid "Device is offline; reopen details after registration."
+msgstr "设备处于离线状态；请在重新注册后打开详情。"
+
+msgid "Device online"
+msgstr "设备在线"
+
+msgid "Devices"
+msgstr "从网关设备"
+
+msgid "Devices & groups"
+msgstr "设备与分组"
+
+msgid "DHCP address count"
+msgstr "DHCP 地址数量"
+
+msgid "DHCP lease time"
+msgstr "DHCP 租期"
+
+msgid "DHCP start offset"
+msgstr "DHCP 起始偏移"
+
+msgid "Disable (keep the WLAN object)"
+msgstr "禁用（保留 WLAN 对象）"
+
+msgid ""
+"Disabled by default. Uses the global management VLAN, priority and ACS URL "
+"for this device only, subject to management application authorization. "
+"Disabling skips future OMCI management writes and retains existing ONU "
+"settings. ME readback does not prove WAN creation or successful Inform; K155 "
+"may clear its local ACS URL when enabled."
+msgstr ""
+"默认禁用。仅针对此设备使用全局管理 VLAN、优先级和 ACS URL，需经管理应用授权。禁用后将跳过后续 OMCI 管理写入并保留现有 ONU "
+"设置。ME 回读不能作为 WAN 创建或 Inform 成功的凭证；K155 启用时可能会清除其本地 ACS URL。"
+
+msgid "Disabling"
+msgstr "禁用中"
+
+msgid "Disabling read"
+msgstr "禁用校验中"
+
+msgid "Discovering"
+msgstr "发现中"
+
+msgid "Download JSON"
+msgstr "下载 JSON"
+
+msgid "Downloading MIB snapshot"
+msgstr "正在下载 MIB 快照"
+
+msgid "Duplicate VLAN IDs are not allowed."
+msgstr "不允许存在重复的 VLAN ID。"
+
+msgid "Enable ACS"
+msgstr "启用 ACS"
+
+msgid "Enable management DHCP"
+msgstr "启用管理 DHCP"
+
+msgid "Enable management network"
+msgstr "启用管理网络"
+
+msgid "Enable provisioning"
+msgstr "启用配置下发"
+
+msgid ""
+"Enter a complete LANDevice.1 interface reference, without trailing dot or "
+"comma."
+msgstr "请输入完整的 LANDevice.1 接口引用，末尾不要带有句点或逗号。"
+
+msgid "Enter a VLAN ID in 1–4094."
+msgstr "请输入 1–4094 之间的 VLAN ID。"
+
+msgid "Enter at least one VLAN ID in 1–4094."
+msgstr "请至少输入一个 1–4094 之间的 VLAN ID。"
+
+msgid "Entity"
+msgstr "实体"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "EtherType code"
+msgstr "以太网类型码 (EtherType)"
+
+msgid "Failed"
+msgstr "失败"
+
+msgid ""
+"For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
+"TR069 is reserved for OMCI."
+msgstr "对于自定义 VLAN，可选择 INTERNET、OTHER、IPTV 和 VOIP 的任意组合。TR069 保留给 OMCI 使用。"
+
+msgid "FTTR"
+msgstr "FTTR"
+
+msgid "FTTR configuration"
+msgstr "FTTR 配置"
+
+msgid "FTTR configuration check failed"
+msgstr "FTTR 配置检查失败"
+
+msgid "G.988 encoded field values"
+msgstr "G.988 编码字段值"
+
+msgid "General"
+msgstr "通用设置"
+
+msgid "Generated ACS URL"
+msgstr "生成的 ACS URL"
+
+msgid "Group"
+msgstr "分组"
+
+msgid "Groups"
+msgstr "分组管理"
+
+msgid "Hardware status"
+msgstr "硬件状态"
+
+msgid "Hardware version"
+msgstr "硬件版本"
+
+msgid "HL202 management"
+msgstr "HL202 管理"
+
+msgid "HTTP Basic password"
+msgstr "HTTP Basic 密码"
+
+msgid "HTTP Basic username"
+msgstr "HTTP Basic 用户名"
+
+msgid "Identity age"
+msgstr "标识留存时长"
+
+msgid "Identity read errors"
+msgstr "标识读取错误"
+
+msgid "Identity source"
+msgstr "标识来源"
+
+msgid "Incomplete MIB snapshot"
+msgstr "MIB 快照不完整"
+
+msgid ""
+"Independent of the optical adapter. Parameter paths, types and writable "
+"evidence are discovered before synchronization. Unverified candidates do not "
+"authorize writes."
+msgstr "独立于光纤适配器。参数路径、类型和可写凭据会在同步前完成发现。未校验的候选对象不会被授权写入。"
+
+msgid "Inner filter (priority / VID / TPID-DEI)"
+msgstr "内层过滤（优先级 / VID / TPID-DEI）"
+
+msgid "Inner treatment (priority / VID / TPID-DEI)"
+msgstr "内层处理（优先级 / VID / TPID-DEI）"
+
+msgid "Interrupted"
+msgstr "已中断"
+
+msgid "Invalid job result"
+msgstr "无效的任务结果"
+
+msgid "Invalid MIB snapshot"
+msgstr "无效的 MIB 快照"
+
+msgid "Invalid MIB snapshot chunk"
+msgstr "无效的 MIB 快照数据分片"
+
+msgid "Invalid MIB snapshot size"
+msgstr "无效的 MIB 快照大小"
+
+msgid "Invalid response"
+msgstr "无效的响应"
+
+msgid ""
+"Job polling timed out; execution outcome is unknown. Do not automatically "
+"retry."
+msgstr "任务轮询超时，执行结果未知。请勿自动重试。"
+
+msgid "Job result exceeds the transport limit"
+msgstr "任务结果超出了传输大小限制"
+
+msgid "Keep current key"
+msgstr "保持当前密钥"
+
+msgid "LAN / WLAN port bindings"
+msgstr "LAN / WLAN 端口绑定"
+
+msgid "Leave unchanged"
+msgstr "保持不变"
+
+msgid "Listen port"
+msgstr "监听端口"
+
+msgid ""
+"Lists supported devices registered on the optical link, including devices "
+"that have not sent an ACS Inform. Devices already configured are omitted "
+"when adding a new device."
+msgstr "列出在光纤链路上注册的受支持设备，包括尚未发送 ACS Inform 的设备。添加新设备时会自动忽略已配置的设备。"
+
+msgid "Management application mode"
+msgstr "管理应用模式"
+
+msgid "Management IPv4 address/prefix"
+msgstr "管理 IPv4 地址/掩码前缀"
+
+msgid "Manual"
+msgstr "手动"
+
+msgid ""
+"Manual mode only discovers and plans. Use Apply management configuration on "
+"the Synchronization page to create or update the isolated network, ACS "
+"listener and child TR069 settings."
+msgstr "手动模式仅进行发现和规划。请在“同步”页面中使用“应用管理配置”来创建或更新隔离网络、ACS 监听服务和子设备 TR069 配置。"
+
+msgid ""
+"Manual mode only saves configuration; use Apply differences on the "
+"Synchronization page to send it to devices. Automatic mode synchronizes "
+"after Save & Apply when Configuration changed is selected."
+msgstr "手动模式仅保存配置；请在“同步”页面中点击“应用差异变更”以推送到设备。若选择了“配置发生变更”，自动模式会在“保存并应用”后自动执行同步。"
+
+msgid "MIB query timed out; retry."
+msgstr "MIB 查询超时；请重试。"
+
+msgid "Missing job identifier"
+msgstr "缺少任务标识符"
+
+msgid "Missing MIB report"
+msgstr "缺少 MIB 报告"
+
+msgid "Model"
+msgstr "型号"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Network"
+msgstr "网络"
+
+msgid "Networks"
+msgstr "网络配置"
+
+msgid "New device"
+msgstr "新设备"
+
+msgid "New network"
+msgstr "新建网络"
+
+msgid "New template"
+msgstr "新建模板"
+
+msgid "None"
+msgstr "无"
+
+msgid "Not collected"
+msgstr "未采集"
+
+msgid "Not configured"
+msgstr "未配置"
+
+msgid "Not started"
+msgstr "未开始"
+
+msgid "O1 Initial"
+msgstr "O1 初始"
+
+msgid "O2 Standby"
+msgstr "O2 待机"
+
+msgid "O3 Serial Number"
+msgstr "O3 序列号"
+
+msgid "O4 Ranging"
+msgstr "O4 测距"
+
+msgid "O5 (Operation)"
+msgstr "O5 运行"
+
+msgid "O6 POPUP"
+msgstr "O6 弹出"
+
+msgid "O7 Emergency Stop"
+msgstr "O7 紧急停止"
+
+msgid "Offline"
+msgstr "离线"
+
+msgid "Offline or stale"
+msgstr "离线或过期"
+
+msgid "OMCC version"
+msgstr "OMCC 版本"
+
+msgid "Online"
+msgstr "在线"
+
+msgid "ONU ID"
+msgstr "ONU ID"
+
+msgid "Open Synchronization"
+msgstr "打开同步页面"
+
+msgid "Optical serial"
+msgstr "光纤 SN"
+
+msgid "Outer filter (priority / VID / TPID-DEI)"
+msgstr "外层过滤（优先级 / VID / TPID-DEI）"
+
+msgid "Outer treatment (priority / VID / TPID-DEI)"
+msgstr "外层处理（优先级 / VID / TPID-DEI）"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Password must be 8–63 bytes."
+msgstr "密码长度必须为 8–63 字节。"
+
+msgid "Pending"
+msgstr "等待中"
+
+msgid "Periodic"
+msgstr "周期性触发"
+
+msgid "Periodic synchronization interval (seconds)"
+msgstr "周期性同步间隔（秒）"
+
+msgid "Port bindings"
+msgstr "端口绑定"
+
+msgid "Ports"
+msgstr "端口"
+
+msgid "Previous snapshot retained"
+msgstr "保留的历史快照"
+
+msgid "Priority"
+msgstr "优先级"
+
+msgid "Provision management VLAN and ACS via OMCI"
+msgstr "通过 OMCI 下发管理 VLAN 与 ACS 配置"
+
+msgid "Raw data / observations"
+msgstr "原始数据 / 观测记录"
+
+msgid "Raw JSON"
+msgstr "原始 JSON"
+
+msgid "Read MIB"
+msgstr "读取 MIB"
+
+msgid "Read MIB and VLAN tables"
+msgstr "读取 MIB 与 VLAN 表"
+
+msgid "Read MIB on demand. Results are a snapshot, not live polling."
+msgstr "按需读取 MIB。结果为瞬时快照，非实时长轮询。"
+
+msgid "Reading"
+msgstr "读取中"
+
+msgid "Reading MIB…"
+msgstr "正在读取 MIB…"
+
+msgid "Records / diagnostics"
+msgstr "记录 / 诊断信息"
+
+msgid "Registration"
+msgstr "注册状态"
+
+msgid "Registration freshness unavailable"
+msgstr "注册新鲜度不可用"
+
+msgid "Reload"
+msgstr "重新加载"
+
+msgid "Remove tags"
+msgstr "剥离 VLAN 标签"
+
+msgid "Request failed"
+msgstr "请求失败"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid ""
+"Result polling stopped after leaving the page. The backend job is not "
+"cancelled."
+msgstr "离开页面后结果轮询已停止。后台任务未被取消。"
+
+msgid "rows"
+msgstr "行"
+
+msgid ""
+"Saving configuration does not synchronize devices in Manual mode. After Save "
+"& Apply, open Synchronization and choose Apply differences. Preview "
+"differences is read-only."
+msgstr "在手动模式下保存配置不会同步至设备。在“保存并应用”后，请打开“同步”页面并选择“应用差异变更”。“预览差异变更”为只读操作。"
+
+msgid "Search ME name or Class ID"
+msgstr "搜索 ME 名称或 Class ID"
+
+msgid "Security"
+msgstr "安全加密"
+
+msgid "Select and copy the JSON manually."
+msgstr "请手动选中并复制 JSON 内容。"
+
+msgid "Select device."
+msgstr "请选择设备。"
+
+msgid "Settling"
+msgstr "稳定中"
+
+msgid "Software images"
+msgstr "固件镜像列表"
+
+msgid "SSID"
+msgstr "SSID"
+
+msgid "SSID must be 1–32 bytes."
+msgstr "SSID 长度必须为 1–32 字节。"
+
+msgid "SSIDs"
+msgstr "SSID 列表"
+
+msgid "Stale management"
+msgstr "管理过期"
+
+msgid "Stale revision"
+msgstr "版本过期"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Status refresh failed: %s"
+msgstr "状态刷新失败：%s"
+
+msgid "Synchronization"
+msgstr "配置同步"
+
+msgid "Synchronization mode"
+msgstr "同步模式"
+
+msgid "Tables requested / collected"
+msgstr "已请求表 / 已采集表"
+
+msgid "Template"
+msgstr "模板"
+
+msgid "Template is in use."
+msgstr "模板正在使用中。"
+
+msgid "Templates"
+msgstr "模板配置"
+
+msgid ""
+"The local ACS binds to this address. The child ACS URL is generated from "
+"this address, the ACS port and CWMP path."
+msgstr "本地 ACS 监听此地址。子设备的 ACS URL 将根据该地址、ACS 端口和 CWMP 路径自动生成。"
+
+msgid "The path must start with '/'."
+msgstr "路径必须以 '/' 开头。"
+
+msgid "The state file path must be absolute."
+msgstr "状态文件路径必须为绝对路径。"
+
+msgid "Too many result chunks"
+msgstr "结果分片过多"
+
+msgid "TR069 VLANs"
+msgstr "TR069 VLAN 列表"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Unconfigured WLANs"
+msgstr "未配置的 WLAN"
+
+msgid "Unexpected MIB response"
+msgstr "异常的 MIB 响应"
+
+msgid "Unknown class"
+msgstr "未知类型 (Class)"
+
+msgid "Unknown model"
+msgstr "未知型号"
+
+msgid "Unverified"
+msgstr "下发未校验"
+
+msgid "Unverified candidate"
+msgstr "未校验的候选对象"
+
+msgid "Upload complete"
+msgstr "上传完成"
+
+msgid "Upload diagnostics"
+msgstr "上传诊断信息"
+
+msgid "Use 0 to disable, or 30–86400 seconds."
+msgstr "设为 0 表示禁用，或输入 30–86400 秒。"
+
+msgid "Value"
+msgstr "数值"
+
+msgid "Vendor"
+msgstr "供应商"
+
+msgid "Verified"
+msgstr "已校验"
+
+msgid "Verifying"
+msgstr "校验中"
+
+msgid "VLAN"
+msgstr "VLAN"
+
+msgid "Waiting"
+msgstr "等待中"
+
+msgid "Waiting Inform"
+msgstr "等待 Inform"
+
+msgid "WAN reconciling"
+msgstr "WAN 调谐中"
+
+msgid "WAN service"
+msgstr "WAN 业务"
+
+msgid "WAN Service List (multi-select)"
+msgstr "WAN 业务列表（多选）"
+
+msgid "WAN verifying"
+msgstr "WAN 校验中"
+
+msgid "Wi-Fi reconciling"
+msgstr "Wi-Fi 调谐中"
+
+msgid "Writing"
+msgstr "写入中"
+
+msgid "速度：%s Mbit/s，双工：%s"
+msgstr "速度：%s Mbit/s，双工：%s"

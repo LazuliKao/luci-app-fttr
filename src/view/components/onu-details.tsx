@@ -377,7 +377,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		</p>
 	);
 	const body = (
-		<div style="width:min(1100px,85vw);max-height:75vh;overflow:auto">
+		<>
 			{navigation}
 			{basic}
 			{mib}
@@ -395,9 +395,10 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					{_("Close")}
 				</button>
 			</div>
-		</div>
+		</>
 	);
-	const active = (): boolean => !closed && body.isConnected && body.getClientRects().length > 0;
+	// The body is a Fragment; track a persistent element after its children are mounted.
+	const active = (): boolean => !closed && navigation.isConnected && navigation.getClientRects().length > 0;
 	async function run(withTables: boolean): Promise<void> {
 		if (busy) return;
 		busy = true;
