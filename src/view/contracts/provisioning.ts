@@ -1,0 +1,257 @@
+import * as z from "zod/mini";
+
+const str = z.string();
+const num = z.number();
+const bool = z.boolean();
+const optString = z.optional(str);
+const optNumber = z.optional(num);
+const optBool = z.optional(bool);
+export const operationPhase = z.enum([
+	"waiting",
+	"wan_reconciling",
+	"wan_verifying",
+	"wifi_reconciling",
+	"discovering",
+	"reading",
+	"disabling",
+	"disabling_read",
+	"writing",
+	"verifying",
+	"settling",
+	"completed",
+	"not_started",
+	"reset_pending",
+	"interrupted",
+]);
+export const wifiSync = z.enum([
+	"not_configured",
+	"stale_revision",
+	"stale_management",
+	"verified",
+	"attention_required",
+	"accepted_unverified",
+	"pending",
+]);
+export const syncItem = z.object({
+	id: str,
+	name: z.optional(z.nullable(str)),
+	kind: z.enum(["device_service", "ssid", "port_binding", "wan_activation"]),
+	service_type: str,
+	state: str,
+	reason: optString,
+	revision: optString,
+	current_revision: optBool,
+	management_fresh: optBool,
+	operation_id: optNumber,
+	task_id: z.optional(z.nullable(num)),
+	updated_at: optNumber,
+	changes: z.optional(z.array(z.object({ name: str, desired: str }))),
+});
+const lifecycle = z.object({
+	state: str,
+	reason: optString,
+	task_id: z.optional(z.nullable(num)),
+	instance: optNumber,
+});
+export const management = z.object({
+	cwmp_id: str,
+	state: z.enum(["online", "waiting_inform", "offline_or_stale"]),
+	optical_online: bool,
+	last_inform: z.nullable(num),
+	age_seconds: z.nullable(num),
+});
+const bootstrapSnapshot = z.object({
+	state: z.enum([
+		"waiting_transport",
+		"waiting_identity",
+		"reading",
+		"configuring",
+		"verifying",
+		"waiting_inform",
+		"ready",
+		"retry_wait",
+		"manual_required",
+		"not_configured",
+		"waiting_acs",
+		"awaiting_apply",
+		"discovering_management_wan",
+		"configuring_management_wan",
+		"verifying_management_wan",
+	]),
+	method: optString,
+	reason: optString,
+	mqtt_target: z.nullable(str),
+	binding_source: optString,
+	link_identity_error: z.nullable(str),
+	mqtt_last_seen: z.nullable(num),
+	cwmp_id: optString,
+	desired_version: optString,
+	generation: optNumber,
+	inflight: optBool,
+	attempts: optNumber,
+	next_retry_at: optNumber,
+	updated_at: optNumber,
+	settings_verified_at: z.nullable(num),
+	last_inform: z.nullable(num),
+	last_error: z.optional(z.nullable(str)),
+	persistence_error: z.optional(z.nullable(str)),
+	desired: z.optional(z.nullable(z.object({ vlan: num, vlans: z.array(num), priority: num, acs_url: str }))),
+	listener: z.optional(z.object({ enabled: bool, listen: str, path: str, error: z.nullable(str) })),
+	endpoint_notice: optString,
+	manual_steps: z.optional(z.array(str)),
+});
+export const acsBootstrap = z.discriminatedUnion("state", [
+	bootstrapSnapshot,
+	z.extend(z.partial(bootstrapSnapshot), { state: z.enum(["pending", "unavailable"]), reason: str }),
+]);
+export const provisioning = z.object({
+	state: operationPhase,
+	operation_id: optNumber,
+	device: optString,
+	optical_sn: optString,
+	cwmp_id: optString,
+	revision: optString,
+	mode: z.optional(z.enum(["apply", "plan"])),
+	started_at: optNumber,
+	current_revision: optBool,
+	management_fresh: optBool,
+	reason: optString,
+	error: optString,
+	items: z.array(syncItem),
+	cwmp_contract: z.optional(
+		z.object({
+			state: str,
+			requested: str,
+			contract: z.nullable(str),
+			reason: str,
+			cache_hit: bool,
+			schema: str,
+			capabilities: z.nullable(z.object({ wan: str, wlan: str, binding: str })),
+		}),
+	),
+	wan_objects: z.optional(z.record(str, z.json())),
+	wan_lifecycle: z.optional(z.record(str, lifecycle)),
+	wan_stage: z.optional(
+		z.enum([
+			"waiting",
+			"inventory",
+			"classifying",
+			"adding_parent",
+			"child_names",
+			"adding_child",
+			"delete_guard",
+			"deleting",
+			"verify_delete",
+			"empty_parent",
+			"deleting_parent",
+			"verify_parent_delete",
+			"next",
+			"done",
+		]),
+	),
+	wifi_objects: z.optional(
+		z.object({ owned: z.array(num), pending: z.nullable(str), pending_instance: z.nullable(num) }),
+	),
+	wifi_lifecycle: z.optional(z.record(str, lifecycle)),
+	wifi_stage: z.optional(
+		z.enum([
+			"waiting",
+			"inventory",
+			"adding",
+			"verify_add",
+			"deleting",
+			"verify_delete",
+			"reading_disable",
+			"disabling",
+			"verifying_disable",
+			"next",
+			"done",
+		]),
+	),
+	wifi_cleanup: z.optional(z.enum(["disable", "preserve", "delete"])),
+});
+const networkConfig = z.object({
+	enabled: bool,
+	mode: z.enum(["auto", "manual"]),
+	vlan: z.array(num),
+	priority: num,
+	address: str,
+	acs_url: str,
+	port: num,
+	path: str,
+	dhcp_enabled: bool,
+});
+const network = z.object({
+	state: z.enum([
+		"discovering",
+		"comparing",
+		"planning",
+		"applying",
+		"verifying",
+		"configuring_listener",
+		"cleaning_previous",
+		"waiting_devices",
+		"ready",
+		"awaiting_apply",
+		"verified",
+		"blocked",
+		"retry_wait",
+	]),
+	error: z.nullable(str),
+	inflight: bool,
+	ready: bool,
+	desired_version: z.nullable(str),
+	applied_version: z.nullable(str),
+	next_retry_at: num,
+	attempts: num,
+	desired: z.nullable(networkConfig),
+	applied: z.nullable(networkConfig),
+	previous: z.nullable(networkConfig),
+	plan: z.array(z.object({ operation: str, key: str, value: z.array(str) })),
+});
+export const deviceSync = z.object({
+	device: str,
+	name: z.nullable(str),
+	group: z.nullable(str),
+	group_name: z.nullable(str),
+	template: z.nullable(str),
+	template_name: z.nullable(str),
+	optical_sn: str,
+	adapter: str,
+	omci_management: z.object({ state: str, reason: optString }),
+	management: z.nullable(management),
+	acs_bootstrap: acsBootstrap,
+	provisioning,
+	services: z.array(syncItem),
+	ssids: z.array(syncItem),
+	wifi_sync: wifiSync,
+});
+export const syncStatus = z.object({
+	enabled: bool,
+	mode: z.enum(["auto", "manual"]),
+	method: z.literal("diff"),
+	revision: str,
+	triggers: z.array(str),
+	interval: num,
+	error: z.nullable(str),
+	devices: z.array(deviceSync),
+	management_network: network,
+	omci_management: z.json(),
+	groups: z.array(z.object({ id: str, name: z.nullable(str), template: str })),
+	pending_devices: z.array(str),
+});
+export const configCheck = z.union([
+	z.object({ valid: z.literal(true), revision: str, devices: num, error: z.optional(z.never()) }),
+	z.object({
+		error: str,
+		valid: z.optional(z.never()),
+		revision: z.optional(z.never()),
+		devices: z.optional(z.never()),
+	}),
+]);
+export type SyncItem = z.infer<typeof syncItem>;
+export type AcsBootstrap = z.infer<typeof acsBootstrap>;
+export type DeviceSync = z.infer<typeof deviceSync>;
+export type SyncStatus = z.infer<typeof syncStatus>;
+export type ConfigCheck = z.infer<typeof configCheck>;
+export type Lifecycle = z.infer<typeof lifecycle>;
