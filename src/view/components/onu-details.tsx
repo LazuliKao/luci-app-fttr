@@ -1,107 +1,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
-export interface OnuDetails {
-	onu_id: number;
-	serial_number: string;
-	model: string;
-	vendor: string;
-	state: string;
-	business_status?: string;
-	firmware_version?: string;
-	hardware_version?: string;
-	identity_age_seconds?: number;
-	identity_current?: boolean;
-	identity?: {
-		equipment_id?: string;
-		hardware_version?: string;
-		software_images?: string[];
-		omcc_version?: number;
-		errors?: string[];
-	};
-	data_path?: { interface?: string };
-}
+import { getStatus } from "../contracts/api";
+import { assertNever, checked } from "../contracts/common";
+import { type Definition, getMib, type MibReport, mibSnapshot, startMib, type Value } from "../contracts/mib";
+import { businessText, eqdText, type SubGateway as OnuDetails } from "../contracts/status";
 
-interface Definition {
-	name: string;
-	kind: string;
-	index: number;
-	reference?: { id: string; url: string };
-}
-interface Value {
-	type: string;
-	value?: string | number | null;
-	hex?: string;
-	bytes?: number;
-}
-interface Entity {
-	class_id: number;
-	entity_id: number;
-	name: string | null;
-	support: string;
-	sequences: number[];
-	attributes: Array<{
-		definition: Definition;
-		value: Value | null;
-		observations: Array<{ raw_hex: string; value: Value; sequences: number[] }>;
-	}>;
-	diagnostics: unknown[];
-}
-interface MibReport {
-	schema_version: number;
-	onu_id: number;
-	uploaded_complete: boolean;
-	expected_records: number;
-	received_records: number;
-	decoded_records: number;
-	partial_records: number;
-	basic_records: number;
-	tables_requested: boolean;
-	tables_collected: boolean;
-	classes: Array<{ class_id: number; name: string | null; entities: number; support: string }>;
-	entities: Entity[];
-	records: Array<{ class_id: number; entity_id: number; sequence: number; attribute_mask: number; raw_hex: string }>;
-	tables: Array<{
-		class_id: number;
-		entity_id: number;
-		attribute: Definition;
-		collected: boolean;
-		error: string | null;
-		rows: string[];
-		vlan_rules: Array<Record<string, string | number | boolean>>;
-	}>;
-	diagnostics: unknown[];
-}
-interface JobReply {
-	error?: string;
-	job?: string;
-	status?: string;
-	report?: MibReport;
-	chunk?: number;
-	chunks?: number;
-	bytes?: number;
-	data?: string;
-}
-const getStatus = L.rpc.declare<{ sub_gateways?: OnuDetails[] }>({
-	object: "luci.fttr",
-	method: "get_status",
-	reject: true,
-});
-const startMib = L.rpc.declare<JobReply, [number, string, boolean]>({
-	object: "luci.fttr",
-	method: "mib_start",
-	params: ["onu_id", "optical_sn", "tables"],
-	reject: true,
-});
-const getMib = L.rpc.declare<JobReply, [string, number]>({
-	object: "luci.fttr",
-	method: "mib_result",
-	params: ["job", "chunk"],
-	reject: true,
-});
 const text = (v: unknown): string => (v == null || v === "" ? "—" : String(v));
 const json = (v: unknown): string => JSON.stringify(v, null, 2);
-const valueText = (v: Value | null): string =>
-	v === null ? _("Conflicting values; inspect observations") : text(v.value ?? v.hex ?? v.bytes);
+function valueText(value: Value | null): string {
+	if (value === null) return _("Conflicting values; inspect observations");
+	switch (value.type) {
+		case "unsigned":
+		case "signed":
+		case "decimal":
+		case "text":
+			return text(value.value);
+		case "octets":
+			return text(value.hex);
+		case "table_length":
+			return text(value.bytes);
+		default:
+			return assertNever(value);
+	}
+}
 
 function reference(definition: Definition): HTMLElement {
 	const ref = definition.reference;
@@ -264,8 +185,18 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					[_("Optical serial"), initial.serial_number],
 					[_("ONU ID"), initial.onu_id],
 					[_("Registration"), initial.state],
-					[_("Business"), initial.business_status],
+					[_("Business"), businessText(initial.business_status)],
 					[_("Data interface"), initial.data_path?.interface],
+					[
+						_("Receive optical power"),
+						initial.optical_rx_power_dbm == null ? null : `${initial.optical_rx_power_dbm.toFixed(3)} dBm`,
+					],
+					[
+						_("Transmit optical power"),
+						initial.optical_tx_power_dbm == null ? null : `${initial.optical_tx_power_dbm.toFixed(3)} dBm`,
+					],
+					[_("Uptime"), initial.uptime_seconds == null ? null : `${Math.floor(initial.uptime_seconds)} s`],
+					[_("Equalization delay (EQD)"), eqdText(initial.equalization_delay_bits)],
 					[_("Hardware version"), initial.identity?.hardware_version ?? initial.hardware_version],
 					[_("Software images"), initial.identity?.software_images?.join(", ") ?? initial.firmware_version],
 					[
@@ -356,7 +287,10 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 	const panels: Record<string, HTMLElement> = { basic, mib, raw: rawPanel };
 	const buttons = new Map<string, HTMLButtonElement>();
 	function tab(name: string): void {
-		for (const [key, panel] of Object.entries(panels)) panel.hidden = key !== name;
+		for (const [key, panel] of Object.entries(panels)) {
+			if (key === name) panel.style.removeProperty("display");
+			else panel.style.setProperty("display", "none", "important");
+		}
 		for (const [key, button] of buttons) button.disabled = key === name;
 	}
 	const navigation = (
@@ -407,16 +341,14 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		try {
 			const status = await getStatus();
 			const current = status.sub_gateways?.find((o) => o.serial_number === initial.serial_number);
-			if (current?.state !== "O5Operation")
+			if (current?.state !== "o5_operation")
 				throw new Error(_("Device is offline; reopen details after registration."));
 			if (!active()) return;
 			const started = await startMib(current.onu_id, current.serial_number, withTables);
-			if (started.error || !started.job) throw new Error(started.error ?? _("Cannot start MIB query"));
 			const deadline = Date.now() + 140000;
 			while (active()) {
 				const result = await getMib(started.job, 0);
 				if (!active()) return;
-				if (result.error) throw new Error(result.error);
 				if (result.status === "ready") {
 					if (
 						!result.chunks ||
@@ -432,8 +364,8 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					for (let chunk = 0; chunk < result.chunks; chunk++) {
 						const part = chunk === 0 ? result : await getMib(started.job, chunk);
 						if (!active()) return;
-						if (part.error) throw new Error(part.error);
 						if (
+							part.status !== "ready" ||
 							part.chunk !== chunk ||
 							part.chunks !== result.chunks ||
 							part.bytes !== result.bytes ||
@@ -441,14 +373,16 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 						)
 							throw new Error(_("Invalid MIB snapshot chunk"));
 						const decoded = atob(part.data);
-						if (offset + decoded.length > buffer.length) throw new Error(_("Invalid MIB snapshot size"));
+						if (decoded.length > 32768 || offset + decoded.length > buffer.length)
+							throw new Error(_("Invalid MIB snapshot size"));
 						for (let index = 0; index < decoded.length; index++)
 							buffer[offset++] = decoded.charCodeAt(index);
 						message.textContent = `${_("Downloading MIB snapshot")}: ${chunk + 1}/${result.chunks}`;
 					}
 					if (offset !== buffer.length) throw new Error(_("Incomplete MIB snapshot"));
-					const snapshot = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer)) as JobReply;
-					if (snapshot.error || !snapshot.report) throw new Error(snapshot.error ?? _("Missing MIB report"));
+					const snapshot = mibSnapshot.parse(
+						checked(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer))),
+					);
 					report = snapshot.report;
 					if (report.schema_version !== 1 || report.onu_id !== current.onu_id)
 						throw new Error(_("Unexpected MIB response"));
@@ -465,7 +399,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					downloadUrl = URL.createObjectURL(new Blob([raw.value], { type: "application/json" }));
 					download.href = downloadUrl;
 					copy.disabled = false;
-					download.hidden = false;
+					download.style.display = "";
 					return;
 				}
 				if (Date.now() >= deadline) throw new Error(_("MIB query timed out; retry."));
@@ -480,7 +414,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		}
 	}
 	copy.disabled = true;
-	download.hidden = true;
+	download.style.display = "none";
 	tab(initialTab);
 	L.ui.showModal(`${initial.model} — ${initial.serial_number}`, body);
 }
