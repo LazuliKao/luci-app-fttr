@@ -25,9 +25,11 @@ registration() {
 		json_get_var id onu_id
 		json_get_var sn serial_number
 		json_get_var state state
-		json_get_var generation business_status
+		json_select business_status || return 1
+		json_get_var generation generation
 		json_select ..
-		if [ "$id" = "$1" ] && [ "$sn" = "$2" ] && [ "$state" = O5Operation ]; then
+		json_select ..
+		if [ "$id" = "$1" ] && [ "$sn" = "$2" ] && [ "$state" = o5_operation ]; then
 			printf '%s:%s\n' "$sn" "$generation"
 			return 0
 		fi
