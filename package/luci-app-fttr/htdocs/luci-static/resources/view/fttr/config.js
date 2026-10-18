@@ -456,6 +456,22 @@ function addTemplateWifi(section, template) {
             [
                 "wpa2-psk",
                 "WPA2-PSK"
+            ],
+            [
+                "wpa3-sae",
+                "WPA3-SAE"
+            ],
+            [
+                "wpa2-psk/wpa3-sae",
+                "WPA2-PSK / WPA3-SAE"
+            ],
+            [
+                "wpa-psk/wpa2-psk",
+                "WPA-PSK / WPA2-PSK"
+            ],
+            [
+                "none",
+                _("None (Open)")
             ]
         ], true);
         security.modalonly = true;
@@ -463,6 +479,9 @@ function addTemplateWifi(section, template) {
         key.password = true;
         key.modalonly = true;
         key.depends("security", "wpa2-psk");
+        key.depends("security", "wpa3-sae");
+        key.depends("security", "wpa2-psk/wpa3-sae");
+        key.depends("security", "wpa-psk/wpa2-psk");
         key.rmempty = false;
         key.validate = (_id, value)=>{
             const length = new TextEncoder().encode(value).length;
