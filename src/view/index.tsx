@@ -1,155 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { showOnuDetails } from "./components/onu-details";
+import { getNetworkDevices, getStatus } from "./contracts/api";
+import { businessText, type FttrStatus, type NetworkDevices, type SubGateway } from "./contracts/status";
 
 const view = L.view;
-const rpc = L.rpc;
 const poll = L.Poll;
-
-/** Optical & physical telemetry from Rust `OpticalTransceiverStatus` */
-interface OpticalTransceiverStatus {
-	model?: string;
-	wavelength_tx_nm?: number;
-	wavelength_rx_nm?: number;
-	phy_rate_downlink_gbps?: number;
-	phy_rate_uplink_gbps?: number;
-	tx_power_dbm?: number;
-	laser_bias_current_ma?: number;
-	temperature_celsius?: number;
-	vcc_voltage?: number;
-	cdr_locked?: boolean;
-}
-
-/** Downstream DSA switch port link telemetry from Rust `SwitchPortStatus` */
-interface SwitchPortStatus {
-	port: number;
-	interface: string;
-	carrier: boolean;
-	status: string;
-	onu_id?: number;
-	onu_sn?: string;
-	link_state: string;
-}
-
-/** Sub-gateway OMCI identity record from Rust `OnuIdentity` */
-interface OnuIdentity {
-	equipment_id?: string;
-	hardware_version?: string;
-	software_images: string[];
-	omcc_version?: number;
-	errors: string[];
-}
-
-/** CWMP management state reported by ACS controller */
-interface SubGatewayManagement {
-	cwmp_id?: string;
-	state?: "online" | "waiting_inform" | "offline_or_stale" | string;
-	optical_online?: boolean;
-	last_inform?: number;
-	age_seconds?: number;
-}
-
-/** Operation state reported by Desired-State Provisioning controller */
-interface SubGatewayProvisioning {
-	state?:
-		| "waiting"
-		| "wan_reconciling"
-		| "wan_verifying"
-		| "wifi_reconciling"
-		| "discovering"
-		| "reading"
-		| "disabling"
-		| "disabling_read"
-		| "writing"
-		| "verifying"
-		| "settling"
-		| "completed"
-		| "interrupted"
-		| "failed"
-		| "error"
-		| "blocked"
-		| "not_started"
-		| string;
-	revision?: string;
-	current_revision?: boolean;
-	management_fresh?: boolean;
-	operation_id?: number;
-	error?: string;
-}
-
-/** Comprehensive sub-gateway record from Rust `SubGatewayStatus` */
-interface SubGateway {
-	onu_id: number;
-	vendor: string;
-	model: string;
-	serial_number: string;
-	state: string;
-	business_status: string;
-	management?: SubGatewayManagement;
-	provisioning?: SubGatewayProvisioning;
-	wifi_sync:
-		| "not_configured"
-		| "stale_revision"
-		| "stale_management"
-		| "verified"
-		| "attention_required"
-		| "accepted_unverified"
-		| "pending"
-		| string;
-	identity?: OnuIdentity;
-	identity_age_seconds?: number;
-	identity_current?: boolean;
-	fiber_distance_m?: number;
-	ranging_delay_rtd_ns?: number;
-	optical_rx_power_dbm?: number;
-	optical_tx_power_dbm?: number;
-	firmware_version: string;
-	hardware_version: string;
-	uptime_seconds?: number;
-	data_path?: {
-		interface: string;
-		gem_ports?: number[];
-		vlan_id?: number;
-		tx_bytes?: number;
-		rx_bytes?: number;
-	};
-}
-
-/** Global system status from Rust `FttrSystemStatus` */
-interface FttrStatus {
-	fpga_status: string;
-	optical_transceiver: OpticalTransceiverStatus;
-	switch_ports: SwitchPortStatus[];
-	sub_gateways: SubGateway[];
-	provisioning?: {
-		enabled?: boolean;
-		mode?: string;
-		revision?: string;
-		error?: string;
-	};
-}
-
-interface NetworkDevice {
-	carrier?: boolean;
-	mac?: string;
-	link?: { speed?: number; duplex?: string; autoneg?: boolean };
-	stats?: Record<string, number>;
-}
-
-type NetworkDevices = Record<string, NetworkDevice>;
-
-const getStatus = rpc.declare<FttrStatus>({
-	object: "luci.fttr",
-	method: "get_status",
-	reject: true,
-});
-
-const getNetworkDevices = rpc.declare<NetworkDevices>({
-	object: "luci-rpc",
-	method: "getNetworkDevices",
-	expect: { "": {} },
-	reject: true,
-});
 
 const I18N_DICT: Record<string, string> = {
 	"FTTR overview": "FTTR 总览",
@@ -509,13 +365,13 @@ interface OnuRow {
 }
 
 const REGISTRATION_STATE_LABELS: Record<string, string> = {
-	O1Initial: _("O1 Initial"),
-	O2Standby: _("O2 Standby"),
-	O3Serial_Number: _("O3 Serial Number"),
-	O4Ranging: _("O4 Ranging"),
-	O5Operation: _("O5 (Operation)"),
-	O6POPUP: _("O6 POPUP"),
-	O7Emergency_Stop: _("O7 Emergency Stop"),
+	o1_initial: _("O1 Initial"),
+	o2_standby: _("O2 Standby"),
+	o3_serial_number: _("O3 Serial Number"),
+	o4_ranging: _("O4 Ranging"),
+	o5_operation: _("O5 (Operation)"),
+	o6_intermittent_lods: _("O6 Intermittent LODS"),
+	o7_emergency_stop: _("O7 Emergency Stop"),
 };
 
 const CWMP_STATE_LABELS: Record<string, string> = {
@@ -681,8 +537,8 @@ function createOnuRow(onu: SubGateway): OnuRow {
 			modelNode.textContent = text(value.identity?.equipment_id ?? value.model);
 			serialNode.textContent = text(value.serial_number);
 
-			if (value.state === "O5Operation") {
-				updateBadge(registrationNode, "success", tr(REGISTRATION_STATE_LABELS.O5Operation), value.state);
+			if (value.state === "o5_operation") {
+				updateBadge(registrationNode, "success", tr(REGISTRATION_STATE_LABELS.o5_operation), value.state);
 			} else if (value.state) {
 				const rawLabel = REGISTRATION_STATE_LABELS[value.state] ?? value.state;
 				updateBadge(registrationNode, "warning", tr(rawLabel));
@@ -690,16 +546,14 @@ function createOnuRow(onu: SubGateway): OnuRow {
 				updateBadge(registrationNode, "none", "—");
 			}
 
-			const bStatus = value.business_status ?? "";
-			if (bStatus.startsWith("Verified")) {
-				updateBadge(businessNode, "success", tr("Verified"), bStatus);
-			} else if (bStatus.includes("pending")) {
-				updateBadge(businessNode, "warning", tr("WAN pending"), bStatus);
-			} else if (bStatus) {
-				updateBadge(businessNode, "neutral", bStatus);
-			} else {
-				updateBadge(businessNode, "none", "—");
-			}
+			const bStatus = value.business_status;
+			const tone =
+				bStatus.phase === "verified"
+					? "success"
+					: bStatus.error || bStatus.phase === "wan_bootstrap_pending"
+						? "warning"
+						: "neutral";
+			updateBadge(businessNode, tone, businessText(bStatus));
 
 			const fw = formatFirmware(value.firmware_version || value.identity?.software_images?.join("; "));
 			firmwareNode.textContent = fw.display;
@@ -1018,7 +872,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 	);
 
 	const update = (status: FttrStatus, devices: NetworkDevices) => {
-		const optical = status.optical_transceiver ?? {};
+		const optical = status.optical_transceiver;
 		const provisioning = status.provisioning;
 
 		if (provisioning) {
@@ -1050,8 +904,8 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 
 		opticalNode.textContent = text(optical.model);
 
-		if (optical.cdr_locked === undefined) {
-			updateBadge(cdrNode, "none", "—");
+		if (optical.cdr_locked == null) {
+			updateBadge(cdrNode, "none", tr("Unknown"));
 		} else if (optical.cdr_locked) {
 			updateBadge(cdrNode, "success", tr("Locked"));
 		} else {
@@ -1070,7 +924,7 @@ let pageRoot: HTMLElement | null = null;
 let pageView: StatusView | null = null;
 let refreshing = false;
 
-export const main = (view as unknown as { extend(obj: unknown): unknown }).extend({
+export const main = view.extend({
 	async load(): Promise<{ status: FttrStatus; devices: NetworkDevices }> {
 		const [status, deviceResult] = await Promise.all([
 			getStatus(),
