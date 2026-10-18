@@ -1,121 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-interface SyncItem {
-	id?: string;
-	name?: string;
-	kind?: string;
-	service_type?: string;
-	state?: string;
-	reason?: string;
-	revision?: string;
-	current_revision?: boolean;
-	management_fresh?: boolean;
-	task_id?: number;
-	updated_at?: number;
-	changes?: Array<{ name: string; desired: string }>;
-}
-
-interface AcsBootstrap {
-	state?: string;
-	method?: string;
-	reason?: string;
-	mqtt_target?: string;
-	binding_source?: string;
-	link_identity_error?: string;
-	mqtt_last_seen?: number;
-	cwmp_id?: string;
-	desired_version?: string;
-	generation?: number;
-	inflight?: boolean;
-	attempts?: number;
-	next_retry_at?: number;
-	updated_at?: number;
-	settings_verified_at?: number;
-	last_inform?: number;
-	last_error?: string;
-	persistence_error?: string;
-	desired?: { vlan?: number; priority?: number; acs_url?: string };
-	listener?: { enabled?: boolean; listen?: string; path?: string; error?: string };
-	endpoint_notice?: string;
-	manual_steps?: string[];
-}
-
-interface DeviceSync {
-	device: string;
-	name?: string;
-	group?: string;
-	template?: string;
-	group_name?: string;
-	template_name?: string;
-	omci_management?: { state?: string; reason?: string };
-	optical_sn: string;
-	adapter: string;
-	wifi_sync?: string;
-	management?: { state?: string; age_seconds?: number; last_inform?: number };
-	acs_bootstrap?: AcsBootstrap;
-	provisioning: {
-		cwmp_contract?: {
-			state?: string;
-			requested?: string;
-			contract?: string;
-			reason?: string;
-			cache_hit?: boolean;
-			schema?: string;
-			capabilities?: { wan?: string; wlan?: string; binding?: string };
-		};
-		state?: string;
-		operation_id?: number;
-		revision?: string;
-		mode?: string;
-		started_at?: number;
-		current_revision?: boolean;
-		management_fresh?: boolean;
-		items?: SyncItem[];
-		wan_objects?: Record<string, unknown>;
-		wan_lifecycle?: Record<string, SyncItem>;
-		wifi_objects?: { owned?: number[]; pending?: string; pending_instance?: number };
-		wifi_lifecycle?: Record<string, SyncItem>;
-		wifi_stage?: string;
-		wifi_cleanup?: string;
-	};
-}
-
-interface SyncStatus {
-	management_network?: {
-		state?: string;
-		error?: string;
-		inflight?: boolean;
-		ready?: boolean;
-		desired_version?: string;
-		applied_version?: string;
-		next_retry_at?: number;
-		desired?: Record<string, unknown>;
-		applied?: Record<string, unknown>;
-		plan?: Array<{ operation: string; key: string; value: string[] }>;
-	};
-	enabled?: boolean;
-	mode?: string;
-	revision?: string;
-	triggers?: string[];
-	interval?: number;
-	error?: string;
-	devices?: DeviceSync[];
-}
-
-interface ConfigCheck {
-	valid?: boolean;
-	revision?: string;
-	error?: string;
-}
-
-const getSync = L.rpc.declare<SyncStatus>({ object: "luci.fttr", method: "get_sync", reject: true });
-const checkConfig = L.rpc.declare<ConfigCheck>({ object: "luci.fttr", method: "config_check", reject: true });
-const sync = L.rpc.declare<{ error?: string; operation_ids?: number[] }, [string, string]>({
-	object: "luci.fttr",
-	method: "sync",
-	params: ["action", "target"],
-	reject: true,
-});
+import { checkConfig, getSync, type SyncAction, sync } from "./contracts/api";
+import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
 
 const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }> = {
 	ready: { label: "就绪", type: "success" },
@@ -262,7 +148,7 @@ function tr(key: string): string {
 }
 
 const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
-const date = (value?: number): string => (value ? new Date(value * 1000).toLocaleString() : "—");
+const date = (value?: number | null): string => (value ? new Date(value * 1000).toLocaleString() : "—");
 
 function renderStateBadge(value?: string): HTMLElement {
 	if (!value) return <span class="fttr-badge fttr-badge-neutral">—</span>;
@@ -309,7 +195,8 @@ function renderFreshness(currentRev?: boolean, mgmtFresh?: boolean): HTMLElement
 	);
 }
 
-function itemTable(items: SyncItem[]): HTMLElement {
+type ItemRow = Partial<Omit<SyncItem, "kind">> & Lifecycle & { id: string; kind: string };
+function itemTable(items: ItemRow[]): HTMLElement {
 	return (
 		<div class="table-wrapper">
 			<table class="table">
@@ -332,9 +219,9 @@ function itemTable(items: SyncItem[]): HTMLElement {
 								</td>
 								<td>
 									<span class="fttr-badge fttr-badge-info" style="font-size:80%">
-										{item.service_type === "wifi" || item.kind === "wifi"
+										{item.service_type === "wifi" || item.kind === "ssid"
 											? "Wi-Fi"
-											: item.service_type === "wan" || item.kind === "wan"
+											: item.service_type === "wan" || item.kind === "wan_activation"
 												? "WAN"
 												: text(item.service_type || item.kind)}
 									</span>
@@ -704,7 +591,7 @@ function deviceCard(
 	);
 }
 
-const main = (L.view as any).extend({
+const main = L.view.extend({
 	load(): Promise<[SyncStatus, ConfigCheck]> {
 		return Promise.all([getSync(), checkConfig()]);
 	},
@@ -733,8 +620,7 @@ const main = (L.view as any).extend({
 			busy = true;
 			update(current);
 			try {
-				const reply = await sync("reset_state", device.device);
-				if (!reply || reply.error) throw new Error(String(reply?.error ?? "Empty synchronization reply"));
+				await sync("reset_state", device.device);
 				result.replaceChildren(
 					<div class="alert-message info">
 						{tr(
@@ -751,17 +637,16 @@ const main = (L.view as any).extend({
 			}
 		};
 
-		const run = async (action: string) => {
+		const run = async (action: SyncAction) => {
 			if (busy) return;
 			busy = true;
 			for (const button of buttons) button.disabled = true;
 			update(current);
 			try {
 				const reply = await sync(action, target.value);
-				if (!reply || reply.error) throw new Error(String(reply?.error ?? "Empty synchronization reply"));
 				const msg = action.startsWith("management_")
 					? tr("Management operation started; status is refreshed below.")
-					: tr("Started: %s").replace("%s", (reply.operation_ids ?? []).join(", "));
+					: tr("Started: %s").replace("%s", "operation_ids" in reply ? reply.operation_ids.join(", ") : "—");
 				result.replaceChildren(<div class="alert-message info">{msg}</div>);
 				update(await getSync());
 			} catch (failure) {
@@ -1143,8 +1028,7 @@ const main = (L.view as any).extend({
 			managementPlan.disabled = busy || !!host?.inflight || !!committed.error || !L.hasViewPermission();
 			managementApply.disabled = managementPlan.disabled;
 
-			const desired = host?.desired as Record<string, unknown> | undefined;
-			const applied = host?.applied as Record<string, unknown> | undefined;
+			const configuration = host.desired ?? host.applied;
 			const planChanges = host?.plan ?? [];
 			const isSync =
 				Boolean(host?.applied_version) &&
@@ -1185,28 +1069,26 @@ const main = (L.view as any).extend({
 						<div class="fttr-card">
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{tr("Management interface")}</span>
-								<strong>{text(desired?.interface || applied?.interface || "br-lan.40")}</strong>
+								<strong>—</strong>
 							</div>
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{tr("Management VLAN")}</span>
 								<span>
-									VLAN {text(desired?.vlan ?? applied?.vlan ?? 40)} (Prio{" "}
-									{text(desired?.priority ?? applied?.priority ?? 0)})
+									VLAN {text(configuration?.vlan.join(", "))} (Prio {text(configuration?.priority)})
 								</span>
 							</div>
 						</div>
 						<div class="fttr-card">
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{tr("Service IP / Netmask")}</span>
-								<code>
-									{text(desired?.address || applied?.address || "192.168.40.1")}
-									{desired?.netmask ? ` / ${desired.netmask}` : ""}
-								</code>
+								<code>{text(configuration?.address)}</code>
 							</div>
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{tr("DHCP service")}</span>
 								<span>
-									{(desired?.dhcp_enabled ?? applied?.dhcp_enabled) !== false ? (
+									{configuration === null ? (
+										"—"
+									) : configuration.dhcp_enabled ? (
 										<span class="fttr-badge fttr-badge-success">{tr("Enabled")}</span>
 									) : (
 										<span class="fttr-badge fttr-badge-neutral">{tr("Disabled")}</span>
@@ -1217,11 +1099,11 @@ const main = (L.view as any).extend({
 						<div class="fttr-card">
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{tr("ACS URL")}</span>
-								<code style="font-size:80%">{text(desired?.acs_url || applied?.acs_url)}</code>
+								<code style="font-size:80%">{text(configuration?.acs_url)}</code>
 							</div>
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{tr("Mode")}</span>
-								<span>{text(desired?.mode || applied?.mode || status.mode)}</span>
+								<span>{text(configuration?.mode)}</span>
 							</div>
 						</div>
 					</div>
