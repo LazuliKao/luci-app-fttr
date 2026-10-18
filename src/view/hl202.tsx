@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import type { DeviceMeta } from "./contracts/hl202";
 import { text, tr } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
-import { check, list, object, type Target } from "./hl202/rpc";
+import { list, type Target } from "./hl202/rpc";
 
 function renderPage(): HTMLElement {
 	const select = (
@@ -167,19 +168,9 @@ function renderPage(): HTMLElement {
 		</div>
 	);
 
-	interface DeviceMeta {
-		optical_sn: string;
-		onu_id: number;
-		model: string;
-		optical_online: boolean;
-		can_execute: boolean;
-		mqtt: { binding_generation: string } | null;
-		report_revision?: number;
-	}
-
 	let currentDevices: DeviceMeta[] = [];
 	let previousDeviceFingerprint = "";
-	let reportRevision: number | undefined;
+	let reportRevision = "";
 
 	const show = (): void => {
 		const selectedSn = select.value;
@@ -241,38 +232,17 @@ function renderPage(): HTMLElement {
 		refresh.disabled = true;
 		status.textContent = tr("Loading devices…");
 		try {
-			const response = check(await list());
-			if (!Array.isArray(response.devices)) throw new Error(tr("Invalid device list"));
-
-			const parsedDevices: DeviceMeta[] = [];
-			for (const val of response.devices) {
-				const d = object(val);
-				if (typeof d.optical_sn !== "string" || typeof d.onu_id !== "number") {
-					throw new Error(tr("Invalid device identity"));
-				}
-				const ready = d.can_execute === true && d.mqtt !== null;
-				let mqttObj: { binding_generation: string } | null = null;
-				if (ready) {
-					const m = object(d.mqtt);
-					if (typeof m.binding_generation !== "string") throw new Error(tr("Invalid binding generation"));
-					mqttObj = { binding_generation: m.binding_generation };
-				}
-				parsedDevices.push({
-					optical_sn: d.optical_sn,
-					onu_id: d.onu_id,
-					model: String(d.model || "HL202"),
-					optical_online: Boolean(d.optical_online),
-					can_execute: Boolean(d.can_execute),
-					mqtt: mqttObj,
-					report_revision: typeof d.report_revision === "number" ? d.report_revision : undefined,
-				});
-			}
+			const response = await list();
+			const parsedDevices = response.devices;
 
 			currentDevices = parsedDevices;
 
 			// Compare fingerprint before rebuilding select options to avoid destroying open menu
 			const fingerprint = parsedDevices
-				.map((d) => `${d.optical_sn}:${d.onu_id}:${d.optical_online}:${d.can_execute}:${d.report_revision}`)
+				.map(
+					(d) =>
+						`${d.optical_sn}:${d.onu_id}:${d.optical_online}:${d.can_execute}:${d.report_revision}:${d.mqtt?.binding_generation}`,
+				)
 				.join("|");
 
 			if (fingerprint !== previousDeviceFingerprint) {
@@ -301,17 +271,11 @@ function renderPage(): HTMLElement {
 			const previousSource = sourceSelect.value;
 			const observations: { mqtt_mac: string; binding_generation: string }[] = [];
 			sourceSelect.replaceChildren();
-			if (Array.isArray(response.sources)) {
-				for (const value of response.sources) {
-					const src = object(value);
-					if (typeof src.mqtt_mac !== "string" || typeof src.binding_generation !== "string") {
-						throw new Error(tr("Invalid source observation"));
-					}
-					observations.push({ mqtt_mac: src.mqtt_mac, binding_generation: src.binding_generation });
-					sourceSelect.append(
-						<option value={src.mqtt_mac}>{text(`${src.mqtt_mac} — ${String(src.reason)}`)}</option>,
-					);
-				}
+			for (const src of response.sources) {
+				observations.push({ mqtt_mac: src.mqtt_mac, binding_generation: src.binding_generation });
+				sourceSelect.append(
+					<option value={src.mqtt_mac}>{text(`${src.mqtt_mac} — ${String(src.reason)}`)}</option>,
+				);
 			}
 			sourceTargets = observations;
 			if (observations.some((s) => s.mqtt_mac === previousSource)) {
@@ -324,12 +288,13 @@ function renderPage(): HTMLElement {
 			// Auto refresh report if revision changed
 			const selectedDev = parsedDevices.find((d) => d.optical_sn === select.value);
 			if (
-				selectedDev &&
-				selectedDev.report_revision !== undefined &&
-				selectedDev.report_revision !== reportRevision &&
+				selectedDev?.can_execute &&
+				selectedDev.report_revision !== null &&
+				`${selectedDev.optical_sn}:${selectedDev.mqtt?.binding_generation}:${selectedDev.report_revision}` !==
+					reportRevision &&
 				!isBusy()
 			) {
-				reportRevision = selectedDev.report_revision;
+				reportRevision = `${selectedDev.optical_sn}:${selectedDev.mqtt?.binding_generation}:${selectedDev.report_revision}`;
 				void reportCtrl.refresh();
 			}
 		} catch (cause: unknown) {

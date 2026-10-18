@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { date, formatUptime, renderBadge, text, tr } from "./dom";
-import { check, execute, object, readAccounts, readReport, type SourceTarget, setAccount, type Target } from "./rpc";
+import { execute, readAccounts, readReport, type SourceTarget, setAccount, type Target } from "./rpc";
 
 let busy = false;
 export const isBusy = (): boolean => busy;
@@ -53,6 +53,7 @@ export function createReportPanel(): ReportController {
 		statusMsg.textContent = tr("Waiting for device result…");
 		try {
 			const response = await readReport(target);
+			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 			if (!response.report) {
 				outputSummary.replaceChildren();
 				outputTable.replaceChildren();
@@ -60,7 +61,7 @@ export function createReportPanel(): ReportController {
 				statusMsg.textContent = tr("No MQTT report has been parsed yet.");
 				return;
 			}
-			const state = object(response.report);
+			const state = response.report;
 			outputSummary.replaceChildren(
 				<span>
 					<span style="color:#888;margin-right:4px">{tr("Revision")}:</span>
@@ -84,8 +85,8 @@ export function createReportPanel(): ReportController {
 			}
 
 			if (state.report) {
-				const rep = object(state.report);
-				const fields = object(rep.fields);
+				const rep = state.report;
+				const fields = rep.fields;
 				outputTable.replaceChildren(
 					<table class="table" style="font-size:90%">
 						<thead>
@@ -96,10 +97,12 @@ export function createReportPanel(): ReportController {
 							</tr>
 						</thead>
 						<tbody>
-							{Object.entries(fields).map(([name, val]) => {
-								const field = object(val);
+							{Object.entries(fields).map(([name, field]) => {
 								const rawVal = field.value;
-								let displayVal = `${String(rawVal)}${typeof field.unit === "string" ? ` ${field.unit}` : ""}`;
+								let displayVal =
+									rawVal === null
+										? "—"
+										: `${typeof rawVal === "object" ? JSON.stringify(rawVal) : String(rawVal)}${field.unit ? ` ${field.unit}` : ""}`;
 								if (name === "uptime_seconds" && typeof rawVal === "number") {
 									displayVal = formatUptime(rawVal);
 								}
@@ -122,55 +125,58 @@ export function createReportPanel(): ReportController {
 				);
 
 				const membersList: HTMLElement[] = [];
-				if (Array.isArray(rep.members)) {
-					for (const val of rep.members) {
-						const member = object(val);
-						const copyBtn = (
-							<button
-								type="button"
-								class="fttr-btn-subtle"
-								style="margin-left:8px"
-								onclick={(e: MouseEvent) => {
-									e.stopPropagation();
-									if (typeof member.text === "string") {
-										void navigator.clipboard?.writeText(member.text);
-										copyBtn.textContent = tr("Copied to clipboard");
-										setTimeout(() => {
-											copyBtn.textContent = tr("Copy member text");
-										}, 1500);
-									}
-								}}
-							>
-								{tr("Copy member text")}
-							</button>
-						) as HTMLButtonElement;
+				for (const member of rep.members) {
+					const copyBtn = (
+						<button
+							type="button"
+							class="fttr-btn-subtle"
+							style="margin-left:8px"
+							onclick={(e: MouseEvent) => {
+								e.stopPropagation();
+								if (typeof member.text === "string") {
+									void navigator.clipboard?.writeText(member.text);
+									copyBtn.textContent = tr("Copied to clipboard");
+									setTimeout(() => {
+										copyBtn.textContent = tr("Copy member text");
+									}, 1500);
+								}
+							}}
+						>
+							{tr("Copy member text")}
+						</button>
+					) as HTMLButtonElement;
 
-						membersList.push(
-							<details style="margin:6px 0;border:1px solid rgba(127,140,141,0.15);border-radius:4px;padding:4px 8px">
-								<summary style="cursor:pointer;user-select:none;font-weight:600;font-size:90%">
-									{text(
-										`${String(member.name)} (${String(member.bytes)} bytes, ${String(member.encoding)})`,
-									)}
-									{typeof member.text === "string" ? copyBtn : null}
-								</summary>
-								<div style="margin-top:6px">
-									{typeof member.text === "string" ? (
-										<pre class="hl202-terminal-output" style="max-height:16rem">
-											{member.text}
-										</pre>
-									) : (
-										<p style="font-size:85%;color:#888;margin:4px 0">
-											{member.text_omitted
-												? tr("Text omitted at the shared byte limit.")
-												: tr("Binary member; text is unavailable.")}
-										</p>
-									)}
-								</div>
-							</details>,
-						);
-					}
+					membersList.push(
+						<details style="margin:6px 0;border:1px solid rgba(127,140,141,0.15);border-radius:4px;padding:4px 8px">
+							<summary style="cursor:pointer;user-select:none;font-weight:600;font-size:90%">
+								{text(
+									`${String(member.name)} (${String(member.bytes)} bytes, ${String(member.encoding)})`,
+								)}
+								{typeof member.text === "string" ? copyBtn : null}
+							</summary>
+							<div style="margin-top:6px">
+								{typeof member.text === "string" ? (
+									<pre class="hl202-terminal-output" style="max-height:16rem">
+										{member.text}
+									</pre>
+								) : (
+									<p style="font-size:85%;color:#888;margin:4px 0">
+										{member.text_omitted
+											? tr("Text omitted at the shared byte limit.")
+											: tr("Binary member; text is unavailable.")}
+									</p>
+								)}
+							</div>
+						</details>,
+					);
 				}
-				outputMembers.replaceChildren(...membersList);
+				outputMembers.replaceChildren(
+					...rep.errors.map((message) => <div class="alert-message warning">{message}</div>),
+					...membersList,
+				);
+			} else {
+				outputTable.replaceChildren();
+				outputMembers.replaceChildren();
 			}
 			statusMsg.textContent = "";
 		} catch (cause: unknown) {
@@ -201,6 +207,12 @@ export function createReportPanel(): ReportController {
 	return {
 		element,
 		setTarget(target: Target | SourceTarget | null) {
+			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) {
+				outputSummary.replaceChildren();
+				outputTable.replaceChildren();
+				outputMembers.replaceChildren();
+				statusMsg.textContent = "";
+			}
 			currentTarget = target;
 			readBtn.disabled = !target;
 		},
@@ -237,29 +249,26 @@ export function createAccountsPanel(): AccountsController {
 		busy = true;
 		readBtn.disabled = true;
 		statusMsg.textContent = tr("Waiting for device result…");
+		const target = currentTarget;
 		try {
-			const response = check(await readAccounts(currentTarget));
-			const op = object(response.operation);
-			const res = object(op.result);
+			const response = await readAccounts(target);
+			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
+			usersContainer.replaceChildren();
+			const op = response.operation;
+			const res = op.result;
 			if (res.status === "timeout") {
 				statusMsg.textContent = tr(
 					"Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.",
 				);
 			} else {
-				statusMsg.textContent = "";
+				statusMsg.textContent = !op.binding_current
+					? tr("Device binding changed; this result is stale.")
+					: (res.error ?? (response.accounts === null ? tr("Account data is unavailable.") : ""));
 			}
 
-			if (Array.isArray(response.accounts)) {
+			if (response.accounts && op.binding_current) {
 				const userNodes: HTMLElement[] = [];
-				for (const item of response.accounts) {
-					const account = object(item);
-					if (
-						typeof account.entry !== "number" ||
-						typeof account.username !== "string" ||
-						typeof account.active !== "boolean"
-					) {
-						throw new Error(tr("Invalid account metadata"));
-					}
+				for (const account of response.accounts) {
 					const entry = account.entry;
 					let active = account.active;
 
@@ -301,12 +310,10 @@ export function createAccountsPanel(): AccountsController {
 					const userActionStatus = <div style="font-size:82%;margin-top:4px" aria-live="polite" />;
 
 					saveBtn.addEventListener("click", async () => {
-						if (!currentTarget || busy) return;
+						if (!currentTarget || busy || JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 						const val = pwdInput.value;
 						if (!val) {
-							userActionStatus.textContent = tr(
-								"Enter a non-empty UTF-8 script up to 64 KiB without NUL characters.",
-							);
+							userActionStatus.textContent = tr("Enter a non-empty password.");
 							return;
 						}
 						pwdInput.value = "";
@@ -314,20 +321,22 @@ export function createAccountsPanel(): AccountsController {
 						saveBtn.disabled = toggleBtn.disabled = true;
 						userActionStatus.textContent = tr("Waiting for device result…");
 						try {
-							const result = await setAccount(currentTarget, {
+							const result = await setAccount(target, {
 								entry,
 								kind: "password",
 								password: val,
 								active,
 							});
-							const setOp = object(result.operation);
-							const setRes = object(setOp.result);
-							if (setRes.status === "success" || result.write_status === "committed") {
-								userActionStatus.innerHTML = `<span style="color:#27ae60">${tr("Password updated successfully")}</span>`;
-							} else {
-								userActionStatus.textContent = String(
-									result.write_status || setRes.status || tr("Request failed"),
+							if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
+							const setOp = result.operation;
+							const setRes = setOp.result;
+							if (setOp.binding_current && result.write_status === "accepted_and_saved") {
+								userActionStatus.textContent = tr(
+									"Password accepted and saved; web login permission is not verified.",
 								);
+							} else {
+								userActionStatus.textContent =
+									setRes.error ?? tr("Execution outcome is unknown. Do not automatically retry.");
 							}
 						} catch (e: unknown) {
 							userActionStatus.textContent = e instanceof Error ? e.message : tr("Request failed");
@@ -338,19 +347,31 @@ export function createAccountsPanel(): AccountsController {
 					});
 
 					toggleBtn.addEventListener("click", async () => {
-						if (!currentTarget || busy) return;
+						if (!currentTarget || busy || JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 						busy = true;
 						saveBtn.disabled = toggleBtn.disabled = true;
 						userActionStatus.textContent = tr("Waiting for device result…");
 						try {
 							const nextActive = !active;
-							const result = await setAccount(currentTarget, {
+							const result = await setAccount(target, {
 								entry,
 								kind: "active",
 								password: "",
 								active: nextActive,
 							});
-							active = nextActive;
+							if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
+							const readback = result.accounts?.find((account) => account.entry === entry);
+							if (
+								!result.operation.binding_current ||
+								result.write_status !== "accepted_and_saved" ||
+								!readback
+							) {
+								userActionStatus.textContent =
+									result.operation.result.error ??
+									tr("Execution outcome is unknown. Refresh users before retrying.");
+								return;
+							}
+							active = readback.active;
 							activeBadge.className = `hl202-badge ${active ? "hl202-badge-success" : "hl202-badge-neutral"}`;
 							activeBadge.textContent = active ? tr("Enabled") : tr("Disabled");
 							toggleBtn.className = `cbi-button ${active ? "cbi-button-neutral" : "cbi-button-apply"}`;
@@ -418,6 +439,10 @@ export function createAccountsPanel(): AccountsController {
 	return {
 		element,
 		setTarget(target: Target | null) {
+			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) {
+				usersContainer.replaceChildren();
+				statusMsg.textContent = "";
+			}
 			currentTarget = target;
 			readBtn.disabled = !target || !L.hasViewPermission();
 		},
@@ -541,14 +566,16 @@ export function createConsolePanel(): ConsoleController {
 		outputStatus.replaceChildren(renderBadge("info", tr("Waiting for device result…")));
 
 		const startTime = Date.now();
+		const target = currentTarget;
 		try {
-			const res = await execute(currentTarget, script.value, seconds);
+			const res = await execute(target, script.value, seconds);
+			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 			const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-			const op = object(res.operation);
-			const result = object(op.result);
-			const status = typeof result.status === "string" ? result.status : tr("Unknown");
+			const op = res.operation;
+			const result = op.result;
+			const status = result.status;
 			const exitCode = result.exit_code;
-			const isSuccess = status === "success" && exitCode === 0;
+			const isSuccess = op.binding_current && !result.error && status === "executed" && exitCode === 0;
 
 			const statusBadge = renderBadge(
 				isSuccess ? "success" : status === "timeout" ? "warning" : "danger",
@@ -577,6 +604,13 @@ export function createConsolePanel(): ConsoleController {
 			);
 
 			const outputLines: string[] = [];
+			if (!op.binding_current) outputLines.push(tr("Device binding changed; this result is stale."));
+			if (status === "timeout" || status === "dispatched")
+				outputLines.push(
+					tr(
+						"Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.",
+					),
+				);
 			if (typeof result.output === "string" && result.output.length) {
 				outputLines.push(result.output);
 			}
@@ -587,7 +621,7 @@ export function createConsolePanel(): ConsoleController {
 				outputLines.push(`\n[!] ${tr("Output was truncated at the byte limit.")}`);
 			}
 			if (outputLines.length === 0) {
-				outputLines.push("(命令已执行完毕，无标准输出返回)");
+				outputLines.push(tr("No output returned."));
 			}
 			outputBody.textContent = outputLines.join("\n");
 		} catch (cause: unknown) {
@@ -679,6 +713,11 @@ export function createConsolePanel(): ConsoleController {
 	return {
 		element,
 		setTarget(target: Target | null) {
+			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) {
+				outputStatus.replaceChildren();
+				outputBody.textContent = "";
+				outputBody.style.display = "none";
+			}
 			currentTarget = target;
 			execBtn.disabled = !target || !L.hasViewPermission();
 			if (target) {
