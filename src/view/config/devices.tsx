@@ -22,7 +22,7 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 		const device = bySerial.get(serial);
 		const configured = L.uci.sections("fttr", "device").find((item) => item.optical_sn === serial);
 		const model = device?.model || String(configured?.adapter || _("Unknown model"));
-		return `${model} · ${serial} · ${device?.state === "O5Operation" ? _("Connected") : _("Offline")}${device?.onu_id != null ? ` · ONU ${device.onu_id}` : ""}`;
+		return `${model} · ${serial} · ${device?.state === "o5_operation" ? _("Connected") : _("Offline")}${device?.onu_id != null ? ` · ONU ${device.onu_id}` : ""}`;
 	};
 	section.tab("devices", _("Devices & groups"));
 	grid(section, "devices", "_groups", "group", _("Groups"), (s) => {
@@ -53,7 +53,7 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 					.map((item) => item.optical_sn),
 			);
 			for (const device of connected)
-				if (device.state === "O5Operation" && adapterFor(device) && !used.has(device.serial_number))
+				if (device.state === "o5_operation" && adapterFor(device) && !used.has(device.serial_number))
 					this.value(device.serial_number, label(device.serial_number));
 			if (current && !this.keylist.includes(current)) this.value(current, label(current));
 			const selected = configured || current || this.keylist[0] || "";

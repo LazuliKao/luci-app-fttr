@@ -3,20 +3,21 @@
 import { addBasic } from "./config/basic";
 import { addDevices } from "./config/devices";
 import { addServices } from "./config/services";
+import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
+import type { SubGateway } from "./contracts/status";
 
 const view = L.view;
 const uci = L.uci;
 const form = L.form;
-const rpc = L.rpc;
-const checkConfig = rpc.declare<any>({ object: "luci.fttr", method: "config_check", reject: true });
-const reloadConfig = rpc.declare<any>({ object: "luci.fttr", method: "config_reload", reject: true });
-const restartService = rpc.declare<any>({ object: "luci.fttr", method: "restart_service", reject: true });
-const getStatus = rpc.declare<any>({ object: "luci.fttr", method: "get_status", reject: true });
 
-async function command(fn: () => Promise<any>, output: HTMLElement, onResult?: (result: any) => void): Promise<void> {
+async function command<T>(
+	fn: () => Promise<T>,
+	output: HTMLElement,
+	onResult?: (result: T | { error: string }) => void,
+): Promise<void> {
 	try {
 		const result = await fn();
-		output.textContent = result.error ? String(result.error) : JSON.stringify(result, null, 2);
+		output.textContent = JSON.stringify(result, null, 2);
 		onResult?.(result);
 	} catch (error) {
 		output.textContent = String(error);
@@ -24,18 +25,22 @@ async function command(fn: () => Promise<any>, output: HTMLElement, onResult?: (
 	}
 }
 
-const main = (view as any).extend({
-	async load(): Promise<any> {
+type InitialCheck = { error?: string; connectedDevices: SubGateway[] };
+const main = view.extend({
+	async load(): Promise<InitialCheck> {
 		await uci.load("fttr");
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
-		const [check, status]: any[] = await Promise.all([
+		const [check, status] = await Promise.all([
 			checkConfig().catch((error: unknown) => ({ error: String(error) })),
 			getStatus().catch((error: unknown) => ({ error: String(error), sub_gateways: [] })),
 		]);
-		return { ...check, error: check.error || status.error, connectedDevices: status.sub_gateways ?? [] };
+		return {
+			error: check.error || ("error" in status ? status.error : undefined),
+			connectedDevices: status.sub_gateways,
+		};
 	},
-	render(initialCheck: any): Promise<Node> {
+	render(initialCheck: InitialCheck): Promise<Node> {
 		const map = new form.Map("fttr", _("FTTR configuration"));
 		const section = map.section(form.NamedSection, "acs", "acs", "acs");
 		section.addremove = false;
@@ -54,7 +59,7 @@ const main = (view as any).extend({
 
 		const output = <pre style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite" />;
 		let checkNotification: Node | null = null;
-		const showCheck = (result: any): void => {
+		const showCheck = (result: { error?: string }): void => {
 			checkNotification?.parentNode?.removeChild(checkNotification);
 			checkNotification = null;
 			if (result?.error) {
@@ -89,8 +94,7 @@ const main = (view as any).extend({
 					onclick={() =>
 						command(
 							async () => {
-								const reload: any = await reloadConfig();
-								if (reload.error) return reload;
+								await reloadConfig();
 								return await checkConfig();
 							},
 							output,
