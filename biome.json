@@ -1,11 +1,7 @@
 {
 	"files": {
 		"ignoreUnknown": true,
-		"includes": [
-			"**/*",
-			"!htdocs/**/*",
-			"!node_modules/**/*"
-		]
+		"includes": ["**/*", "!package/luci-app-fttr/htdocs/**/*", "!node_modules/**/*"]
 	},
 	"formatter": {
 		"enabled": true,
