@@ -581,7 +581,9 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 
 	const dropZone = (
 		<div class="fttr-dropzone">
-			<div style="font-size:22px;margin-bottom:6px">📁</div>
+			<div style="font-size:22px;margin-bottom:6px" aria-hidden="true">
+				<span style="display:inline-block;width:1em;height:1em;background-color:currentColor;mask:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E&quot;) center/contain no-repeat" />
+			</div>
 			<div style="font-weight:600;margin-bottom:4px">点击选择或拖拽 UX3326.bin 文件至此处</div>
 			<div style="font-size:85%;opacity:0.75">
 				支持 <code>modified_UX3326.bin</code> 文件；必须严格为 288 字节

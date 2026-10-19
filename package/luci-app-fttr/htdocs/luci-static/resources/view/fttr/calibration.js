@@ -206,7 +206,7 @@ const T = (e, t)=>{
     });
 }, $ = s("$ZodError", T), U = s("$ZodError", T, {
     Parent: Error
-}), M = (t = U, (e, r, n, i)=>{
+}), C = (t = U, (e, r, n, i)=>{
     let a = n ? Object.assign(n, {
         async: !1
     }) : {
@@ -221,7 +221,7 @@ const T = (e, t)=>{
         throw b(e, i?.callee), e;
     }
     return o.value;
-}), Z = (r = U, async (e, t, n, i)=>{
+}), M = (r = U, async (e, t, n, i)=>{
     let a = n ? Object.assign(n, {
         async: !0
     }) : {
@@ -235,7 +235,7 @@ const T = (e, t)=>{
         throw b(e, i?.callee), e;
     }
     return o.value;
-}), C = (n = U, (e, t, r)=>{
+}), Z = (n = U, (e, t, r)=>{
     let i = r ? {
         ...r,
         async: !1
@@ -269,13 +269,13 @@ const T = (e, t)=>{
         success: !0,
         data: a.value
     };
-}), D = /^-?\d+(?:\.\d+)?$/, X = /^(?:true|false)$/i, F = /^null$/i, R = {
+}), D = /^-?\d+(?:\.\d+)?$/, X = /^(?:true|false)$/i, B = /^null$/i, F = {
     major: 4,
     minor: 3,
     patch: 6
-}, B = s("$ZodType", (e, t)=>{
+}, R = s("$ZodType", (e, t)=>{
     var r;
-    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = R;
+    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = F;
     let n = [
         ...e._zod.def.checks ?? []
     ];
@@ -333,7 +333,7 @@ const T = (e, t)=>{
     g(e, "~standard", ()=>({
             validate: (t)=>{
                 try {
-                    let r = C(e, t);
+                    let r = Z(e, t);
                     return r.success ? {
                         value: r.data
                     } : {
@@ -353,7 +353,7 @@ const T = (e, t)=>{
 }), I = s("$ZodString", (e, t)=>{
     var r;
     let n;
-    B.init(e, t), e._zod.pattern = [
+    R.init(e, t), e._zod.pattern = [
         ...e?._zod.bag?.patterns ?? []
     ].pop() ?? (n = (r = e._zod.bag) ? `[\\s\\S]{${r?.minimum ?? 0},${r?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${n}$`)), e._zod.parse = (r, n)=>{
         if (t.coerce) try {
@@ -367,7 +367,7 @@ const T = (e, t)=>{
         }), r;
     };
 }), H = s("$ZodNumber", (e, t)=>{
-    B.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? D, e._zod.parse = (r, n)=>{
+    R.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? D, e._zod.parse = (r, n)=>{
         if (t.coerce) try {
             r.value = Number(r.value);
         } catch (e) {}
@@ -385,7 +385,7 @@ const T = (e, t)=>{
         }), r;
     };
 }), V = s("$ZodBoolean", (e, t)=>{
-    B.init(e, t), e._zod.pattern = X, e._zod.parse = (r, n)=>{
+    R.init(e, t), e._zod.pattern = X, e._zod.parse = (r, n)=>{
         if (t.coerce) try {
             r.value = !!r.value;
         } catch (e) {}
@@ -398,7 +398,7 @@ const T = (e, t)=>{
         }), r;
     };
 }), q = s("$ZodNull", (e, t)=>{
-    B.init(e, t), e._zod.pattern = F, e._zod.values = new Set([
+    R.init(e, t), e._zod.pattern = B, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, r)=>{
         let n = t.value;
@@ -410,7 +410,7 @@ const T = (e, t)=>{
         }), t;
     };
 }), W = s("$ZodNever", (e, t)=>{
-    B.init(e, t), e._zod.parse = (t, r)=>(t.issues.push({
+    R.init(e, t), e._zod.parse = (t, r)=>(t.issues.push({
             expected: "never",
             code: "invalid_type",
             input: t.value,
@@ -421,7 +421,7 @@ function J(e, t, r) {
     e.issues.length && t.issues.push(...P(r, e.issues)), t.value[r] = e.value;
 }
 const K = s("$ZodArray", (e, t)=>{
-    B.init(e, t), e._zod.parse = (r, n)=>{
+    R.init(e, t), e._zod.parse = (r, n)=>{
         let i = r.value;
         if (!Array.isArray(i)) return r.issues.push({
             expected: "array",
@@ -450,7 +450,7 @@ function G(e, t, r, n, i) {
 }
 const Q = s("$ZodObject", (e, t)=>{
     let r;
-    B.init(e, t);
+    R.init(e, t);
     let n = Object.getOwnPropertyDescriptor(t, "shape");
     if (!n?.get) {
         let e = t.shape;
@@ -539,7 +539,7 @@ function Y(e, t, r, n) {
     }), t);
 }
 const ee = s("$ZodUnion", (e, t)=>{
-    B.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
+    R.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
         if (t.options.every((e)=>e._zod.values)) return new Set(t.options.flatMap((e)=>Array.from(e._zod.values)));
     }), g(e._zod, "pattern", ()=>{
         if (t.options.every((e)=>e._zod.pattern)) {
@@ -610,7 +610,7 @@ const ee = s("$ZodUnion", (e, t)=>{
         }), i);
     };
 }), er = s("$ZodRecord", (e, t)=>{
-    B.init(e, t), e._zod.parse = (r, n)=>{
+    R.init(e, t), e._zod.parse = (r, n)=>{
         let i = r.value;
         if (!w(i)) return r.issues.push({
             expected: "record",
@@ -681,7 +681,7 @@ const ee = s("$ZodUnion", (e, t)=>{
 }), en = s("$ZodEnum", (e, t)=>{
     var r;
     let n;
-    B.init(e, t);
+    R.init(e, t);
     let i = (n = Object.values(r = t.entries).filter((e)=>"number" == typeof e), Object.entries(r).filter(([e, t])=>-1 === n.indexOf(+e)).map(([e, t])=>t)), a = new Set(i);
     e._zod.values = a, e._zod.pattern = RegExp(`^(${i.filter((e)=>z.has(typeof e)).map((e)=>"string" == typeof e ? x(e) : e.toString()).join("|")})$`), e._zod.parse = (t, r)=>{
         let n = t.value;
@@ -693,7 +693,7 @@ const ee = s("$ZodUnion", (e, t)=>{
         }), t;
     };
 }), ei = s("$ZodLiteral", (e, t)=>{
-    if (B.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
+    if (R.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let r = new Set(t.values);
     e._zod.values = r, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? x(e) : e ? x(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (n, i)=>{
         let a = n.value;
@@ -712,7 +712,7 @@ function ea(e, t) {
     } : e;
 }
 const eo = s("$ZodOptional", (e, t)=>{
-    B.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+    R.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             void 0
         ]) : void 0), g(e._zod, "pattern", ()=>{
@@ -726,7 +726,7 @@ const eo = s("$ZodOptional", (e, t)=>{
         return void 0 === e.value ? e : t.innerType._zod.run(e, r);
     };
 }), es = s("$ZodNullable", (e, t)=>{
-    B.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
+    R.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
         return e ? RegExp(`^(${f(e.source)}|null)$`) : void 0;
     }), g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
@@ -734,7 +734,7 @@ const eo = s("$ZodOptional", (e, t)=>{
             null
         ]) : void 0), e._zod.parse = (e, r)=>null === e.value ? e : t.innerType._zod.run(e, r);
 }), el = s("$ZodCatch", (e, t)=>{
-    B.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, r)=>{
+    R.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, r)=>{
         if ("backward" === r.direction) return t.innerType._zod.run(e, r);
         let n = t.innerType._zod.run(e, r);
         return n instanceof Promise ? n.then((n)=>(e.value = n.value, n.issues.length && (e.value = t.catchValue({
@@ -752,7 +752,7 @@ const eo = s("$ZodOptional", (e, t)=>{
         }), e.issues = []), e);
     };
 }), ed = s("$ZodLazy", (e, t)=>{
-    B.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, r)=>e._zod.innerType._zod.run(t, r);
+    R.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, r)=>e._zod.innerType._zod.run(t, r);
 });
 Symbol("ZodOutput"), Symbol("ZodInput");
 (e = globalThis).__zod_globalRegistry ?? (e.__zod_globalRegistry = new class e {
@@ -791,9 +791,9 @@ Symbol("ZodOutput"), Symbol("ZodInput");
 }());
 const ec = s("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
-    B.init(e, t), e.def = t, e.type = t.type, e.parse = (t, r)=>M(e, t, r, {
+    R.init(e, t), e.def = t, e.type = t.type, e.parse = (t, r)=>C(e, t, r, {
             callee: e.parse
-        }), e.safeParse = (t, r)=>C(e, t, r), e.parseAsync = async (t, r)=>Z(e, t, r, {
+        }), e.safeParse = (t, r)=>Z(e, t, r), e.parseAsync = async (t, r)=>M(e, t, r, {
             callee: e.parseAsync
         }), e.safeParseAsync = async (t, r)=>N(e, t, r), e.check = (...r)=>e.clone({
             ...t,
@@ -906,7 +906,7 @@ function eA(e, t, r) {
 const eT = s("ZodMiniEnum", (e, t)=>{
     en.init(e, t), ec.init(e, t), e.options = Object.values(t.entries);
 });
-function e$(e, t) {
+function eE(e, t) {
     return new eT({
         type: "enum",
         entries: Array.isArray(e) ? Object.fromEntries(e.map((e)=>[
@@ -916,11 +916,11 @@ function e$(e, t) {
         ...j(t)
     });
 }
-const eE = s("ZodMiniLiteral", (e, t)=>{
+const e$ = s("ZodMiniLiteral", (e, t)=>{
     ei.init(e, t), ec.init(e, t);
 });
 function eU(e, t) {
-    return new eE({
+    return new e$({
         type: "literal",
         values: Array.isArray(e) ? e : [
             e
@@ -928,20 +928,20 @@ function eU(e, t) {
         ...j(t)
     });
 }
-const eM = s("ZodMiniOptional", (e, t)=>{
+const eC = s("ZodMiniOptional", (e, t)=>{
     eo.init(e, t), ec.init(e, t);
 });
-function eZ(e) {
-    return new eM({
+function eM(e) {
+    return new eC({
         type: "optional",
         innerType: e
     });
 }
-const eC = s("ZodMiniNullable", (e, t)=>{
+const eZ = s("ZodMiniNullable", (e, t)=>{
     es.init(e, t), ec.init(e, t);
 });
 function eN(e) {
-    return new eC({
+    return new eZ({
         type: "nullable",
         innerType: e
     });
@@ -968,7 +968,7 @@ function eX() {
     });
     return e;
 }
-let eF = ex({
+let eB = ex({
     error: ej([
         eu(),
         ex({
@@ -977,17 +977,17 @@ let eF = ex({
         })
     ])
 });
-class eR extends Error {
+class eF extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function eB(e) {
-    let t = eF.safeParse(e);
+function eR(e) {
+    let t = eB.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new eR("rpc", e) : new eR(e.code, e.message);
+        throw "string" == typeof e ? new eF("rpc", e) : new eF(e.code, e.message);
     }
     return e;
 }
@@ -1006,8 +1006,8 @@ ex({
         data: eu()
     })
 ]);
-let eI = eu(), eH = eh(), eV = em(), eq = eZ(eI), eW = eZ(eH), eJ = eZ(eV);
-const eK = e$([
+let eI = eu(), eH = eh(), eV = em(), eq = eM(eI), eW = eM(eH), eJ = eM(eV);
+const eK = eE([
     "waiting",
     "wan_reconciling",
     "wan_verifying",
@@ -1026,7 +1026,7 @@ const eK = e$([
     "recovering",
     "waiting_management",
     "waiting_task"
-]), eG = e$([
+]), eG = eE([
     "not_configured",
     "stale_revision",
     "stale_management",
@@ -1038,8 +1038,8 @@ const eK = e$([
     "waiting_management"
 ]), eQ = ex({
     id: eI,
-    name: eZ(eN(eI)),
-    kind: e$([
+    name: eM(eN(eI)),
+    kind: eE([
         "device_service",
         "ssid",
         "port_binding",
@@ -1052,9 +1052,9 @@ const eK = e$([
     current_revision: eJ,
     management_fresh: eJ,
     operation_id: eW,
-    task_id: eZ(eN(eH)),
+    task_id: eM(eN(eH)),
     updated_at: eW,
-    changes: eZ(ew(ex({
+    changes: eM(ew(ex({
         name: eI,
         desired: eI
     })))
@@ -1062,12 +1062,12 @@ const eK = e$([
 let eY = ex({
     state: eI,
     reason: eq,
-    task_id: eZ(eN(eH)),
+    task_id: eM(eN(eH)),
     instance: eW
 });
 const e0 = ex({
     cwmp_id: eI,
-    state: e$([
+    state: eE([
         "online",
         "waiting_inform",
         "offline_or_stale"
@@ -1077,7 +1077,7 @@ const e0 = ex({
     age_seconds: eN(eH)
 });
 let e1 = ex({
-    state: e$([
+    state: eE([
         "waiting_transport",
         "waiting_identity",
         "reading",
@@ -1109,22 +1109,22 @@ let e1 = ex({
     updated_at: eW,
     settings_verified_at: eN(eH),
     last_inform: eN(eH),
-    last_error: eZ(eN(eI)),
-    persistence_error: eZ(eN(eI)),
-    desired: eZ(eN(ex({
+    last_error: eM(eN(eI)),
+    persistence_error: eM(eN(eI)),
+    desired: eM(eN(ex({
         vlan: eH,
         vlans: ew(eH),
         priority: eH,
         acs_url: eI
     }))),
-    listener: eZ(ex({
+    listener: eM(ex({
         enabled: eV,
         listen: eI,
         path: eI,
         error: eN(eI)
     })),
     endpoint_notice: eq,
-    manual_steps: eZ(ew(eI))
+    manual_steps: eM(ew(eI))
 });
 const e2 = eP("state", [
     e1,
@@ -1156,12 +1156,12 @@ const e2 = eP("state", [
                 };
                 if (t) for(let e in t){
                     if (!(e in r)) throw Error(`Unrecognized key: "${e}"`);
-                    t[e] && (n[e] = eM ? new eM({
+                    t[e] && (n[e] = eC ? new eC({
                         type: "optional",
                         innerType: r[e]
                     }) : r[e]);
                 }
-                else for(let e in r)n[e] = eM ? new eM({
+                else for(let e in r)n[e] = eC ? new eC({
                     type: "optional",
                     innerType: r[e]
                 }) : r[e];
@@ -1171,7 +1171,7 @@ const e2 = eP("state", [
         });
         return k(e, n);
     }(e1), {
-        state: e$([
+        state: eE([
             "pending",
             "unavailable"
         ]),
@@ -1184,7 +1184,7 @@ const e2 = eP("state", [
     optical_sn: eq,
     cwmp_id: eq,
     revision: eq,
-    mode: eZ(e$([
+    mode: eM(eE([
         "apply",
         "plan"
     ])),
@@ -1197,7 +1197,7 @@ const e2 = eP("state", [
     next_retry_at: eW,
     reconcile_reason: eq,
     items: ew(eQ),
-    cwmp_contract: eZ(ex({
+    cwmp_contract: eM(ex({
         state: eI,
         requested: eI,
         contract: eN(eI),
@@ -1210,9 +1210,9 @@ const e2 = eP("state", [
             binding: eI
         }))
     })),
-    wan_objects: eZ(eA(eI, eX())),
-    wan_lifecycle: eZ(eA(eI, eY)),
-    wan_stage: eZ(e$([
+    wan_objects: eM(eA(eI, eX())),
+    wan_lifecycle: eM(eA(eI, eY)),
+    wan_stage: eM(eE([
         "waiting",
         "inventory",
         "classifying",
@@ -1228,13 +1228,13 @@ const e2 = eP("state", [
         "next",
         "done"
     ])),
-    wifi_objects: eZ(ex({
+    wifi_objects: eM(ex({
         owned: ew(eH),
         pending: eN(eI),
         pending_instance: eN(eH)
     })),
-    wifi_lifecycle: eZ(eA(eI, eY)),
-    wifi_stage: eZ(e$([
+    wifi_lifecycle: eM(eA(eI, eY)),
+    wifi_stage: eM(eE([
         "waiting",
         "inventory",
         "adding",
@@ -1247,7 +1247,7 @@ const e2 = eP("state", [
         "next",
         "done"
     ])),
-    wifi_cleanup: eZ(e$([
+    wifi_cleanup: eM(eE([
         "disable",
         "preserve",
         "delete"
@@ -1255,7 +1255,7 @@ const e2 = eP("state", [
 });
 let e5 = ex({
     enabled: eV,
-    mode: e$([
+    mode: eE([
         "auto",
         "manual"
     ]),
@@ -1267,7 +1267,7 @@ let e5 = ex({
     path: eI,
     dhcp_enabled: eV
 }), e4 = ex({
-    state: e$([
+    state: eE([
         "discovering",
         "comparing",
         "planning",
@@ -1298,7 +1298,7 @@ let e5 = ex({
         value: ew(eI)
     }))
 });
-const e8 = ex({
+const e3 = ex({
     device: eI,
     name: eN(eI),
     group: eN(eI),
@@ -1317,9 +1317,9 @@ const e8 = ex({
     services: ew(eQ),
     ssids: ew(eQ),
     wifi_sync: eG
-}), e3 = ex({
+}), e8 = ex({
     enabled: eV,
-    mode: e$([
+    mode: eE([
         "auto",
         "manual"
     ]),
@@ -1333,7 +1333,7 @@ const e8 = ex({
         ...j(void 0)
     }),
     error: eN(eI),
-    devices: ew(e8),
+    devices: ew(e3),
     management_network: e4,
     omci_management: eX(),
     groups: ew(ex({
@@ -1348,13 +1348,13 @@ ej([
         valid: eU(!0),
         revision: eI,
         devices: eH,
-        error: eZ(eb())
+        error: eM(eb())
     }),
     ex({
         error: eI,
-        valid: eZ(eb()),
-        revision: eZ(eb()),
-        devices: eZ(eb())
+        valid: eM(eb()),
+        revision: eM(eb()),
+        devices: eM(eb())
     })
 ]);
 let e7 = eu(), e9 = eh(), te = eN(e9), tt = eA(e7, ex({
@@ -1365,7 +1365,7 @@ let e7 = eu(), e9 = eh(), te = eN(e9), tt = eA(e7, ex({
     age_seconds: te
 }));
 const tr = ex({
-    phase: e$([
+    phase: eE([
         "not_started",
         "collecting_identity",
         "retrying_identity",
@@ -1379,7 +1379,7 @@ const tr = ex({
     ]),
     generation: e9,
     error: eN(e7)
-}), tn = e$([
+}), tn = eE([
     "o1_initial",
     "o2_standby",
     "o3_serial_number",
@@ -1419,7 +1419,7 @@ const to = ex({
     services: ew(eQ),
     ssids: ew(eQ),
     wifi_sync: eG,
-    acs_bootstrap: eZ(e2),
+    acs_bootstrap: eM(e2),
     identity: eN(ta),
     identity_age_seconds: te,
     identity_current: em(),
@@ -1467,13 +1467,13 @@ let ts = ex({
     interface: e7,
     carrier: em(),
     status: e7,
-    onu_id: eZ(e9),
-    onu_sn: eZ(e7),
+    onu_id: eM(e9),
+    onu_sn: eM(e7),
     link_state: e7
 });
 ex({
     fpga_status: e7,
-    provisioning: eN(e3),
+    provisioning: eN(e8),
     optical_transceiver: ti,
     switch_ports: ew(ts),
     sub_gateways: ew(to),
@@ -1483,14 +1483,14 @@ ex({
         last_payload_bytes: e9
     }))
 }), eA(e7, ex({
-    carrier: eZ(em()),
-    mac: eZ(e7),
-    link: eZ(ex({
-        speed: eZ(e9),
-        duplex: eZ(e7),
-        autoneg: eZ(em())
+    carrier: eM(em()),
+    mac: eM(e7),
+    link: eM(ex({
+        speed: eM(e9),
+        duplex: eM(e7),
+        autoneg: eM(em())
     })),
-    stats: eZ(eA(e7, e9))
+    stats: eM(eA(e7, e9))
 })), L.rpc.declare({
     object: "luci.fttr",
     method: "get_status",
@@ -1533,7 +1533,7 @@ ex({
     }),
     ex({
         started: eU(!0),
-        mode: e$([
+        mode: eE([
             "apply",
             "plan"
         ])
@@ -1544,12 +1544,12 @@ ex({
     }),
     ex({
         operation_ids: ew(eh()),
-        mode: e$([
+        mode: eE([
             "apply",
             "plan"
         ]),
-        reconcile: eZ(em()),
-        retry: eZ(em())
+        reconcile: eM(em()),
+        retry: eM(em())
     })
 ]);
 let tl = L.rpc.declare({
@@ -1570,7 +1570,7 @@ let tl = L.rpc.declare({
     reject: !0
 });
 const tp = ex({
-    source: e$([
+    source: eE([
         "factory",
         "firmware",
         "builtin"
@@ -1578,7 +1578,7 @@ const tp = ex({
     active_path: eu(),
     size: eh(),
     sha256: eu(),
-    data: eZ(eu()),
+    data: eM(eu()),
     factory: ex({
         detected: em(),
         device: eu(),
@@ -1593,18 +1593,18 @@ const tp = ex({
         sha256: eu(),
         data: eu()
     }),
-    error: eZ(eu())
+    error: eM(eu())
 }), tu = ex({
     success: em(),
     path: eu(),
     size: eh(),
     sha256: eu(),
-    error: eZ(eu())
+    error: eM(eu())
 }), tf = ex({
     success: em(),
-    output: eZ(eu()),
-    error: eZ(eu())
-}), th = async ()=>tp.parse(eB(await tl())), tg = async (e)=>tu.parse(eB(await td("/lib/firmware/modified_UX3326.bin", e))), tm = async ()=>tf.parse(eB(await tc()));
+    output: eM(eu()),
+    error: eM(eu())
+}), th = async ()=>tp.parse(eR(await tl())), tg = async (e)=>tu.parse(eR(await td("/lib/firmware/modified_UX3326.bin", e))), tm = async ()=>tf.parse(eR(await tc()));
 async function ty(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : "unavailable";
 }
@@ -1700,21 +1700,21 @@ function tb(e, t) {
     }, u;
 }
 function tv(e, t, r) {
-    var n, i, a, s, l, d, c, p, u, f, h, g, m, y, b, v, w, z, x, k, j, S, P, O, A, T, $, U, M, Z, C, N, D, X, F;
-    let R = e.isStockHash ? o("span", {
+    var n, i, a, s, l, d, c, p, u, f, h, g, m, y, b, v, w, z, x, k, j, S, P, O, A, T, $, U, C, M, Z, N, D, X, B;
+    let F = e.isStockHash ? o("span", {
         class: "fttr-badge fttr-badge-success",
         children: "\u5B98\u65B9\u51FA\u5382\u57FA\u7EBF\u5339\u914D"
     }) : o("span", {
         class: "fttr-badge fttr-badge-info",
         children: "\u81EA\u5B9A\u4E49\u6821\u51C6\u6570\u636E"
-    }), B = 288 === e.size ? o("span", {
+    }), R = 288 === e.size ? o("span", {
         class: "fttr-badge fttr-badge-success",
         children: "\u6807\u51C6 288 \u5B57\u8282"
     }) : o("span", {
         class: "fttr-badge fttr-badge-warning",
         children: "\u57FA\u7840 56 \u5B57\u8282\uFF08\u7F3A ADC \u7CFB\u6570\uFF09"
     });
-    return F = {
+    return B = {
         class: "fttr-card",
         style: "margin-top:12px",
         children: [
@@ -1736,8 +1736,8 @@ function tv(e, t, r) {
                     o("div", {
                         style: "display:flex;gap:6px",
                         children: [
-                            B,
-                            R
+                            R,
+                            F
                         ]
                     })
                 ]
@@ -1998,7 +1998,7 @@ function tv(e, t, r) {
                                         }, o("td", A))
                                     ]
                                 }, o("tr", T)),
-                                (C = {
+                                (Z = {
                                     children: [
                                         ($ = {
                                             children: o("strong", {
@@ -2019,12 +2019,12 @@ function tv(e, t, r) {
                                         o("td", {
                                             children: e.txPower.o
                                         }),
-                                        (M = {
+                                        (C = {
                                             children: o("code", {
                                                 children: "p_mw = (raw*N/D+O)/10000; 10*log10(p_mw) dBm"
                                             })
-                                        }, o("td", M)),
-                                        (Z = {
+                                        }, o("td", C)),
+                                        (M = {
                                             children: [
                                                 "Raw ",
                                                 o("code", {
@@ -2038,9 +2038,9 @@ function tv(e, t, r) {
                                                     ]
                                                 })
                                             ]
-                                        }, o("td", Z))
+                                        }, o("td", M))
                                     ]
-                                }, o("tr", C))
+                                }, o("tr", Z))
                             ]
                         }, o("tbody", N))
                     ]
@@ -2166,18 +2166,18 @@ function tv(e, t, r) {
                 }, o("div", s);
             }(e.registers)
         ]
-    }, o("div", F);
+    }, o("div", B);
 }
 let main = L.view.extend({
     load: ()=>th(),
     render: (e)=>(function(e) {
-            var t, r, n, i, a, s, l, d, c, p;
-            let u = document.createElement("div");
-            u.className = "fttr-calibration";
-            let f = null, h = null, g = o("div", {}), m = o("div", {}), y = o("div", {}), b = o("div", {});
-            function v(e) {
-                var t, r, n, i, a, s, l, d, c, p, u, f, h, y, b, v, w, z, x, k, j, S;
-                g.innerHTML = "", m.innerHTML = "", "builtin" === e.source && g.appendChild((n = {
+            var t, r, n, i, a, s, l, d, c, p, u;
+            let f = document.createElement("div");
+            f.className = "fttr-calibration";
+            let h = null, g = null, m = o("div", {}), y = o("div", {}), b = o("div", {}), v = o("div", {});
+            function w(e) {
+                var t, r, n, i, a, s, l, d, c, p, u, f, h, g, b, v, w, z, x, k, j, S;
+                m.innerHTML = "", y.innerHTML = "", "builtin" === e.source && m.appendChild((n = {
                     class: "alert-message warning",
                     style: "margin-bottom:16px",
                     children: [
@@ -2227,7 +2227,7 @@ let main = L.view.extend({
                     let t = t_(e.factory.data);
                     O = tb(t, e.factory.sha256);
                 } catch  {}
-                m.appendChild((S = {
+                y.appendChild((S = {
                     class: "cbi-section",
                     style: "margin-bottom:16px",
                     children: [
@@ -2329,7 +2329,7 @@ let main = L.view.extend({
                                 (k = {
                                     class: "fttr-grid-2",
                                     children: [
-                                        (y = {
+                                        (g = {
                                             class: "fttr-card",
                                             children: [
                                                 (p = {
@@ -2381,7 +2381,7 @@ let main = L.view.extend({
                                                     ]
                                                 }, o("div", h))
                                             ]
-                                        }, o("div", y)),
+                                        }, o("div", g)),
                                         (x = {
                                             class: "fttr-card",
                                             children: [
@@ -2454,34 +2454,37 @@ let main = L.view.extend({
                     ]
                 }, o("div", S)));
             }
-            v(e);
-            let w = o("input", {
+            w(e);
+            let z = o("input", {
                 id: "fttr-cal-apply-hw",
                 type: "checkbox",
                 checked: !0,
                 style: "margin-right:6px"
-            }), z = o("button", {
+            }), x = o("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 disabled: !0,
                 style: "margin-right:8px",
                 children: _("\u4E0A\u4F20\u5E76\u4FDD\u5B58\u81F3 /lib/firmware/modified_UX3326.bin") || "\u4E0A\u4F20\u5E76\u4FDD\u5B58\u81F3 /lib/firmware/modified_UX3326.bin"
-            }), x = o("input", {
+            }), k = o("input", {
                 type: "file",
                 accept: ".bin",
                 style: "display:none"
-            }), k = (r = {
+            }), j = (n = {
                 class: "fttr-dropzone",
                 children: [
-                    o("div", {
+                    (t = {
                         style: "font-size:22px;margin-bottom:6px",
-                        children: "\uD83D\uDCC1"
-                    }),
+                        "aria-hidden": "true",
+                        children: o("span", {
+                            style: "display:inline-block;width:1em;height:1em;background-color:currentColor;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E\") center/contain no-repeat"
+                        })
+                    }, o("div", t)),
                     o("div", {
                         style: "font-weight:600;margin-bottom:4px",
                         children: "\u70B9\u51FB\u9009\u62E9\u6216\u62D6\u62FD UX3326.bin \u6587\u4EF6\u81F3\u6B64\u5904"
                     }),
-                    (t = {
+                    (r = {
                         style: "font-size:85%;opacity:0.75",
                         children: [
                             "\u652F\u6301 ",
@@ -2490,14 +2493,14 @@ let main = L.view.extend({
                             }),
                             " \u6587\u4EF6\uFF1B\u5FC5\u987B\u4E25\u683C\u4E3A 288 \u5B57\u8282"
                         ]
-                    }, o("div", t))
+                    }, o("div", r))
                 ]
-            }, o("div", r));
-            async function j(e) {
-                var t, r, n, i, a, s, l, d, c, p, u, g;
-                b.innerHTML = "", y.innerHTML = "", z.disabled = !0;
+            }, o("div", n));
+            async function S(e) {
+                var t, r, n, i, a, s, l, d, c, p, u, f;
+                v.innerHTML = "", b.innerHTML = "", x.disabled = !0;
                 let m = e.size;
-                if (288 !== m && 56 !== m) return void b.appendChild((r = {
+                if (288 !== m && 56 !== m) return void v.appendChild((r = {
                     class: "alert-message danger",
                     children: [
                         o("h4", {
@@ -2531,9 +2534,9 @@ let main = L.view.extend({
                 }, o("div", r)));
                 try {
                     let t = await e.arrayBuffer();
-                    f = t;
-                    let r = await ty(t), g = tb(t, r);
-                    if (!g) return void b.appendChild((a = {
+                    h = t;
+                    let r = await ty(t), f = tb(t, r);
+                    if (!f) return void v.appendChild((a = {
                         class: "alert-message danger",
                         children: [
                             (n = {
@@ -2546,7 +2549,7 @@ let main = L.view.extend({
                             }, o("p", i))
                         ]
                     }, o("div", a)));
-                    h = g, z.disabled = !1, b.appendChild((u = {
+                    g = f, x.disabled = !1, v.appendChild((u = {
                         class: "alert-message success",
                         children: [
                             (s = {
@@ -2566,7 +2569,7 @@ let main = L.view.extend({
                                     (l = {
                                         children: r
                                     }, o("code", l)),
-                                    g.isStockHash ? " (\u4E0E\u539F\u5382\u5B98\u65B9\u51FA\u5382\u57FA\u7EBF\u5B8C\u5168\u543B\u5408)" : " (\u81EA\u5B9A\u4E49/\u81EA\u6807\u5B9A\u6821\u51C6\u8868)",
+                                    f.isStockHash ? " (\u4E0E\u539F\u5382\u5B98\u65B9\u51FA\u5382\u57FA\u7EBF\u5B8C\u5168\u543B\u5408)" : " (\u81EA\u5B9A\u4E49/\u81EA\u6807\u5B9A\u6821\u51C6\u8868)",
                                     (d = {}, o("br", d)),
                                     "\u5404\u9879\u53C2\u6570\u5DF2\u6210\u529F\u89E3\u6790\u5E76\u5728\u4E0B\u65B9\u9884\u89C8\uFF0C\u6838\u5BF9\u65E0\u8BEF\u540E\u70B9\u51FB\u4E0B\u65B9\u6309\u94AE\u4E0A\u4F20\u81F3",
                                     " ",
@@ -2577,9 +2580,9 @@ let main = L.view.extend({
                                 ]
                             }, o("p", p))
                         ]
-                    }, o("div", u))), y.appendChild(tv(g, `\u{5F85}\u{4E0A}\u{4F20}\u{6587}\u{4EF6}\u{53C2}\u{6570}\u{9884}\u{89C8}\u{FF1A}${e.name}`));
+                    }, o("div", u))), b.appendChild(tv(f, `\u{5F85}\u{4E0A}\u{4F20}\u{6587}\u{4EF6}\u{53C2}\u{6570}\u{9884}\u{89C8}\u{FF1A}${e.name}`));
                 } catch (e) {
-                    b.appendChild((g = {
+                    v.appendChild((f = {
                         class: "alert-message danger",
                         children: o("p", {
                             style: "margin:0",
@@ -2588,35 +2591,35 @@ let main = L.view.extend({
                                 String(e)
                             ]
                         })
-                    }, o("div", g)));
+                    }, o("div", f)));
                 }
             }
-            return k.addEventListener("click", ()=>x.click()), k.addEventListener("dragover", (e)=>{
-                e.preventDefault(), k.style.opacity = "0.75";
-            }), k.addEventListener("dragleave", ()=>{
-                k.style.opacity = "1";
-            }), k.addEventListener("drop", (e)=>{
-                e.preventDefault(), k.style.opacity = "1", e.dataTransfer?.files.length && j(e.dataTransfer.files[0]);
-            }), x.addEventListener("change", ()=>{
-                x.files?.length && j(x.files[0]);
-            }), z.addEventListener("click", async ()=>{
-                if (f && h) {
+            return j.addEventListener("click", ()=>k.click()), j.addEventListener("dragover", (e)=>{
+                e.preventDefault(), j.style.opacity = "0.75";
+            }), j.addEventListener("dragleave", ()=>{
+                j.style.opacity = "1";
+            }), j.addEventListener("drop", (e)=>{
+                e.preventDefault(), j.style.opacity = "1", e.dataTransfer?.files.length && S(e.dataTransfer.files[0]);
+            }), k.addEventListener("change", ()=>{
+                k.files?.length && S(k.files[0]);
+            }), x.addEventListener("click", async ()=>{
+                if (h && g) {
                     var e, t, r, n, i, a;
-                    z.disabled = !0, z.textContent = "\u6B63\u5728\u4E0A\u4F20\u81F3 /lib/firmware/modified_UX3326.bin...", b.innerHTML = "";
+                    x.disabled = !0, x.textContent = "\u6B63\u5728\u4E0A\u4F20\u81F3 /lib/firmware/modified_UX3326.bin...", v.innerHTML = "";
                     try {
                         let a = function(e) {
                             let t = "", r = new Uint8Array(e), n = r.byteLength;
                             for(let e = 0; e < n; e++)t += String.fromCharCode(r[e]);
                             return window.btoa(t);
-                        }(f), s = w.checked, l = await tg(a);
+                        }(h), s = z.checked, l = await tg(a);
                         if (!l.success) throw Error(l.error || "\u4FDD\u5B58\u6821\u51C6\u6587\u4EF6\u5931\u8D25");
                         let d = "";
                         if (s) {
-                            z.textContent = "\u6B63\u5728\u914D\u7F6E BOSA \u5149\u6536\u53D1\u5668\u786C\u4EF6...";
+                            x.textContent = "\u6B63\u5728\u914D\u7F6E BOSA \u5149\u6536\u53D1\u5668\u786C\u4EF6...";
                             let e = await tm();
                             d = e.success ? "\uFF0C\u4E14\u5149\u6536\u53D1\u5668\u786C\u4EF6\u91CD\u7F6E\u4E0E\u5BC4\u5B58\u5668\u8868\u5DF2\u6210\u529F\u9501\u5B58\u5199\u5165\uFF08bosa-init \u6210\u529F\uFF09" : `\u{FF0C}\u{4F46}\u{5149}\u{6536}\u{53D1}\u{5668}\u{786C}\u{4EF6}\u{521D}\u{59CB}\u{5316}\u{8B66}\u{544A}\u{FF1A}${e.error || "\u672A\u77E5\u5F02\u5E38"}`;
                         }
-                        b.appendChild((i = {
+                        v.appendChild((i = {
                             class: "alert-message success",
                             children: [
                                 (e = {
@@ -2645,9 +2648,9 @@ let main = L.view.extend({
                             ]
                         }, o("div", i)));
                         let c = await th();
-                        v(c);
+                        w(c);
                     } catch (e) {
-                        b.appendChild((a = {
+                        v.appendChild((a = {
                             class: "alert-message danger",
                             children: [
                                 o("h4", {
@@ -2661,10 +2664,10 @@ let main = L.view.extend({
                             ]
                         }, o("div", a)));
                     } finally{
-                        z.disabled = !1, z.textContent = _("\u4E0A\u4F20\u5E76\u4FDD\u5B58\u81F3 /lib/firmware/modified_UX3326.bin") || "\u4E0A\u4F20\u5E76\u4FDD\u5B58\u81F3 /lib/firmware/modified_UX3326.bin";
+                        x.disabled = !1, x.textContent = _("\u4E0A\u4F20\u5E76\u4FDD\u5B58\u81F3 /lib/firmware/modified_UX3326.bin") || "\u4E0A\u4F20\u5E76\u4FDD\u5B58\u81F3 /lib/firmware/modified_UX3326.bin";
                     }
                 }
-            }), u.appendChild((p = {
+            }), f.appendChild((u = {
                 children: [
                     o("style", {
                         children: `
@@ -2808,7 +2811,7 @@ let main = L.view.extend({
                         style: "margin-bottom:6px",
                         children: "BOSA \u4E0B\u884C\u5149\u8DEF\u6821\u51C6\u7BA1\u7406 (UX3326)"
                     }),
-                    (n = {
+                    (i = {
                         class: "cbi-section-descr",
                         style: "margin-bottom:16px",
                         children: [
@@ -2824,16 +2827,16 @@ let main = L.view.extend({
                             " ",
                             "\u8BFB\u53D6\u6821\u51C6\u6570\u636E\uFF1B\u82E5\u5747\u65E0\u6709\u6548\u6570\u636E\u5219\u81EA\u52A8\u56DE\u9000\u81F3\u5185\u7F6E\u9759\u6001\u9ED8\u8BA4\u7248\u672C\u3002"
                         ]
-                    }, o("p", n)),
-                    g,
+                    }, o("p", i)),
                     m,
-                    (c = {
+                    y,
+                    (p = {
                         class: "cbi-section",
                         children: [
                             o("h3", {
                                 children: "\u4E0A\u4F20\u65B0\u7684 UX3326 \u6821\u51C6\u6587\u4EF6"
                             }),
-                            (i = {
+                            (a = {
                                 style: "font-size:90%;opacity:0.75;margin-top:0;margin-bottom:12px",
                                 children: [
                                     "\u4E0A\u4F20\u65B0\u7684\u6821\u51C6\u8868\u5C06\u56FA\u5B9A\u4FDD\u5B58\u81F3\u56FA\u4EF6\u76EE\u5F55 ",
@@ -2842,18 +2845,18 @@ let main = L.view.extend({
                                     }),
                                     "\u3002\u6587\u4EF6\u5927\u5C0F\u5FC5\u987B\u4E25\u683C\u4E3A 288 \u5B57\u8282\u3002"
                                 ]
-                            }, o("p", i)),
+                            }, o("p", a)),
+                            j,
                             k,
-                            x,
+                            o("div", {
+                                style: "margin-top:12px",
+                                children: v
+                            }),
                             o("div", {
                                 style: "margin-top:12px",
                                 children: b
                             }),
-                            o("div", {
-                                style: "margin-top:12px",
-                                children: y
-                            }),
-                            (d = {
+                            (c = {
                                 class: "fttr-card",
                                 style: "margin-top:16px",
                                 children: [
@@ -2861,7 +2864,7 @@ let main = L.view.extend({
                                         style: "margin-top:0;margin-bottom:12px",
                                         children: "\u5199\u5165\u8BBE\u7F6E\u4E0E\u6267\u884C"
                                     }),
-                                    (a = {
+                                    (s = {
                                         class: "fttr-kv-row",
                                         style: "margin-bottom:12px",
                                         children: [
@@ -2874,8 +2877,8 @@ let main = L.view.extend({
                                                 children: "/lib/firmware/modified_UX3326.bin"
                                             })
                                         ]
-                                    }, o("div", a)),
-                                    (l = {
+                                    }, o("div", s)),
+                                    (d = {
                                         class: "fttr-kv-row",
                                         style: "margin-bottom:16px",
                                         children: [
@@ -2884,27 +2887,27 @@ let main = L.view.extend({
                                                 style: "min-width:160px",
                                                 children: "\u786C\u4EF6\u7ACB\u5373\u751F\u6548"
                                             }),
-                                            (s = {
+                                            (l = {
                                                 htmlFor: "fttr-cal-apply-hw",
                                                 style: "display:flex;align-items:center;cursor:pointer",
                                                 children: [
-                                                    w,
+                                                    z,
                                                     o("span", {
                                                         children: "\u4FDD\u5B58\u540E\u7ACB\u5373\u5411 BOSA \u786C\u4EF6\u5199\u5165 56 \u5BC4\u5B58\u5668\u5E76\u6267\u884C\u9501\u5B58\u63D0\u4EA4 (bosa-init)"
                                                     })
                                                 ]
-                                            }, o("label", s))
+                                            }, o("label", l))
                                         ]
-                                    }, o("div", l)),
+                                    }, o("div", d)),
                                     o("div", {
-                                        children: z
+                                        children: x
                                     })
                                 ]
-                            }, o("div", d))
+                            }, o("div", c))
                         ]
-                    }, o("div", c))
+                    }, o("div", p))
                 ]
-            }, o("div", p))), u;
+            }, o("div", u))), f;
         })(e),
     handleSaveApply: null,
     handleSave: null,

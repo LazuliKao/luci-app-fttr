@@ -13,7 +13,7 @@ function adapterFor(device?: ConnectedDevice): string | undefined {
 	const vendor = device?.vendor || device?.serial_number.slice(0, 4);
 	if (vendor === "HWTC") return "hwtc";
 	if (device?.model?.startsWith("HL202")) return "hl202";
-	return undefined;
+	return "generic";
 }
 
 export function addDevices(section: any, connected: ConnectedDevice[]): void {
@@ -68,8 +68,16 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 		serial.write = (id: string, value: string): void => {
 			L.uci.set("fttr", id, "optical_sn", value);
 			const adapter = adapterFor(bySerial.get(value));
-			if (adapter) L.uci.set("fttr", id, "adapter", adapter);
+			if (adapter && !L.uci.get("fttr", id, "adapter")) L.uci.set("fttr", id, "adapter", adapter);
 		};
+		const adapterField = choice(s, "adapter", _("Device adapter"), [
+			["hl202", "H3C HL202"],
+			["hwtc", "Huawei HWTC"],
+			["generic", _("Generic G.988 Bridge")],
+		]);
+		adapterField.modalonly = true;
+		adapterField.default = "generic";
+		adapterField.rmempty = false;
 		reference(s, "group", _("Group"), "group").modalonly = true;
 		const contract = choice(s, "cwmp_contract", _("CWMP contract"), [
 			["auto", _("Automatic (read-only capability discovery)")],

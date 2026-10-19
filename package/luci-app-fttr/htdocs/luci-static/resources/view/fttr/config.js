@@ -80,7 +80,7 @@ function f(e, t, n, i, r, a, o) {
     }, s;
 }
 function m(e) {
-    return "HWTC" === (e?.vendor || e?.serial_number.slice(0, 4)) ? "hwtc" : e?.model?.startsWith("HL202") ? "hl202" : void 0;
+    return "HWTC" === (e?.vendor || e?.serial_number.slice(0, 4)) ? "hwtc" : e?.model?.startsWith("HL202") ? "hl202" : "generic";
 }
 function g(e, t, n) {
     function i(n, i) {
@@ -292,7 +292,7 @@ const W = (e, t)=>{
         success: !0,
         data: a.value
     };
-}), K = (r = I, async (e, t, n)=>{
+}), G = (r = I, async (e, t, n)=>{
     let i = n ? Object.assign(n, {
         async: !0
     }) : {
@@ -308,7 +308,7 @@ const W = (e, t)=>{
         success: !0,
         data: a.value
     };
-}), G = /^-?\d+(?:\.\d+)?$/, q = /^(?:true|false)$/i, B = /^null$/i, J = {
+}), K = /^-?\d+(?:\.\d+)?$/, B = /^(?:true|false)$/i, q = /^null$/i, J = {
     major: 4,
     minor: 3,
     patch: 6
@@ -379,7 +379,7 @@ const W = (e, t)=>{
                         issues: n.error?.issues
                     };
                 } catch (n) {
-                    return K(e, t).then((e)=>e.success ? {
+                    return G(e, t).then((e)=>e.success ? {
                             value: e.data
                         } : {
                             issues: e.error?.issues
@@ -406,7 +406,7 @@ const W = (e, t)=>{
         }), n;
     };
 }), Y = g("$ZodNumber", (e, t)=>{
-    X.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? G, e._zod.parse = (n, i)=>{
+    X.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? K, e._zod.parse = (n, i)=>{
         if (t.coerce) try {
             n.value = Number(n.value);
         } catch (e) {}
@@ -424,7 +424,7 @@ const W = (e, t)=>{
         }), n;
     };
 }), ee = g("$ZodBoolean", (e, t)=>{
-    X.init(e, t), e._zod.pattern = q, e._zod.parse = (n, i)=>{
+    X.init(e, t), e._zod.pattern = B, e._zod.parse = (n, i)=>{
         if (t.coerce) try {
             n.value = !!n.value;
         } catch (e) {}
@@ -437,7 +437,7 @@ const W = (e, t)=>{
         }), n;
     };
 }), et = g("$ZodNull", (e, t)=>{
-    X.init(e, t), e._zod.pattern = B, e._zod.values = new Set([
+    X.init(e, t), e._zod.pattern = q, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, n)=>{
         let i = t.value;
@@ -686,7 +686,7 @@ const el = g("$ZodUnion", (e, t)=>{
                 issues: []
             }, i);
             if (s instanceof Promise) throw Error("Async schemas not supported in object keys currently");
-            if ("string" == typeof o && G.test(o) && s.issues.length) {
+            if ("string" == typeof o && K.test(o) && s.issues.length) {
                 let e = t.keyType._zod.run({
                     value: Number(o),
                     issues: []
@@ -834,7 +834,7 @@ const ey = g("ZodMiniType", (e, t)=>{
             callee: e.parse
         }), e.safeParse = (t, n)=>F(e, t, n), e.parseAsync = async (t, n)=>H(e, t, n, {
             callee: e.parseAsync
-        }), e.safeParseAsync = async (t, n)=>K(e, t, n), e.check = (...n)=>e.clone({
+        }), e.safeParseAsync = async (t, n)=>G(e, t, n), e.check = (...n)=>e.clone({
             ...t,
             checks: [
                 ...t.checks ?? [],
@@ -985,13 +985,13 @@ function eF(e) {
         innerType: e
     });
 }
-const eK = g("ZodMiniCatch", (e, t)=>{
+const eG = g("ZodMiniCatch", (e, t)=>{
     eg.init(e, t), ey.init(e, t);
-}), eG = g("ZodMiniLazy", (e, t)=>{
+}), eK = g("ZodMiniLazy", (e, t)=>{
     eh.init(e, t), ey.init(e, t);
 });
-function eq() {
-    let e = new eG({
+function eB() {
+    let e = new eK({
         type: "lazy",
         getter: ()=>e$([
                 eb(),
@@ -1007,7 +1007,7 @@ function eq() {
     });
     return e;
 }
-let eB = eO({
+let eq = eO({
     error: e$([
         eb(),
         eO({
@@ -1023,7 +1023,7 @@ class eJ extends Error {
     }
 }
 function eX(e) {
-    let t = eB.safeParse(e);
+    let t = eq.safeParse(e);
     if (t.success) {
         let e = t.data.error;
         throw "string" == typeof e ? new eJ("rpc", e) : new eJ(e.code, e.message);
@@ -1075,7 +1075,7 @@ const e6 = eD([
     "pending",
     "recovering",
     "waiting_management"
-]), e7 = eO({
+]), e3 = eO({
     id: eQ,
     name: eU(eF(eQ)),
     kind: eD([
@@ -1098,7 +1098,7 @@ const e6 = eD([
         desired: eQ
     })))
 });
-let e3 = eO({
+let e7 = eO({
     state: eQ,
     reason: e1,
     task_id: eU(eF(eY)),
@@ -1235,7 +1235,7 @@ const te = eV("state", [
     attempts: e2,
     next_retry_at: e2,
     reconcile_reason: e1,
-    items: eN(e7),
+    items: eN(e3),
     cwmp_contract: eU(eO({
         state: eQ,
         requested: eQ,
@@ -1249,8 +1249,8 @@ const te = eV("state", [
             binding: eQ
         }))
     })),
-    wan_objects: eU(eC(eQ, eq())),
-    wan_lifecycle: eU(eC(eQ, e3)),
+    wan_objects: eU(eC(eQ, eB())),
+    wan_lifecycle: eU(eC(eQ, e7)),
     wan_stage: eU(eD([
         "waiting",
         "inventory",
@@ -1272,7 +1272,7 @@ const te = eV("state", [
         pending: eF(eQ),
         pending_instance: eF(eY)
     })),
-    wifi_lifecycle: eU(eC(eQ, e3)),
+    wifi_lifecycle: eU(eC(eQ, e7)),
     wifi_stage: eU(eD([
         "waiting",
         "inventory",
@@ -1353,8 +1353,8 @@ const tr = eO({
     management: eF(e9),
     acs_bootstrap: te,
     provisioning: tt,
-    services: eN(e7),
-    ssids: eN(e7),
+    services: eN(e3),
+    ssids: eN(e3),
     wifi_sync: e5
 }), ta = eO({
     enabled: e0,
@@ -1374,7 +1374,7 @@ const tr = eO({
     error: eF(eQ),
     devices: eN(tr),
     management_network: ti,
-    omci_management: eq(),
+    omci_management: eB(),
     groups: eN(eO({
         id: eQ,
         name: eF(eQ),
@@ -1454,8 +1454,8 @@ const tm = eO({
     business_status: tu,
     management: eF(e9),
     provisioning: eF(tt),
-    services: eN(e7),
-    ssids: eN(e7),
+    services: eN(e3),
+    ssids: eN(e3),
     wifi_sync: e5,
     acs_bootstrap: eU(te),
     identity: eF(tf),
@@ -1463,7 +1463,7 @@ const tm = eO({
     identity_current: eS(),
     fiber_distance_m: td,
     ranging_delay_rtd_ns: td,
-    equalization_delay_bits: new eK({
+    equalization_delay_bits: new eG({
         type: "catch",
         innerType: td,
         catchValue: ()=>null
@@ -1725,7 +1725,7 @@ let main = tP.extend({
                 ]
             ]))(r = l(a, L.form.Value, e, t)).default = n, r.rmempty = !1, r.depends("dhcp_enabled", "1");
             let s = e.taboption("basic", L.form.SectionValue, "_policy", L.form.NamedSection, n, "provisioning").subsection;
-            for (let [e, t] of (s.addremove = !1, s.anonymous = !1, (r = l(s, L.form.Flag, "enabled", _("Enable provisioning"))).default = "1", r.rmempty = !1, (r = d(s, "mode", _("Synchronization mode"), [
+            for (let [e, t] of (s.addremove = !1, s.anonymous = !1, (r = l(s, L.form.Flag, "enabled", _("Enable provisioning"))).default = "1", r.rmempty = !1, (r = l(s, L.form.Flag, "allow_unsupported_as_bridge", _("Allow unsupported ONUs as bridge"))).default = "0", r.rmempty = !1, r.description = _("Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state."), (r = d(s, "mode", _("Synchronization mode"), [
                 [
                     "auto",
                     _("Automatic")
@@ -1787,9 +1787,24 @@ let main = tP.extend({
             }, n.validate = (e, t)=>t ? !L.uci.sections("fttr", "device").some((n)=>n[".name"] !== e && n.optical_sn === t) || _("Device already configured.") : _("Select device."), n.write = (e, t)=>{
                 L.uci.set("fttr", e, "optical_sn", t);
                 let n = m(r.get(t));
-                n && L.uci.set("fttr", e, "adapter", n);
-            }, c(e, "group", _("Group"), "group").modalonly = !0;
-            let o = d(e, "cwmp_contract", _("CWMP contract"), [
+                n && !L.uci.get("fttr", e, "adapter") && L.uci.set("fttr", e, "adapter", n);
+            };
+            let o = d(e, "adapter", _("Device adapter"), [
+                [
+                    "hl202",
+                    "H3C HL202"
+                ],
+                [
+                    "hwtc",
+                    "Huawei HWTC"
+                ],
+                [
+                    "generic",
+                    _("Generic G.988 Bridge")
+                ]
+            ]);
+            o.modalonly = !0, o.default = "generic", o.rmempty = !1, c(e, "group", _("Group"), "group").modalonly = !0;
+            let s = d(e, "cwmp_contract", _("CWMP contract"), [
                 [
                     "auto",
                     _("Automatic (read-only capability discovery)")
@@ -1819,10 +1834,10 @@ let main = tP.extend({
                     `CT \xb7 ${_("Unverified candidate")}`
                 ]
             ]);
-            o.modalonly = !0, o.default = "auto", o.rmempty = !1, o.description = _("Independent of the optical adapter. Parameter paths, types and writable evidence are discovered before synchronization. Unverified candidates do not authorize writes.");
-            let s = l(e, L.form.Flag, "omci_management", _("Provision management VLAN and ACS via OMCI"));
-            s.modalonly = !0, s.default = "0", s.rmempty = !1, s.description = _("Disabled by default. Uses the global management VLAN, priority and ACS URL for this device only, subject to management application authorization. Disabling skips future OMCI management writes and retains existing ONU settings. ME readback does not prove WAN creation or successful Inform; K155 may clear its local ACS URL when enabled.");
-            let u = d(e, "wifi_cleanup", _("Unconfigured WLANs"), [
+            s.modalonly = !0, s.default = "auto", s.rmempty = !1, s.description = _("Independent of the optical adapter. Parameter paths, types and writable evidence are discovered before synchronization. Unverified candidates do not authorize writes.");
+            let u = l(e, L.form.Flag, "omci_management", _("Provision management VLAN and ACS via OMCI"));
+            u.modalonly = !0, u.default = "0", u.rmempty = !1, u.description = _("Disabled by default. Uses the global management VLAN, priority and ACS URL for this device only, subject to management application authorization. Disabling skips future OMCI management writes and retains existing ONU settings. ME readback does not prove WAN creation or successful Inform; K155 may clear its local ACS URL when enabled.");
+            let f = d(e, "wifi_cleanup", _("Unconfigured WLANs"), [
                 [
                     "disable",
                     _("Disable (keep the WLAN object)")
@@ -1836,7 +1851,7 @@ let main = tP.extend({
                     _("Delete the WLAN object")
                 ]
             ]);
-            u.modalonly = !0, u.default = "disable", u.description = _("By default, extra WLANs are disabled and retained. Deleting objects is destructive and should only be selected deliberately.");
+            f.modalonly = !0, f.default = "disable", f.description = _("By default, extra WLANs are disabled and retained. Deleting objects is destructive and should only be selected deliberately.");
         }), y.tab("templates", _("Templates")), g = (s = u(y, "templates", "_templates", "template", _("Templates"), (e)=>{
             p(e, "_name", _("Template"), (e)=>String(L.uci.get("fttr", e, "name") || _("New template")));
             let t = l(e, L.form.Value, "name", _("Name"));
