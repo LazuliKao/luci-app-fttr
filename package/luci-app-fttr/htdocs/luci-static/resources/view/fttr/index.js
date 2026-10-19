@@ -6,12932 +6,1008 @@
 'require form as __fttr_form';
 'require poll as __fttr_poll';
 'require dom as __fttr_dom';
-
-// UNUSED EXPORTS: main
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/@lazulikao+luci-types@https_685a81b9ead15f36368ce6e6ebcf4a27/node_modules/@lazulikao/luci-types/src/jsx/jsx-factory.ts
-/**
- * JSX Fragment symbol
- */ const Fragment = Symbol.for("jsx.fragment");
-function normalizeChildren(input) {
-    let out = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : [];
-    for (const child of input){
-        if (child == null || typeof child === "boolean") continue;
-        if (Array.isArray(child)) {
-            normalizeChildren(child, out);
-        } else {
-            out.push(child instanceof Node ? child : String(child));
-        }
+var e;
+let t, n, r, i;
+const o = Symbol.for("jsx.fragment");
+function a(e, t) {
+    let { children: n, ...r } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, i = function e(t) {
+        let n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
+        for (let r of t)null != r && "boolean" != typeof r && (Array.isArray(r) ? e(r, n) : n.push(r instanceof Node ? r : String(r)));
+        return n;
+    }(null == n ? [] : Array.isArray(n) ? n : [
+        n
+    ]);
+    if (e === o) {
+        let e = document.createDocumentFragment();
+        return e.append(...i), e;
     }
-    return out;
-}
-function isPropertyBag(value) {
-    return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-function isEventListener(value) {
-    return typeof value === "function";
-}
-function createJsxNode(type, config) {
-    const { children, ...props } = isPropertyBag(config) ? config : {};
-    const childArray = children == null ? [] : Array.isArray(children) ? children : [
-        children
-    ];
-    const filteredChildren = normalizeChildren(childArray);
-    if (type === Fragment) {
-        const fragment = document.createDocumentFragment();
-        fragment.append(...filteredChildren);
-        return fragment;
-    }
-    if (typeof type === "function") {
-        const result = Reflect.apply(type, undefined, [
+    if ("function" == typeof e) {
+        let t = Reflect.apply(e, void 0, [
             {
-                ...props,
-                children: filteredChildren
+                ...r,
+                children: i
             }
         ]);
-        if (!(result instanceof Node)) {
-            throw new TypeError("JSX components must return a DOM Node");
-        }
-        return result;
+        if (!(t instanceof Node)) throw TypeError("JSX components must return a DOM Node");
+        return t;
     }
-    if (typeof type !== "string") {
-        throw new TypeError("JSX element types must be tag names or component functions");
-    }
-    const eventHandlers = {};
-    const finalProps = {
-        ...props
+    if ("string" != typeof e) throw TypeError("JSX element types must be tag names or component functions");
+    let a = {}, s = {
+        ...r
     };
-    for (const [key, value] of Object.entries(finalProps)){
-        if (key.startsWith("on") && isEventListener(value)) {
-            eventHandlers[key] = value;
-            delete finalProps[key];
-        } else if (typeof value === "boolean") {
-            if (value) {
-                finalProps[key] = key;
-            } else {
-                delete finalProps[key];
-            }
+    for (let [e, t] of Object.entries(s))e.startsWith("on") && "function" == typeof t ? (a[e] = t, delete s[e]) : "boolean" == typeof t && (t ? s[e] = e : delete s[e]);
+    let l = Object.keys(s).length > 0 ? i.length > 1 ? E(e, s, i) : E(e, s, i[0]) : i.length > 1 ? E(e, {}, i) : E(e, {}, i[0]);
+    for (let [e, t] of Object.entries(a)){
+        let n = e.slice(2).toLowerCase();
+        l.addEventListener(n, t);
+    }
+    return l;
+}
+function s(e, t, n) {
+    function r(n, r) {
+        if (n._zod || Object.defineProperty(n, "_zod", {
+            value: {
+                def: r,
+                constr: a,
+                traits: new Set()
+            },
+            enumerable: !1
+        }), n._zod.traits.has(e)) return;
+        n._zod.traits.add(e), t(n, r);
+        let i = a.prototype, o = Object.keys(i);
+        for(let e = 0; e < o.length; e++){
+            let t = o[e];
+            t in n || (n[t] = i[t].bind(n));
         }
     }
-    const hasProps = Object.keys(finalProps).length > 0;
-    const element = !hasProps ? filteredChildren.length > 1 ? E(type, {}, filteredChildren) : E(type, {}, filteredChildren[0]) : filteredChildren.length > 1 ? E(type, finalProps, filteredChildren) : E(type, finalProps, filteredChildren[0]);
-    for (const [eventName, handler] of Object.entries(eventHandlers)){
-        const eventType = eventName.slice(2).toLowerCase();
-        element.addEventListener(eventType, handler);
+    let i = n?.Parent ?? Object;
+    class o extends i {
     }
-    return element;
-}
-/**
- * JSX automatic runtime - production (single/no children)
- */ function jsx(type, config) {
-    return createJsxNode(type, config);
-}
-/**
- * JSX automatic runtime - production (multiple static children)
- */ function jsxs(type, config) {
-    return createJsxNode(type, config);
-}
-/**
- * JSX automatic runtime - development mode
- */ function jsxDEV(type, config) {
-    return createJsxNode(type, config);
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/@lazulikao+luci-types@https_685a81b9ead15f36368ce6e6ebcf4a27/node_modules/@lazulikao/luci-types/src/jsx/jsx-runtime.ts
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/core.js
-/** A special constant with type `never` */
-const NEVER = Object.freeze({
-    status: "aborted",
-});
-function $constructor(name, initializer, params) {
-    function init(inst, def) {
-        if (!inst._zod) {
-            Object.defineProperty(inst, "_zod", {
-                value: {
-                    def,
-                    constr: _,
-                    traits: new Set(),
-                },
-                enumerable: false,
-            });
-        }
-        if (inst._zod.traits.has(name)) {
-            return;
-        }
-        inst._zod.traits.add(name);
-        initializer(inst, def);
-        // support prototype modifications
-        const proto = _.prototype;
-        const keys = Object.keys(proto);
-        for (let i = 0; i < keys.length; i++) {
-            const k = keys[i];
-            if (!(k in inst)) {
-                inst[k] = proto[k].bind(inst);
-            }
-        }
+    function a(e) {
+        var t;
+        let i = n?.Parent ? new o() : this;
+        for (let n of (r(i, e), (t = i._zod).deferred ?? (t.deferred = []), i._zod.deferred))n();
+        return i;
     }
-    // doesn't work if Parent has a constructor with arguments
-    const Parent = params?.Parent ?? Object;
-    class Definition extends Parent {
-    }
-    Object.defineProperty(Definition, "name", { value: name });
-    function _(def) {
-        var _a;
-        const inst = params?.Parent ? new Definition() : this;
-        init(inst, def);
-        (_a = inst._zod).deferred ?? (_a.deferred = []);
-        for (const fn of inst._zod.deferred) {
-            fn();
-        }
-        return inst;
-    }
-    Object.defineProperty(_, "init", { value: init });
-    Object.defineProperty(_, Symbol.hasInstance, {
-        value: (inst) => {
-            if (params?.Parent && inst instanceof params.Parent)
-                return true;
-            return inst?._zod?.traits?.has(name);
-        },
-    });
-    Object.defineProperty(_, "name", { value: name });
-    return _;
+    return Object.defineProperty(o, "name", {
+        value: e
+    }), Object.defineProperty(a, "init", {
+        value: r
+    }), Object.defineProperty(a, Symbol.hasInstance, {
+        value: (t)=>!!n?.Parent && t instanceof n.Parent || t?._zod?.traits?.has(e)
+    }), Object.defineProperty(a, "name", {
+        value: e
+    }), a;
 }
-//////////////////////////////   UTILITIES   ///////////////////////////////////////
-const $brand = Symbol("zod_brand");
-class $ZodAsyncError extends Error {
-    constructor() {
-        super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
+Object.freeze({
+    status: "aborted"
+}), Symbol("zod_brand");
+class l extends Error {
+    constructor(){
+        super("Encountered Promise during synchronous parse. Use .parseAsync() instead.");
     }
 }
-class $ZodEncodeError extends Error {
-    constructor(name) {
-        super(`Encountered unidirectional transform during encode: ${name}`);
-        this.name = "ZodEncodeError";
-    }
+const d = {};
+function c(e) {
+    return e && Object.assign(d, e), d;
 }
-const globalConfig = {};
-function core_config(newConfig) {
-    if (newConfig)
-        Object.assign(globalConfig, newConfig);
-    return globalConfig;
+function u(e, t) {
+    return "bigint" == typeof t ? t.toString() : t;
 }
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/util.js
-// functions
-function assertEqual(val) {
-    return val;
-}
-function assertNotEqual(val) {
-    return val;
-}
-function assertIs(_arg) { }
-function assertNever(_x) {
-    throw new Error("Unexpected value in exhaustive check");
-}
-function assert(_) { }
-function util_getEnumValues(entries) {
-    const numericValues = Object.values(entries).filter((v) => typeof v === "number");
-    const values = Object.entries(entries)
-        .filter(([k, _]) => numericValues.indexOf(+k) === -1)
-        .map(([_, v]) => v);
-    return values;
-}
-function joinValues(array, separator = "|") {
-    return array.map((val) => stringifyPrimitive(val)).join(separator);
-}
-function jsonStringifyReplacer(_, value) {
-    if (typeof value === "bigint")
-        return value.toString();
-    return value;
-}
-function cached(getter) {
-    const set = false;
+function p(e) {
     return {
-        get value() {
-            if (!set) {
-                const value = getter();
-                Object.defineProperty(this, "value", { value });
-                return value;
+        get value () {
+            {
+                let t = e();
+                return Object.defineProperty(this, "value", {
+                    value: t
+                }), t;
             }
-            throw new Error("cached value already set");
-        },
+        }
     };
 }
-function nullish(input) {
-    return input === null || input === undefined;
+function f(e) {
+    let t = +!!e.startsWith("^"), n = e.endsWith("$") ? e.length - 1 : e.length;
+    return e.slice(t, n);
 }
-function cleanRegex(source) {
-    const start = source.startsWith("^") ? 1 : 0;
-    const end = source.endsWith("$") ? source.length - 1 : source.length;
-    return source.slice(start, end);
-}
-function floatSafeRemainder(val, step) {
-    const valDecCount = (val.toString().split(".")[1] || "").length;
-    const stepString = step.toString();
-    let stepDecCount = (stepString.split(".")[1] || "").length;
-    if (stepDecCount === 0 && /\d?e-\d?/.test(stepString)) {
-        const match = stepString.match(/\d?e-(\d?)/);
-        if (match?.[1]) {
-            stepDecCount = Number.parseInt(match[1]);
-        }
-    }
-    const decCount = valDecCount > stepDecCount ? valDecCount : stepDecCount;
-    const valInt = Number.parseInt(val.toFixed(decCount).replace(".", ""));
-    const stepInt = Number.parseInt(step.toFixed(decCount).replace(".", ""));
-    return (valInt % stepInt) / 10 ** decCount;
-}
-const EVALUATING = Symbol("evaluating");
-function defineLazy(object, key, getter) {
-    let value = undefined;
-    Object.defineProperty(object, key, {
-        get() {
-            if (value === EVALUATING) {
-                // Circular reference detected, return undefined to break the cycle
-                return undefined;
-            }
-            if (value === undefined) {
-                value = EVALUATING;
-                value = getter();
-            }
-            return value;
+const h = Symbol("evaluating");
+function g(e, t, n) {
+    let r;
+    Object.defineProperty(e, t, {
+        get () {
+            if (r !== h) return void 0 === r && (r = h, r = n()), r;
         },
-        set(v) {
-            Object.defineProperty(object, key, {
-                value: v,
-                // configurable: true,
+        set (n) {
+            Object.defineProperty(e, t, {
+                value: n
             });
-            // object[key] = v;
         },
-        configurable: true,
+        configurable: !0
     });
 }
-function objectClone(obj) {
-    return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
-}
-function assignProp(target, prop, value) {
-    Object.defineProperty(target, prop, {
-        value,
-        writable: true,
-        enumerable: true,
-        configurable: true,
+function v(e, t, n) {
+    Object.defineProperty(e, t, {
+        value: n,
+        writable: !0,
+        enumerable: !0,
+        configurable: !0
     });
 }
-function mergeDefs(...defs) {
-    const mergedDescriptors = {};
-    for (const def of defs) {
-        const descriptors = Object.getOwnPropertyDescriptors(def);
-        Object.assign(mergedDescriptors, descriptors);
-    }
-    return Object.defineProperties({}, mergedDescriptors);
+function m(...e) {
+    let t = {};
+    for (let n of e)Object.assign(t, Object.getOwnPropertyDescriptors(n));
+    return Object.defineProperties({}, t);
 }
-function cloneDef(schema) {
-    return mergeDefs(schema._zod.def);
+const y = "captureStackTrace" in Error ? Error.captureStackTrace : (...e)=>{};
+function b(e) {
+    return "object" == typeof e && null !== e && !Array.isArray(e);
 }
-function getElementAtPath(obj, path) {
-    if (!path)
-        return obj;
-    return path.reduce((acc, key) => acc?.[key], obj);
+function w(e) {
+    if (!1 === b(e)) return !1;
+    let t = e.constructor;
+    if (void 0 === t || "function" != typeof t) return !0;
+    let n = t.prototype;
+    return !1 !== b(n) && !1 !== Object.prototype.hasOwnProperty.call(n, "isPrototypeOf");
 }
-function promiseAllObject(promisesObj) {
-    const keys = Object.keys(promisesObj);
-    const promises = keys.map((key) => promisesObj[key]);
-    return Promise.all(promises).then((results) => {
-        const resolvedObj = {};
-        for (let i = 0; i < keys.length; i++) {
-            resolvedObj[keys[i]] = results[i];
-        }
-        return resolvedObj;
-    });
+const z = new Set([
+    "string",
+    "number",
+    "symbol"
+]);
+function x(e) {
+    return e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-function randomString(length = 10) {
-    const chars = "abcdefghijklmnopqrstuvwxyz";
-    let str = "";
-    for (let i = 0; i < length; i++) {
-        str += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return str;
+function k(e, t, n) {
+    let r = new e._zod.constr(t ?? e._zod.def);
+    return (!t || n?.parent) && (r._zod.parent = e), r;
 }
-function esc(str) {
-    return JSON.stringify(str);
-}
-function slugify(input) {
-    return input
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/[\s_-]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-}
-const captureStackTrace = ("captureStackTrace" in Error ? Error.captureStackTrace : (..._args) => { });
-function util_isObject(data) {
-    return typeof data === "object" && data !== null && !Array.isArray(data);
-}
-const util_allowsEval = (/* unused pure expression or super */ null && (cached(() => {
-    // @ts-ignore
-    if (typeof navigator !== "undefined" && navigator?.userAgent?.includes("Cloudflare")) {
-        return false;
-    }
-    try {
-        const F = Function;
-        new F("");
-        return true;
-    }
-    catch (_) {
-        return false;
-    }
-})));
-function isPlainObject(o) {
-    if (util_isObject(o) === false)
-        return false;
-    // modified constructor
-    const ctor = o.constructor;
-    if (ctor === undefined)
-        return true;
-    if (typeof ctor !== "function")
-        return true;
-    // modified prototype
-    const prot = ctor.prototype;
-    if (util_isObject(prot) === false)
-        return false;
-    // ctor doesn't have static `isPrototypeOf`
-    if (Object.prototype.hasOwnProperty.call(prot, "isPrototypeOf") === false) {
-        return false;
-    }
-    return true;
-}
-function shallowClone(o) {
-    if (isPlainObject(o))
-        return { ...o };
-    if (Array.isArray(o))
-        return [...o];
-    return o;
-}
-function numKeys(data) {
-    let keyCount = 0;
-    for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-            keyCount++;
-        }
-    }
-    return keyCount;
-}
-const getParsedType = (data) => {
-    const t = typeof data;
-    switch (t) {
-        case "undefined":
-            return "undefined";
-        case "string":
-            return "string";
-        case "number":
-            return Number.isNaN(data) ? "nan" : "number";
-        case "boolean":
-            return "boolean";
-        case "function":
-            return "function";
-        case "bigint":
-            return "bigint";
-        case "symbol":
-            return "symbol";
-        case "object":
-            if (Array.isArray(data)) {
-                return "array";
-            }
-            if (data === null) {
-                return "null";
-            }
-            if (data.then && typeof data.then === "function" && data.catch && typeof data.catch === "function") {
-                return "promise";
-            }
-            if (typeof Map !== "undefined" && data instanceof Map) {
-                return "map";
-            }
-            if (typeof Set !== "undefined" && data instanceof Set) {
-                return "set";
-            }
-            if (typeof Date !== "undefined" && data instanceof Date) {
-                return "date";
-            }
-            // @ts-ignore
-            if (typeof File !== "undefined" && data instanceof File) {
-                return "file";
-            }
-            return "object";
-        default:
-            throw new Error(`Unknown data type: ${t}`);
-    }
-};
-const propertyKeyTypes = new Set(["string", "number", "symbol"]);
-const primitiveTypes = new Set(["string", "number", "bigint", "boolean", "symbol", "undefined"]);
-function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-// zod-specific utils
-function clone(inst, def, params) {
-    const cl = new inst._zod.constr(def ?? inst._zod.def);
-    if (!def || params?.parent)
-        cl._zod.parent = inst;
-    return cl;
-}
-function normalizeParams(_params) {
-    const params = _params;
-    if (!params)
-        return {};
-    if (typeof params === "string")
-        return { error: () => params };
-    if (params?.message !== undefined) {
-        if (params?.error !== undefined)
-            throw new Error("Cannot specify both `message` and `error` params");
-        params.error = params.message;
-    }
-    delete params.message;
-    if (typeof params.error === "string")
-        return { ...params, error: () => params.error };
-    return params;
-}
-function createTransparentProxy(getter) {
-    let target;
-    return new Proxy({}, {
-        get(_, prop, receiver) {
-            target ?? (target = getter());
-            return Reflect.get(target, prop, receiver);
-        },
-        set(_, prop, value, receiver) {
-            target ?? (target = getter());
-            return Reflect.set(target, prop, value, receiver);
-        },
-        has(_, prop) {
-            target ?? (target = getter());
-            return Reflect.has(target, prop);
-        },
-        deleteProperty(_, prop) {
-            target ?? (target = getter());
-            return Reflect.deleteProperty(target, prop);
-        },
-        ownKeys(_) {
-            target ?? (target = getter());
-            return Reflect.ownKeys(target);
-        },
-        getOwnPropertyDescriptor(_, prop) {
-            target ?? (target = getter());
-            return Reflect.getOwnPropertyDescriptor(target, prop);
-        },
-        defineProperty(_, prop, descriptor) {
-            target ?? (target = getter());
-            return Reflect.defineProperty(target, prop, descriptor);
-        },
-    });
-}
-function stringifyPrimitive(value) {
-    if (typeof value === "bigint")
-        return value.toString() + "n";
-    if (typeof value === "string")
-        return `"${value}"`;
-    return `${value}`;
-}
-function optionalKeys(shape) {
-    return Object.keys(shape).filter((k) => {
-        return shape[k]._zod.optin === "optional" && shape[k]._zod.optout === "optional";
-    });
-}
-const NUMBER_FORMAT_RANGES = {
-    safeint: [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER],
-    int32: [-2147483648, 2147483647],
-    uint32: [0, 4294967295],
-    float32: [-3.4028234663852886e38, 3.4028234663852886e38],
-    float64: [-Number.MAX_VALUE, Number.MAX_VALUE],
-};
-const BIGINT_FORMAT_RANGES = {
-    int64: [/* @__PURE__*/ BigInt("-9223372036854775808"), /* @__PURE__*/ BigInt("9223372036854775807")],
-    uint64: [/* @__PURE__*/ BigInt(0), /* @__PURE__*/ BigInt("18446744073709551615")],
-};
-function pick(schema, mask) {
-    const currDef = schema._zod.def;
-    const checks = currDef.checks;
-    const hasChecks = checks && checks.length > 0;
-    if (hasChecks) {
-        throw new Error(".pick() cannot be used on object schemas containing refinements");
-    }
-    const def = mergeDefs(schema._zod.def, {
-        get shape() {
-            const newShape = {};
-            for (const key in mask) {
-                if (!(key in currDef.shape)) {
-                    throw new Error(`Unrecognized key: "${key}"`);
-                }
-                if (!mask[key])
-                    continue;
-                newShape[key] = currDef.shape[key];
-            }
-            assignProp(this, "shape", newShape); // self-caching
-            return newShape;
-        },
-        checks: [],
-    });
-    return clone(schema, def);
-}
-function omit(schema, mask) {
-    const currDef = schema._zod.def;
-    const checks = currDef.checks;
-    const hasChecks = checks && checks.length > 0;
-    if (hasChecks) {
-        throw new Error(".omit() cannot be used on object schemas containing refinements");
-    }
-    const def = mergeDefs(schema._zod.def, {
-        get shape() {
-            const newShape = { ...schema._zod.def.shape };
-            for (const key in mask) {
-                if (!(key in currDef.shape)) {
-                    throw new Error(`Unrecognized key: "${key}"`);
-                }
-                if (!mask[key])
-                    continue;
-                delete newShape[key];
-            }
-            assignProp(this, "shape", newShape); // self-caching
-            return newShape;
-        },
-        checks: [],
-    });
-    return clone(schema, def);
-}
-function extend(schema, shape) {
-    if (!isPlainObject(shape)) {
-        throw new Error("Invalid input to extend: expected a plain object");
-    }
-    const checks = schema._zod.def.checks;
-    const hasChecks = checks && checks.length > 0;
-    if (hasChecks) {
-        // Only throw if new shape overlaps with existing shape
-        // Use getOwnPropertyDescriptor to check key existence without accessing values
-        const existingShape = schema._zod.def.shape;
-        for (const key in shape) {
-            if (Object.getOwnPropertyDescriptor(existingShape, key) !== undefined) {
-                throw new Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
-            }
-        }
-    }
-    const def = mergeDefs(schema._zod.def, {
-        get shape() {
-            const _shape = { ...schema._zod.def.shape, ...shape };
-            assignProp(this, "shape", _shape); // self-caching
-            return _shape;
-        },
-    });
-    return clone(schema, def);
-}
-function safeExtend(schema, shape) {
-    if (!isPlainObject(shape)) {
-        throw new Error("Invalid input to safeExtend: expected a plain object");
-    }
-    const def = mergeDefs(schema._zod.def, {
-        get shape() {
-            const _shape = { ...schema._zod.def.shape, ...shape };
-            assignProp(this, "shape", _shape); // self-caching
-            return _shape;
-        },
-    });
-    return clone(schema, def);
-}
-function merge(a, b) {
-    const def = mergeDefs(a._zod.def, {
-        get shape() {
-            const _shape = { ...a._zod.def.shape, ...b._zod.def.shape };
-            assignProp(this, "shape", _shape); // self-caching
-            return _shape;
-        },
-        get catchall() {
-            return b._zod.def.catchall;
-        },
-        checks: [], // delete existing checks
-    });
-    return clone(a, def);
-}
-function partial(Class, schema, mask) {
-    const currDef = schema._zod.def;
-    const checks = currDef.checks;
-    const hasChecks = checks && checks.length > 0;
-    if (hasChecks) {
-        throw new Error(".partial() cannot be used on object schemas containing refinements");
-    }
-    const def = mergeDefs(schema._zod.def, {
-        get shape() {
-            const oldShape = schema._zod.def.shape;
-            const shape = { ...oldShape };
-            if (mask) {
-                for (const key in mask) {
-                    if (!(key in oldShape)) {
-                        throw new Error(`Unrecognized key: "${key}"`);
-                    }
-                    if (!mask[key])
-                        continue;
-                    // if (oldShape[key]!._zod.optin === "optional") continue;
-                    shape[key] = Class
-                        ? new Class({
-                            type: "optional",
-                            innerType: oldShape[key],
-                        })
-                        : oldShape[key];
-                }
-            }
-            else {
-                for (const key in oldShape) {
-                    // if (oldShape[key]!._zod.optin === "optional") continue;
-                    shape[key] = Class
-                        ? new Class({
-                            type: "optional",
-                            innerType: oldShape[key],
-                        })
-                        : oldShape[key];
-                }
-            }
-            assignProp(this, "shape", shape); // self-caching
-            return shape;
-        },
-        checks: [],
-    });
-    return clone(schema, def);
-}
-function required(Class, schema, mask) {
-    const def = mergeDefs(schema._zod.def, {
-        get shape() {
-            const oldShape = schema._zod.def.shape;
-            const shape = { ...oldShape };
-            if (mask) {
-                for (const key in mask) {
-                    if (!(key in shape)) {
-                        throw new Error(`Unrecognized key: "${key}"`);
-                    }
-                    if (!mask[key])
-                        continue;
-                    // overwrite with non-optional
-                    shape[key] = new Class({
-                        type: "nonoptional",
-                        innerType: oldShape[key],
-                    });
-                }
-            }
-            else {
-                for (const key in oldShape) {
-                    // overwrite with non-optional
-                    shape[key] = new Class({
-                        type: "nonoptional",
-                        innerType: oldShape[key],
-                    });
-                }
-            }
-            assignProp(this, "shape", shape); // self-caching
-            return shape;
-        },
-    });
-    return clone(schema, def);
-}
-// invalid_type | too_big | too_small | invalid_format | not_multiple_of | unrecognized_keys | invalid_union | invalid_key | invalid_element | invalid_value | custom
-function aborted(x, startIndex = 0) {
-    if (x.aborted === true)
-        return true;
-    for (let i = startIndex; i < x.issues.length; i++) {
-        if (x.issues[i]?.continue !== true) {
-            return true;
-        }
-    }
-    return false;
-}
-function prefixIssues(path, issues) {
-    return issues.map((iss) => {
-        var _a;
-        (_a = iss).path ?? (_a.path = []);
-        iss.path.unshift(path);
-        return iss;
-    });
-}
-function unwrapMessage(message) {
-    return typeof message === "string" ? message : message?.message;
-}
-function finalizeIssue(iss, ctx, config) {
-    const full = { ...iss, path: iss.path ?? [] };
-    // for backwards compatibility
-    if (!iss.message) {
-        const message = unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ??
-            unwrapMessage(ctx?.error?.(iss)) ??
-            unwrapMessage(config.customError?.(iss)) ??
-            unwrapMessage(config.localeError?.(iss)) ??
-            "Invalid input";
-        full.message = message;
-    }
-    // delete (full as any).def;
-    delete full.inst;
-    delete full.continue;
-    if (!ctx?.reportInput) {
-        delete full.input;
-    }
-    return full;
-}
-function getSizableOrigin(input) {
-    if (input instanceof Set)
-        return "set";
-    if (input instanceof Map)
-        return "map";
-    // @ts-ignore
-    if (input instanceof File)
-        return "file";
-    return "unknown";
-}
-function getLengthableOrigin(input) {
-    if (Array.isArray(input))
-        return "array";
-    if (typeof input === "string")
-        return "string";
-    return "unknown";
-}
-function parsedType(data) {
-    const t = typeof data;
-    switch (t) {
-        case "number": {
-            return Number.isNaN(data) ? "nan" : "number";
-        }
-        case "object": {
-            if (data === null) {
-                return "null";
-            }
-            if (Array.isArray(data)) {
-                return "array";
-            }
-            const obj = data;
-            if (obj && Object.getPrototypeOf(obj) !== Object.prototype && "constructor" in obj && obj.constructor) {
-                return obj.constructor.name;
-            }
-        }
-    }
-    return t;
-}
-function util_issue(...args) {
-    const [iss, input, inst] = args;
-    if (typeof iss === "string") {
-        return {
-            message: iss,
-            code: "custom",
-            input,
-            inst,
-        };
-    }
-    return { ...iss };
-}
-function cleanEnum(obj) {
-    return Object.entries(obj)
-        .filter(([k, _]) => {
-        // return true if NaN, meaning it's not a number, thus a string key
-        return Number.isNaN(Number.parseInt(k, 10));
-    })
-        .map((el) => el[1]);
-}
-// Codec utility functions
-function base64ToUint8Array(base64) {
-    const binaryString = atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-}
-function uint8ArrayToBase64(bytes) {
-    let binaryString = "";
-    for (let i = 0; i < bytes.length; i++) {
-        binaryString += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binaryString);
-}
-function base64urlToUint8Array(base64url) {
-    const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-    const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-    return base64ToUint8Array(base64 + padding);
-}
-function uint8ArrayToBase64url(bytes) {
-    return uint8ArrayToBase64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-}
-function hexToUint8Array(hex) {
-    const cleanHex = hex.replace(/^0x/, "");
-    if (cleanHex.length % 2 !== 0) {
-        throw new Error("Invalid hex string length");
-    }
-    const bytes = new Uint8Array(cleanHex.length / 2);
-    for (let i = 0; i < cleanHex.length; i += 2) {
-        bytes[i / 2] = Number.parseInt(cleanHex.slice(i, i + 2), 16);
-    }
-    return bytes;
-}
-function uint8ArrayToHex(bytes) {
-    return Array.from(bytes)
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-}
-// instanceof
-class util_Class {
-    constructor(..._args) { }
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/errors.js
-
-
-const errors_initializer = (inst, def) => {
-    inst.name = "$ZodError";
-    Object.defineProperty(inst, "_zod", {
-        value: inst._zod,
-        enumerable: false,
-    });
-    Object.defineProperty(inst, "issues", {
-        value: def,
-        enumerable: false,
-    });
-    inst.message = JSON.stringify(def, jsonStringifyReplacer, 2);
-    Object.defineProperty(inst, "toString", {
-        value: () => inst.message,
-        enumerable: false,
-    });
-};
-const $ZodError = $constructor("$ZodError", errors_initializer);
-const $ZodRealError = $constructor("$ZodError", errors_initializer, { Parent: Error });
-function flattenError(error, mapper = (issue) => issue.message) {
-    const fieldErrors = {};
-    const formErrors = [];
-    for (const sub of error.issues) {
-        if (sub.path.length > 0) {
-            fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
-            fieldErrors[sub.path[0]].push(mapper(sub));
-        }
-        else {
-            formErrors.push(mapper(sub));
-        }
-    }
-    return { formErrors, fieldErrors };
-}
-function formatError(error, mapper = (issue) => issue.message) {
-    const fieldErrors = { _errors: [] };
-    const processError = (error) => {
-        for (const issue of error.issues) {
-            if (issue.code === "invalid_union" && issue.errors.length) {
-                issue.errors.map((issues) => processError({ issues }));
-            }
-            else if (issue.code === "invalid_key") {
-                processError({ issues: issue.issues });
-            }
-            else if (issue.code === "invalid_element") {
-                processError({ issues: issue.issues });
-            }
-            else if (issue.path.length === 0) {
-                fieldErrors._errors.push(mapper(issue));
-            }
-            else {
-                let curr = fieldErrors;
-                let i = 0;
-                while (i < issue.path.length) {
-                    const el = issue.path[i];
-                    const terminal = i === issue.path.length - 1;
-                    if (!terminal) {
-                        curr[el] = curr[el] || { _errors: [] };
-                    }
-                    else {
-                        curr[el] = curr[el] || { _errors: [] };
-                        curr[el]._errors.push(mapper(issue));
-                    }
-                    curr = curr[el];
-                    i++;
-                }
-            }
-        }
+function $(e) {
+    if (!e) return {};
+    if ("string" == typeof e) return {
+        error: ()=>e
     };
-    processError(error);
-    return fieldErrors;
-}
-function treeifyError(error, mapper = (issue) => issue.message) {
-    const result = { errors: [] };
-    const processError = (error, path = []) => {
-        var _a, _b;
-        for (const issue of error.issues) {
-            if (issue.code === "invalid_union" && issue.errors.length) {
-                // regular union error
-                issue.errors.map((issues) => processError({ issues }, issue.path));
-            }
-            else if (issue.code === "invalid_key") {
-                processError({ issues: issue.issues }, issue.path);
-            }
-            else if (issue.code === "invalid_element") {
-                processError({ issues: issue.issues }, issue.path);
-            }
-            else {
-                const fullpath = [...path, ...issue.path];
-                if (fullpath.length === 0) {
-                    result.errors.push(mapper(issue));
-                    continue;
-                }
-                let curr = result;
-                let i = 0;
-                while (i < fullpath.length) {
-                    const el = fullpath[i];
-                    const terminal = i === fullpath.length - 1;
-                    if (typeof el === "string") {
-                        curr.properties ?? (curr.properties = {});
-                        (_a = curr.properties)[el] ?? (_a[el] = { errors: [] });
-                        curr = curr.properties[el];
-                    }
-                    else {
-                        curr.items ?? (curr.items = []);
-                        (_b = curr.items)[el] ?? (_b[el] = { errors: [] });
-                        curr = curr.items[el];
-                    }
-                    if (terminal) {
-                        curr.errors.push(mapper(issue));
-                    }
-                    i++;
-                }
-            }
-        }
-    };
-    processError(error);
-    return result;
-}
-/** Format a ZodError as a human-readable string in the following form.
- *
- * From
- *
- * ```ts
- * ZodError {
- *   issues: [
- *     {
- *       expected: 'string',
- *       code: 'invalid_type',
- *       path: [ 'username' ],
- *       message: 'Invalid input: expected string'
- *     },
- *     {
- *       expected: 'number',
- *       code: 'invalid_type',
- *       path: [ 'favoriteNumbers', 1 ],
- *       message: 'Invalid input: expected number'
- *     }
- *   ];
- * }
- * ```
- *
- * to
- *
- * ```
- * username
- *   ✖ Expected number, received string at "username
- * favoriteNumbers[0]
- *   ✖ Invalid input: expected number
- * ```
- */
-function toDotPath(_path) {
-    const segs = [];
-    const path = _path.map((seg) => (typeof seg === "object" ? seg.key : seg));
-    for (const seg of path) {
-        if (typeof seg === "number")
-            segs.push(`[${seg}]`);
-        else if (typeof seg === "symbol")
-            segs.push(`[${JSON.stringify(String(seg))}]`);
-        else if (/[^\w$]/.test(seg))
-            segs.push(`[${JSON.stringify(seg)}]`);
-        else {
-            if (segs.length)
-                segs.push(".");
-            segs.push(seg);
-        }
+    if (e?.message !== void 0) {
+        if (e?.error !== void 0) throw Error("Cannot specify both `message` and `error` params");
+        e.error = e.message;
     }
-    return segs.join("");
+    return (delete e.message, "string" == typeof e.error) ? {
+        ...e,
+        error: ()=>e.error
+    } : e;
 }
-function prettifyError(error) {
-    const lines = [];
-    // sort by path length
-    const issues = [...error.issues].sort((a, b) => (a.path ?? []).length - (b.path ?? []).length);
-    // Process each issue
-    for (const issue of issues) {
-        lines.push(`✖ ${issue.message}`);
-        if (issue.path?.length)
-            lines.push(`  → at ${toDotPath(issue.path)}`);
+function O(e, t = 0) {
+    if (!0 === e.aborted) return !0;
+    for(let n = t; n < e.issues.length; n++)if (e.issues[n]?.continue !== !0) return !0;
+    return !1;
+}
+function j(e, t) {
+    return t.map((t)=>(t.path ?? (t.path = []), t.path.unshift(e), t));
+}
+function P(e) {
+    return "string" == typeof e ? e : e?.message;
+}
+function S(e, t, n) {
+    let r = {
+        ...e,
+        path: e.path ?? []
+    };
+    return e.message || (r.message = P(e.inst?._zod.def?.error?.(e)) ?? P(t?.error?.(e)) ?? P(n.customError?.(e)) ?? P(n.localeError?.(e)) ?? "Invalid input"), delete r.inst, delete r.continue, t?.reportInput || delete r.input, r;
+}
+const C = (e, t)=>{
+    e.name = "$ZodError", Object.defineProperty(e, "_zod", {
+        value: e._zod,
+        enumerable: !1
+    }), Object.defineProperty(e, "issues", {
+        value: t,
+        enumerable: !1
+    }), e.message = JSON.stringify(t, u, 2), Object.defineProperty(e, "toString", {
+        value: ()=>e.message,
+        enumerable: !1
+    });
+}, T = s("$ZodError", C), R = s("$ZodError", C, {
+    Parent: Error
+}), N = (t = R, (e, n, r, i)=>{
+    let o = r ? Object.assign(r, {
+        async: !1
+    }) : {
+        async: !1
+    }, a = e._zod.run({
+        value: n,
+        issues: []
+    }, o);
+    if (a instanceof Promise) throw new l();
+    if (a.issues.length) {
+        let e = new (i?.Err ?? t)(a.issues.map((e)=>S(e, o, c())));
+        throw y(e, i?.callee), e;
     }
-    // Convert Map to formatted string
-    return lines.join("\n");
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/parse.js
-
-
-
-const _parse = (_Err) => (schema, value, _ctx, _params) => {
-    const ctx = _ctx ? Object.assign(_ctx, { async: false }) : { async: false };
-    const result = schema._zod.run({ value, issues: [] }, ctx);
-    if (result instanceof Promise) {
-        throw new $ZodAsyncError();
+    return a.value;
+}), A = (n = R, async (e, t, r, i)=>{
+    let o = r ? Object.assign(r, {
+        async: !0
+    }) : {
+        async: !0
+    }, a = e._zod.run({
+        value: t,
+        issues: []
+    }, o);
+    if (a instanceof Promise && (a = await a), a.issues.length) {
+        let e = new (i?.Err ?? n)(a.issues.map((e)=>S(e, o, c())));
+        throw y(e, i?.callee), e;
     }
-    if (result.issues.length) {
-        const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, core_config())));
-        captureStackTrace(e, _params?.callee);
-        throw e;
-    }
-    return result.value;
-};
-const parse_parse = /* @__PURE__*/ _parse($ZodRealError);
-const _parseAsync = (_Err) => async (schema, value, _ctx, params) => {
-    const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
-    let result = schema._zod.run({ value, issues: [] }, ctx);
-    if (result instanceof Promise)
-        result = await result;
-    if (result.issues.length) {
-        const e = new (params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, core_config())));
-        captureStackTrace(e, params?.callee);
-        throw e;
-    }
-    return result.value;
-};
-const parse_parseAsync = /* @__PURE__*/ _parseAsync($ZodRealError);
-const _safeParse = (_Err) => (schema, value, _ctx) => {
-    const ctx = _ctx ? { ..._ctx, async: false } : { async: false };
-    const result = schema._zod.run({ value, issues: [] }, ctx);
-    if (result instanceof Promise) {
-        throw new $ZodAsyncError();
-    }
-    return result.issues.length
-        ? {
-            success: false,
-            error: new (_Err ?? $ZodError)(result.issues.map((iss) => finalizeIssue(iss, ctx, core_config()))),
-        }
-        : { success: true, data: result.value };
-};
-const safeParse = /* @__PURE__*/ _safeParse($ZodRealError);
-const _safeParseAsync = (_Err) => async (schema, value, _ctx) => {
-    const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
-    let result = schema._zod.run({ value, issues: [] }, ctx);
-    if (result instanceof Promise)
-        result = await result;
-    return result.issues.length
-        ? {
-            success: false,
-            error: new _Err(result.issues.map((iss) => finalizeIssue(iss, ctx, core_config()))),
-        }
-        : { success: true, data: result.value };
-};
-const safeParseAsync = /* @__PURE__*/ _safeParseAsync($ZodRealError);
-const _encode = (_Err) => (schema, value, _ctx) => {
-    const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
-    return _parse(_Err)(schema, value, ctx);
-};
-const encode = /* @__PURE__*/ _encode($ZodRealError);
-const _decode = (_Err) => (schema, value, _ctx) => {
-    return _parse(_Err)(schema, value, _ctx);
-};
-const decode = /* @__PURE__*/ _decode($ZodRealError);
-const _encodeAsync = (_Err) => async (schema, value, _ctx) => {
-    const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
-    return _parseAsync(_Err)(schema, value, ctx);
-};
-const encodeAsync = /* @__PURE__*/ _encodeAsync($ZodRealError);
-const _decodeAsync = (_Err) => async (schema, value, _ctx) => {
-    return _parseAsync(_Err)(schema, value, _ctx);
-};
-const decodeAsync = /* @__PURE__*/ _decodeAsync($ZodRealError);
-const _safeEncode = (_Err) => (schema, value, _ctx) => {
-    const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
-    return _safeParse(_Err)(schema, value, ctx);
-};
-const safeEncode = /* @__PURE__*/ _safeEncode($ZodRealError);
-const _safeDecode = (_Err) => (schema, value, _ctx) => {
-    return _safeParse(_Err)(schema, value, _ctx);
-};
-const safeDecode = /* @__PURE__*/ _safeDecode($ZodRealError);
-const _safeEncodeAsync = (_Err) => async (schema, value, _ctx) => {
-    const ctx = _ctx ? Object.assign(_ctx, { direction: "backward" }) : { direction: "backward" };
-    return _safeParseAsync(_Err)(schema, value, ctx);
-};
-const safeEncodeAsync = /* @__PURE__*/ _safeEncodeAsync($ZodRealError);
-const _safeDecodeAsync = (_Err) => async (schema, value, _ctx) => {
-    return _safeParseAsync(_Err)(schema, value, _ctx);
-};
-const safeDecodeAsync = /* @__PURE__*/ _safeDecodeAsync($ZodRealError);
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/regexes.js
-
-const cuid = /^[cC][^\s-]{8,}$/;
-const cuid2 = /^[0-9a-z]+$/;
-const ulid = /^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$/;
-const xid = /^[0-9a-vA-V]{20}$/;
-const ksuid = /^[A-Za-z0-9]{27}$/;
-const nanoid = /^[a-zA-Z0-9_-]{21}$/;
-/** ISO 8601-1 duration regex. Does not support the 8601-2 extensions like negative durations or fractional/negative components. */
-const duration = /^P(?:(\d+W)|(?!.*W)(?=\d|T\d)(\d+Y)?(\d+M)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+([.,]\d+)?S)?)?)$/;
-/** Implements ISO 8601-2 extensions like explicit +- prefixes, mixing weeks with other units, and fractional/negative components. */
-const extendedDuration = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
-/** A regex for any UUID-like identifier: 8-4-4-4-12 hex pattern */
-const guid = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/;
-/** Returns a regex for validating an RFC 9562/4122 UUID.
- *
- * @param version Optionally specify a version 1-8. If no version is specified, all versions are supported. */
-const uuid = (version) => {
-    if (!version)
-        return /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/;
-    return new RegExp(`^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-${version}[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$`);
-};
-const uuid4 = /*@__PURE__*/ (/* unused pure expression or super */ null && (uuid(4)));
-const uuid6 = /*@__PURE__*/ (/* unused pure expression or super */ null && (uuid(6)));
-const uuid7 = /*@__PURE__*/ (/* unused pure expression or super */ null && (uuid(7)));
-/** Practical email validation */
-const email = /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$/;
-/** Equivalent to the HTML5 input[type=email] validation implemented by browsers. Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email */
-const html5Email = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-/** The classic emailregex.com regex for RFC 5322-compliant emails */
-const rfc5322Email = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-/** A loose regex that allows Unicode characters, enforces length limits, and that's about it. */
-const unicodeEmail = /^[^\s@"]{1,64}@[^\s@]{1,255}$/u;
-const idnEmail = (/* unused pure expression or super */ null && (unicodeEmail));
-const browserEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-// from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
-const _emoji = (/* unused pure expression or super */ null && (`^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`));
-function emoji() {
-    return new RegExp(_emoji, "u");
-}
-const ipv4 = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
-const ipv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/;
-const mac = (delimiter) => {
-    const escapedDelim = util.escapeRegex(delimiter ?? ":");
-    return new RegExp(`^(?:[0-9A-F]{2}${escapedDelim}){5}[0-9A-F]{2}$|^(?:[0-9a-f]{2}${escapedDelim}){5}[0-9a-f]{2}$`);
-};
-const cidrv4 = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/([0-9]|[1-2][0-9]|3[0-2])$/;
-const cidrv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|::|([0-9a-fA-F]{1,4})?::([0-9a-fA-F]{1,4}:?){0,6})\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
-// https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
-const regexes_base64 = /^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
-const regexes_base64url = /^[A-Za-z0-9_-]*$/;
-// based on https://stackoverflow.com/questions/106179/regular-expression-to-match-dns-hostname-or-ip-address
-// export const hostname: RegExp = /^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+$/;
-const hostname = /^(?=.{1,253}\.?$)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?)*\.?$/;
-const domain = /^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
-// https://blog.stevenlevithan.com/archives/validate-phone-number#r4-3 (regex sans spaces)
-// E.164: leading digit must be 1-9; total digits (excluding '+') between 7-15
-const e164 = /^\+[1-9]\d{6,14}$/;
-// const dateSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
-const dateSource = `(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))`;
-const date = /*@__PURE__*/ new RegExp(`^${dateSource}$`);
-function timeSource(args) {
-    const hhmm = `(?:[01]\\d|2[0-3]):[0-5]\\d`;
-    const regex = typeof args.precision === "number"
-        ? args.precision === -1
-            ? `${hhmm}`
-            : args.precision === 0
-                ? `${hhmm}:[0-5]\\d`
-                : `${hhmm}:[0-5]\\d\\.\\d{${args.precision}}`
-        : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
-    return regex;
-}
-function regexes_time(args) {
-    return new RegExp(`^${timeSource(args)}$`);
-}
-// Adapted from https://stackoverflow.com/a/3143231
-function datetime(args) {
-    const time = timeSource({ precision: args.precision });
-    const opts = ["Z"];
-    if (args.local)
-        opts.push("");
-    // if (args.offset) opts.push(`([+-]\\d{2}:\\d{2})`);
-    if (args.offset)
-        opts.push(`([+-](?:[01]\\d|2[0-3]):[0-5]\\d)`);
-    const timeRegex = `${time}(?:${opts.join("|")})`;
-    return new RegExp(`^${dateSource}T(?:${timeRegex})$`);
-}
-const string = (params) => {
-    const regex = params ? `[\\s\\S]{${params?.minimum ?? 0},${params?.maximum ?? ""}}` : `[\\s\\S]*`;
-    return new RegExp(`^${regex}$`);
-};
-const bigint = /^-?\d+n?$/;
-const integer = /^-?\d+$/;
-const regexes_number = /^-?\d+(?:\.\d+)?$/;
-const regexes_boolean = /^(?:true|false)$/i;
-const _null = /^null$/i;
-
-const _undefined = /^undefined$/i;
-
-// regex for string with no uppercase letters
-const lowercase = /^[^A-Z]*$/;
-// regex for string with no lowercase letters
-const uppercase = /^[^a-z]*$/;
-// regex for hexadecimal strings (any length)
-const regexes_hex = /^[0-9a-fA-F]*$/;
-// Hash regexes for different algorithms and encodings
-// Helper function to create base64 regex with exact length and padding
-function fixedBase64(bodyLength, padding) {
-    return new RegExp(`^[A-Za-z0-9+/]{${bodyLength}}${padding}$`);
-}
-// Helper function to create base64url regex with exact length (no padding)
-function fixedBase64url(length) {
-    return new RegExp(`^[A-Za-z0-9_-]{${length}}$`);
-}
-// MD5 (16 bytes): base64 = 24 chars total (22 + "==")
-const md5_hex = /^[0-9a-fA-F]{32}$/;
-const md5_base64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64(22, "==")));
-const md5_base64url = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64url(22)));
-// SHA1 (20 bytes): base64 = 28 chars total (27 + "=")
-const sha1_hex = /^[0-9a-fA-F]{40}$/;
-const sha1_base64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64(27, "=")));
-const sha1_base64url = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64url(27)));
-// SHA256 (32 bytes): base64 = 44 chars total (43 + "=")
-const sha256_hex = /^[0-9a-fA-F]{64}$/;
-const sha256_base64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64(43, "=")));
-const sha256_base64url = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64url(43)));
-// SHA384 (48 bytes): base64 = 64 chars total (no padding)
-const sha384_hex = /^[0-9a-fA-F]{96}$/;
-const sha384_base64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64(64, "")));
-const sha384_base64url = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64url(64)));
-// SHA512 (64 bytes): base64 = 88 chars total (86 + "==")
-const sha512_hex = /^[0-9a-fA-F]{128}$/;
-const sha512_base64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64(86, "==")));
-const sha512_base64url = /*@__PURE__*/ (/* unused pure expression or super */ null && (fixedBase64url(86)));
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/checks.js
-// import { $ZodType } from "./schemas.js";
-
-
-
-const $ZodCheck = /*@__PURE__*/ $constructor("$ZodCheck", (inst, def) => {
-    var _a;
-    inst._zod ?? (inst._zod = {});
-    inst._zod.def = def;
-    (_a = inst._zod).onattach ?? (_a.onattach = []);
-});
-const numericOriginMap = (/* unused pure expression or super */ null && ({
-    number: "number",
-    bigint: "bigint",
-    object: "date",
-}));
-const $ZodCheckLessThan = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckLessThan", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    const origin = numericOriginMap[typeof def.value];
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        const curr = (def.inclusive ? bag.maximum : bag.exclusiveMaximum) ?? Number.POSITIVE_INFINITY;
-        if (def.value < curr) {
-            if (def.inclusive)
-                bag.maximum = def.value;
-            else
-                bag.exclusiveMaximum = def.value;
-        }
-    });
-    inst._zod.check = (payload) => {
-        if (def.inclusive ? payload.value <= def.value : payload.value < def.value) {
-            return;
-        }
-        payload.issues.push({
-            origin,
-            code: "too_big",
-            maximum: typeof def.value === "object" ? def.value.getTime() : def.value,
-            input: payload.value,
-            inclusive: def.inclusive,
-            inst,
-            continue: !def.abort,
-        });
+    return a.value;
+}), M = (r = R, (e, t, n)=>{
+    let i = n ? {
+        ...n,
+        async: !1
+    } : {
+        async: !1
+    }, o = e._zod.run({
+        value: t,
+        issues: []
+    }, i);
+    if (o instanceof Promise) throw new l();
+    return o.issues.length ? {
+        success: !1,
+        error: new (r ?? T)(o.issues.map((e)=>S(e, i, c())))
+    } : {
+        success: !0,
+        data: o.value
     };
-})));
-const $ZodCheckGreaterThan = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckGreaterThan", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    const origin = numericOriginMap[typeof def.value];
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        const curr = (def.inclusive ? bag.minimum : bag.exclusiveMinimum) ?? Number.NEGATIVE_INFINITY;
-        if (def.value > curr) {
-            if (def.inclusive)
-                bag.minimum = def.value;
-            else
-                bag.exclusiveMinimum = def.value;
-        }
-    });
-    inst._zod.check = (payload) => {
-        if (def.inclusive ? payload.value >= def.value : payload.value > def.value) {
-            return;
-        }
-        payload.issues.push({
-            origin,
-            code: "too_small",
-            minimum: typeof def.value === "object" ? def.value.getTime() : def.value,
-            input: payload.value,
-            inclusive: def.inclusive,
-            inst,
-            continue: !def.abort,
-        });
+}), D = (i = R, async (e, t, n)=>{
+    let r = n ? Object.assign(n, {
+        async: !0
+    }) : {
+        async: !0
+    }, o = e._zod.run({
+        value: t,
+        issues: []
+    }, r);
+    return o instanceof Promise && (o = await o), o.issues.length ? {
+        success: !1,
+        error: new i(o.issues.map((e)=>S(e, r, c())))
+    } : {
+        success: !0,
+        data: o.value
     };
-})));
-const $ZodCheckMultipleOf = 
-/*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckMultipleOf", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    inst._zod.onattach.push((inst) => {
-        var _a;
-        (_a = inst._zod.bag).multipleOf ?? (_a.multipleOf = def.value);
-    });
-    inst._zod.check = (payload) => {
-        if (typeof payload.value !== typeof def.value)
-            throw new Error("Cannot mix number and bigint in multiple_of check.");
-        const isMultiple = typeof payload.value === "bigint"
-            ? payload.value % def.value === BigInt(0)
-            : util.floatSafeRemainder(payload.value, def.value) === 0;
-        if (isMultiple)
-            return;
-        payload.issues.push({
-            origin: typeof payload.value,
-            code: "not_multiple_of",
-            divisor: def.value,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckNumberFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckNumberFormat", (inst, def) => {
-    $ZodCheck.init(inst, def); // no format checks
-    def.format = def.format || "float64";
-    const isInt = def.format?.includes("int");
-    const origin = isInt ? "int" : "number";
-    const [minimum, maximum] = util.NUMBER_FORMAT_RANGES[def.format];
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.format = def.format;
-        bag.minimum = minimum;
-        bag.maximum = maximum;
-        if (isInt)
-            bag.pattern = regexes.integer;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        if (isInt) {
-            if (!Number.isInteger(input)) {
-                // invalid_format issue
-                // payload.issues.push({
-                //   expected: def.format,
-                //   format: def.format,
-                //   code: "invalid_format",
-                //   input,
-                //   inst,
-                // });
-                // invalid_type issue
-                payload.issues.push({
-                    expected: origin,
-                    format: def.format,
-                    code: "invalid_type",
-                    continue: false,
-                    input,
-                    inst,
-                });
-                return;
-                // not_multiple_of issue
-                // payload.issues.push({
-                //   code: "not_multiple_of",
-                //   origin: "number",
-                //   input,
-                //   inst,
-                //   divisor: 1,
-                // });
-            }
-            if (!Number.isSafeInteger(input)) {
-                if (input > 0) {
-                    // too_big
-                    payload.issues.push({
-                        input,
-                        code: "too_big",
-                        maximum: Number.MAX_SAFE_INTEGER,
-                        note: "Integers must be within the safe integer range.",
-                        inst,
-                        origin,
-                        inclusive: true,
-                        continue: !def.abort,
-                    });
-                }
-                else {
-                    // too_small
-                    payload.issues.push({
-                        input,
-                        code: "too_small",
-                        minimum: Number.MIN_SAFE_INTEGER,
-                        note: "Integers must be within the safe integer range.",
-                        inst,
-                        origin,
-                        inclusive: true,
-                        continue: !def.abort,
-                    });
-                }
-                return;
-            }
-        }
-        if (input < minimum) {
-            payload.issues.push({
-                origin: "number",
-                input,
-                code: "too_small",
-                minimum,
-                inclusive: true,
-                inst,
-                continue: !def.abort,
-            });
-        }
-        if (input > maximum) {
-            payload.issues.push({
-                origin: "number",
-                input,
-                code: "too_big",
-                maximum,
-                inclusive: true,
-                inst,
-                continue: !def.abort,
-            });
-        }
-    };
-})));
-const $ZodCheckBigIntFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckBigIntFormat", (inst, def) => {
-    $ZodCheck.init(inst, def); // no format checks
-    const [minimum, maximum] = util.BIGINT_FORMAT_RANGES[def.format];
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.format = def.format;
-        bag.minimum = minimum;
-        bag.maximum = maximum;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        if (input < minimum) {
-            payload.issues.push({
-                origin: "bigint",
-                input,
-                code: "too_small",
-                minimum: minimum,
-                inclusive: true,
-                inst,
-                continue: !def.abort,
-            });
-        }
-        if (input > maximum) {
-            payload.issues.push({
-                origin: "bigint",
-                input,
-                code: "too_big",
-                maximum,
-                inclusive: true,
-                inst,
-                continue: !def.abort,
-            });
-        }
-    };
-})));
-const $ZodCheckMaxSize = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckMaxSize", (inst, def) => {
-    var _a;
-    $ZodCheck.init(inst, def);
-    (_a = inst._zod.def).when ?? (_a.when = (payload) => {
-        const val = payload.value;
-        return !util.nullish(val) && val.size !== undefined;
-    });
-    inst._zod.onattach.push((inst) => {
-        const curr = (inst._zod.bag.maximum ?? Number.POSITIVE_INFINITY);
-        if (def.maximum < curr)
-            inst._zod.bag.maximum = def.maximum;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const size = input.size;
-        if (size <= def.maximum)
-            return;
-        payload.issues.push({
-            origin: util.getSizableOrigin(input),
-            code: "too_big",
-            maximum: def.maximum,
-            inclusive: true,
-            input,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckMinSize = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckMinSize", (inst, def) => {
-    var _a;
-    $ZodCheck.init(inst, def);
-    (_a = inst._zod.def).when ?? (_a.when = (payload) => {
-        const val = payload.value;
-        return !util.nullish(val) && val.size !== undefined;
-    });
-    inst._zod.onattach.push((inst) => {
-        const curr = (inst._zod.bag.minimum ?? Number.NEGATIVE_INFINITY);
-        if (def.minimum > curr)
-            inst._zod.bag.minimum = def.minimum;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const size = input.size;
-        if (size >= def.minimum)
-            return;
-        payload.issues.push({
-            origin: util.getSizableOrigin(input),
-            code: "too_small",
-            minimum: def.minimum,
-            inclusive: true,
-            input,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckSizeEquals = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckSizeEquals", (inst, def) => {
-    var _a;
-    $ZodCheck.init(inst, def);
-    (_a = inst._zod.def).when ?? (_a.when = (payload) => {
-        const val = payload.value;
-        return !util.nullish(val) && val.size !== undefined;
-    });
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.minimum = def.size;
-        bag.maximum = def.size;
-        bag.size = def.size;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const size = input.size;
-        if (size === def.size)
-            return;
-        const tooBig = size > def.size;
-        payload.issues.push({
-            origin: util.getSizableOrigin(input),
-            ...(tooBig ? { code: "too_big", maximum: def.size } : { code: "too_small", minimum: def.size }),
-            inclusive: true,
-            exact: true,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckMaxLength = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckMaxLength", (inst, def) => {
-    var _a;
-    $ZodCheck.init(inst, def);
-    (_a = inst._zod.def).when ?? (_a.when = (payload) => {
-        const val = payload.value;
-        return !util.nullish(val) && val.length !== undefined;
-    });
-    inst._zod.onattach.push((inst) => {
-        const curr = (inst._zod.bag.maximum ?? Number.POSITIVE_INFINITY);
-        if (def.maximum < curr)
-            inst._zod.bag.maximum = def.maximum;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const length = input.length;
-        if (length <= def.maximum)
-            return;
-        const origin = util.getLengthableOrigin(input);
-        payload.issues.push({
-            origin,
-            code: "too_big",
-            maximum: def.maximum,
-            inclusive: true,
-            input,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckMinLength = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckMinLength", (inst, def) => {
-    var _a;
-    $ZodCheck.init(inst, def);
-    (_a = inst._zod.def).when ?? (_a.when = (payload) => {
-        const val = payload.value;
-        return !util.nullish(val) && val.length !== undefined;
-    });
-    inst._zod.onattach.push((inst) => {
-        const curr = (inst._zod.bag.minimum ?? Number.NEGATIVE_INFINITY);
-        if (def.minimum > curr)
-            inst._zod.bag.minimum = def.minimum;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const length = input.length;
-        if (length >= def.minimum)
-            return;
-        const origin = util.getLengthableOrigin(input);
-        payload.issues.push({
-            origin,
-            code: "too_small",
-            minimum: def.minimum,
-            inclusive: true,
-            input,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckLengthEquals = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckLengthEquals", (inst, def) => {
-    var _a;
-    $ZodCheck.init(inst, def);
-    (_a = inst._zod.def).when ?? (_a.when = (payload) => {
-        const val = payload.value;
-        return !util.nullish(val) && val.length !== undefined;
-    });
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.minimum = def.length;
-        bag.maximum = def.length;
-        bag.length = def.length;
-    });
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const length = input.length;
-        if (length === def.length)
-            return;
-        const origin = util.getLengthableOrigin(input);
-        const tooBig = length > def.length;
-        payload.issues.push({
-            origin,
-            ...(tooBig ? { code: "too_big", maximum: def.length } : { code: "too_small", minimum: def.length }),
-            inclusive: true,
-            exact: true,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckStringFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckStringFormat", (inst, def) => {
-    var _a, _b;
-    $ZodCheck.init(inst, def);
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.format = def.format;
-        if (def.pattern) {
-            bag.patterns ?? (bag.patterns = new Set());
-            bag.patterns.add(def.pattern);
-        }
-    });
-    if (def.pattern)
-        (_a = inst._zod).check ?? (_a.check = (payload) => {
-            def.pattern.lastIndex = 0;
-            if (def.pattern.test(payload.value))
-                return;
-            payload.issues.push({
-                origin: "string",
-                code: "invalid_format",
-                format: def.format,
-                input: payload.value,
-                ...(def.pattern ? { pattern: def.pattern.toString() } : {}),
-                inst,
-                continue: !def.abort,
-            });
-        });
-    else
-        (_b = inst._zod).check ?? (_b.check = () => { });
-})));
-const $ZodCheckRegex = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckRegex", (inst, def) => {
-    $ZodCheckStringFormat.init(inst, def);
-    inst._zod.check = (payload) => {
-        def.pattern.lastIndex = 0;
-        if (def.pattern.test(payload.value))
-            return;
-        payload.issues.push({
-            origin: "string",
-            code: "invalid_format",
-            format: "regex",
-            input: payload.value,
-            pattern: def.pattern.toString(),
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckLowerCase = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckLowerCase", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.lowercase);
-    $ZodCheckStringFormat.init(inst, def);
-})));
-const $ZodCheckUpperCase = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckUpperCase", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.uppercase);
-    $ZodCheckStringFormat.init(inst, def);
-})));
-const $ZodCheckIncludes = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckIncludes", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    const escapedRegex = util.escapeRegex(def.includes);
-    const pattern = new RegExp(typeof def.position === "number" ? `^.{${def.position}}${escapedRegex}` : escapedRegex);
-    def.pattern = pattern;
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.patterns ?? (bag.patterns = new Set());
-        bag.patterns.add(pattern);
-    });
-    inst._zod.check = (payload) => {
-        if (payload.value.includes(def.includes, def.position))
-            return;
-        payload.issues.push({
-            origin: "string",
-            code: "invalid_format",
-            format: "includes",
-            includes: def.includes,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckStartsWith = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckStartsWith", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    const pattern = new RegExp(`^${util.escapeRegex(def.prefix)}.*`);
-    def.pattern ?? (def.pattern = pattern);
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.patterns ?? (bag.patterns = new Set());
-        bag.patterns.add(pattern);
-    });
-    inst._zod.check = (payload) => {
-        if (payload.value.startsWith(def.prefix))
-            return;
-        payload.issues.push({
-            origin: "string",
-            code: "invalid_format",
-            format: "starts_with",
-            prefix: def.prefix,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckEndsWith = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckEndsWith", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    const pattern = new RegExp(`.*${util.escapeRegex(def.suffix)}$`);
-    def.pattern ?? (def.pattern = pattern);
-    inst._zod.onattach.push((inst) => {
-        const bag = inst._zod.bag;
-        bag.patterns ?? (bag.patterns = new Set());
-        bag.patterns.add(pattern);
-    });
-    inst._zod.check = (payload) => {
-        if (payload.value.endsWith(def.suffix))
-            return;
-        payload.issues.push({
-            origin: "string",
-            code: "invalid_format",
-            format: "ends_with",
-            suffix: def.suffix,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-///////////////////////////////////
-/////    $ZodCheckProperty    /////
-///////////////////////////////////
-function handleCheckPropertyResult(result, payload, property) {
-    if (result.issues.length) {
-        payload.issues.push(...util.prefixIssues(property, result.issues));
-    }
-}
-const $ZodCheckProperty = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckProperty", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    inst._zod.check = (payload) => {
-        const result = def.schema._zod.run({
-            value: payload.value[def.property],
-            issues: [],
-        }, {});
-        if (result instanceof Promise) {
-            return result.then((result) => handleCheckPropertyResult(result, payload, def.property));
-        }
-        handleCheckPropertyResult(result, payload, def.property);
-        return;
-    };
-})));
-const $ZodCheckMimeType = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckMimeType", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    const mimeSet = new Set(def.mime);
-    inst._zod.onattach.push((inst) => {
-        inst._zod.bag.mime = def.mime;
-    });
-    inst._zod.check = (payload) => {
-        if (mimeSet.has(payload.value.type))
-            return;
-        payload.issues.push({
-            code: "invalid_value",
-            values: def.mime,
-            input: payload.value.type,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCheckOverwrite = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCheckOverwrite", (inst, def) => {
-    $ZodCheck.init(inst, def);
-    inst._zod.check = (payload) => {
-        payload.value = def.tx(payload.value);
-    };
-})));
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/versions.js
-const versions_version = {
+}), I = /^-?\d+(?:\.\d+)?$/, Z = /^(?:true|false)$/i, U = /^null$/i, B = {
     major: 4,
     minor: 3,
-    patch: 6,
-};
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/schemas.js
-
-
-
-
-
-
-
-const $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
-    var _a;
-    inst ?? (inst = {});
-    inst._zod.def = def; // set _def property
-    inst._zod.bag = inst._zod.bag || {}; // initialize _bag object
-    inst._zod.version = versions_version;
-    const checks = [...(inst._zod.def.checks ?? [])];
-    // if inst is itself a checks.$ZodCheck, run it as a check
-    if (inst._zod.traits.has("$ZodCheck")) {
-        checks.unshift(inst);
-    }
-    for (const ch of checks) {
-        for (const fn of ch._zod.onattach) {
-            fn(inst);
-        }
-    }
-    if (checks.length === 0) {
-        // deferred initializer
-        // inst._zod.parse is not yet defined
-        (_a = inst._zod).deferred ?? (_a.deferred = []);
-        inst._zod.deferred?.push(() => {
-            inst._zod.run = inst._zod.parse;
-        });
-    }
+    patch: 6
+}, F = s("$ZodType", (e, t)=>{
+    var n;
+    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = B;
+    let r = [
+        ...e._zod.def.checks ?? []
+    ];
+    for (let t of (e._zod.traits.has("$ZodCheck") && r.unshift(e), r))for (let n of t._zod.onattach)n(e);
+    if (0 === r.length) (n = e._zod).deferred ?? (n.deferred = []), e._zod.deferred?.push(()=>{
+        e._zod.run = e._zod.parse;
+    });
     else {
-        const runChecks = (payload, checks, ctx) => {
-            let isAborted = aborted(payload);
-            let asyncResult;
-            for (const ch of checks) {
-                if (ch._zod.def.when) {
-                    const shouldRun = ch._zod.def.when(payload);
-                    if (!shouldRun)
-                        continue;
-                }
-                else if (isAborted) {
-                    continue;
-                }
-                const currLen = payload.issues.length;
-                const _ = ch._zod.check(payload);
-                if (_ instanceof Promise && ctx?.async === false) {
-                    throw new $ZodAsyncError();
-                }
-                if (asyncResult || _ instanceof Promise) {
-                    asyncResult = (asyncResult ?? Promise.resolve()).then(async () => {
-                        await _;
-                        const nextLen = payload.issues.length;
-                        if (nextLen === currLen)
-                            return;
-                        if (!isAborted)
-                            isAborted = aborted(payload, currLen);
-                    });
-                }
-                else {
-                    const nextLen = payload.issues.length;
-                    if (nextLen === currLen)
-                        continue;
-                    if (!isAborted)
-                        isAborted = aborted(payload, currLen);
-                }
-            }
-            if (asyncResult) {
-                return asyncResult.then(() => {
-                    return payload;
+        let t = (e, t, n)=>{
+            let r, i = O(e);
+            for (let o of t){
+                if (o._zod.def.when) {
+                    if (!o._zod.def.when(e)) continue;
+                } else if (i) continue;
+                let t = e.issues.length, a = o._zod.check(e);
+                if (a instanceof Promise && n?.async === !1) throw new l();
+                if (r || a instanceof Promise) r = (r ?? Promise.resolve()).then(async ()=>{
+                    await a, e.issues.length !== t && (i || (i = O(e, t)));
                 });
-            }
-            return payload;
-        };
-        const handleCanaryResult = (canary, payload, ctx) => {
-            // abort if the canary is aborted
-            if (aborted(canary)) {
-                canary.aborted = true;
-                return canary;
-            }
-            // run checks first, then
-            const checkResult = runChecks(payload, checks, ctx);
-            if (checkResult instanceof Promise) {
-                if (ctx.async === false)
-                    throw new $ZodAsyncError();
-                return checkResult.then((checkResult) => inst._zod.parse(checkResult, ctx));
-            }
-            return inst._zod.parse(checkResult, ctx);
-        };
-        inst._zod.run = (payload, ctx) => {
-            if (ctx.skipChecks) {
-                return inst._zod.parse(payload, ctx);
-            }
-            if (ctx.direction === "backward") {
-                // run canary
-                // initial pass (no checks)
-                const canary = inst._zod.parse({ value: payload.value, issues: [] }, { ...ctx, skipChecks: true });
-                if (canary instanceof Promise) {
-                    return canary.then((canary) => {
-                        return handleCanaryResult(canary, payload, ctx);
-                    });
+                else {
+                    if (e.issues.length === t) continue;
+                    i || (i = O(e, t));
                 }
-                return handleCanaryResult(canary, payload, ctx);
             }
-            // forward
-            const result = inst._zod.parse(payload, ctx);
-            if (result instanceof Promise) {
-                if (ctx.async === false)
-                    throw new $ZodAsyncError();
-                return result.then((result) => runChecks(result, checks, ctx));
+            return r ? r.then(()=>e) : e;
+        }, n = (n, i, o)=>{
+            if (O(n)) return n.aborted = !0, n;
+            let a = t(i, r, o);
+            if (a instanceof Promise) {
+                if (!1 === o.async) throw new l();
+                return a.then((t)=>e._zod.parse(t, o));
             }
-            return runChecks(result, checks, ctx);
+            return e._zod.parse(a, o);
+        };
+        e._zod.run = (i, o)=>{
+            if (o.skipChecks) return e._zod.parse(i, o);
+            if ("backward" === o.direction) {
+                let t = e._zod.parse({
+                    value: i.value,
+                    issues: []
+                }, {
+                    ...o,
+                    skipChecks: !0
+                });
+                return t instanceof Promise ? t.then((e)=>n(e, i, o)) : n(t, i, o);
+            }
+            let a = e._zod.parse(i, o);
+            if (a instanceof Promise) {
+                if (!1 === o.async) throw new l();
+                return a.then((e)=>t(e, r, o));
+            }
+            return t(a, r, o);
         };
     }
-    // Lazy initialize ~standard to avoid creating objects for every schema
-    defineLazy(inst, "~standard", () => ({
-        validate: (value) => {
-            try {
-                const r = safeParse(inst, value);
-                return r.success ? { value: r.data } : { issues: r.error?.issues };
-            }
-            catch (_) {
-                return safeParseAsync(inst, value).then((r) => (r.success ? { value: r.data } : { issues: r.error?.issues }));
-            }
-        },
-        vendor: "zod",
-        version: 1,
-    }));
-});
-
-const $ZodString = /*@__PURE__*/ $constructor("$ZodString", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.pattern = [...(inst?._zod.bag?.patterns ?? [])].pop() ?? string(inst._zod.bag);
-    inst._zod.parse = (payload, _) => {
-        if (def.coerce)
-            try {
-                payload.value = String(payload.value);
-            }
-            catch (_) { }
-        if (typeof payload.value === "string")
-            return payload;
-        payload.issues.push({
+    g(e, "~standard", ()=>({
+            validate: (t)=>{
+                try {
+                    let n = M(e, t);
+                    return n.success ? {
+                        value: n.data
+                    } : {
+                        issues: n.error?.issues
+                    };
+                } catch (n) {
+                    return D(e, t).then((e)=>e.success ? {
+                            value: e.data
+                        } : {
+                            issues: e.error?.issues
+                        });
+                }
+            },
+            vendor: "zod",
+            version: 1
+        }));
+}), q = s("$ZodString", (e, t)=>{
+    var n;
+    let r;
+    F.init(e, t), e._zod.pattern = [
+        ...e?._zod.bag?.patterns ?? []
+    ].pop() ?? (r = (n = e._zod.bag) ? `[\\s\\S]{${n?.minimum ?? 0},${n?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${r}$`)), e._zod.parse = (n, r)=>{
+        if (t.coerce) try {
+            n.value = String(n.value);
+        } catch (e) {}
+        return "string" == typeof n.value || n.issues.push({
             expected: "string",
             code: "invalid_type",
-            input: payload.value,
-            inst,
-        });
-        return payload;
+            input: n.value,
+            inst: e
+        }), n;
     };
-});
-const $ZodStringFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodStringFormat", (inst, def) => {
-    // check initialization must come first
-    checks.$ZodCheckStringFormat.init(inst, def);
-    $ZodString.init(inst, def);
-})));
-const $ZodGUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodGUID", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.guid);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodUUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodUUID", (inst, def) => {
-    if (def.version) {
-        const versionMap = {
-            v1: 1,
-            v2: 2,
-            v3: 3,
-            v4: 4,
-            v5: 5,
-            v6: 6,
-            v7: 7,
-            v8: 8,
-        };
-        const v = versionMap[def.version];
-        if (v === undefined)
-            throw new Error(`Invalid UUID version: "${def.version}"`);
-        def.pattern ?? (def.pattern = regexes.uuid(v));
-    }
-    else
-        def.pattern ?? (def.pattern = regexes.uuid());
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodEmail = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodEmail", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.email);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodURL = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodURL", (inst, def) => {
-    $ZodStringFormat.init(inst, def);
-    inst._zod.check = (payload) => {
-        try {
-            // Trim whitespace from input
-            const trimmed = payload.value.trim();
-            // @ts-ignore
-            const url = new URL(trimmed);
-            if (def.hostname) {
-                def.hostname.lastIndex = 0;
-                if (!def.hostname.test(url.hostname)) {
-                    payload.issues.push({
-                        code: "invalid_format",
-                        format: "url",
-                        note: "Invalid hostname",
-                        pattern: def.hostname.source,
-                        input: payload.value,
-                        inst,
-                        continue: !def.abort,
-                    });
-                }
-            }
-            if (def.protocol) {
-                def.protocol.lastIndex = 0;
-                if (!def.protocol.test(url.protocol.endsWith(":") ? url.protocol.slice(0, -1) : url.protocol)) {
-                    payload.issues.push({
-                        code: "invalid_format",
-                        format: "url",
-                        note: "Invalid protocol",
-                        pattern: def.protocol.source,
-                        input: payload.value,
-                        inst,
-                        continue: !def.abort,
-                    });
-                }
-            }
-            // Set the output value based on normalize flag
-            if (def.normalize) {
-                // Use normalized URL
-                payload.value = url.href;
-            }
-            else {
-                // Preserve the original input (trimmed)
-                payload.value = trimmed;
-            }
-            return;
-        }
-        catch (_) {
-            payload.issues.push({
-                code: "invalid_format",
-                format: "url",
-                input: payload.value,
-                inst,
-                continue: !def.abort,
-            });
-        }
-    };
-})));
-const $ZodEmoji = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodEmoji", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.emoji());
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodNanoID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodNanoID", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.nanoid);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodCUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCUID", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.cuid);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodCUID2 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCUID2", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.cuid2);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodULID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodULID", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.ulid);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodXID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodXID", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.xid);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodKSUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodKSUID", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.ksuid);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodISODateTime = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodISODateTime", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.datetime(def));
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodISODate = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodISODate", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.date);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodISOTime = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodISOTime", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.time(def));
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodISODuration = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodISODuration", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.duration);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodIPv4 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodIPv4", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.ipv4);
-    $ZodStringFormat.init(inst, def);
-    inst._zod.bag.format = `ipv4`;
-})));
-const $ZodIPv6 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodIPv6", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.ipv6);
-    $ZodStringFormat.init(inst, def);
-    inst._zod.bag.format = `ipv6`;
-    inst._zod.check = (payload) => {
-        try {
-            // @ts-ignore
-            new URL(`http://[${payload.value}]`);
-            // return;
-        }
-        catch {
-            payload.issues.push({
-                code: "invalid_format",
-                format: "ipv6",
-                input: payload.value,
-                inst,
-                continue: !def.abort,
-            });
-        }
-    };
-})));
-const $ZodMAC = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodMAC", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.mac(def.delimiter));
-    $ZodStringFormat.init(inst, def);
-    inst._zod.bag.format = `mac`;
-})));
-const $ZodCIDRv4 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCIDRv4", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.cidrv4);
-    $ZodStringFormat.init(inst, def);
-})));
-const $ZodCIDRv6 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCIDRv6", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.cidrv6); // not used for validation
-    $ZodStringFormat.init(inst, def);
-    inst._zod.check = (payload) => {
-        const parts = payload.value.split("/");
-        try {
-            if (parts.length !== 2)
-                throw new Error();
-            const [address, prefix] = parts;
-            if (!prefix)
-                throw new Error();
-            const prefixNum = Number(prefix);
-            if (`${prefixNum}` !== prefix)
-                throw new Error();
-            if (prefixNum < 0 || prefixNum > 128)
-                throw new Error();
-            // @ts-ignore
-            new URL(`http://[${address}]`);
-        }
-        catch {
-            payload.issues.push({
-                code: "invalid_format",
-                format: "cidrv6",
-                input: payload.value,
-                inst,
-                continue: !def.abort,
-            });
-        }
-    };
-})));
-//////////////////////////////   ZodBase64   //////////////////////////////
-function isValidBase64(data) {
-    if (data === "")
-        return true;
-    if (data.length % 4 !== 0)
-        return false;
-    try {
-        // @ts-ignore
-        atob(data);
-        return true;
-    }
-    catch {
-        return false;
-    }
-}
-const $ZodBase64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodBase64", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.base64);
-    $ZodStringFormat.init(inst, def);
-    inst._zod.bag.contentEncoding = "base64";
-    inst._zod.check = (payload) => {
-        if (isValidBase64(payload.value))
-            return;
-        payload.issues.push({
-            code: "invalid_format",
-            format: "base64",
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-//////////////////////////////   ZodBase64   //////////////////////////////
-function isValidBase64URL(data) {
-    if (!regexes.base64url.test(data))
-        return false;
-    const base64 = data.replace(/[-_]/g, (c) => (c === "-" ? "+" : "/"));
-    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
-    return isValidBase64(padded);
-}
-const $ZodBase64URL = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodBase64URL", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.base64url);
-    $ZodStringFormat.init(inst, def);
-    inst._zod.bag.contentEncoding = "base64url";
-    inst._zod.check = (payload) => {
-        if (isValidBase64URL(payload.value))
-            return;
-        payload.issues.push({
-            code: "invalid_format",
-            format: "base64url",
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodE164 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodE164", (inst, def) => {
-    def.pattern ?? (def.pattern = regexes.e164);
-    $ZodStringFormat.init(inst, def);
-})));
-//////////////////////////////   ZodJWT   //////////////////////////////
-function isValidJWT(token, algorithm = null) {
-    try {
-        const tokensParts = token.split(".");
-        if (tokensParts.length !== 3)
-            return false;
-        const [header] = tokensParts;
-        if (!header)
-            return false;
-        // @ts-ignore
-        const parsedHeader = JSON.parse(atob(header));
-        if ("typ" in parsedHeader && parsedHeader?.typ !== "JWT")
-            return false;
-        if (!parsedHeader.alg)
-            return false;
-        if (algorithm && (!("alg" in parsedHeader) || parsedHeader.alg !== algorithm))
-            return false;
-        return true;
-    }
-    catch {
-        return false;
-    }
-}
-const $ZodJWT = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodJWT", (inst, def) => {
-    $ZodStringFormat.init(inst, def);
-    inst._zod.check = (payload) => {
-        if (isValidJWT(payload.value, def.alg))
-            return;
-        payload.issues.push({
-            code: "invalid_format",
-            format: "jwt",
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodCustomStringFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCustomStringFormat", (inst, def) => {
-    $ZodStringFormat.init(inst, def);
-    inst._zod.check = (payload) => {
-        if (def.fn(payload.value))
-            return;
-        payload.issues.push({
-            code: "invalid_format",
-            format: def.format,
-            input: payload.value,
-            inst,
-            continue: !def.abort,
-        });
-    };
-})));
-const $ZodNumber = /*@__PURE__*/ $constructor("$ZodNumber", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.pattern = inst._zod.bag.pattern ?? regexes_number;
-    inst._zod.parse = (payload, _ctx) => {
-        if (def.coerce)
-            try {
-                payload.value = Number(payload.value);
-            }
-            catch (_) { }
-        const input = payload.value;
-        if (typeof input === "number" && !Number.isNaN(input) && Number.isFinite(input)) {
-            return payload;
-        }
-        const received = typeof input === "number"
-            ? Number.isNaN(input)
-                ? "NaN"
-                : !Number.isFinite(input)
-                    ? "Infinity"
-                    : undefined
-            : undefined;
-        payload.issues.push({
+}), W = s("$ZodNumber", (e, t)=>{
+    F.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? I, e._zod.parse = (n, r)=>{
+        if (t.coerce) try {
+            n.value = Number(n.value);
+        } catch (e) {}
+        let i = n.value;
+        if ("number" == typeof i && !Number.isNaN(i) && Number.isFinite(i)) return n;
+        let o = "number" == typeof i ? Number.isNaN(i) ? "NaN" : Number.isFinite(i) ? void 0 : "Infinity" : void 0;
+        return n.issues.push({
             expected: "number",
             code: "invalid_type",
-            input,
-            inst,
-            ...(received ? { received } : {}),
-        });
-        return payload;
+            input: i,
+            inst: e,
+            ...o ? {
+                received: o
+            } : {}
+        }), n;
     };
-});
-const $ZodNumberFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodNumberFormat", (inst, def) => {
-    checks.$ZodCheckNumberFormat.init(inst, def);
-    $ZodNumber.init(inst, def); // no format checks
-})));
-const $ZodBoolean = /*@__PURE__*/ $constructor("$ZodBoolean", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.pattern = regexes_boolean;
-    inst._zod.parse = (payload, _ctx) => {
-        if (def.coerce)
-            try {
-                payload.value = Boolean(payload.value);
-            }
-            catch (_) { }
-        const input = payload.value;
-        if (typeof input === "boolean")
-            return payload;
-        payload.issues.push({
+}), V = s("$ZodBoolean", (e, t)=>{
+    F.init(e, t), e._zod.pattern = Z, e._zod.parse = (n, r)=>{
+        if (t.coerce) try {
+            n.value = !!n.value;
+        } catch (e) {}
+        let i = n.value;
+        return "boolean" == typeof i || n.issues.push({
             expected: "boolean",
             code: "invalid_type",
-            input,
-            inst,
-        });
-        return payload;
+            input: i,
+            inst: e
+        }), n;
     };
-});
-const $ZodBigInt = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodBigInt", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.pattern = regexes.bigint;
-    inst._zod.parse = (payload, _ctx) => {
-        if (def.coerce)
-            try {
-                payload.value = BigInt(payload.value);
-            }
-            catch (_) { }
-        if (typeof payload.value === "bigint")
-            return payload;
-        payload.issues.push({
-            expected: "bigint",
-            code: "invalid_type",
-            input: payload.value,
-            inst,
-        });
-        return payload;
-    };
-})));
-const $ZodBigIntFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodBigIntFormat", (inst, def) => {
-    checks.$ZodCheckBigIntFormat.init(inst, def);
-    $ZodBigInt.init(inst, def); // no format checks
-})));
-const $ZodSymbol = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodSymbol", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        if (typeof input === "symbol")
-            return payload;
-        payload.issues.push({
-            expected: "symbol",
-            code: "invalid_type",
-            input,
-            inst,
-        });
-        return payload;
-    };
-})));
-const $ZodUndefined = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodUndefined", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.pattern = regexes.undefined;
-    inst._zod.values = new Set([undefined]);
-    inst._zod.optin = "optional";
-    inst._zod.optout = "optional";
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        if (typeof input === "undefined")
-            return payload;
-        payload.issues.push({
-            expected: "undefined",
-            code: "invalid_type",
-            input,
-            inst,
-        });
-        return payload;
-    };
-})));
-const $ZodNull = /*@__PURE__*/ $constructor("$ZodNull", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.pattern = _null;
-    inst._zod.values = new Set([null]);
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        if (input === null)
-            return payload;
-        payload.issues.push({
+}), J = s("$ZodNull", (e, t)=>{
+    F.init(e, t), e._zod.pattern = U, e._zod.values = new Set([
+        null
+    ]), e._zod.parse = (t, n)=>{
+        let r = t.value;
+        return null === r || t.issues.push({
             expected: "null",
             code: "invalid_type",
-            input,
-            inst,
-        });
-        return payload;
+            input: r,
+            inst: e
+        }), t;
     };
-});
-const $ZodAny = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodAny", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload) => payload;
-})));
-const $ZodUnknown = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodUnknown", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload) => payload;
-})));
-const $ZodNever = /*@__PURE__*/ $constructor("$ZodNever", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _ctx) => {
-        payload.issues.push({
+}), G = s("$ZodNever", (e, t)=>{
+    F.init(e, t), e._zod.parse = (t, n)=>(t.issues.push({
             expected: "never",
             code: "invalid_type",
-            input: payload.value,
-            inst,
-        });
-        return payload;
-    };
+            input: t.value,
+            inst: e
+        }), t);
 });
-const $ZodVoid = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodVoid", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        if (typeof input === "undefined")
-            return payload;
-        payload.issues.push({
-            expected: "void",
+function K(e, t, n) {
+    e.issues.length && t.issues.push(...j(n, e.issues)), t.value[n] = e.value;
+}
+const X = s("$ZodArray", (e, t)=>{
+    F.init(e, t), e._zod.parse = (n, r)=>{
+        let i = n.value;
+        if (!Array.isArray(i)) return n.issues.push({
+            expected: "array",
             code: "invalid_type",
-            input,
-            inst,
-        });
-        return payload;
-    };
-})));
-const $ZodDate = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodDate", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _ctx) => {
-        if (def.coerce) {
-            try {
-                payload.value = new Date(payload.value);
-            }
-            catch (_err) { }
+            input: i,
+            inst: e
+        }), n;
+        n.value = Array(i.length);
+        let o = [];
+        for(let e = 0; e < i.length; e++){
+            let a = i[e], s = t.element._zod.run({
+                value: a,
+                issues: []
+            }, r);
+            s instanceof Promise ? o.push(s.then((t)=>K(t, n, e))) : K(s, n, e);
         }
-        const input = payload.value;
-        const isDate = input instanceof Date;
-        const isValidDate = isDate && !Number.isNaN(input.getTime());
-        if (isValidDate)
-            return payload;
-        payload.issues.push({
-            expected: "date",
+        return o.length ? Promise.all(o).then(()=>n) : n;
+    };
+});
+function H(e, t, n, r, i) {
+    if (e.issues.length) {
+        if (i && !(n in r)) return;
+        t.issues.push(...j(n, e.issues));
+    }
+    void 0 === e.value ? n in r && (t.value[n] = void 0) : t.value[n] = e.value;
+}
+const Q = s("$ZodObject", (e, t)=>{
+    let n;
+    F.init(e, t);
+    let r = Object.getOwnPropertyDescriptor(t, "shape");
+    if (!r?.get) {
+        let e = t.shape;
+        Object.defineProperty(t, "shape", {
+            get: ()=>{
+                let n = {
+                    ...e
+                };
+                return Object.defineProperty(t, "shape", {
+                    value: n
+                }), n;
+            }
+        });
+    }
+    let i = p(()=>(function(e) {
+            var t;
+            let n = Object.keys(e.shape);
+            for (let t of n)if (!e.shape?.[t]?._zod?.traits?.has("$ZodType")) throw Error(`Invalid element at key "${t}": expected a Zod schema`);
+            let r = Object.keys(t = e.shape).filter((e)=>"optional" === t[e]._zod.optin && "optional" === t[e]._zod.optout);
+            return {
+                ...e,
+                keys: n,
+                keySet: new Set(n),
+                numKeys: n.length,
+                optionalKeys: new Set(r)
+            };
+        })(t));
+    g(e._zod, "propValues", ()=>{
+        let e = t.shape, n = {};
+        for(let t in e){
+            let r = e[t]._zod;
+            if (r.values) for (let e of (n[t] ?? (n[t] = new Set()), r.values))n[t].add(e);
+        }
+        return n;
+    });
+    let o = t.catchall;
+    e._zod.parse = (t, r)=>{
+        n ?? (n = i.value);
+        let a = t.value;
+        if (!b(a)) return t.issues.push({
+            expected: "object",
             code: "invalid_type",
-            input,
-            ...(isDate ? { received: "Invalid Date" } : {}),
-            inst,
-        });
-        return payload;
-    };
-})));
-function handleArrayResult(result, final, index) {
-    if (result.issues.length) {
-        final.issues.push(...prefixIssues(index, result.issues));
-    }
-    final.value[index] = result.value;
-}
-const $ZodArray = /*@__PURE__*/ $constructor("$ZodArray", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        if (!Array.isArray(input)) {
-            payload.issues.push({
-                expected: "array",
-                code: "invalid_type",
-                input,
-                inst,
-            });
-            return payload;
+            input: a,
+            inst: e
+        }), t;
+        t.value = {};
+        let s = [], l = n.shape;
+        for (let e of n.keys){
+            let n = l[e], i = "optional" === n._zod.optout, o = n._zod.run({
+                value: a[e],
+                issues: []
+            }, r);
+            o instanceof Promise ? s.push(o.then((n)=>H(n, t, e, a, i))) : H(o, t, e, a, i);
         }
-        payload.value = Array(input.length);
-        const proms = [];
-        for (let i = 0; i < input.length; i++) {
-            const item = input[i];
-            const result = def.element._zod.run({
-                value: item,
-                issues: [],
-            }, ctx);
-            if (result instanceof Promise) {
-                proms.push(result.then((result) => handleArrayResult(result, payload, i)));
+        return o ? function(e, t, n, r, i, o) {
+            let a = [], s = i.keySet, l = i.catchall._zod, d = l.def.type, c = "optional" === l.optout;
+            for(let i in t){
+                if (s.has(i)) continue;
+                if ("never" === d) {
+                    a.push(i);
+                    continue;
+                }
+                let o = l.run({
+                    value: t[i],
+                    issues: []
+                }, r);
+                o instanceof Promise ? e.push(o.then((e)=>H(e, n, i, t, c))) : H(o, n, i, t, c);
             }
-            else {
-                handleArrayResult(result, payload, i);
-            }
-        }
-        if (proms.length) {
-            return Promise.all(proms).then(() => payload);
-        }
-        return payload; //handleArrayResultsAsync(parseResults, final);
+            return (a.length && n.issues.push({
+                code: "unrecognized_keys",
+                keys: a,
+                input: t,
+                inst: o
+            }), e.length) ? Promise.all(e).then(()=>n) : n;
+        }(s, a, t, r, i.value, e) : s.length ? Promise.all(s).then(()=>t) : t;
     };
 });
-function handlePropertyResult(result, final, key, input, isOptionalOut) {
-    if (result.issues.length) {
-        // For optional-out schemas, ignore errors on absent keys
-        if (isOptionalOut && !(key in input)) {
-            return;
-        }
-        final.issues.push(...prefixIssues(key, result.issues));
-    }
-    if (result.value === undefined) {
-        if (key in input) {
-            final.value[key] = undefined;
-        }
-    }
-    else {
-        final.value[key] = result.value;
-    }
-}
-function normalizeDef(def) {
-    const keys = Object.keys(def.shape);
-    for (const k of keys) {
-        if (!def.shape?.[k]?._zod?.traits?.has("$ZodType")) {
-            throw new Error(`Invalid element at key "${k}": expected a Zod schema`);
-        }
-    }
-    const okeys = optionalKeys(def.shape);
-    return {
-        ...def,
-        keys,
-        keySet: new Set(keys),
-        numKeys: keys.length,
-        optionalKeys: new Set(okeys),
-    };
-}
-function handleCatchall(proms, input, payload, ctx, def, inst) {
-    const unrecognized = [];
-    // iterate over input keys
-    const keySet = def.keySet;
-    const _catchall = def.catchall._zod;
-    const t = _catchall.def.type;
-    const isOptionalOut = _catchall.optout === "optional";
-    for (const key in input) {
-        if (keySet.has(key))
-            continue;
-        if (t === "never") {
-            unrecognized.push(key);
-            continue;
-        }
-        const r = _catchall.run({ value: input[key], issues: [] }, ctx);
-        if (r instanceof Promise) {
-            proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalOut)));
-        }
-        else {
-            handlePropertyResult(r, payload, key, input, isOptionalOut);
-        }
-    }
-    if (unrecognized.length) {
-        payload.issues.push({
-            code: "unrecognized_keys",
-            keys: unrecognized,
-            input,
-            inst,
-        });
-    }
-    if (!proms.length)
-        return payload;
-    return Promise.all(proms).then(() => {
-        return payload;
-    });
-}
-const $ZodObject = /*@__PURE__*/ $constructor("$ZodObject", (inst, def) => {
-    // requires cast because technically $ZodObject doesn't extend
-    $ZodType.init(inst, def);
-    // const sh = def.shape;
-    const desc = Object.getOwnPropertyDescriptor(def, "shape");
-    if (!desc?.get) {
-        const sh = def.shape;
-        Object.defineProperty(def, "shape", {
-            get: () => {
-                const newSh = { ...sh };
-                Object.defineProperty(def, "shape", {
-                    value: newSh,
-                });
-                return newSh;
-            },
-        });
-    }
-    const _normalized = cached(() => normalizeDef(def));
-    defineLazy(inst._zod, "propValues", () => {
-        const shape = def.shape;
-        const propValues = {};
-        for (const key in shape) {
-            const field = shape[key]._zod;
-            if (field.values) {
-                propValues[key] ?? (propValues[key] = new Set());
-                for (const v of field.values)
-                    propValues[key].add(v);
-            }
-        }
-        return propValues;
-    });
-    const isObject = util_isObject;
-    const catchall = def.catchall;
-    let value;
-    inst._zod.parse = (payload, ctx) => {
-        value ?? (value = _normalized.value);
-        const input = payload.value;
-        if (!isObject(input)) {
-            payload.issues.push({
-                expected: "object",
-                code: "invalid_type",
-                input,
-                inst,
-            });
-            return payload;
-        }
-        payload.value = {};
-        const proms = [];
-        const shape = value.shape;
-        for (const key of value.keys) {
-            const el = shape[key];
-            const isOptionalOut = el._zod.optout === "optional";
-            const r = el._zod.run({ value: input[key], issues: [] }, ctx);
-            if (r instanceof Promise) {
-                proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalOut)));
-            }
-            else {
-                handlePropertyResult(r, payload, key, input, isOptionalOut);
-            }
-        }
-        if (!catchall) {
-            return proms.length ? Promise.all(proms).then(() => payload) : payload;
-        }
-        return handleCatchall(proms, input, payload, ctx, _normalized.value, inst);
-    };
-});
-const $ZodObjectJIT = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodObjectJIT", (inst, def) => {
-    // requires cast because technically $ZodObject doesn't extend
-    $ZodObject.init(inst, def);
-    const superParse = inst._zod.parse;
-    const _normalized = util.cached(() => normalizeDef(def));
-    const generateFastpass = (shape) => {
-        const doc = new Doc(["shape", "payload", "ctx"]);
-        const normalized = _normalized.value;
-        const parseStr = (key) => {
-            const k = util.esc(key);
-            return `shape[${k}]._zod.run({ value: input[${k}], issues: [] }, ctx)`;
-        };
-        doc.write(`const input = payload.value;`);
-        const ids = Object.create(null);
-        let counter = 0;
-        for (const key of normalized.keys) {
-            ids[key] = `key_${counter++}`;
-        }
-        // A: preserve key order {
-        doc.write(`const newResult = {};`);
-        for (const key of normalized.keys) {
-            const id = ids[key];
-            const k = util.esc(key);
-            const schema = shape[key];
-            const isOptionalOut = schema?._zod?.optout === "optional";
-            doc.write(`const ${id} = ${parseStr(key)};`);
-            if (isOptionalOut) {
-                // For optional-out schemas, ignore errors on absent keys
-                doc.write(`
-        if (${id}.issues.length) {
-          if (${k} in input) {
-            payload.issues = payload.issues.concat(${id}.issues.map(iss => ({
-              ...iss,
-              path: iss.path ? [${k}, ...iss.path] : [${k}]
-            })));
-          }
-        }
-        
-        if (${id}.value === undefined) {
-          if (${k} in input) {
-            newResult[${k}] = undefined;
-          }
-        } else {
-          newResult[${k}] = ${id}.value;
-        }
-        
-      `);
-            }
-            else {
-                doc.write(`
-        if (${id}.issues.length) {
-          payload.issues = payload.issues.concat(${id}.issues.map(iss => ({
-            ...iss,
-            path: iss.path ? [${k}, ...iss.path] : [${k}]
-          })));
-        }
-        
-        if (${id}.value === undefined) {
-          if (${k} in input) {
-            newResult[${k}] = undefined;
-          }
-        } else {
-          newResult[${k}] = ${id}.value;
-        }
-        
-      `);
-            }
-        }
-        doc.write(`payload.value = newResult;`);
-        doc.write(`return payload;`);
-        const fn = doc.compile();
-        return (payload, ctx) => fn(shape, payload, ctx);
-    };
-    let fastpass;
-    const isObject = util.isObject;
-    const jit = !core.globalConfig.jitless;
-    const allowsEval = util.allowsEval;
-    const fastEnabled = jit && allowsEval.value; // && !def.catchall;
-    const catchall = def.catchall;
-    let value;
-    inst._zod.parse = (payload, ctx) => {
-        value ?? (value = _normalized.value);
-        const input = payload.value;
-        if (!isObject(input)) {
-            payload.issues.push({
-                expected: "object",
-                code: "invalid_type",
-                input,
-                inst,
-            });
-            return payload;
-        }
-        if (jit && fastEnabled && ctx?.async === false && ctx.jitless !== true) {
-            // always synchronous
-            if (!fastpass)
-                fastpass = generateFastpass(def.shape);
-            payload = fastpass(payload, ctx);
-            if (!catchall)
-                return payload;
-            return handleCatchall([], input, payload, ctx, value, inst);
-        }
-        return superParse(payload, ctx);
-    };
-})));
-function handleUnionResults(results, final, inst, ctx) {
-    for (const result of results) {
-        if (result.issues.length === 0) {
-            final.value = result.value;
-            return final;
-        }
-    }
-    const nonaborted = results.filter((r) => !aborted(r));
-    if (nonaborted.length === 1) {
-        final.value = nonaborted[0].value;
-        return nonaborted[0];
-    }
-    final.issues.push({
+function Y(e, t, n, r) {
+    for (let n of e)if (0 === n.issues.length) return t.value = n.value, t;
+    let i = e.filter((e)=>!O(e));
+    return 1 === i.length ? (t.value = i[0].value, i[0]) : (t.issues.push({
         code: "invalid_union",
-        input: final.value,
-        inst,
-        errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, core_config()))),
-    });
-    return final;
+        input: t.value,
+        inst: n,
+        errors: e.map((e)=>e.issues.map((e)=>S(e, r, c())))
+    }), t);
 }
-const $ZodUnion = /*@__PURE__*/ $constructor("$ZodUnion", (inst, def) => {
-    $ZodType.init(inst, def);
-    defineLazy(inst._zod, "optin", () => def.options.some((o) => o._zod.optin === "optional") ? "optional" : undefined);
-    defineLazy(inst._zod, "optout", () => def.options.some((o) => o._zod.optout === "optional") ? "optional" : undefined);
-    defineLazy(inst._zod, "values", () => {
-        if (def.options.every((o) => o._zod.values)) {
-            return new Set(def.options.flatMap((option) => Array.from(option._zod.values)));
+const ee = s("$ZodUnion", (e, t)=>{
+    F.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
+        if (t.options.every((e)=>e._zod.values)) return new Set(t.options.flatMap((e)=>Array.from(e._zod.values)));
+    }), g(e._zod, "pattern", ()=>{
+        if (t.options.every((e)=>e._zod.pattern)) {
+            let e = t.options.map((e)=>e._zod.pattern);
+            return RegExp(`^(${e.map((e)=>f(e.source)).join("|")})$`);
         }
-        return undefined;
     });
-    defineLazy(inst._zod, "pattern", () => {
-        if (def.options.every((o) => o._zod.pattern)) {
-            const patterns = def.options.map((o) => o._zod.pattern);
-            return new RegExp(`^(${patterns.map((p) => cleanRegex(p.source)).join("|")})$`);
-        }
-        return undefined;
-    });
-    const single = def.options.length === 1;
-    const first = def.options[0]._zod.run;
-    inst._zod.parse = (payload, ctx) => {
-        if (single) {
-            return first(payload, ctx);
-        }
-        let async = false;
-        const results = [];
-        for (const option of def.options) {
-            const result = option._zod.run({
-                value: payload.value,
-                issues: [],
-            }, ctx);
-            if (result instanceof Promise) {
-                results.push(result);
-                async = true;
-            }
+    let n = 1 === t.options.length, r = t.options[0]._zod.run;
+    e._zod.parse = (i, o)=>{
+        if (n) return r(i, o);
+        let a = !1, s = [];
+        for (let e of t.options){
+            let t = e._zod.run({
+                value: i.value,
+                issues: []
+            }, o);
+            if (t instanceof Promise) s.push(t), a = !0;
             else {
-                if (result.issues.length === 0)
-                    return result;
-                results.push(result);
+                if (0 === t.issues.length) return t;
+                s.push(t);
             }
         }
-        if (!async)
-            return handleUnionResults(results, payload, inst, ctx);
-        return Promise.all(results).then((results) => {
-            return handleUnionResults(results, payload, inst, ctx);
-        });
+        return a ? Promise.all(s).then((t)=>Y(t, i, e, o)) : Y(s, i, e, o);
     };
-});
-function handleExclusiveUnionResults(results, final, inst, ctx) {
-    const successes = results.filter((r) => r.issues.length === 0);
-    if (successes.length === 1) {
-        final.value = successes[0].value;
-        return final;
-    }
-    if (successes.length === 0) {
-        // No matches - same as regular union
-        final.issues.push({
-            code: "invalid_union",
-            input: final.value,
-            inst,
-            errors: results.map((result) => result.issues.map((iss) => util.finalizeIssue(iss, ctx, core.config()))),
-        });
-    }
-    else {
-        // Multiple matches - exclusive union failure
-        final.issues.push({
-            code: "invalid_union",
-            input: final.value,
-            inst,
-            errors: [],
-            inclusive: false,
-        });
-    }
-    return final;
-}
-const $ZodXor = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodXor", (inst, def) => {
-    $ZodUnion.init(inst, def);
-    def.inclusive = false;
-    const single = def.options.length === 1;
-    const first = def.options[0]._zod.run;
-    inst._zod.parse = (payload, ctx) => {
-        if (single) {
-            return first(payload, ctx);
+}), et = s("$ZodDiscriminatedUnion", (e, t)=>{
+    t.inclusive = !1, ee.init(e, t);
+    let n = e._zod.parse;
+    g(e._zod, "propValues", ()=>{
+        let e = {};
+        for (let n of t.options){
+            let r = n._zod.propValues;
+            if (!r || 0 === Object.keys(r).length) throw Error(`Invalid discriminated union option at index "${t.options.indexOf(n)}"`);
+            for (let [t, n] of Object.entries(r))for (let r of (e[t] || (e[t] = new Set()), n))e[t].add(r);
         }
-        let async = false;
-        const results = [];
-        for (const option of def.options) {
-            const result = option._zod.run({
-                value: payload.value,
-                issues: [],
-            }, ctx);
-            if (result instanceof Promise) {
-                results.push(result);
-                async = true;
-            }
-            else {
-                results.push(result);
-            }
-        }
-        if (!async)
-            return handleExclusiveUnionResults(results, payload, inst, ctx);
-        return Promise.all(results).then((results) => {
-            return handleExclusiveUnionResults(results, payload, inst, ctx);
-        });
-    };
-})));
-const $ZodDiscriminatedUnion = 
-/*@__PURE__*/
-$constructor("$ZodDiscriminatedUnion", (inst, def) => {
-    def.inclusive = false;
-    $ZodUnion.init(inst, def);
-    const _super = inst._zod.parse;
-    defineLazy(inst._zod, "propValues", () => {
-        const propValues = {};
-        for (const option of def.options) {
-            const pv = option._zod.propValues;
-            if (!pv || Object.keys(pv).length === 0)
-                throw new Error(`Invalid discriminated union option at index "${def.options.indexOf(option)}"`);
-            for (const [k, v] of Object.entries(pv)) {
-                if (!propValues[k])
-                    propValues[k] = new Set();
-                for (const val of v) {
-                    propValues[k].add(val);
-                }
-            }
-        }
-        return propValues;
+        return e;
     });
-    const disc = cached(() => {
-        const opts = def.options;
-        const map = new Map();
-        for (const o of opts) {
-            const values = o._zod.propValues?.[def.discriminator];
-            if (!values || values.size === 0)
-                throw new Error(`Invalid discriminated union option at index "${def.options.indexOf(o)}"`);
-            for (const v of values) {
-                if (map.has(v)) {
-                    throw new Error(`Duplicate discriminator value "${String(v)}"`);
-                }
-                map.set(v, o);
+    let r = p(()=>{
+        let e = t.options, n = new Map();
+        for (let r of e){
+            let e = r._zod.propValues?.[t.discriminator];
+            if (!e || 0 === e.size) throw Error(`Invalid discriminated union option at index "${t.options.indexOf(r)}"`);
+            for (let t of e){
+                if (n.has(t)) throw Error(`Duplicate discriminator value "${String(t)}"`);
+                n.set(t, r);
             }
         }
-        return map;
+        return n;
     });
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        if (!util_isObject(input)) {
-            payload.issues.push({
-                code: "invalid_type",
-                expected: "object",
-                input,
-                inst,
-            });
-            return payload;
-        }
-        const opt = disc.value.get(input?.[def.discriminator]);
-        if (opt) {
-            return opt._zod.run(payload, ctx);
-        }
-        if (def.unionFallback) {
-            return _super(payload, ctx);
-        }
-        // no matching discriminator
-        payload.issues.push({
+    e._zod.parse = (i, o)=>{
+        let a = i.value;
+        if (!b(a)) return i.issues.push({
+            code: "invalid_type",
+            expected: "object",
+            input: a,
+            inst: e
+        }), i;
+        let s = r.value.get(a?.[t.discriminator]);
+        return s ? s._zod.run(i, o) : t.unionFallback ? n(i, o) : (i.issues.push({
             code: "invalid_union",
             errors: [],
             note: "No matching discriminator",
-            discriminator: def.discriminator,
-            input,
-            path: [def.discriminator],
-            inst,
-        });
-        return payload;
+            discriminator: t.discriminator,
+            input: a,
+            path: [
+                t.discriminator
+            ],
+            inst: e
+        }), i);
     };
-});
-const $ZodIntersection = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodIntersection", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        const left = def.left._zod.run({ value: input, issues: [] }, ctx);
-        const right = def.right._zod.run({ value: input, issues: [] }, ctx);
-        const async = left instanceof Promise || right instanceof Promise;
-        if (async) {
-            return Promise.all([left, right]).then(([left, right]) => {
-                return handleIntersectionResults(payload, left, right);
-            });
-        }
-        return handleIntersectionResults(payload, left, right);
-    };
-})));
-function mergeValues(a, b) {
-    // const aType = parse.t(a);
-    // const bType = parse.t(b);
-    if (a === b) {
-        return { valid: true, data: a };
-    }
-    if (a instanceof Date && b instanceof Date && +a === +b) {
-        return { valid: true, data: a };
-    }
-    if (util.isPlainObject(a) && util.isPlainObject(b)) {
-        const bKeys = Object.keys(b);
-        const sharedKeys = Object.keys(a).filter((key) => bKeys.indexOf(key) !== -1);
-        const newObj = { ...a, ...b };
-        for (const key of sharedKeys) {
-            const sharedValue = mergeValues(a[key], b[key]);
-            if (!sharedValue.valid) {
-                return {
-                    valid: false,
-                    mergeErrorPath: [key, ...sharedValue.mergeErrorPath],
-                };
-            }
-            newObj[key] = sharedValue.data;
-        }
-        return { valid: true, data: newObj };
-    }
-    if (Array.isArray(a) && Array.isArray(b)) {
-        if (a.length !== b.length) {
-            return { valid: false, mergeErrorPath: [] };
-        }
-        const newArray = [];
-        for (let index = 0; index < a.length; index++) {
-            const itemA = a[index];
-            const itemB = b[index];
-            const sharedValue = mergeValues(itemA, itemB);
-            if (!sharedValue.valid) {
-                return {
-                    valid: false,
-                    mergeErrorPath: [index, ...sharedValue.mergeErrorPath],
-                };
-            }
-            newArray.push(sharedValue.data);
-        }
-        return { valid: true, data: newArray };
-    }
-    return { valid: false, mergeErrorPath: [] };
-}
-function handleIntersectionResults(result, left, right) {
-    // Track which side(s) report each key as unrecognized
-    const unrecKeys = new Map();
-    let unrecIssue;
-    for (const iss of left.issues) {
-        if (iss.code === "unrecognized_keys") {
-            unrecIssue ?? (unrecIssue = iss);
-            for (const k of iss.keys) {
-                if (!unrecKeys.has(k))
-                    unrecKeys.set(k, {});
-                unrecKeys.get(k).l = true;
-            }
-        }
-        else {
-            result.issues.push(iss);
-        }
-    }
-    for (const iss of right.issues) {
-        if (iss.code === "unrecognized_keys") {
-            for (const k of iss.keys) {
-                if (!unrecKeys.has(k))
-                    unrecKeys.set(k, {});
-                unrecKeys.get(k).r = true;
-            }
-        }
-        else {
-            result.issues.push(iss);
-        }
-    }
-    // Report only keys unrecognized by BOTH sides
-    const bothKeys = [...unrecKeys].filter(([, f]) => f.l && f.r).map(([k]) => k);
-    if (bothKeys.length && unrecIssue) {
-        result.issues.push({ ...unrecIssue, keys: bothKeys });
-    }
-    if (util.aborted(result))
-        return result;
-    const merged = mergeValues(left.value, right.value);
-    if (!merged.valid) {
-        throw new Error(`Unmergable intersection. Error path: ` + `${JSON.stringify(merged.mergeErrorPath)}`);
-    }
-    result.value = merged.data;
-    return result;
-}
-const $ZodTuple = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodTuple", (inst, def) => {
-    $ZodType.init(inst, def);
-    const items = def.items;
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        if (!Array.isArray(input)) {
-            payload.issues.push({
-                input,
-                inst,
-                expected: "tuple",
-                code: "invalid_type",
-            });
-            return payload;
-        }
-        payload.value = [];
-        const proms = [];
-        const reversedIndex = [...items].reverse().findIndex((item) => item._zod.optin !== "optional");
-        const optStart = reversedIndex === -1 ? 0 : items.length - reversedIndex;
-        if (!def.rest) {
-            const tooBig = input.length > items.length;
-            const tooSmall = input.length < optStart - 1;
-            if (tooBig || tooSmall) {
-                payload.issues.push({
-                    ...(tooBig
-                        ? { code: "too_big", maximum: items.length, inclusive: true }
-                        : { code: "too_small", minimum: items.length }),
-                    input,
-                    inst,
-                    origin: "array",
-                });
-                return payload;
-            }
-        }
-        let i = -1;
-        for (const item of items) {
-            i++;
-            if (i >= input.length)
-                if (i >= optStart)
-                    continue;
-            const result = item._zod.run({
-                value: input[i],
-                issues: [],
-            }, ctx);
-            if (result instanceof Promise) {
-                proms.push(result.then((result) => handleTupleResult(result, payload, i)));
-            }
-            else {
-                handleTupleResult(result, payload, i);
-            }
-        }
-        if (def.rest) {
-            const rest = input.slice(items.length);
-            for (const el of rest) {
-                i++;
-                const result = def.rest._zod.run({
-                    value: el,
-                    issues: [],
-                }, ctx);
-                if (result instanceof Promise) {
-                    proms.push(result.then((result) => handleTupleResult(result, payload, i)));
-                }
-                else {
-                    handleTupleResult(result, payload, i);
-                }
-            }
-        }
-        if (proms.length)
-            return Promise.all(proms).then(() => payload);
-        return payload;
-    };
-})));
-function handleTupleResult(result, final, index) {
-    if (result.issues.length) {
-        final.issues.push(...util.prefixIssues(index, result.issues));
-    }
-    final.value[index] = result.value;
-}
-const $ZodRecord = /*@__PURE__*/ $constructor("$ZodRecord", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        if (!isPlainObject(input)) {
-            payload.issues.push({
-                expected: "record",
-                code: "invalid_type",
-                input,
-                inst,
-            });
-            return payload;
-        }
-        const proms = [];
-        const values = def.keyType._zod.values;
-        if (values) {
-            payload.value = {};
-            const recordKeys = new Set();
-            for (const key of values) {
-                if (typeof key === "string" || typeof key === "number" || typeof key === "symbol") {
-                    recordKeys.add(typeof key === "number" ? key.toString() : key);
-                    const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
-                    if (result instanceof Promise) {
-                        proms.push(result.then((result) => {
-                            if (result.issues.length) {
-                                payload.issues.push(...prefixIssues(key, result.issues));
-                            }
-                            payload.value[key] = result.value;
-                        }));
-                    }
-                    else {
-                        if (result.issues.length) {
-                            payload.issues.push(...prefixIssues(key, result.issues));
-                        }
-                        payload.value[key] = result.value;
-                    }
-                }
-            }
-            let unrecognized;
-            for (const key in input) {
-                if (!recordKeys.has(key)) {
-                    unrecognized = unrecognized ?? [];
-                    unrecognized.push(key);
-                }
-            }
-            if (unrecognized && unrecognized.length > 0) {
-                payload.issues.push({
-                    code: "unrecognized_keys",
-                    input,
-                    inst,
-                    keys: unrecognized,
-                });
-            }
-        }
-        else {
-            payload.value = {};
-            for (const key of Reflect.ownKeys(input)) {
-                if (key === "__proto__")
-                    continue;
-                let keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
-                if (keyResult instanceof Promise) {
-                    throw new Error("Async schemas not supported in object keys currently");
-                }
-                // Numeric string fallback: if key is a numeric string and failed, retry with Number(key)
-                // This handles z.number(), z.literal([1, 2, 3]), and unions containing numeric literals
-                const checkNumericKey = typeof key === "string" && regexes_number.test(key) && keyResult.issues.length;
-                if (checkNumericKey) {
-                    const retryResult = def.keyType._zod.run({ value: Number(key), issues: [] }, ctx);
-                    if (retryResult instanceof Promise) {
-                        throw new Error("Async schemas not supported in object keys currently");
-                    }
-                    if (retryResult.issues.length === 0) {
-                        keyResult = retryResult;
-                    }
-                }
-                if (keyResult.issues.length) {
-                    if (def.mode === "loose") {
-                        // Pass through unchanged
-                        payload.value[key] = input[key];
-                    }
-                    else {
-                        // Default "strict" behavior: error on invalid key
-                        payload.issues.push({
-                            code: "invalid_key",
-                            origin: "record",
-                            issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, core_config())),
-                            input: key,
-                            path: [key],
-                            inst,
-                        });
-                    }
-                    continue;
-                }
-                const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
-                if (result instanceof Promise) {
-                    proms.push(result.then((result) => {
-                        if (result.issues.length) {
-                            payload.issues.push(...prefixIssues(key, result.issues));
-                        }
-                        payload.value[keyResult.value] = result.value;
-                    }));
-                }
-                else {
-                    if (result.issues.length) {
-                        payload.issues.push(...prefixIssues(key, result.issues));
-                    }
-                    payload.value[keyResult.value] = result.value;
-                }
-            }
-        }
-        if (proms.length) {
-            return Promise.all(proms).then(() => payload);
-        }
-        return payload;
-    };
-});
-const $ZodMap = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodMap", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        if (!(input instanceof Map)) {
-            payload.issues.push({
-                expected: "map",
-                code: "invalid_type",
-                input,
-                inst,
-            });
-            return payload;
-        }
-        const proms = [];
-        payload.value = new Map();
-        for (const [key, value] of input) {
-            const keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
-            const valueResult = def.valueType._zod.run({ value: value, issues: [] }, ctx);
-            if (keyResult instanceof Promise || valueResult instanceof Promise) {
-                proms.push(Promise.all([keyResult, valueResult]).then(([keyResult, valueResult]) => {
-                    handleMapResult(keyResult, valueResult, payload, key, input, inst, ctx);
-                }));
-            }
-            else {
-                handleMapResult(keyResult, valueResult, payload, key, input, inst, ctx);
-            }
-        }
-        if (proms.length)
-            return Promise.all(proms).then(() => payload);
-        return payload;
-    };
-})));
-function handleMapResult(keyResult, valueResult, final, key, input, inst, ctx) {
-    if (keyResult.issues.length) {
-        if (util.propertyKeyTypes.has(typeof key)) {
-            final.issues.push(...util.prefixIssues(key, keyResult.issues));
-        }
-        else {
-            final.issues.push({
-                code: "invalid_key",
-                origin: "map",
-                input,
-                inst,
-                issues: keyResult.issues.map((iss) => util.finalizeIssue(iss, ctx, core.config())),
-            });
-        }
-    }
-    if (valueResult.issues.length) {
-        if (util.propertyKeyTypes.has(typeof key)) {
-            final.issues.push(...util.prefixIssues(key, valueResult.issues));
-        }
-        else {
-            final.issues.push({
-                origin: "map",
-                code: "invalid_element",
-                input,
-                inst,
-                key: key,
-                issues: valueResult.issues.map((iss) => util.finalizeIssue(iss, ctx, core.config())),
-            });
-        }
-    }
-    final.value.set(keyResult.value, valueResult.value);
-}
-const $ZodSet = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodSet", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        const input = payload.value;
-        if (!(input instanceof Set)) {
-            payload.issues.push({
-                input,
-                inst,
-                expected: "set",
-                code: "invalid_type",
-            });
-            return payload;
-        }
-        const proms = [];
-        payload.value = new Set();
-        for (const item of input) {
-            const result = def.valueType._zod.run({ value: item, issues: [] }, ctx);
-            if (result instanceof Promise) {
-                proms.push(result.then((result) => handleSetResult(result, payload)));
-            }
-            else
-                handleSetResult(result, payload);
-        }
-        if (proms.length)
-            return Promise.all(proms).then(() => payload);
-        return payload;
-    };
-})));
-function handleSetResult(result, final) {
-    if (result.issues.length) {
-        final.issues.push(...result.issues);
-    }
-    final.value.add(result.value);
-}
-const $ZodEnum = /*@__PURE__*/ $constructor("$ZodEnum", (inst, def) => {
-    $ZodType.init(inst, def);
-    const values = util_getEnumValues(def.entries);
-    const valuesSet = new Set(values);
-    inst._zod.values = valuesSet;
-    inst._zod.pattern = new RegExp(`^(${values
-        .filter((k) => propertyKeyTypes.has(typeof k))
-        .map((o) => (typeof o === "string" ? escapeRegex(o) : o.toString()))
-        .join("|")})$`);
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        if (valuesSet.has(input)) {
-            return payload;
-        }
-        payload.issues.push({
-            code: "invalid_value",
-            values,
-            input,
-            inst,
-        });
-        return payload;
-    };
-});
-const $ZodLiteral = /*@__PURE__*/ $constructor("$ZodLiteral", (inst, def) => {
-    $ZodType.init(inst, def);
-    if (def.values.length === 0) {
-        throw new Error("Cannot create literal schema with no valid values");
-    }
-    const values = new Set(def.values);
-    inst._zod.values = values;
-    inst._zod.pattern = new RegExp(`^(${def.values
-        .map((o) => (typeof o === "string" ? escapeRegex(o) : o ? escapeRegex(o.toString()) : String(o)))
-        .join("|")})$`);
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        if (values.has(input)) {
-            return payload;
-        }
-        payload.issues.push({
-            code: "invalid_value",
-            values: def.values,
-            input,
-            inst,
-        });
-        return payload;
-    };
-});
-const $ZodFile = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodFile", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _ctx) => {
-        const input = payload.value;
-        // @ts-ignore
-        if (input instanceof File)
-            return payload;
-        payload.issues.push({
-            expected: "file",
+}), en = s("$ZodRecord", (e, t)=>{
+    F.init(e, t), e._zod.parse = (n, r)=>{
+        let i = n.value;
+        if (!w(i)) return n.issues.push({
+            expected: "record",
             code: "invalid_type",
-            input,
-            inst,
-        });
-        return payload;
-    };
-})));
-const $ZodTransform = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodTransform", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            throw new core.$ZodEncodeError(inst.constructor.name);
-        }
-        const _out = def.transform(payload.value, payload);
-        if (ctx.async) {
-            const output = _out instanceof Promise ? _out : Promise.resolve(_out);
-            return output.then((output) => {
-                payload.value = output;
-                return payload;
+            input: i,
+            inst: e
+        }), n;
+        let o = [], a = t.keyType._zod.values;
+        if (a) {
+            let s;
+            n.value = {};
+            let l = new Set();
+            for (let e of a)if ("string" == typeof e || "number" == typeof e || "symbol" == typeof e) {
+                l.add("number" == typeof e ? e.toString() : e);
+                let a = t.valueType._zod.run({
+                    value: i[e],
+                    issues: []
+                }, r);
+                a instanceof Promise ? o.push(a.then((t)=>{
+                    t.issues.length && n.issues.push(...j(e, t.issues)), n.value[e] = t.value;
+                })) : (a.issues.length && n.issues.push(...j(e, a.issues)), n.value[e] = a.value);
+            }
+            for(let e in i)l.has(e) || (s = s ?? []).push(e);
+            s && s.length > 0 && n.issues.push({
+                code: "unrecognized_keys",
+                input: i,
+                inst: e,
+                keys: s
             });
+        } else for (let a of (n.value = {}, Reflect.ownKeys(i))){
+            if ("__proto__" === a) continue;
+            let s = t.keyType._zod.run({
+                value: a,
+                issues: []
+            }, r);
+            if (s instanceof Promise) throw Error("Async schemas not supported in object keys currently");
+            if ("string" == typeof a && I.test(a) && s.issues.length) {
+                let e = t.keyType._zod.run({
+                    value: Number(a),
+                    issues: []
+                }, r);
+                if (e instanceof Promise) throw Error("Async schemas not supported in object keys currently");
+                0 === e.issues.length && (s = e);
+            }
+            if (s.issues.length) {
+                "loose" === t.mode ? n.value[a] = i[a] : n.issues.push({
+                    code: "invalid_key",
+                    origin: "record",
+                    issues: s.issues.map((e)=>S(e, r, c())),
+                    input: a,
+                    path: [
+                        a
+                    ],
+                    inst: e
+                });
+                continue;
+            }
+            let l = t.valueType._zod.run({
+                value: i[a],
+                issues: []
+            }, r);
+            l instanceof Promise ? o.push(l.then((e)=>{
+                e.issues.length && n.issues.push(...j(a, e.issues)), n.value[s.value] = e.value;
+            })) : (l.issues.length && n.issues.push(...j(a, l.issues)), n.value[s.value] = l.value);
         }
-        if (_out instanceof Promise) {
-            throw new core.$ZodAsyncError();
-        }
-        payload.value = _out;
-        return payload;
+        return o.length ? Promise.all(o).then(()=>n) : n;
     };
-})));
-function handleOptionalResult(result, input) {
-    if (result.issues.length && input === undefined) {
-        return { issues: [], value: undefined };
-    }
-    return result;
-}
-const $ZodOptional = /*@__PURE__*/ $constructor("$ZodOptional", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.optin = "optional";
-    inst._zod.optout = "optional";
-    defineLazy(inst._zod, "values", () => {
-        return def.innerType._zod.values ? new Set([...def.innerType._zod.values, undefined]) : undefined;
-    });
-    defineLazy(inst._zod, "pattern", () => {
-        const pattern = def.innerType._zod.pattern;
-        return pattern ? new RegExp(`^(${cleanRegex(pattern.source)})?$`) : undefined;
-    });
-    inst._zod.parse = (payload, ctx) => {
-        if (def.innerType._zod.optin === "optional") {
-            const result = def.innerType._zod.run(payload, ctx);
-            if (result instanceof Promise)
-                return result.then((r) => handleOptionalResult(r, payload.value));
-            return handleOptionalResult(result, payload.value);
-        }
-        if (payload.value === undefined) {
-            return payload;
-        }
-        return def.innerType._zod.run(payload, ctx);
+}), er = s("$ZodEnum", (e, t)=>{
+    var n;
+    let r;
+    F.init(e, t);
+    let i = (r = Object.values(n = t.entries).filter((e)=>"number" == typeof e), Object.entries(n).filter(([e, t])=>-1 === r.indexOf(+e)).map(([e, t])=>t)), o = new Set(i);
+    e._zod.values = o, e._zod.pattern = RegExp(`^(${i.filter((e)=>z.has(typeof e)).map((e)=>"string" == typeof e ? x(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
+        let r = t.value;
+        return o.has(r) || t.issues.push({
+            code: "invalid_value",
+            values: i,
+            input: r,
+            inst: e
+        }), t;
+    };
+}), ei = s("$ZodLiteral", (e, t)=>{
+    if (F.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
+    let n = new Set(t.values);
+    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? x(e) : e ? x(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (r, i)=>{
+        let o = r.value;
+        return n.has(o) || r.issues.push({
+            code: "invalid_value",
+            values: t.values,
+            input: o,
+            inst: e
+        }), r;
     };
 });
-const $ZodExactOptional = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodExactOptional", (inst, def) => {
-    // Call parent init - inherits optin/optout = "optional"
-    $ZodOptional.init(inst, def);
-    // Override values/pattern to NOT add undefined
-    util.defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-    util.defineLazy(inst._zod, "pattern", () => def.innerType._zod.pattern);
-    // Override parse to just delegate (no undefined handling)
-    inst._zod.parse = (payload, ctx) => {
-        return def.innerType._zod.run(payload, ctx);
-    };
-})));
-const $ZodNullable = /*@__PURE__*/ $constructor("$ZodNullable", (inst, def) => {
-    $ZodType.init(inst, def);
-    defineLazy(inst._zod, "optin", () => def.innerType._zod.optin);
-    defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
-    defineLazy(inst._zod, "pattern", () => {
-        const pattern = def.innerType._zod.pattern;
-        return pattern ? new RegExp(`^(${cleanRegex(pattern.source)}|null)$`) : undefined;
-    });
-    defineLazy(inst._zod, "values", () => {
-        return def.innerType._zod.values ? new Set([...def.innerType._zod.values, null]) : undefined;
-    });
-    inst._zod.parse = (payload, ctx) => {
-        // Forward direction (decode): allow null to pass through
-        if (payload.value === null)
-            return payload;
-        return def.innerType._zod.run(payload, ctx);
-    };
-});
-const $ZodDefault = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodDefault", (inst, def) => {
-    $ZodType.init(inst, def);
-    // inst._zod.qin = "true";
-    inst._zod.optin = "optional";
-    util.defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            return def.innerType._zod.run(payload, ctx);
-        }
-        // Forward direction (decode): apply defaults for undefined input
-        if (payload.value === undefined) {
-            payload.value = def.defaultValue;
-            /**
-             * $ZodDefault returns the default value immediately in forward direction.
-             * It doesn't pass the default value into the validator ("prefault"). There's no reason to pass the default value through validation. The validity of the default is enforced by TypeScript statically. Otherwise, it's the responsibility of the user to ensure the default is valid. In the case of pipes with divergent in/out types, you can specify the default on the `in` schema of your ZodPipe to set a "prefault" for the pipe.   */
-            return payload;
-        }
-        // Forward direction: continue with default handling
-        const result = def.innerType._zod.run(payload, ctx);
-        if (result instanceof Promise) {
-            return result.then((result) => handleDefaultResult(result, def));
-        }
-        return handleDefaultResult(result, def);
-    };
-})));
-function handleDefaultResult(payload, def) {
-    if (payload.value === undefined) {
-        payload.value = def.defaultValue;
-    }
-    return payload;
+function eo(e, t) {
+    return e.issues.length && void 0 === t ? {
+        issues: [],
+        value: void 0
+    } : e;
 }
-const $ZodPrefault = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodPrefault", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.optin = "optional";
-    util.defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            return def.innerType._zod.run(payload, ctx);
+const ea = s("$ZodOptional", (e, t)=>{
+    F.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+            ...t.innerType._zod.values,
+            void 0
+        ]) : void 0), g(e._zod, "pattern", ()=>{
+        let e = t.innerType._zod.pattern;
+        return e ? RegExp(`^(${f(e.source)})?$`) : void 0;
+    }), e._zod.parse = (e, n)=>{
+        if ("optional" === t.innerType._zod.optin) {
+            let r = t.innerType._zod.run(e, n);
+            return r instanceof Promise ? r.then((t)=>eo(t, e.value)) : eo(r, e.value);
         }
-        // Forward direction (decode): apply prefault for undefined input
-        if (payload.value === undefined) {
-            payload.value = def.defaultValue;
-        }
-        return def.innerType._zod.run(payload, ctx);
+        return void 0 === e.value ? e : t.innerType._zod.run(e, n);
     };
-})));
-const $ZodNonOptional = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodNonOptional", (inst, def) => {
-    $ZodType.init(inst, def);
-    util.defineLazy(inst._zod, "values", () => {
-        const v = def.innerType._zod.values;
-        return v ? new Set([...v].filter((x) => x !== undefined)) : undefined;
-    });
-    inst._zod.parse = (payload, ctx) => {
-        const result = def.innerType._zod.run(payload, ctx);
-        if (result instanceof Promise) {
-            return result.then((result) => handleNonOptionalResult(result, inst));
-        }
-        return handleNonOptionalResult(result, inst);
-    };
-})));
-function handleNonOptionalResult(payload, inst) {
-    if (!payload.issues.length && payload.value === undefined) {
-        payload.issues.push({
-            code: "invalid_type",
-            expected: "nonoptional",
-            input: payload.value,
-            inst,
-        });
-    }
-    return payload;
-}
-const $ZodSuccess = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodSuccess", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            throw new core.$ZodEncodeError("ZodSuccess");
-        }
-        const result = def.innerType._zod.run(payload, ctx);
-        if (result instanceof Promise) {
-            return result.then((result) => {
-                payload.value = result.issues.length === 0;
-                return payload;
-            });
-        }
-        payload.value = result.issues.length === 0;
-        return payload;
-    };
-})));
-const $ZodCatch = /*@__PURE__*/ $constructor("$ZodCatch", (inst, def) => {
-    $ZodType.init(inst, def);
-    defineLazy(inst._zod, "optin", () => def.innerType._zod.optin);
-    defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
-    defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            return def.innerType._zod.run(payload, ctx);
-        }
-        // Forward direction (decode): apply catch logic
-        const result = def.innerType._zod.run(payload, ctx);
-        if (result instanceof Promise) {
-            return result.then((result) => {
-                payload.value = result.value;
-                if (result.issues.length) {
-                    payload.value = def.catchValue({
-                        ...payload,
-                        error: {
-                            issues: result.issues.map((iss) => finalizeIssue(iss, ctx, core_config())),
-                        },
-                        input: payload.value,
-                    });
-                    payload.issues = [];
-                }
-                return payload;
-            });
-        }
-        payload.value = result.value;
-        if (result.issues.length) {
-            payload.value = def.catchValue({
-                ...payload,
+}), es = s("$ZodNullable", (e, t)=>{
+    F.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
+        let e = t.innerType._zod.pattern;
+        return e ? RegExp(`^(${f(e.source)}|null)$`) : void 0;
+    }), g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+            ...t.innerType._zod.values,
+            null
+        ]) : void 0), e._zod.parse = (e, n)=>null === e.value ? e : t.innerType._zod.run(e, n);
+}), el = s("$ZodCatch", (e, t)=>{
+    F.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, n)=>{
+        if ("backward" === n.direction) return t.innerType._zod.run(e, n);
+        let r = t.innerType._zod.run(e, n);
+        return r instanceof Promise ? r.then((r)=>(e.value = r.value, r.issues.length && (e.value = t.catchValue({
+                ...e,
                 error: {
-                    issues: result.issues.map((iss) => finalizeIssue(iss, ctx, core_config())),
+                    issues: r.issues.map((e)=>S(e, n, c()))
                 },
-                input: payload.value,
-            });
-            payload.issues = [];
-        }
-        return payload;
+                input: e.value
+            }), e.issues = []), e)) : (e.value = r.value, r.issues.length && (e.value = t.catchValue({
+            ...e,
+            error: {
+                issues: r.issues.map((e)=>S(e, n, c()))
+            },
+            input: e.value
+        }), e.issues = []), e);
     };
+}), ed = s("$ZodLazy", (e, t)=>{
+    F.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, n)=>e._zod.innerType._zod.run(t, n);
 });
-const $ZodNaN = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodNaN", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _ctx) => {
-        if (typeof payload.value !== "number" || !Number.isNaN(payload.value)) {
-            payload.issues.push({
-                input: payload.value,
-                inst,
-                expected: "nan",
-                code: "invalid_type",
-            });
-            return payload;
-        }
-        return payload;
-    };
-})));
-const $ZodPipe = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodPipe", (inst, def) => {
-    $ZodType.init(inst, def);
-    util.defineLazy(inst._zod, "values", () => def.in._zod.values);
-    util.defineLazy(inst._zod, "optin", () => def.in._zod.optin);
-    util.defineLazy(inst._zod, "optout", () => def.out._zod.optout);
-    util.defineLazy(inst._zod, "propValues", () => def.in._zod.propValues);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            const right = def.out._zod.run(payload, ctx);
-            if (right instanceof Promise) {
-                return right.then((right) => handlePipeResult(right, def.in, ctx));
-            }
-            return handlePipeResult(right, def.in, ctx);
-        }
-        const left = def.in._zod.run(payload, ctx);
-        if (left instanceof Promise) {
-            return left.then((left) => handlePipeResult(left, def.out, ctx));
-        }
-        return handlePipeResult(left, def.out, ctx);
-    };
-})));
-function handlePipeResult(left, next, ctx) {
-    if (left.issues.length) {
-        // prevent further checks
-        left.aborted = true;
-        return left;
+Symbol("ZodOutput"), Symbol("ZodInput");
+(e = globalThis).__zod_globalRegistry ?? (e.__zod_globalRegistry = new class e {
+    constructor(){
+        this._map = new WeakMap(), this._idmap = new Map();
     }
-    return next._zod.run({ value: left.value, issues: left.issues }, ctx);
-}
-const $ZodCodec = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCodec", (inst, def) => {
-    $ZodType.init(inst, def);
-    util.defineLazy(inst._zod, "values", () => def.in._zod.values);
-    util.defineLazy(inst._zod, "optin", () => def.in._zod.optin);
-    util.defineLazy(inst._zod, "optout", () => def.out._zod.optout);
-    util.defineLazy(inst._zod, "propValues", () => def.in._zod.propValues);
-    inst._zod.parse = (payload, ctx) => {
-        const direction = ctx.direction || "forward";
-        if (direction === "forward") {
-            const left = def.in._zod.run(payload, ctx);
-            if (left instanceof Promise) {
-                return left.then((left) => handleCodecAResult(left, def, ctx));
-            }
-            return handleCodecAResult(left, def, ctx);
-        }
-        else {
-            const right = def.out._zod.run(payload, ctx);
-            if (right instanceof Promise) {
-                return right.then((right) => handleCodecAResult(right, def, ctx));
-            }
-            return handleCodecAResult(right, def, ctx);
-        }
-    };
-})));
-function handleCodecAResult(result, def, ctx) {
-    if (result.issues.length) {
-        // prevent further checks
-        result.aborted = true;
-        return result;
-    }
-    const direction = ctx.direction || "forward";
-    if (direction === "forward") {
-        const transformed = def.transform(result.value, result);
-        if (transformed instanceof Promise) {
-            return transformed.then((value) => handleCodecTxResult(result, value, def.out, ctx));
-        }
-        return handleCodecTxResult(result, transformed, def.out, ctx);
-    }
-    else {
-        const transformed = def.reverseTransform(result.value, result);
-        if (transformed instanceof Promise) {
-            return transformed.then((value) => handleCodecTxResult(result, value, def.in, ctx));
-        }
-        return handleCodecTxResult(result, transformed, def.in, ctx);
-    }
-}
-function handleCodecTxResult(left, value, nextSchema, ctx) {
-    // Check if transform added any issues
-    if (left.issues.length) {
-        left.aborted = true;
-        return left;
-    }
-    return nextSchema._zod.run({ value, issues: left.issues }, ctx);
-}
-const $ZodReadonly = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodReadonly", (inst, def) => {
-    $ZodType.init(inst, def);
-    util.defineLazy(inst._zod, "propValues", () => def.innerType._zod.propValues);
-    util.defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-    util.defineLazy(inst._zod, "optin", () => def.innerType?._zod?.optin);
-    util.defineLazy(inst._zod, "optout", () => def.innerType?._zod?.optout);
-    inst._zod.parse = (payload, ctx) => {
-        if (ctx.direction === "backward") {
-            return def.innerType._zod.run(payload, ctx);
-        }
-        const result = def.innerType._zod.run(payload, ctx);
-        if (result instanceof Promise) {
-            return result.then(handleReadonlyResult);
-        }
-        return handleReadonlyResult(result);
-    };
-})));
-function handleReadonlyResult(payload) {
-    payload.value = Object.freeze(payload.value);
-    return payload;
-}
-const $ZodTemplateLiteral = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodTemplateLiteral", (inst, def) => {
-    $ZodType.init(inst, def);
-    const regexParts = [];
-    for (const part of def.parts) {
-        if (typeof part === "object" && part !== null) {
-            // is Zod schema
-            if (!part._zod.pattern) {
-                // if (!source)
-                throw new Error(`Invalid template literal part, no pattern found: ${[...part._zod.traits].shift()}`);
-            }
-            const source = part._zod.pattern instanceof RegExp ? part._zod.pattern.source : part._zod.pattern;
-            if (!source)
-                throw new Error(`Invalid template literal part: ${part._zod.traits}`);
-            const start = source.startsWith("^") ? 1 : 0;
-            const end = source.endsWith("$") ? source.length - 1 : source.length;
-            regexParts.push(source.slice(start, end));
-        }
-        else if (part === null || util.primitiveTypes.has(typeof part)) {
-            regexParts.push(util.escapeRegex(`${part}`));
-        }
-        else {
-            throw new Error(`Invalid template literal part: ${part}`);
-        }
-    }
-    inst._zod.pattern = new RegExp(`^${regexParts.join("")}$`);
-    inst._zod.parse = (payload, _ctx) => {
-        if (typeof payload.value !== "string") {
-            payload.issues.push({
-                input: payload.value,
-                inst,
-                expected: "string",
-                code: "invalid_type",
-            });
-            return payload;
-        }
-        inst._zod.pattern.lastIndex = 0;
-        if (!inst._zod.pattern.test(payload.value)) {
-            payload.issues.push({
-                input: payload.value,
-                inst,
-                code: "invalid_format",
-                format: def.format ?? "template_literal",
-                pattern: inst._zod.pattern.source,
-            });
-            return payload;
-        }
-        return payload;
-    };
-})));
-const $ZodFunction = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodFunction", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._def = def;
-    inst._zod.def = def;
-    inst.implement = (func) => {
-        if (typeof func !== "function") {
-            throw new Error("implement() must be called with a function");
-        }
-        return function (...args) {
-            const parsedArgs = inst._def.input ? parse(inst._def.input, args) : args;
-            const result = Reflect.apply(func, this, parsedArgs);
-            if (inst._def.output) {
-                return parse(inst._def.output, result);
-            }
-            return result;
-        };
-    };
-    inst.implementAsync = (func) => {
-        if (typeof func !== "function") {
-            throw new Error("implementAsync() must be called with a function");
-        }
-        return async function (...args) {
-            const parsedArgs = inst._def.input ? await parseAsync(inst._def.input, args) : args;
-            const result = await Reflect.apply(func, this, parsedArgs);
-            if (inst._def.output) {
-                return await parseAsync(inst._def.output, result);
-            }
-            return result;
-        };
-    };
-    inst._zod.parse = (payload, _ctx) => {
-        if (typeof payload.value !== "function") {
-            payload.issues.push({
-                code: "invalid_type",
-                expected: "function",
-                input: payload.value,
-                inst,
-            });
-            return payload;
-        }
-        // Check if output is a promise type to determine if we should use async implementation
-        const hasPromiseOutput = inst._def.output && inst._def.output._zod.def.type === "promise";
-        if (hasPromiseOutput) {
-            payload.value = inst.implementAsync(payload.value);
-        }
-        else {
-            payload.value = inst.implement(payload.value);
-        }
-        return payload;
-    };
-    inst.input = (...args) => {
-        const F = inst.constructor;
-        if (Array.isArray(args[0])) {
-            return new F({
-                type: "function",
-                input: new $ZodTuple({
-                    type: "tuple",
-                    items: args[0],
-                    rest: args[1],
-                }),
-                output: inst._def.output,
-            });
-        }
-        return new F({
-            type: "function",
-            input: args[0],
-            output: inst._def.output,
-        });
-    };
-    inst.output = (output) => {
-        const F = inst.constructor;
-        return new F({
-            type: "function",
-            input: inst._def.input,
-            output,
-        });
-    };
-    return inst;
-})));
-const $ZodPromise = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodPromise", (inst, def) => {
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, ctx) => {
-        return Promise.resolve(payload.value).then((inner) => def.innerType._zod.run({ value: inner, issues: [] }, ctx));
-    };
-})));
-const $ZodLazy = /*@__PURE__*/ $constructor("$ZodLazy", (inst, def) => {
-    $ZodType.init(inst, def);
-    // let _innerType!: any;
-    // util.defineLazy(def, "getter", () => {
-    //   if (!_innerType) {
-    //     _innerType = def.getter();
-    //   }
-    //   return () => _innerType;
-    // });
-    defineLazy(inst._zod, "innerType", () => def.getter());
-    defineLazy(inst._zod, "pattern", () => inst._zod.innerType?._zod?.pattern);
-    defineLazy(inst._zod, "propValues", () => inst._zod.innerType?._zod?.propValues);
-    defineLazy(inst._zod, "optin", () => inst._zod.innerType?._zod?.optin ?? undefined);
-    defineLazy(inst._zod, "optout", () => inst._zod.innerType?._zod?.optout ?? undefined);
-    inst._zod.parse = (payload, ctx) => {
-        const inner = inst._zod.innerType;
-        return inner._zod.run(payload, ctx);
-    };
-});
-const $ZodCustom = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("$ZodCustom", (inst, def) => {
-    checks.$ZodCheck.init(inst, def);
-    $ZodType.init(inst, def);
-    inst._zod.parse = (payload, _) => {
-        return payload;
-    };
-    inst._zod.check = (payload) => {
-        const input = payload.value;
-        const r = def.fn(input);
-        if (r instanceof Promise) {
-            return r.then((r) => handleRefineResult(r, payload, input, inst));
-        }
-        handleRefineResult(r, payload, input, inst);
-        return;
-    };
-})));
-function handleRefineResult(result, payload, input, inst) {
-    if (!result) {
-        const _iss = {
-            code: "custom",
-            input,
-            inst, // incorporates params.error into issue reporting
-            path: [...(inst._zod.def.path ?? [])], // incorporates params.error into issue reporting
-            continue: !inst._zod.def.abort,
-            // params: inst._zod.def.params,
-        };
-        if (inst._zod.def.params)
-            _iss.params = inst._zod.def.params;
-        payload.issues.push(util.issue(_iss));
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ar.js
-
-const ar_error = () => {
-    const Sizable = {
-        string: { unit: "حرف", verb: "أن يحوي" },
-        file: { unit: "بايت", verb: "أن يحوي" },
-        array: { unit: "عنصر", verb: "أن يحوي" },
-        set: { unit: "عنصر", verb: "أن يحوي" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "مدخل",
-        email: "بريد إلكتروني",
-        url: "رابط",
-        emoji: "إيموجي",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "تاريخ ووقت بمعيار ISO",
-        date: "تاريخ بمعيار ISO",
-        time: "وقت بمعيار ISO",
-        duration: "مدة بمعيار ISO",
-        ipv4: "عنوان IPv4",
-        ipv6: "عنوان IPv6",
-        cidrv4: "مدى عناوين بصيغة IPv4",
-        cidrv6: "مدى عناوين بصيغة IPv6",
-        base64: "نَص بترميز base64-encoded",
-        base64url: "نَص بترميز base64url-encoded",
-        json_string: "نَص على هيئة JSON",
-        e164: "رقم هاتف بمعيار E.164",
-        jwt: "JWT",
-        template_literal: "مدخل",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `مدخلات غير مقبولة: يفترض إدخال instanceof ${issue.expected}، ولكن تم إدخال ${received}`;
-                }
-                return `مدخلات غير مقبولة: يفترض إدخال ${expected}، ولكن تم إدخال ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `مدخلات غير مقبولة: يفترض إدخال ${util.stringifyPrimitive(issue.values[0])}`;
-                return `اختيار غير مقبول: يتوقع انتقاء أحد هذه الخيارات: ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return ` أكبر من اللازم: يفترض أن تكون ${issue.origin ?? "القيمة"} ${adj} ${issue.maximum.toString()} ${sizing.unit ?? "عنصر"}`;
-                return `أكبر من اللازم: يفترض أن تكون ${issue.origin ?? "القيمة"} ${adj} ${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `أصغر من اللازم: يفترض لـ ${issue.origin} أن يكون ${adj} ${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `أصغر من اللازم: يفترض لـ ${issue.origin} أن يكون ${adj} ${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `نَص غير مقبول: يجب أن يبدأ بـ "${issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `نَص غير مقبول: يجب أن ينتهي بـ "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `نَص غير مقبول: يجب أن يتضمَّن "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `نَص غير مقبول: يجب أن يطابق النمط ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} غير مقبول`;
-            }
-            case "not_multiple_of":
-                return `رقم غير مقبول: يجب أن يكون من مضاعفات ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `معرف${issue.keys.length > 1 ? "ات" : ""} غريب${issue.keys.length > 1 ? "ة" : ""}: ${util.joinValues(issue.keys, "، ")}`;
-            case "invalid_key":
-                return `معرف غير مقبول في ${issue.origin}`;
-            case "invalid_union":
-                return "مدخل غير مقبول";
-            case "invalid_element":
-                return `مدخل غير مقبول في ${issue.origin}`;
-            default:
-                return "مدخل غير مقبول";
-        }
-    };
-};
-/* export default */ function ar() {
-    return {
-        localeError: ar_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/az.js
-
-const az_error = () => {
-    const Sizable = {
-        string: { unit: "simvol", verb: "olmalıdır" },
-        file: { unit: "bayt", verb: "olmalıdır" },
-        array: { unit: "element", verb: "olmalıdır" },
-        set: { unit: "element", verb: "olmalıdır" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "email address",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO datetime",
-        date: "ISO date",
-        time: "ISO time",
-        duration: "ISO duration",
-        ipv4: "IPv4 address",
-        ipv6: "IPv6 address",
-        cidrv4: "IPv4 range",
-        cidrv6: "IPv6 range",
-        base64: "base64-encoded string",
-        base64url: "base64url-encoded string",
-        json_string: "JSON string",
-        e164: "E.164 number",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Yanlış dəyər: gözlənilən instanceof ${issue.expected}, daxil olan ${received}`;
-                }
-                return `Yanlış dəyər: gözlənilən ${expected}, daxil olan ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Yanlış dəyər: gözlənilən ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Yanlış seçim: aşağıdakılardan biri olmalıdır: ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Çox böyük: gözlənilən ${issue.origin ?? "dəyər"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "element"}`;
-                return `Çox böyük: gözlənilən ${issue.origin ?? "dəyər"} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Çox kiçik: gözlənilən ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                return `Çox kiçik: gözlənilən ${issue.origin} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Yanlış mətn: "${_issue.prefix}" ilə başlamalıdır`;
-                if (_issue.format === "ends_with")
-                    return `Yanlış mətn: "${_issue.suffix}" ilə bitməlidir`;
-                if (_issue.format === "includes")
-                    return `Yanlış mətn: "${_issue.includes}" daxil olmalıdır`;
-                if (_issue.format === "regex")
-                    return `Yanlış mətn: ${_issue.pattern} şablonuna uyğun olmalıdır`;
-                return `Yanlış ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Yanlış ədəd: ${issue.divisor} ilə bölünə bilən olmalıdır`;
-            case "unrecognized_keys":
-                return `Tanınmayan açar${issue.keys.length > 1 ? "lar" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `${issue.origin} daxilində yanlış açar`;
-            case "invalid_union":
-                return "Yanlış dəyər";
-            case "invalid_element":
-                return `${issue.origin} daxilində yanlış dəyər`;
-            default:
-                return `Yanlış dəyər`;
-        }
-    };
-};
-/* export default */ function az() {
-    return {
-        localeError: az_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/be.js
-
-function getBelarusianPlural(count, one, few, many) {
-    const absCount = Math.abs(count);
-    const lastDigit = absCount % 10;
-    const lastTwoDigits = absCount % 100;
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-        return many;
-    }
-    if (lastDigit === 1) {
-        return one;
-    }
-    if (lastDigit >= 2 && lastDigit <= 4) {
-        return few;
-    }
-    return many;
-}
-const be_error = () => {
-    const Sizable = {
-        string: {
-            unit: {
-                one: "сімвал",
-                few: "сімвалы",
-                many: "сімвалаў",
-            },
-            verb: "мець",
-        },
-        array: {
-            unit: {
-                one: "элемент",
-                few: "элементы",
-                many: "элементаў",
-            },
-            verb: "мець",
-        },
-        set: {
-            unit: {
-                one: "элемент",
-                few: "элементы",
-                many: "элементаў",
-            },
-            verb: "мець",
-        },
-        file: {
-            unit: {
-                one: "байт",
-                few: "байты",
-                many: "байтаў",
-            },
-            verb: "мець",
-        },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "увод",
-        email: "email адрас",
-        url: "URL",
-        emoji: "эмодзі",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO дата і час",
-        date: "ISO дата",
-        time: "ISO час",
-        duration: "ISO працягласць",
-        ipv4: "IPv4 адрас",
-        ipv6: "IPv6 адрас",
-        cidrv4: "IPv4 дыяпазон",
-        cidrv6: "IPv6 дыяпазон",
-        base64: "радок у фармаце base64",
-        base64url: "радок у фармаце base64url",
-        json_string: "JSON радок",
-        e164: "нумар E.164",
-        jwt: "JWT",
-        template_literal: "увод",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "лік",
-        array: "масіў",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Няправільны ўвод: чакаўся instanceof ${issue.expected}, атрымана ${received}`;
-                }
-                return `Няправільны ўвод: чакаўся ${expected}, атрымана ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Няправільны ўвод: чакалася ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Няправільны варыянт: чакаўся адзін з ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    const maxValue = Number(issue.maximum);
-                    const unit = getBelarusianPlural(maxValue, sizing.unit.one, sizing.unit.few, sizing.unit.many);
-                    return `Занадта вялікі: чакалася, што ${issue.origin ?? "значэнне"} павінна ${sizing.verb} ${adj}${issue.maximum.toString()} ${unit}`;
-                }
-                return `Занадта вялікі: чакалася, што ${issue.origin ?? "значэнне"} павінна быць ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    const minValue = Number(issue.minimum);
-                    const unit = getBelarusianPlural(minValue, sizing.unit.one, sizing.unit.few, sizing.unit.many);
-                    return `Занадта малы: чакалася, што ${issue.origin} павінна ${sizing.verb} ${adj}${issue.minimum.toString()} ${unit}`;
-                }
-                return `Занадта малы: чакалася, што ${issue.origin} павінна быць ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Няправільны радок: павінен пачынацца з "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Няправільны радок: павінен заканчвацца на "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Няправільны радок: павінен змяшчаць "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Няправільны радок: павінен адпавядаць шаблону ${_issue.pattern}`;
-                return `Няправільны ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Няправільны лік: павінен быць кратным ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Нераспазнаны ${issue.keys.length > 1 ? "ключы" : "ключ"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Няправільны ключ у ${issue.origin}`;
-            case "invalid_union":
-                return "Няправільны ўвод";
-            case "invalid_element":
-                return `Няправільнае значэнне ў ${issue.origin}`;
-            default:
-                return `Няправільны ўвод`;
-        }
-    };
-};
-/* export default */ function locales_be() {
-    return {
-        localeError: be_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/bg.js
-
-const bg_error = () => {
-    const Sizable = {
-        string: { unit: "символа", verb: "да съдържа" },
-        file: { unit: "байта", verb: "да съдържа" },
-        array: { unit: "елемента", verb: "да съдържа" },
-        set: { unit: "елемента", verb: "да съдържа" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "вход",
-        email: "имейл адрес",
-        url: "URL",
-        emoji: "емоджи",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO време",
-        date: "ISO дата",
-        time: "ISO време",
-        duration: "ISO продължителност",
-        ipv4: "IPv4 адрес",
-        ipv6: "IPv6 адрес",
-        cidrv4: "IPv4 диапазон",
-        cidrv6: "IPv6 диапазон",
-        base64: "base64-кодиран низ",
-        base64url: "base64url-кодиран низ",
-        json_string: "JSON низ",
-        e164: "E.164 номер",
-        jwt: "JWT",
-        template_literal: "вход",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "число",
-        array: "масив",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Невалиден вход: очакван instanceof ${issue.expected}, получен ${received}`;
-                }
-                return `Невалиден вход: очакван ${expected}, получен ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Невалиден вход: очакван ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Невалидна опция: очаквано едно от ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Твърде голямо: очаква се ${issue.origin ?? "стойност"} да съдържа ${adj}${issue.maximum.toString()} ${sizing.unit ?? "елемента"}`;
-                return `Твърде голямо: очаква се ${issue.origin ?? "стойност"} да бъде ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Твърде малко: очаква се ${issue.origin} да съдържа ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Твърде малко: очаква се ${issue.origin} да бъде ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Невалиден низ: трябва да започва с "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Невалиден низ: трябва да завършва с "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Невалиден низ: трябва да включва "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Невалиден низ: трябва да съвпада с ${_issue.pattern}`;
-                let invalid_adj = "Невалиден";
-                if (_issue.format === "emoji")
-                    invalid_adj = "Невалидно";
-                if (_issue.format === "datetime")
-                    invalid_adj = "Невалидно";
-                if (_issue.format === "date")
-                    invalid_adj = "Невалидна";
-                if (_issue.format === "time")
-                    invalid_adj = "Невалидно";
-                if (_issue.format === "duration")
-                    invalid_adj = "Невалидна";
-                return `${invalid_adj} ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Невалидно число: трябва да бъде кратно на ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Неразпознат${issue.keys.length > 1 ? "и" : ""} ключ${issue.keys.length > 1 ? "ове" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Невалиден ключ в ${issue.origin}`;
-            case "invalid_union":
-                return "Невалиден вход";
-            case "invalid_element":
-                return `Невалидна стойност в ${issue.origin}`;
-            default:
-                return `Невалиден вход`;
-        }
-    };
-};
-/* export default */ function bg() {
-    return {
-        localeError: bg_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ca.js
-
-const ca_error = () => {
-    const Sizable = {
-        string: { unit: "caràcters", verb: "contenir" },
-        file: { unit: "bytes", verb: "contenir" },
-        array: { unit: "elements", verb: "contenir" },
-        set: { unit: "elements", verb: "contenir" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "entrada",
-        email: "adreça electrònica",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "data i hora ISO",
-        date: "data ISO",
-        time: "hora ISO",
-        duration: "durada ISO",
-        ipv4: "adreça IPv4",
-        ipv6: "adreça IPv6",
-        cidrv4: "rang IPv4",
-        cidrv6: "rang IPv6",
-        base64: "cadena codificada en base64",
-        base64url: "cadena codificada en base64url",
-        json_string: "cadena JSON",
-        e164: "número E.164",
-        jwt: "JWT",
-        template_literal: "entrada",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Tipus invàlid: s'esperava instanceof ${issue.expected}, s'ha rebut ${received}`;
-                }
-                return `Tipus invàlid: s'esperava ${expected}, s'ha rebut ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Valor invàlid: s'esperava ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Opció invàlida: s'esperava una de ${util.joinValues(issue.values, " o ")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "com a màxim" : "menys de";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Massa gran: s'esperava que ${issue.origin ?? "el valor"} contingués ${adj} ${issue.maximum.toString()} ${sizing.unit ?? "elements"}`;
-                return `Massa gran: s'esperava que ${issue.origin ?? "el valor"} fos ${adj} ${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? "com a mínim" : "més de";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Massa petit: s'esperava que ${issue.origin} contingués ${adj} ${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Massa petit: s'esperava que ${issue.origin} fos ${adj} ${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Format invàlid: ha de començar amb "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Format invàlid: ha d'acabar amb "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Format invàlid: ha d'incloure "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Format invàlid: ha de coincidir amb el patró ${_issue.pattern}`;
-                return `Format invàlid per a ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Número invàlid: ha de ser múltiple de ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Clau${issue.keys.length > 1 ? "s" : ""} no reconeguda${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Clau invàlida a ${issue.origin}`;
-            case "invalid_union":
-                return "Entrada invàlida"; // Could also be "Tipus d'unió invàlid" but "Entrada invàlida" is more general
-            case "invalid_element":
-                return `Element invàlid a ${issue.origin}`;
-            default:
-                return `Entrada invàlida`;
-        }
-    };
-};
-/* export default */ function ca() {
-    return {
-        localeError: ca_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/cs.js
-
-const cs_error = () => {
-    const Sizable = {
-        string: { unit: "znaků", verb: "mít" },
-        file: { unit: "bajtů", verb: "mít" },
-        array: { unit: "prvků", verb: "mít" },
-        set: { unit: "prvků", verb: "mít" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "regulární výraz",
-        email: "e-mailová adresa",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "datum a čas ve formátu ISO",
-        date: "datum ve formátu ISO",
-        time: "čas ve formátu ISO",
-        duration: "doba trvání ISO",
-        ipv4: "IPv4 adresa",
-        ipv6: "IPv6 adresa",
-        cidrv4: "rozsah IPv4",
-        cidrv6: "rozsah IPv6",
-        base64: "řetězec zakódovaný ve formátu base64",
-        base64url: "řetězec zakódovaný ve formátu base64url",
-        json_string: "řetězec ve formátu JSON",
-        e164: "číslo E.164",
-        jwt: "JWT",
-        template_literal: "vstup",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "číslo",
-        string: "řetězec",
-        function: "funkce",
-        array: "pole",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Neplatný vstup: očekáváno instanceof ${issue.expected}, obdrženo ${received}`;
-                }
-                return `Neplatný vstup: očekáváno ${expected}, obdrženo ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Neplatný vstup: očekáváno ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Neplatná možnost: očekávána jedna z hodnot ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Hodnota je příliš velká: ${issue.origin ?? "hodnota"} musí mít ${adj}${issue.maximum.toString()} ${sizing.unit ?? "prvků"}`;
-                }
-                return `Hodnota je příliš velká: ${issue.origin ?? "hodnota"} musí být ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Hodnota je příliš malá: ${issue.origin ?? "hodnota"} musí mít ${adj}${issue.minimum.toString()} ${sizing.unit ?? "prvků"}`;
-                }
-                return `Hodnota je příliš malá: ${issue.origin ?? "hodnota"} musí být ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Neplatný řetězec: musí začínat na "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Neplatný řetězec: musí končit na "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Neplatný řetězec: musí obsahovat "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Neplatný řetězec: musí odpovídat vzoru ${_issue.pattern}`;
-                return `Neplatný formát ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Neplatné číslo: musí být násobkem ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Neznámé klíče: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Neplatný klíč v ${issue.origin}`;
-            case "invalid_union":
-                return "Neplatný vstup";
-            case "invalid_element":
-                return `Neplatná hodnota v ${issue.origin}`;
-            default:
-                return `Neplatný vstup`;
-        }
-    };
-};
-/* export default */ function cs() {
-    return {
-        localeError: cs_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/da.js
-
-const da_error = () => {
-    const Sizable = {
-        string: { unit: "tegn", verb: "havde" },
-        file: { unit: "bytes", verb: "havde" },
-        array: { unit: "elementer", verb: "indeholdt" },
-        set: { unit: "elementer", verb: "indeholdt" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "e-mailadresse",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO dato- og klokkeslæt",
-        date: "ISO-dato",
-        time: "ISO-klokkeslæt",
-        duration: "ISO-varighed",
-        ipv4: "IPv4-område",
-        ipv6: "IPv6-område",
-        cidrv4: "IPv4-spektrum",
-        cidrv6: "IPv6-spektrum",
-        base64: "base64-kodet streng",
-        base64url: "base64url-kodet streng",
-        json_string: "JSON-streng",
-        e164: "E.164-nummer",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        string: "streng",
-        number: "tal",
-        boolean: "boolean",
-        array: "liste",
-        object: "objekt",
-        set: "sæt",
-        file: "fil",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Ugyldigt input: forventede instanceof ${issue.expected}, fik ${received}`;
-                }
-                return `Ugyldigt input: forventede ${expected}, fik ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Ugyldig værdi: forventede ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Ugyldigt valg: forventede en af følgende ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                if (sizing)
-                    return `For stor: forventede ${origin ?? "value"} ${sizing.verb} ${adj} ${issue.maximum.toString()} ${sizing.unit ?? "elementer"}`;
-                return `For stor: forventede ${origin ?? "value"} havde ${adj} ${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                if (sizing) {
-                    return `For lille: forventede ${origin} ${sizing.verb} ${adj} ${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `For lille: forventede ${origin} havde ${adj} ${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Ugyldig streng: skal starte med "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Ugyldig streng: skal ende med "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Ugyldig streng: skal indeholde "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Ugyldig streng: skal matche mønsteret ${_issue.pattern}`;
-                return `Ugyldig ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Ugyldigt tal: skal være deleligt med ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `${issue.keys.length > 1 ? "Ukendte nøgler" : "Ukendt nøgle"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Ugyldig nøgle i ${issue.origin}`;
-            case "invalid_union":
-                return "Ugyldigt input: matcher ingen af de tilladte typer";
-            case "invalid_element":
-                return `Ugyldig værdi i ${issue.origin}`;
-            default:
-                return `Ugyldigt input`;
-        }
-    };
-};
-/* export default */ function da() {
-    return {
-        localeError: da_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/de.js
-
-const de_error = () => {
-    const Sizable = {
-        string: { unit: "Zeichen", verb: "zu haben" },
-        file: { unit: "Bytes", verb: "zu haben" },
-        array: { unit: "Elemente", verb: "zu haben" },
-        set: { unit: "Elemente", verb: "zu haben" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "Eingabe",
-        email: "E-Mail-Adresse",
-        url: "URL",
-        emoji: "Emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO-Datum und -Uhrzeit",
-        date: "ISO-Datum",
-        time: "ISO-Uhrzeit",
-        duration: "ISO-Dauer",
-        ipv4: "IPv4-Adresse",
-        ipv6: "IPv6-Adresse",
-        cidrv4: "IPv4-Bereich",
-        cidrv6: "IPv6-Bereich",
-        base64: "Base64-codierter String",
-        base64url: "Base64-URL-codierter String",
-        json_string: "JSON-String",
-        e164: "E.164-Nummer",
-        jwt: "JWT",
-        template_literal: "Eingabe",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "Zahl",
-        array: "Array",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Ungültige Eingabe: erwartet instanceof ${issue.expected}, erhalten ${received}`;
-                }
-                return `Ungültige Eingabe: erwartet ${expected}, erhalten ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Ungültige Eingabe: erwartet ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Ungültige Option: erwartet eine von ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Zu groß: erwartet, dass ${issue.origin ?? "Wert"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "Elemente"} hat`;
-                return `Zu groß: erwartet, dass ${issue.origin ?? "Wert"} ${adj}${issue.maximum.toString()} ist`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Zu klein: erwartet, dass ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit} hat`;
-                }
-                return `Zu klein: erwartet, dass ${issue.origin} ${adj}${issue.minimum.toString()} ist`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Ungültiger String: muss mit "${_issue.prefix}" beginnen`;
-                if (_issue.format === "ends_with")
-                    return `Ungültiger String: muss mit "${_issue.suffix}" enden`;
-                if (_issue.format === "includes")
-                    return `Ungültiger String: muss "${_issue.includes}" enthalten`;
-                if (_issue.format === "regex")
-                    return `Ungültiger String: muss dem Muster ${_issue.pattern} entsprechen`;
-                return `Ungültig: ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Ungültige Zahl: muss ein Vielfaches von ${issue.divisor} sein`;
-            case "unrecognized_keys":
-                return `${issue.keys.length > 1 ? "Unbekannte Schlüssel" : "Unbekannter Schlüssel"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Ungültiger Schlüssel in ${issue.origin}`;
-            case "invalid_union":
-                return "Ungültige Eingabe";
-            case "invalid_element":
-                return `Ungültiger Wert in ${issue.origin}`;
-            default:
-                return `Ungültige Eingabe`;
-        }
-    };
-};
-/* export default */ function de() {
-    return {
-        localeError: de_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/en.js
-
-const en_error = () => {
-    const Sizable = {
-        string: { unit: "characters", verb: "to have" },
-        file: { unit: "bytes", verb: "to have" },
-        array: { unit: "items", verb: "to have" },
-        set: { unit: "items", verb: "to have" },
-        map: { unit: "entries", verb: "to have" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "email address",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO datetime",
-        date: "ISO date",
-        time: "ISO time",
-        duration: "ISO duration",
-        ipv4: "IPv4 address",
-        ipv6: "IPv6 address",
-        mac: "MAC address",
-        cidrv4: "IPv4 range",
-        cidrv6: "IPv6 range",
-        base64: "base64-encoded string",
-        base64url: "base64url-encoded string",
-        json_string: "JSON string",
-        e164: "E.164 number",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    // type names: missing keys = do not translate (use raw value via ?? fallback)
-    const TypeDictionary = {
-        // Compatibility: "nan" -> "NaN" for display
-        nan: "NaN",
-        // All other type names omitted - they fall back to raw values via ?? operator
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                return `Invalid input: expected ${expected}, received ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Invalid input: expected ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Invalid option: expected one of ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Too big: expected ${issue.origin ?? "value"} to have ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elements"}`;
-                return `Too big: expected ${issue.origin ?? "value"} to be ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Too small: expected ${issue.origin} to have ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Too small: expected ${issue.origin} to be ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Invalid string: must start with "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Invalid string: must end with "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Invalid string: must include "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Invalid string: must match pattern ${_issue.pattern}`;
-                return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Invalid number: must be a multiple of ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Unrecognized key${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Invalid key in ${issue.origin}`;
-            case "invalid_union":
-                return "Invalid input";
-            case "invalid_element":
-                return `Invalid value in ${issue.origin}`;
-            default:
-                return `Invalid input`;
-        }
-    };
-};
-/* export default */ function en() {
-    return {
-        localeError: en_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/eo.js
-
-const eo_error = () => {
-    const Sizable = {
-        string: { unit: "karaktrojn", verb: "havi" },
-        file: { unit: "bajtojn", verb: "havi" },
-        array: { unit: "elementojn", verb: "havi" },
-        set: { unit: "elementojn", verb: "havi" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "enigo",
-        email: "retadreso",
-        url: "URL",
-        emoji: "emoĝio",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO-datotempo",
-        date: "ISO-dato",
-        time: "ISO-tempo",
-        duration: "ISO-daŭro",
-        ipv4: "IPv4-adreso",
-        ipv6: "IPv6-adreso",
-        cidrv4: "IPv4-rango",
-        cidrv6: "IPv6-rango",
-        base64: "64-ume kodita karaktraro",
-        base64url: "URL-64-ume kodita karaktraro",
-        json_string: "JSON-karaktraro",
-        e164: "E.164-nombro",
-        jwt: "JWT",
-        template_literal: "enigo",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "nombro",
-        array: "tabelo",
-        null: "senvalora",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Nevalida enigo: atendiĝis instanceof ${issue.expected}, riceviĝis ${received}`;
-                }
-                return `Nevalida enigo: atendiĝis ${expected}, riceviĝis ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Nevalida enigo: atendiĝis ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Nevalida opcio: atendiĝis unu el ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Tro granda: atendiĝis ke ${issue.origin ?? "valoro"} havu ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementojn"}`;
-                return `Tro granda: atendiĝis ke ${issue.origin ?? "valoro"} havu ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Tro malgranda: atendiĝis ke ${issue.origin} havu ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Tro malgranda: atendiĝis ke ${issue.origin} estu ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Nevalida karaktraro: devas komenciĝi per "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Nevalida karaktraro: devas finiĝi per "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Nevalida karaktraro: devas inkluzivi "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Nevalida karaktraro: devas kongrui kun la modelo ${_issue.pattern}`;
-                return `Nevalida ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Nevalida nombro: devas esti oblo de ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Nekonata${issue.keys.length > 1 ? "j" : ""} ŝlosilo${issue.keys.length > 1 ? "j" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Nevalida ŝlosilo en ${issue.origin}`;
-            case "invalid_union":
-                return "Nevalida enigo";
-            case "invalid_element":
-                return `Nevalida valoro en ${issue.origin}`;
-            default:
-                return `Nevalida enigo`;
-        }
-    };
-};
-/* export default */ function eo() {
-    return {
-        localeError: eo_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/es.js
-
-const es_error = () => {
-    const Sizable = {
-        string: { unit: "caracteres", verb: "tener" },
-        file: { unit: "bytes", verb: "tener" },
-        array: { unit: "elementos", verb: "tener" },
-        set: { unit: "elementos", verb: "tener" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "entrada",
-        email: "dirección de correo electrónico",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "fecha y hora ISO",
-        date: "fecha ISO",
-        time: "hora ISO",
-        duration: "duración ISO",
-        ipv4: "dirección IPv4",
-        ipv6: "dirección IPv6",
-        cidrv4: "rango IPv4",
-        cidrv6: "rango IPv6",
-        base64: "cadena codificada en base64",
-        base64url: "URL codificada en base64",
-        json_string: "cadena JSON",
-        e164: "número E.164",
-        jwt: "JWT",
-        template_literal: "entrada",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        string: "texto",
-        number: "número",
-        boolean: "booleano",
-        array: "arreglo",
-        object: "objeto",
-        set: "conjunto",
-        file: "archivo",
-        date: "fecha",
-        bigint: "número grande",
-        symbol: "símbolo",
-        undefined: "indefinido",
-        null: "nulo",
-        function: "función",
-        map: "mapa",
-        record: "registro",
-        tuple: "tupla",
-        enum: "enumeración",
-        union: "unión",
-        literal: "literal",
-        promise: "promesa",
-        void: "vacío",
-        never: "nunca",
-        unknown: "desconocido",
-        any: "cualquiera",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Entrada inválida: se esperaba instanceof ${issue.expected}, recibido ${received}`;
-                }
-                return `Entrada inválida: se esperaba ${expected}, recibido ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Entrada inválida: se esperaba ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Opción inválida: se esperaba una de ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                if (sizing)
-                    return `Demasiado grande: se esperaba que ${origin ?? "valor"} tuviera ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementos"}`;
-                return `Demasiado grande: se esperaba que ${origin ?? "valor"} fuera ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                if (sizing) {
-                    return `Demasiado pequeño: se esperaba que ${origin} tuviera ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Demasiado pequeño: se esperaba que ${origin} fuera ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Cadena inválida: debe comenzar con "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Cadena inválida: debe terminar en "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Cadena inválida: debe incluir "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Cadena inválida: debe coincidir con el patrón ${_issue.pattern}`;
-                return `Inválido ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Número inválido: debe ser múltiplo de ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Llave${issue.keys.length > 1 ? "s" : ""} desconocida${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Llave inválida en ${TypeDictionary[issue.origin] ?? issue.origin}`;
-            case "invalid_union":
-                return "Entrada inválida";
-            case "invalid_element":
-                return `Valor inválido en ${TypeDictionary[issue.origin] ?? issue.origin}`;
-            default:
-                return `Entrada inválida`;
-        }
-    };
-};
-/* export default */ function es() {
-    return {
-        localeError: es_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/fa.js
-
-const fa_error = () => {
-    const Sizable = {
-        string: { unit: "کاراکتر", verb: "داشته باشد" },
-        file: { unit: "بایت", verb: "داشته باشد" },
-        array: { unit: "آیتم", verb: "داشته باشد" },
-        set: { unit: "آیتم", verb: "داشته باشد" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ورودی",
-        email: "آدرس ایمیل",
-        url: "URL",
-        emoji: "ایموجی",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "تاریخ و زمان ایزو",
-        date: "تاریخ ایزو",
-        time: "زمان ایزو",
-        duration: "مدت زمان ایزو",
-        ipv4: "IPv4 آدرس",
-        ipv6: "IPv6 آدرس",
-        cidrv4: "IPv4 دامنه",
-        cidrv6: "IPv6 دامنه",
-        base64: "base64-encoded رشته",
-        base64url: "base64url-encoded رشته",
-        json_string: "JSON رشته",
-        e164: "E.164 عدد",
-        jwt: "JWT",
-        template_literal: "ورودی",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "عدد",
-        array: "آرایه",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `ورودی نامعتبر: می‌بایست instanceof ${issue.expected} می‌بود، ${received} دریافت شد`;
-                }
-                return `ورودی نامعتبر: می‌بایست ${expected} می‌بود، ${received} دریافت شد`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1) {
-                    return `ورودی نامعتبر: می‌بایست ${util.stringifyPrimitive(issue.values[0])} می‌بود`;
-                }
-                return `گزینه نامعتبر: می‌بایست یکی از ${util.joinValues(issue.values, "|")} می‌بود`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `خیلی بزرگ: ${issue.origin ?? "مقدار"} باید ${adj}${issue.maximum.toString()} ${sizing.unit ?? "عنصر"} باشد`;
-                }
-                return `خیلی بزرگ: ${issue.origin ?? "مقدار"} باید ${adj}${issue.maximum.toString()} باشد`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `خیلی کوچک: ${issue.origin} باید ${adj}${issue.minimum.toString()} ${sizing.unit} باشد`;
-                }
-                return `خیلی کوچک: ${issue.origin} باید ${adj}${issue.minimum.toString()} باشد`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `رشته نامعتبر: باید با "${_issue.prefix}" شروع شود`;
-                }
-                if (_issue.format === "ends_with") {
-                    return `رشته نامعتبر: باید با "${_issue.suffix}" تمام شود`;
-                }
-                if (_issue.format === "includes") {
-                    return `رشته نامعتبر: باید شامل "${_issue.includes}" باشد`;
-                }
-                if (_issue.format === "regex") {
-                    return `رشته نامعتبر: باید با الگوی ${_issue.pattern} مطابقت داشته باشد`;
-                }
-                return `${FormatDictionary[_issue.format] ?? issue.format} نامعتبر`;
-            }
-            case "not_multiple_of":
-                return `عدد نامعتبر: باید مضرب ${issue.divisor} باشد`;
-            case "unrecognized_keys":
-                return `کلید${issue.keys.length > 1 ? "های" : ""} ناشناس: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `کلید ناشناس در ${issue.origin}`;
-            case "invalid_union":
-                return `ورودی نامعتبر`;
-            case "invalid_element":
-                return `مقدار نامعتبر در ${issue.origin}`;
-            default:
-                return `ورودی نامعتبر`;
-        }
-    };
-};
-/* export default */ function fa() {
-    return {
-        localeError: fa_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/fi.js
-
-const fi_error = () => {
-    const Sizable = {
-        string: { unit: "merkkiä", subject: "merkkijonon" },
-        file: { unit: "tavua", subject: "tiedoston" },
-        array: { unit: "alkiota", subject: "listan" },
-        set: { unit: "alkiota", subject: "joukon" },
-        number: { unit: "", subject: "luvun" },
-        bigint: { unit: "", subject: "suuren kokonaisluvun" },
-        int: { unit: "", subject: "kokonaisluvun" },
-        date: { unit: "", subject: "päivämäärän" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "säännöllinen lauseke",
-        email: "sähköpostiosoite",
-        url: "URL-osoite",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO-aikaleima",
-        date: "ISO-päivämäärä",
-        time: "ISO-aika",
-        duration: "ISO-kesto",
-        ipv4: "IPv4-osoite",
-        ipv6: "IPv6-osoite",
-        cidrv4: "IPv4-alue",
-        cidrv6: "IPv6-alue",
-        base64: "base64-koodattu merkkijono",
-        base64url: "base64url-koodattu merkkijono",
-        json_string: "JSON-merkkijono",
-        e164: "E.164-luku",
-        jwt: "JWT",
-        template_literal: "templaattimerkkijono",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Virheellinen tyyppi: odotettiin instanceof ${issue.expected}, oli ${received}`;
-                }
-                return `Virheellinen tyyppi: odotettiin ${expected}, oli ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Virheellinen syöte: täytyy olla ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Virheellinen valinta: täytyy olla yksi seuraavista: ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Liian suuri: ${sizing.subject} täytyy olla ${adj}${issue.maximum.toString()} ${sizing.unit}`.trim();
-                }
-                return `Liian suuri: arvon täytyy olla ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Liian pieni: ${sizing.subject} täytyy olla ${adj}${issue.minimum.toString()} ${sizing.unit}`.trim();
-                }
-                return `Liian pieni: arvon täytyy olla ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Virheellinen syöte: täytyy alkaa "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Virheellinen syöte: täytyy loppua "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Virheellinen syöte: täytyy sisältää "${_issue.includes}"`;
-                if (_issue.format === "regex") {
-                    return `Virheellinen syöte: täytyy vastata säännöllistä lauseketta ${_issue.pattern}`;
-                }
-                return `Virheellinen ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Virheellinen luku: täytyy olla luvun ${issue.divisor} monikerta`;
-            case "unrecognized_keys":
-                return `${issue.keys.length > 1 ? "Tuntemattomat avaimet" : "Tuntematon avain"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return "Virheellinen avain tietueessa";
-            case "invalid_union":
-                return "Virheellinen unioni";
-            case "invalid_element":
-                return "Virheellinen arvo joukossa";
-            default:
-                return `Virheellinen syöte`;
-        }
-    };
-};
-/* export default */ function fi() {
-    return {
-        localeError: fi_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/fr.js
-
-const fr_error = () => {
-    const Sizable = {
-        string: { unit: "caractères", verb: "avoir" },
-        file: { unit: "octets", verb: "avoir" },
-        array: { unit: "éléments", verb: "avoir" },
-        set: { unit: "éléments", verb: "avoir" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "entrée",
-        email: "adresse e-mail",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "date et heure ISO",
-        date: "date ISO",
-        time: "heure ISO",
-        duration: "durée ISO",
-        ipv4: "adresse IPv4",
-        ipv6: "adresse IPv6",
-        cidrv4: "plage IPv4",
-        cidrv6: "plage IPv6",
-        base64: "chaîne encodée en base64",
-        base64url: "chaîne encodée en base64url",
-        json_string: "chaîne JSON",
-        e164: "numéro E.164",
-        jwt: "JWT",
-        template_literal: "entrée",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "nombre",
-        array: "tableau",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Entrée invalide : instanceof ${issue.expected} attendu, ${received} reçu`;
-                }
-                return `Entrée invalide : ${expected} attendu, ${received} reçu`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Entrée invalide : ${util.stringifyPrimitive(issue.values[0])} attendu`;
-                return `Option invalide : une valeur parmi ${util.joinValues(issue.values, "|")} attendue`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Trop grand : ${issue.origin ?? "valeur"} doit ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "élément(s)"}`;
-                return `Trop grand : ${issue.origin ?? "valeur"} doit être ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Trop petit : ${issue.origin} doit ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Trop petit : ${issue.origin} doit être ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Chaîne invalide : doit commencer par "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Chaîne invalide : doit se terminer par "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Chaîne invalide : doit inclure "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Chaîne invalide : doit correspondre au modèle ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} invalide`;
-            }
-            case "not_multiple_of":
-                return `Nombre invalide : doit être un multiple de ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Clé${issue.keys.length > 1 ? "s" : ""} non reconnue${issue.keys.length > 1 ? "s" : ""} : ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Clé invalide dans ${issue.origin}`;
-            case "invalid_union":
-                return "Entrée invalide";
-            case "invalid_element":
-                return `Valeur invalide dans ${issue.origin}`;
-            default:
-                return `Entrée invalide`;
-        }
-    };
-};
-/* export default */ function fr() {
-    return {
-        localeError: fr_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/fr-CA.js
-
-const fr_CA_error = () => {
-    const Sizable = {
-        string: { unit: "caractères", verb: "avoir" },
-        file: { unit: "octets", verb: "avoir" },
-        array: { unit: "éléments", verb: "avoir" },
-        set: { unit: "éléments", verb: "avoir" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "entrée",
-        email: "adresse courriel",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "date-heure ISO",
-        date: "date ISO",
-        time: "heure ISO",
-        duration: "durée ISO",
-        ipv4: "adresse IPv4",
-        ipv6: "adresse IPv6",
-        cidrv4: "plage IPv4",
-        cidrv6: "plage IPv6",
-        base64: "chaîne encodée en base64",
-        base64url: "chaîne encodée en base64url",
-        json_string: "chaîne JSON",
-        e164: "numéro E.164",
-        jwt: "JWT",
-        template_literal: "entrée",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Entrée invalide : attendu instanceof ${issue.expected}, reçu ${received}`;
-                }
-                return `Entrée invalide : attendu ${expected}, reçu ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Entrée invalide : attendu ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Option invalide : attendu l'une des valeurs suivantes ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "≤" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Trop grand : attendu que ${issue.origin ?? "la valeur"} ait ${adj}${issue.maximum.toString()} ${sizing.unit}`;
-                return `Trop grand : attendu que ${issue.origin ?? "la valeur"} soit ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? "≥" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Trop petit : attendu que ${issue.origin} ait ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Trop petit : attendu que ${issue.origin} soit ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Chaîne invalide : doit commencer par "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Chaîne invalide : doit se terminer par "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Chaîne invalide : doit inclure "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Chaîne invalide : doit correspondre au motif ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} invalide`;
-            }
-            case "not_multiple_of":
-                return `Nombre invalide : doit être un multiple de ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Clé${issue.keys.length > 1 ? "s" : ""} non reconnue${issue.keys.length > 1 ? "s" : ""} : ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Clé invalide dans ${issue.origin}`;
-            case "invalid_union":
-                return "Entrée invalide";
-            case "invalid_element":
-                return `Valeur invalide dans ${issue.origin}`;
-            default:
-                return `Entrée invalide`;
-        }
-    };
-};
-/* export default */ function fr_CA() {
-    return {
-        localeError: fr_CA_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/he.js
-
-const he_error = () => {
-    // Hebrew labels + grammatical gender
-    const TypeNames = {
-        string: { label: "מחרוזת", gender: "f" },
-        number: { label: "מספר", gender: "m" },
-        boolean: { label: "ערך בוליאני", gender: "m" },
-        bigint: { label: "BigInt", gender: "m" },
-        date: { label: "תאריך", gender: "m" },
-        array: { label: "מערך", gender: "m" },
-        object: { label: "אובייקט", gender: "m" },
-        null: { label: "ערך ריק (null)", gender: "m" },
-        undefined: { label: "ערך לא מוגדר (undefined)", gender: "m" },
-        symbol: { label: "סימבול (Symbol)", gender: "m" },
-        function: { label: "פונקציה", gender: "f" },
-        map: { label: "מפה (Map)", gender: "f" },
-        set: { label: "קבוצה (Set)", gender: "f" },
-        file: { label: "קובץ", gender: "m" },
-        promise: { label: "Promise", gender: "m" },
-        NaN: { label: "NaN", gender: "m" },
-        unknown: { label: "ערך לא ידוע", gender: "m" },
-        value: { label: "ערך", gender: "m" },
-    };
-    // Sizing units for size-related messages + localized origin labels
-    const Sizable = {
-        string: { unit: "תווים", shortLabel: "קצר", longLabel: "ארוך" },
-        file: { unit: "בייטים", shortLabel: "קטן", longLabel: "גדול" },
-        array: { unit: "פריטים", shortLabel: "קטן", longLabel: "גדול" },
-        set: { unit: "פריטים", shortLabel: "קטן", longLabel: "גדול" },
-        number: { unit: "", shortLabel: "קטן", longLabel: "גדול" }, // no unit
-    };
-    // Helpers — labels, articles, and verbs
-    const typeEntry = (t) => (t ? TypeNames[t] : undefined);
-    const typeLabel = (t) => {
-        const e = typeEntry(t);
-        if (e)
-            return e.label;
-        // fallback: show raw string if unknown
-        return t ?? TypeNames.unknown.label;
-    };
-    const withDefinite = (t) => `ה${typeLabel(t)}`;
-    const verbFor = (t) => {
-        const e = typeEntry(t);
-        const gender = e?.gender ?? "m";
-        return gender === "f" ? "צריכה להיות" : "צריך להיות";
-    };
-    const getSizing = (origin) => {
-        if (!origin)
-            return null;
-        return Sizable[origin] ?? null;
-    };
-    const FormatDictionary = {
-        regex: { label: "קלט", gender: "m" },
-        email: { label: "כתובת אימייל", gender: "f" },
-        url: { label: "כתובת רשת", gender: "f" },
-        emoji: { label: "אימוג'י", gender: "m" },
-        uuid: { label: "UUID", gender: "m" },
-        nanoid: { label: "nanoid", gender: "m" },
-        guid: { label: "GUID", gender: "m" },
-        cuid: { label: "cuid", gender: "m" },
-        cuid2: { label: "cuid2", gender: "m" },
-        ulid: { label: "ULID", gender: "m" },
-        xid: { label: "XID", gender: "m" },
-        ksuid: { label: "KSUID", gender: "m" },
-        datetime: { label: "תאריך וזמן ISO", gender: "m" },
-        date: { label: "תאריך ISO", gender: "m" },
-        time: { label: "זמן ISO", gender: "m" },
-        duration: { label: "משך זמן ISO", gender: "m" },
-        ipv4: { label: "כתובת IPv4", gender: "f" },
-        ipv6: { label: "כתובת IPv6", gender: "f" },
-        cidrv4: { label: "טווח IPv4", gender: "m" },
-        cidrv6: { label: "טווח IPv6", gender: "m" },
-        base64: { label: "מחרוזת בבסיס 64", gender: "f" },
-        base64url: { label: "מחרוזת בבסיס 64 לכתובות רשת", gender: "f" },
-        json_string: { label: "מחרוזת JSON", gender: "f" },
-        e164: { label: "מספר E.164", gender: "m" },
-        jwt: { label: "JWT", gender: "m" },
-        ends_with: { label: "קלט", gender: "m" },
-        includes: { label: "קלט", gender: "m" },
-        lowercase: { label: "קלט", gender: "m" },
-        starts_with: { label: "קלט", gender: "m" },
-        uppercase: { label: "קלט", gender: "m" },
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                // Expected type: show without definite article for clearer Hebrew
-                const expectedKey = issue.expected;
-                const expected = TypeDictionary[expectedKey ?? ""] ?? typeLabel(expectedKey);
-                // Received: show localized label if known, otherwise constructor/raw
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? TypeNames[receivedType]?.label ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `קלט לא תקין: צריך להיות instanceof ${issue.expected}, התקבל ${received}`;
-                }
-                return `קלט לא תקין: צריך להיות ${expected}, התקבל ${received}`;
-            }
-            case "invalid_value": {
-                if (issue.values.length === 1) {
-                    return `ערך לא תקין: הערך חייב להיות ${util.stringifyPrimitive(issue.values[0])}`;
-                }
-                // Join values with proper Hebrew formatting
-                const stringified = issue.values.map((v) => util.stringifyPrimitive(v));
-                if (issue.values.length === 2) {
-                    return `ערך לא תקין: האפשרויות המתאימות הן ${stringified[0]} או ${stringified[1]}`;
-                }
-                // For 3+ values: "a", "b" או "c"
-                const lastValue = stringified[stringified.length - 1];
-                const restValues = stringified.slice(0, -1).join(", ");
-                return `ערך לא תקין: האפשרויות המתאימות הן ${restValues} או ${lastValue}`;
-            }
-            case "too_big": {
-                const sizing = getSizing(issue.origin);
-                const subject = withDefinite(issue.origin ?? "value");
-                if (issue.origin === "string") {
-                    // Special handling for strings - more natural Hebrew
-                    return `${sizing?.longLabel ?? "ארוך"} מדי: ${subject} צריכה להכיל ${issue.maximum.toString()} ${sizing?.unit ?? ""} ${issue.inclusive ? "או פחות" : "לכל היותר"}`.trim();
-                }
-                if (issue.origin === "number") {
-                    // Natural Hebrew for numbers
-                    const comparison = issue.inclusive ? `קטן או שווה ל-${issue.maximum}` : `קטן מ-${issue.maximum}`;
-                    return `גדול מדי: ${subject} צריך להיות ${comparison}`;
-                }
-                if (issue.origin === "array" || issue.origin === "set") {
-                    // Natural Hebrew for arrays and sets
-                    const verb = issue.origin === "set" ? "צריכה" : "צריך";
-                    const comparison = issue.inclusive
-                        ? `${issue.maximum} ${sizing?.unit ?? ""} או פחות`
-                        : `פחות מ-${issue.maximum} ${sizing?.unit ?? ""}`;
-                    return `גדול מדי: ${subject} ${verb} להכיל ${comparison}`.trim();
-                }
-                const adj = issue.inclusive ? "<=" : "<";
-                const be = verbFor(issue.origin ?? "value");
-                if (sizing?.unit) {
-                    return `${sizing.longLabel} מדי: ${subject} ${be} ${adj}${issue.maximum.toString()} ${sizing.unit}`;
-                }
-                return `${sizing?.longLabel ?? "גדול"} מדי: ${subject} ${be} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const sizing = getSizing(issue.origin);
-                const subject = withDefinite(issue.origin ?? "value");
-                if (issue.origin === "string") {
-                    // Special handling for strings - more natural Hebrew
-                    return `${sizing?.shortLabel ?? "קצר"} מדי: ${subject} צריכה להכיל ${issue.minimum.toString()} ${sizing?.unit ?? ""} ${issue.inclusive ? "או יותר" : "לפחות"}`.trim();
-                }
-                if (issue.origin === "number") {
-                    // Natural Hebrew for numbers
-                    const comparison = issue.inclusive ? `גדול או שווה ל-${issue.minimum}` : `גדול מ-${issue.minimum}`;
-                    return `קטן מדי: ${subject} צריך להיות ${comparison}`;
-                }
-                if (issue.origin === "array" || issue.origin === "set") {
-                    // Natural Hebrew for arrays and sets
-                    const verb = issue.origin === "set" ? "צריכה" : "צריך";
-                    // Special case for singular (minimum === 1)
-                    if (issue.minimum === 1 && issue.inclusive) {
-                        const singularPhrase = issue.origin === "set" ? "לפחות פריט אחד" : "לפחות פריט אחד";
-                        return `קטן מדי: ${subject} ${verb} להכיל ${singularPhrase}`;
-                    }
-                    const comparison = issue.inclusive
-                        ? `${issue.minimum} ${sizing?.unit ?? ""} או יותר`
-                        : `יותר מ-${issue.minimum} ${sizing?.unit ?? ""}`;
-                    return `קטן מדי: ${subject} ${verb} להכיל ${comparison}`.trim();
-                }
-                const adj = issue.inclusive ? ">=" : ">";
-                const be = verbFor(issue.origin ?? "value");
-                if (sizing?.unit) {
-                    return `${sizing.shortLabel} מדי: ${subject} ${be} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `${sizing?.shortLabel ?? "קטן"} מדי: ${subject} ${be} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                // These apply to strings — use feminine grammar + ה׳ הידיעה
-                if (_issue.format === "starts_with")
-                    return `המחרוזת חייבת להתחיל ב "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `המחרוזת חייבת להסתיים ב "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `המחרוזת חייבת לכלול "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `המחרוזת חייבת להתאים לתבנית ${_issue.pattern}`;
-                // Handle gender agreement for formats
-                const nounEntry = FormatDictionary[_issue.format];
-                const noun = nounEntry?.label ?? _issue.format;
-                const gender = nounEntry?.gender ?? "m";
-                const adjective = gender === "f" ? "תקינה" : "תקין";
-                return `${noun} לא ${adjective}`;
-            }
-            case "not_multiple_of":
-                return `מספר לא תקין: חייב להיות מכפלה של ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `מפתח${issue.keys.length > 1 ? "ות" : ""} לא מזוה${issue.keys.length > 1 ? "ים" : "ה"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key": {
-                return `שדה לא תקין באובייקט`;
-            }
-            case "invalid_union":
-                return "קלט לא תקין";
-            case "invalid_element": {
-                const place = withDefinite(issue.origin ?? "array");
-                return `ערך לא תקין ב${place}`;
-            }
-            default:
-                return `קלט לא תקין`;
-        }
-    };
-};
-/* export default */ function he() {
-    return {
-        localeError: he_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/hu.js
-
-const hu_error = () => {
-    const Sizable = {
-        string: { unit: "karakter", verb: "legyen" },
-        file: { unit: "byte", verb: "legyen" },
-        array: { unit: "elem", verb: "legyen" },
-        set: { unit: "elem", verb: "legyen" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "bemenet",
-        email: "email cím",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO időbélyeg",
-        date: "ISO dátum",
-        time: "ISO idő",
-        duration: "ISO időintervallum",
-        ipv4: "IPv4 cím",
-        ipv6: "IPv6 cím",
-        cidrv4: "IPv4 tartomány",
-        cidrv6: "IPv6 tartomány",
-        base64: "base64-kódolt string",
-        base64url: "base64url-kódolt string",
-        json_string: "JSON string",
-        e164: "E.164 szám",
-        jwt: "JWT",
-        template_literal: "bemenet",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "szám",
-        array: "tömb",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Érvénytelen bemenet: a várt érték instanceof ${issue.expected}, a kapott érték ${received}`;
-                }
-                return `Érvénytelen bemenet: a várt érték ${expected}, a kapott érték ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Érvénytelen bemenet: a várt érték ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Érvénytelen opció: valamelyik érték várt ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Túl nagy: ${issue.origin ?? "érték"} mérete túl nagy ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elem"}`;
-                return `Túl nagy: a bemeneti érték ${issue.origin ?? "érték"} túl nagy: ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Túl kicsi: a bemeneti érték ${issue.origin} mérete túl kicsi ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Túl kicsi: a bemeneti érték ${issue.origin} túl kicsi ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Érvénytelen string: "${_issue.prefix}" értékkel kell kezdődnie`;
-                if (_issue.format === "ends_with")
-                    return `Érvénytelen string: "${_issue.suffix}" értékkel kell végződnie`;
-                if (_issue.format === "includes")
-                    return `Érvénytelen string: "${_issue.includes}" értéket kell tartalmaznia`;
-                if (_issue.format === "regex")
-                    return `Érvénytelen string: ${_issue.pattern} mintának kell megfelelnie`;
-                return `Érvénytelen ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Érvénytelen szám: ${issue.divisor} többszörösének kell lennie`;
-            case "unrecognized_keys":
-                return `Ismeretlen kulcs${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Érvénytelen kulcs ${issue.origin}`;
-            case "invalid_union":
-                return "Érvénytelen bemenet";
-            case "invalid_element":
-                return `Érvénytelen érték: ${issue.origin}`;
-            default:
-                return `Érvénytelen bemenet`;
-        }
-    };
-};
-/* export default */ function hu() {
-    return {
-        localeError: hu_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/hy.js
-
-function getArmenianPlural(count, one, many) {
-    return Math.abs(count) === 1 ? one : many;
-}
-function withDefiniteArticle(word) {
-    if (!word)
-        return "";
-    const vowels = ["ա", "ե", "ը", "ի", "ո", "ու", "օ"];
-    const lastChar = word[word.length - 1];
-    return word + (vowels.includes(lastChar) ? "ն" : "ը");
-}
-const hy_error = () => {
-    const Sizable = {
-        string: {
-            unit: {
-                one: "նշան",
-                many: "նշաններ",
-            },
-            verb: "ունենալ",
-        },
-        file: {
-            unit: {
-                one: "բայթ",
-                many: "բայթեր",
-            },
-            verb: "ունենալ",
-        },
-        array: {
-            unit: {
-                one: "տարր",
-                many: "տարրեր",
-            },
-            verb: "ունենալ",
-        },
-        set: {
-            unit: {
-                one: "տարր",
-                many: "տարրեր",
-            },
-            verb: "ունենալ",
-        },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "մուտք",
-        email: "էլ. հասցե",
-        url: "URL",
-        emoji: "էմոջի",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO ամսաթիվ և ժամ",
-        date: "ISO ամսաթիվ",
-        time: "ISO ժամ",
-        duration: "ISO տևողություն",
-        ipv4: "IPv4 հասցե",
-        ipv6: "IPv6 հասցե",
-        cidrv4: "IPv4 միջակայք",
-        cidrv6: "IPv6 միջակայք",
-        base64: "base64 ձևաչափով տող",
-        base64url: "base64url ձևաչափով տող",
-        json_string: "JSON տող",
-        e164: "E.164 համար",
-        jwt: "JWT",
-        template_literal: "մուտք",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "թիվ",
-        array: "զանգված",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Սխալ մուտքագրում․ սպասվում էր instanceof ${issue.expected}, ստացվել է ${received}`;
-                }
-                return `Սխալ մուտքագրում․ սպասվում էր ${expected}, ստացվել է ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Սխալ մուտքագրում․ սպասվում էր ${util.stringifyPrimitive(issue.values[1])}`;
-                return `Սխալ տարբերակ․ սպասվում էր հետևյալներից մեկը՝ ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    const maxValue = Number(issue.maximum);
-                    const unit = getArmenianPlural(maxValue, sizing.unit.one, sizing.unit.many);
-                    return `Չափազանց մեծ արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin ?? "արժեք")} կունենա ${adj}${issue.maximum.toString()} ${unit}`;
-                }
-                return `Չափազանց մեծ արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin ?? "արժեք")} լինի ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    const minValue = Number(issue.minimum);
-                    const unit = getArmenianPlural(minValue, sizing.unit.one, sizing.unit.many);
-                    return `Չափազանց փոքր արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin)} կունենա ${adj}${issue.minimum.toString()} ${unit}`;
-                }
-                return `Չափազանց փոքր արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin)} լինի ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Սխալ տող․ պետք է սկսվի "${_issue.prefix}"-ով`;
-                if (_issue.format === "ends_with")
-                    return `Սխալ տող․ պետք է ավարտվի "${_issue.suffix}"-ով`;
-                if (_issue.format === "includes")
-                    return `Սխալ տող․ պետք է պարունակի "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Սխալ տող․ պետք է համապատասխանի ${_issue.pattern} ձևաչափին`;
-                return `Սխալ ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Սխալ թիվ․ պետք է բազմապատիկ լինի ${issue.divisor}-ի`;
-            case "unrecognized_keys":
-                return `Չճանաչված բանալի${issue.keys.length > 1 ? "ներ" : ""}. ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Սխալ բանալի ${withDefiniteArticle(issue.origin)}-ում`;
-            case "invalid_union":
-                return "Սխալ մուտքագրում";
-            case "invalid_element":
-                return `Սխալ արժեք ${withDefiniteArticle(issue.origin)}-ում`;
-            default:
-                return `Սխալ մուտքագրում`;
-        }
-    };
-};
-/* export default */ function hy() {
-    return {
-        localeError: hy_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/id.js
-
-const id_error = () => {
-    const Sizable = {
-        string: { unit: "karakter", verb: "memiliki" },
-        file: { unit: "byte", verb: "memiliki" },
-        array: { unit: "item", verb: "memiliki" },
-        set: { unit: "item", verb: "memiliki" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "alamat email",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "tanggal dan waktu format ISO",
-        date: "tanggal format ISO",
-        time: "jam format ISO",
-        duration: "durasi format ISO",
-        ipv4: "alamat IPv4",
-        ipv6: "alamat IPv6",
-        cidrv4: "rentang alamat IPv4",
-        cidrv6: "rentang alamat IPv6",
-        base64: "string dengan enkode base64",
-        base64url: "string dengan enkode base64url",
-        json_string: "string JSON",
-        e164: "angka E.164",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Input tidak valid: diharapkan instanceof ${issue.expected}, diterima ${received}`;
-                }
-                return `Input tidak valid: diharapkan ${expected}, diterima ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Input tidak valid: diharapkan ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Pilihan tidak valid: diharapkan salah satu dari ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Terlalu besar: diharapkan ${issue.origin ?? "value"} memiliki ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elemen"}`;
-                return `Terlalu besar: diharapkan ${issue.origin ?? "value"} menjadi ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Terlalu kecil: diharapkan ${issue.origin} memiliki ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Terlalu kecil: diharapkan ${issue.origin} menjadi ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `String tidak valid: harus dimulai dengan "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `String tidak valid: harus berakhir dengan "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `String tidak valid: harus menyertakan "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `String tidak valid: harus sesuai pola ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} tidak valid`;
-            }
-            case "not_multiple_of":
-                return `Angka tidak valid: harus kelipatan dari ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Kunci tidak dikenali ${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Kunci tidak valid di ${issue.origin}`;
-            case "invalid_union":
-                return "Input tidak valid";
-            case "invalid_element":
-                return `Nilai tidak valid di ${issue.origin}`;
-            default:
-                return `Input tidak valid`;
-        }
-    };
-};
-/* export default */ function locales_id() {
-    return {
-        localeError: id_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/is.js
-
-const is_error = () => {
-    const Sizable = {
-        string: { unit: "stafi", verb: "að hafa" },
-        file: { unit: "bæti", verb: "að hafa" },
-        array: { unit: "hluti", verb: "að hafa" },
-        set: { unit: "hluti", verb: "að hafa" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "gildi",
-        email: "netfang",
-        url: "vefslóð",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO dagsetning og tími",
-        date: "ISO dagsetning",
-        time: "ISO tími",
-        duration: "ISO tímalengd",
-        ipv4: "IPv4 address",
-        ipv6: "IPv6 address",
-        cidrv4: "IPv4 range",
-        cidrv6: "IPv6 range",
-        base64: "base64-encoded strengur",
-        base64url: "base64url-encoded strengur",
-        json_string: "JSON strengur",
-        e164: "E.164 tölugildi",
-        jwt: "JWT",
-        template_literal: "gildi",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "númer",
-        array: "fylki",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Rangt gildi: Þú slóst inn ${received} þar sem á að vera instanceof ${issue.expected}`;
-                }
-                return `Rangt gildi: Þú slóst inn ${received} þar sem á að vera ${expected}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Rangt gildi: gert ráð fyrir ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Ógilt val: má vera eitt af eftirfarandi ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Of stórt: gert er ráð fyrir að ${issue.origin ?? "gildi"} hafi ${adj}${issue.maximum.toString()} ${sizing.unit ?? "hluti"}`;
-                return `Of stórt: gert er ráð fyrir að ${issue.origin ?? "gildi"} sé ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Of lítið: gert er ráð fyrir að ${issue.origin} hafi ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Of lítið: gert er ráð fyrir að ${issue.origin} sé ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Ógildur strengur: verður að byrja á "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Ógildur strengur: verður að enda á "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Ógildur strengur: verður að innihalda "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Ógildur strengur: verður að fylgja mynstri ${_issue.pattern}`;
-                return `Rangt ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Röng tala: verður að vera margfeldi af ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Óþekkt ${issue.keys.length > 1 ? "ir lyklar" : "ur lykill"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Rangur lykill í ${issue.origin}`;
-            case "invalid_union":
-                return "Rangt gildi";
-            case "invalid_element":
-                return `Rangt gildi í ${issue.origin}`;
-            default:
-                return `Rangt gildi`;
-        }
-    };
-};
-/* export default */ function is() {
-    return {
-        localeError: is_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/it.js
-
-const it_error = () => {
-    const Sizable = {
-        string: { unit: "caratteri", verb: "avere" },
-        file: { unit: "byte", verb: "avere" },
-        array: { unit: "elementi", verb: "avere" },
-        set: { unit: "elementi", verb: "avere" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "indirizzo email",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "data e ora ISO",
-        date: "data ISO",
-        time: "ora ISO",
-        duration: "durata ISO",
-        ipv4: "indirizzo IPv4",
-        ipv6: "indirizzo IPv6",
-        cidrv4: "intervallo IPv4",
-        cidrv6: "intervallo IPv6",
-        base64: "stringa codificata in base64",
-        base64url: "URL codificata in base64",
-        json_string: "stringa JSON",
-        e164: "numero E.164",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "numero",
-        array: "vettore",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Input non valido: atteso instanceof ${issue.expected}, ricevuto ${received}`;
-                }
-                return `Input non valido: atteso ${expected}, ricevuto ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Input non valido: atteso ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Opzione non valida: atteso uno tra ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Troppo grande: ${issue.origin ?? "valore"} deve avere ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementi"}`;
-                return `Troppo grande: ${issue.origin ?? "valore"} deve essere ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Troppo piccolo: ${issue.origin} deve avere ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Troppo piccolo: ${issue.origin} deve essere ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Stringa non valida: deve iniziare con "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Stringa non valida: deve terminare con "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Stringa non valida: deve includere "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Stringa non valida: deve corrispondere al pattern ${_issue.pattern}`;
-                return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Numero non valido: deve essere un multiplo di ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Chiav${issue.keys.length > 1 ? "i" : "e"} non riconosciut${issue.keys.length > 1 ? "e" : "a"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Chiave non valida in ${issue.origin}`;
-            case "invalid_union":
-                return "Input non valido";
-            case "invalid_element":
-                return `Valore non valido in ${issue.origin}`;
-            default:
-                return `Input non valido`;
-        }
-    };
-};
-/* export default */ function it() {
-    return {
-        localeError: it_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ja.js
-
-const ja_error = () => {
-    const Sizable = {
-        string: { unit: "文字", verb: "である" },
-        file: { unit: "バイト", verb: "である" },
-        array: { unit: "要素", verb: "である" },
-        set: { unit: "要素", verb: "である" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "入力値",
-        email: "メールアドレス",
-        url: "URL",
-        emoji: "絵文字",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO日時",
-        date: "ISO日付",
-        time: "ISO時刻",
-        duration: "ISO期間",
-        ipv4: "IPv4アドレス",
-        ipv6: "IPv6アドレス",
-        cidrv4: "IPv4範囲",
-        cidrv6: "IPv6範囲",
-        base64: "base64エンコード文字列",
-        base64url: "base64urlエンコード文字列",
-        json_string: "JSON文字列",
-        e164: "E.164番号",
-        jwt: "JWT",
-        template_literal: "入力値",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "数値",
-        array: "配列",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `無効な入力: instanceof ${issue.expected}が期待されましたが、${received}が入力されました`;
-                }
-                return `無効な入力: ${expected}が期待されましたが、${received}が入力されました`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `無効な入力: ${util.stringifyPrimitive(issue.values[0])}が期待されました`;
-                return `無効な選択: ${util.joinValues(issue.values, "、")}のいずれかである必要があります`;
-            case "too_big": {
-                const adj = issue.inclusive ? "以下である" : "より小さい";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `大きすぎる値: ${issue.origin ?? "値"}は${issue.maximum.toString()}${sizing.unit ?? "要素"}${adj}必要があります`;
-                return `大きすぎる値: ${issue.origin ?? "値"}は${issue.maximum.toString()}${adj}必要があります`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? "以上である" : "より大きい";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `小さすぎる値: ${issue.origin}は${issue.minimum.toString()}${sizing.unit}${adj}必要があります`;
-                return `小さすぎる値: ${issue.origin}は${issue.minimum.toString()}${adj}必要があります`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `無効な文字列: "${_issue.prefix}"で始まる必要があります`;
-                if (_issue.format === "ends_with")
-                    return `無効な文字列: "${_issue.suffix}"で終わる必要があります`;
-                if (_issue.format === "includes")
-                    return `無効な文字列: "${_issue.includes}"を含む必要があります`;
-                if (_issue.format === "regex")
-                    return `無効な文字列: パターン${_issue.pattern}に一致する必要があります`;
-                return `無効な${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `無効な数値: ${issue.divisor}の倍数である必要があります`;
-            case "unrecognized_keys":
-                return `認識されていないキー${issue.keys.length > 1 ? "群" : ""}: ${util.joinValues(issue.keys, "、")}`;
-            case "invalid_key":
-                return `${issue.origin}内の無効なキー`;
-            case "invalid_union":
-                return "無効な入力";
-            case "invalid_element":
-                return `${issue.origin}内の無効な値`;
-            default:
-                return `無効な入力`;
-        }
-    };
-};
-/* export default */ function ja() {
-    return {
-        localeError: ja_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ka.js
-
-const ka_error = () => {
-    const Sizable = {
-        string: { unit: "სიმბოლო", verb: "უნდა შეიცავდეს" },
-        file: { unit: "ბაიტი", verb: "უნდა შეიცავდეს" },
-        array: { unit: "ელემენტი", verb: "უნდა შეიცავდეს" },
-        set: { unit: "ელემენტი", verb: "უნდა შეიცავდეს" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "შეყვანა",
-        email: "ელ-ფოსტის მისამართი",
-        url: "URL",
-        emoji: "ემოჯი",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "თარიღი-დრო",
-        date: "თარიღი",
-        time: "დრო",
-        duration: "ხანგრძლივობა",
-        ipv4: "IPv4 მისამართი",
-        ipv6: "IPv6 მისამართი",
-        cidrv4: "IPv4 დიაპაზონი",
-        cidrv6: "IPv6 დიაპაზონი",
-        base64: "base64-კოდირებული სტრინგი",
-        base64url: "base64url-კოდირებული სტრინგი",
-        json_string: "JSON სტრინგი",
-        e164: "E.164 ნომერი",
-        jwt: "JWT",
-        template_literal: "შეყვანა",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "რიცხვი",
-        string: "სტრინგი",
-        boolean: "ბულეანი",
-        function: "ფუნქცია",
-        array: "მასივი",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `არასწორი შეყვანა: მოსალოდნელი instanceof ${issue.expected}, მიღებული ${received}`;
-                }
-                return `არასწორი შეყვანა: მოსალოდნელი ${expected}, მიღებული ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `არასწორი შეყვანა: მოსალოდნელი ${util.stringifyPrimitive(issue.values[0])}`;
-                return `არასწორი ვარიანტი: მოსალოდნელია ერთ-ერთი ${util.joinValues(issue.values, "|")}-დან`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `ზედმეტად დიდი: მოსალოდნელი ${issue.origin ?? "მნიშვნელობა"} ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit}`;
-                return `ზედმეტად დიდი: მოსალოდნელი ${issue.origin ?? "მნიშვნელობა"} იყოს ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `ზედმეტად პატარა: მოსალოდნელი ${issue.origin} ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `ზედმეტად პატარა: მოსალოდნელი ${issue.origin} იყოს ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `არასწორი სტრინგი: უნდა იწყებოდეს "${_issue.prefix}"-ით`;
-                }
-                if (_issue.format === "ends_with")
-                    return `არასწორი სტრინგი: უნდა მთავრდებოდეს "${_issue.suffix}"-ით`;
-                if (_issue.format === "includes")
-                    return `არასწორი სტრინგი: უნდა შეიცავდეს "${_issue.includes}"-ს`;
-                if (_issue.format === "regex")
-                    return `არასწორი სტრინგი: უნდა შეესაბამებოდეს შაბლონს ${_issue.pattern}`;
-                return `არასწორი ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `არასწორი რიცხვი: უნდა იყოს ${issue.divisor}-ის ჯერადი`;
-            case "unrecognized_keys":
-                return `უცნობი გასაღებ${issue.keys.length > 1 ? "ები" : "ი"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `არასწორი გასაღები ${issue.origin}-ში`;
-            case "invalid_union":
-                return "არასწორი შეყვანა";
-            case "invalid_element":
-                return `არასწორი მნიშვნელობა ${issue.origin}-ში`;
-            default:
-                return `არასწორი შეყვანა`;
-        }
-    };
-};
-/* export default */ function ka() {
-    return {
-        localeError: ka_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/km.js
-
-const km_error = () => {
-    const Sizable = {
-        string: { unit: "តួអក្សរ", verb: "គួរមាន" },
-        file: { unit: "បៃ", verb: "គួរមាន" },
-        array: { unit: "ធាតុ", verb: "គួរមាន" },
-        set: { unit: "ធាតុ", verb: "គួរមាន" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ទិន្នន័យបញ្ចូល",
-        email: "អាសយដ្ឋានអ៊ីមែល",
-        url: "URL",
-        emoji: "សញ្ញាអារម្មណ៍",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "កាលបរិច្ឆេទ និងម៉ោង ISO",
-        date: "កាលបរិច្ឆេទ ISO",
-        time: "ម៉ោង ISO",
-        duration: "រយៈពេល ISO",
-        ipv4: "អាសយដ្ឋាន IPv4",
-        ipv6: "អាសយដ្ឋាន IPv6",
-        cidrv4: "ដែនអាសយដ្ឋាន IPv4",
-        cidrv6: "ដែនអាសយដ្ឋាន IPv6",
-        base64: "ខ្សែអក្សរអ៊ិកូដ base64",
-        base64url: "ខ្សែអក្សរអ៊ិកូដ base64url",
-        json_string: "ខ្សែអក្សរ JSON",
-        e164: "លេខ E.164",
-        jwt: "JWT",
-        template_literal: "ទិន្នន័យបញ្ចូល",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "លេខ",
-        array: "អារេ (Array)",
-        null: "គ្មានតម្លៃ (null)",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ instanceof ${issue.expected} ប៉ុន្តែទទួលបាន ${received}`;
-                }
-                return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ ${expected} ប៉ុន្តែទទួលបាន ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ ${util.stringifyPrimitive(issue.values[0])}`;
-                return `ជម្រើសមិនត្រឹមត្រូវ៖ ត្រូវជាមួយក្នុងចំណោម ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `ធំពេក៖ ត្រូវការ ${issue.origin ?? "តម្លៃ"} ${adj} ${issue.maximum.toString()} ${sizing.unit ?? "ធាតុ"}`;
-                return `ធំពេក៖ ត្រូវការ ${issue.origin ?? "តម្លៃ"} ${adj} ${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `តូចពេក៖ ត្រូវការ ${issue.origin} ${adj} ${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `តូចពេក៖ ត្រូវការ ${issue.origin} ${adj} ${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `ខ្សែអក្សរមិនត្រឹមត្រូវ៖ ត្រូវចាប់ផ្តើមដោយ "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `ខ្សែអក្សរមិនត្រឹមត្រូវ៖ ត្រូវបញ្ចប់ដោយ "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `ខ្សែអក្សរមិនត្រឹមត្រូវ៖ ត្រូវមាន "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `ខ្សែអក្សរមិនត្រឹមត្រូវ៖ ត្រូវតែផ្គូផ្គងនឹងទម្រង់ដែលបានកំណត់ ${_issue.pattern}`;
-                return `មិនត្រឹមត្រូវ៖ ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `លេខមិនត្រឹមត្រូវ៖ ត្រូវតែជាពហុគុណនៃ ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `រកឃើញសោមិនស្គាល់៖ ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `សោមិនត្រឹមត្រូវនៅក្នុង ${issue.origin}`;
-            case "invalid_union":
-                return `ទិន្នន័យមិនត្រឹមត្រូវ`;
-            case "invalid_element":
-                return `ទិន្នន័យមិនត្រឹមត្រូវនៅក្នុង ${issue.origin}`;
-            default:
-                return `ទិន្នន័យមិនត្រឹមត្រូវ`;
-        }
-    };
-};
-/* export default */ function locales_km() {
-    return {
-        localeError: km_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/kh.js
-
-/** @deprecated Use `km` instead. */
-/* export default */ function kh() {
-    return km();
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ko.js
-
-const ko_error = () => {
-    const Sizable = {
-        string: { unit: "문자", verb: "to have" },
-        file: { unit: "바이트", verb: "to have" },
-        array: { unit: "개", verb: "to have" },
-        set: { unit: "개", verb: "to have" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "입력",
-        email: "이메일 주소",
-        url: "URL",
-        emoji: "이모지",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO 날짜시간",
-        date: "ISO 날짜",
-        time: "ISO 시간",
-        duration: "ISO 기간",
-        ipv4: "IPv4 주소",
-        ipv6: "IPv6 주소",
-        cidrv4: "IPv4 범위",
-        cidrv6: "IPv6 범위",
-        base64: "base64 인코딩 문자열",
-        base64url: "base64url 인코딩 문자열",
-        json_string: "JSON 문자열",
-        e164: "E.164 번호",
-        jwt: "JWT",
-        template_literal: "입력",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `잘못된 입력: 예상 타입은 instanceof ${issue.expected}, 받은 타입은 ${received}입니다`;
-                }
-                return `잘못된 입력: 예상 타입은 ${expected}, 받은 타입은 ${received}입니다`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `잘못된 입력: 값은 ${util.stringifyPrimitive(issue.values[0])} 이어야 합니다`;
-                return `잘못된 옵션: ${util.joinValues(issue.values, "또는 ")} 중 하나여야 합니다`;
-            case "too_big": {
-                const adj = issue.inclusive ? "이하" : "미만";
-                const suffix = adj === "미만" ? "이어야 합니다" : "여야 합니다";
-                const sizing = getSizing(issue.origin);
-                const unit = sizing?.unit ?? "요소";
-                if (sizing)
-                    return `${issue.origin ?? "값"}이 너무 큽니다: ${issue.maximum.toString()}${unit} ${adj}${suffix}`;
-                return `${issue.origin ?? "값"}이 너무 큽니다: ${issue.maximum.toString()} ${adj}${suffix}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? "이상" : "초과";
-                const suffix = adj === "이상" ? "이어야 합니다" : "여야 합니다";
-                const sizing = getSizing(issue.origin);
-                const unit = sizing?.unit ?? "요소";
-                if (sizing) {
-                    return `${issue.origin ?? "값"}이 너무 작습니다: ${issue.minimum.toString()}${unit} ${adj}${suffix}`;
-                }
-                return `${issue.origin ?? "값"}이 너무 작습니다: ${issue.minimum.toString()} ${adj}${suffix}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `잘못된 문자열: "${_issue.prefix}"(으)로 시작해야 합니다`;
-                }
-                if (_issue.format === "ends_with")
-                    return `잘못된 문자열: "${_issue.suffix}"(으)로 끝나야 합니다`;
-                if (_issue.format === "includes")
-                    return `잘못된 문자열: "${_issue.includes}"을(를) 포함해야 합니다`;
-                if (_issue.format === "regex")
-                    return `잘못된 문자열: 정규식 ${_issue.pattern} 패턴과 일치해야 합니다`;
-                return `잘못된 ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `잘못된 숫자: ${issue.divisor}의 배수여야 합니다`;
-            case "unrecognized_keys":
-                return `인식할 수 없는 키: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `잘못된 키: ${issue.origin}`;
-            case "invalid_union":
-                return `잘못된 입력`;
-            case "invalid_element":
-                return `잘못된 값: ${issue.origin}`;
-            default:
-                return `잘못된 입력`;
-        }
-    };
-};
-/* export default */ function ko() {
-    return {
-        localeError: ko_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/lt.js
-
-const capitalizeFirstCharacter = (text) => {
-    return text.charAt(0).toUpperCase() + text.slice(1);
-};
-function getUnitTypeFromNumber(number) {
-    const abs = Math.abs(number);
-    const last = abs % 10;
-    const last2 = abs % 100;
-    if ((last2 >= 11 && last2 <= 19) || last === 0)
-        return "many";
-    if (last === 1)
-        return "one";
-    return "few";
-}
-const lt_error = () => {
-    const Sizable = {
-        string: {
-            unit: {
-                one: "simbolis",
-                few: "simboliai",
-                many: "simbolių",
-            },
-            verb: {
-                smaller: {
-                    inclusive: "turi būti ne ilgesnė kaip",
-                    notInclusive: "turi būti trumpesnė kaip",
-                },
-                bigger: {
-                    inclusive: "turi būti ne trumpesnė kaip",
-                    notInclusive: "turi būti ilgesnė kaip",
-                },
-            },
-        },
-        file: {
-            unit: {
-                one: "baitas",
-                few: "baitai",
-                many: "baitų",
-            },
-            verb: {
-                smaller: {
-                    inclusive: "turi būti ne didesnis kaip",
-                    notInclusive: "turi būti mažesnis kaip",
-                },
-                bigger: {
-                    inclusive: "turi būti ne mažesnis kaip",
-                    notInclusive: "turi būti didesnis kaip",
-                },
-            },
-        },
-        array: {
-            unit: {
-                one: "elementą",
-                few: "elementus",
-                many: "elementų",
-            },
-            verb: {
-                smaller: {
-                    inclusive: "turi turėti ne daugiau kaip",
-                    notInclusive: "turi turėti mažiau kaip",
-                },
-                bigger: {
-                    inclusive: "turi turėti ne mažiau kaip",
-                    notInclusive: "turi turėti daugiau kaip",
-                },
-            },
-        },
-        set: {
-            unit: {
-                one: "elementą",
-                few: "elementus",
-                many: "elementų",
-            },
-            verb: {
-                smaller: {
-                    inclusive: "turi turėti ne daugiau kaip",
-                    notInclusive: "turi turėti mažiau kaip",
-                },
-                bigger: {
-                    inclusive: "turi turėti ne mažiau kaip",
-                    notInclusive: "turi turėti daugiau kaip",
-                },
-            },
-        },
-    };
-    function getSizing(origin, unitType, inclusive, targetShouldBe) {
-        const result = Sizable[origin] ?? null;
-        if (result === null)
-            return result;
-        return {
-            unit: result.unit[unitType],
-            verb: result.verb[targetShouldBe][inclusive ? "inclusive" : "notInclusive"],
-        };
-    }
-    const FormatDictionary = {
-        regex: "įvestis",
-        email: "el. pašto adresas",
-        url: "URL",
-        emoji: "jaustukas",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO data ir laikas",
-        date: "ISO data",
-        time: "ISO laikas",
-        duration: "ISO trukmė",
-        ipv4: "IPv4 adresas",
-        ipv6: "IPv6 adresas",
-        cidrv4: "IPv4 tinklo prefiksas (CIDR)",
-        cidrv6: "IPv6 tinklo prefiksas (CIDR)",
-        base64: "base64 užkoduota eilutė",
-        base64url: "base64url užkoduota eilutė",
-        json_string: "JSON eilutė",
-        e164: "E.164 numeris",
-        jwt: "JWT",
-        template_literal: "įvestis",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "skaičius",
-        bigint: "sveikasis skaičius",
-        string: "eilutė",
-        boolean: "loginė reikšmė",
-        undefined: "neapibrėžta reikšmė",
-        function: "funkcija",
-        symbol: "simbolis",
-        array: "masyvas",
-        object: "objektas",
-        null: "nulinė reikšmė",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Gautas tipas ${received}, o tikėtasi - instanceof ${issue.expected}`;
-                }
-                return `Gautas tipas ${received}, o tikėtasi - ${expected}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Privalo būti ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Privalo būti vienas iš ${util.joinValues(issue.values, "|")} pasirinkimų`;
-            case "too_big": {
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                const sizing = getSizing(issue.origin, getUnitTypeFromNumber(Number(issue.maximum)), issue.inclusive ?? false, "smaller");
-                if (sizing?.verb)
-                    return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} ${sizing.verb} ${issue.maximum.toString()} ${sizing.unit ?? "elementų"}`;
-                const adj = issue.inclusive ? "ne didesnis kaip" : "mažesnis kaip";
-                return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} turi būti ${adj} ${issue.maximum.toString()} ${sizing?.unit}`;
-            }
-            case "too_small": {
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                const sizing = getSizing(issue.origin, getUnitTypeFromNumber(Number(issue.minimum)), issue.inclusive ?? false, "bigger");
-                if (sizing?.verb)
-                    return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} ${sizing.verb} ${issue.minimum.toString()} ${sizing.unit ?? "elementų"}`;
-                const adj = issue.inclusive ? "ne mažesnis kaip" : "didesnis kaip";
-                return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} turi būti ${adj} ${issue.minimum.toString()} ${sizing?.unit}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Eilutė privalo prasidėti "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Eilutė privalo pasibaigti "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Eilutė privalo įtraukti "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Eilutė privalo atitikti ${_issue.pattern}`;
-                return `Neteisingas ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Skaičius privalo būti ${issue.divisor} kartotinis.`;
-            case "unrecognized_keys":
-                return `Neatpažint${issue.keys.length > 1 ? "i" : "as"} rakt${issue.keys.length > 1 ? "ai" : "as"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return "Rastas klaidingas raktas";
-            case "invalid_union":
-                return "Klaidinga įvestis";
-            case "invalid_element": {
-                const origin = TypeDictionary[issue.origin] ?? issue.origin;
-                return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} turi klaidingą įvestį`;
-            }
-            default:
-                return "Klaidinga įvestis";
-        }
-    };
-};
-/* export default */ function lt() {
-    return {
-        localeError: lt_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/mk.js
-
-const mk_error = () => {
-    const Sizable = {
-        string: { unit: "знаци", verb: "да имаат" },
-        file: { unit: "бајти", verb: "да имаат" },
-        array: { unit: "ставки", verb: "да имаат" },
-        set: { unit: "ставки", verb: "да имаат" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "внес",
-        email: "адреса на е-пошта",
-        url: "URL",
-        emoji: "емоџи",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO датум и време",
-        date: "ISO датум",
-        time: "ISO време",
-        duration: "ISO времетраење",
-        ipv4: "IPv4 адреса",
-        ipv6: "IPv6 адреса",
-        cidrv4: "IPv4 опсег",
-        cidrv6: "IPv6 опсег",
-        base64: "base64-енкодирана низа",
-        base64url: "base64url-енкодирана низа",
-        json_string: "JSON низа",
-        e164: "E.164 број",
-        jwt: "JWT",
-        template_literal: "внес",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "број",
-        array: "низа",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Грешен внес: се очекува instanceof ${issue.expected}, примено ${received}`;
-                }
-                return `Грешен внес: се очекува ${expected}, примено ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Invalid input: expected ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Грешана опција: се очекува една ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Премногу голем: се очекува ${issue.origin ?? "вредноста"} да има ${adj}${issue.maximum.toString()} ${sizing.unit ?? "елементи"}`;
-                return `Премногу голем: се очекува ${issue.origin ?? "вредноста"} да биде ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Премногу мал: се очекува ${issue.origin} да има ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Премногу мал: се очекува ${issue.origin} да биде ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Неважечка низа: мора да започнува со "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Неважечка низа: мора да завршува со "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Неважечка низа: мора да вклучува "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Неважечка низа: мора да одгоара на патернот ${_issue.pattern}`;
-                return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Грешен број: мора да биде делив со ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `${issue.keys.length > 1 ? "Непрепознаени клучеви" : "Непрепознаен клуч"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Грешен клуч во ${issue.origin}`;
-            case "invalid_union":
-                return "Грешен внес";
-            case "invalid_element":
-                return `Грешна вредност во ${issue.origin}`;
-            default:
-                return `Грешен внес`;
-        }
-    };
-};
-/* export default */ function mk() {
-    return {
-        localeError: mk_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ms.js
-
-const ms_error = () => {
-    const Sizable = {
-        string: { unit: "aksara", verb: "mempunyai" },
-        file: { unit: "bait", verb: "mempunyai" },
-        array: { unit: "elemen", verb: "mempunyai" },
-        set: { unit: "elemen", verb: "mempunyai" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "alamat e-mel",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "tarikh masa ISO",
-        date: "tarikh ISO",
-        time: "masa ISO",
-        duration: "tempoh ISO",
-        ipv4: "alamat IPv4",
-        ipv6: "alamat IPv6",
-        cidrv4: "julat IPv4",
-        cidrv6: "julat IPv6",
-        base64: "string dikodkan base64",
-        base64url: "string dikodkan base64url",
-        json_string: "string JSON",
-        e164: "nombor E.164",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "nombor",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Input tidak sah: dijangka instanceof ${issue.expected}, diterima ${received}`;
-                }
-                return `Input tidak sah: dijangka ${expected}, diterima ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Input tidak sah: dijangka ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Pilihan tidak sah: dijangka salah satu daripada ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Terlalu besar: dijangka ${issue.origin ?? "nilai"} ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elemen"}`;
-                return `Terlalu besar: dijangka ${issue.origin ?? "nilai"} adalah ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Terlalu kecil: dijangka ${issue.origin} ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Terlalu kecil: dijangka ${issue.origin} adalah ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `String tidak sah: mesti bermula dengan "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `String tidak sah: mesti berakhir dengan "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `String tidak sah: mesti mengandungi "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `String tidak sah: mesti sepadan dengan corak ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} tidak sah`;
-            }
-            case "not_multiple_of":
-                return `Nombor tidak sah: perlu gandaan ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Kunci tidak dikenali: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Kunci tidak sah dalam ${issue.origin}`;
-            case "invalid_union":
-                return "Input tidak sah";
-            case "invalid_element":
-                return `Nilai tidak sah dalam ${issue.origin}`;
-            default:
-                return `Input tidak sah`;
-        }
-    };
-};
-/* export default */ function ms() {
-    return {
-        localeError: ms_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/nl.js
-
-const nl_error = () => {
-    const Sizable = {
-        string: { unit: "tekens", verb: "heeft" },
-        file: { unit: "bytes", verb: "heeft" },
-        array: { unit: "elementen", verb: "heeft" },
-        set: { unit: "elementen", verb: "heeft" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "invoer",
-        email: "emailadres",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO datum en tijd",
-        date: "ISO datum",
-        time: "ISO tijd",
-        duration: "ISO duur",
-        ipv4: "IPv4-adres",
-        ipv6: "IPv6-adres",
-        cidrv4: "IPv4-bereik",
-        cidrv6: "IPv6-bereik",
-        base64: "base64-gecodeerde tekst",
-        base64url: "base64 URL-gecodeerde tekst",
-        json_string: "JSON string",
-        e164: "E.164-nummer",
-        jwt: "JWT",
-        template_literal: "invoer",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "getal",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Ongeldige invoer: verwacht instanceof ${issue.expected}, ontving ${received}`;
-                }
-                return `Ongeldige invoer: verwacht ${expected}, ontving ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Ongeldige invoer: verwacht ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Ongeldige optie: verwacht één van ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                const longName = issue.origin === "date" ? "laat" : issue.origin === "string" ? "lang" : "groot";
-                if (sizing)
-                    return `Te ${longName}: verwacht dat ${issue.origin ?? "waarde"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementen"} ${sizing.verb}`;
-                return `Te ${longName}: verwacht dat ${issue.origin ?? "waarde"} ${adj}${issue.maximum.toString()} is`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                const shortName = issue.origin === "date" ? "vroeg" : issue.origin === "string" ? "kort" : "klein";
-                if (sizing) {
-                    return `Te ${shortName}: verwacht dat ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit} ${sizing.verb}`;
-                }
-                return `Te ${shortName}: verwacht dat ${issue.origin} ${adj}${issue.minimum.toString()} is`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Ongeldige tekst: moet met "${_issue.prefix}" beginnen`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Ongeldige tekst: moet op "${_issue.suffix}" eindigen`;
-                if (_issue.format === "includes")
-                    return `Ongeldige tekst: moet "${_issue.includes}" bevatten`;
-                if (_issue.format === "regex")
-                    return `Ongeldige tekst: moet overeenkomen met patroon ${_issue.pattern}`;
-                return `Ongeldig: ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Ongeldig getal: moet een veelvoud van ${issue.divisor} zijn`;
-            case "unrecognized_keys":
-                return `Onbekende key${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Ongeldige key in ${issue.origin}`;
-            case "invalid_union":
-                return "Ongeldige invoer";
-            case "invalid_element":
-                return `Ongeldige waarde in ${issue.origin}`;
-            default:
-                return `Ongeldige invoer`;
-        }
-    };
-};
-/* export default */ function nl() {
-    return {
-        localeError: nl_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/no.js
-
-const no_error = () => {
-    const Sizable = {
-        string: { unit: "tegn", verb: "å ha" },
-        file: { unit: "bytes", verb: "å ha" },
-        array: { unit: "elementer", verb: "å inneholde" },
-        set: { unit: "elementer", verb: "å inneholde" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "input",
-        email: "e-postadresse",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO dato- og klokkeslett",
-        date: "ISO-dato",
-        time: "ISO-klokkeslett",
-        duration: "ISO-varighet",
-        ipv4: "IPv4-område",
-        ipv6: "IPv6-område",
-        cidrv4: "IPv4-spekter",
-        cidrv6: "IPv6-spekter",
-        base64: "base64-enkodet streng",
-        base64url: "base64url-enkodet streng",
-        json_string: "JSON-streng",
-        e164: "E.164-nummer",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "tall",
-        array: "liste",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Ugyldig input: forventet instanceof ${issue.expected}, fikk ${received}`;
-                }
-                return `Ugyldig input: forventet ${expected}, fikk ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Ugyldig verdi: forventet ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Ugyldig valg: forventet en av ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `For stor(t): forventet ${issue.origin ?? "value"} til å ha ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementer"}`;
-                return `For stor(t): forventet ${issue.origin ?? "value"} til å ha ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `For lite(n): forventet ${issue.origin} til å ha ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `For lite(n): forventet ${issue.origin} til å ha ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Ugyldig streng: må starte med "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Ugyldig streng: må ende med "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Ugyldig streng: må inneholde "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Ugyldig streng: må matche mønsteret ${_issue.pattern}`;
-                return `Ugyldig ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Ugyldig tall: må være et multiplum av ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `${issue.keys.length > 1 ? "Ukjente nøkler" : "Ukjent nøkkel"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Ugyldig nøkkel i ${issue.origin}`;
-            case "invalid_union":
-                return "Ugyldig input";
-            case "invalid_element":
-                return `Ugyldig verdi i ${issue.origin}`;
-            default:
-                return `Ugyldig input`;
-        }
-    };
-};
-/* export default */ function no() {
-    return {
-        localeError: no_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ota.js
-
-const ota_error = () => {
-    const Sizable = {
-        string: { unit: "harf", verb: "olmalıdır" },
-        file: { unit: "bayt", verb: "olmalıdır" },
-        array: { unit: "unsur", verb: "olmalıdır" },
-        set: { unit: "unsur", verb: "olmalıdır" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "giren",
-        email: "epostagâh",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO hengâmı",
-        date: "ISO tarihi",
-        time: "ISO zamanı",
-        duration: "ISO müddeti",
-        ipv4: "IPv4 nişânı",
-        ipv6: "IPv6 nişânı",
-        cidrv4: "IPv4 menzili",
-        cidrv6: "IPv6 menzili",
-        base64: "base64-şifreli metin",
-        base64url: "base64url-şifreli metin",
-        json_string: "JSON metin",
-        e164: "E.164 sayısı",
-        jwt: "JWT",
-        template_literal: "giren",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "numara",
-        array: "saf",
-        null: "gayb",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Fâsit giren: umulan instanceof ${issue.expected}, alınan ${received}`;
-                }
-                return `Fâsit giren: umulan ${expected}, alınan ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Fâsit giren: umulan ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Fâsit tercih: mûteberler ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Fazla büyük: ${issue.origin ?? "value"}, ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elements"} sahip olmalıydı.`;
-                return `Fazla büyük: ${issue.origin ?? "value"}, ${adj}${issue.maximum.toString()} olmalıydı.`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Fazla küçük: ${issue.origin}, ${adj}${issue.minimum.toString()} ${sizing.unit} sahip olmalıydı.`;
-                }
-                return `Fazla küçük: ${issue.origin}, ${adj}${issue.minimum.toString()} olmalıydı.`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Fâsit metin: "${_issue.prefix}" ile başlamalı.`;
-                if (_issue.format === "ends_with")
-                    return `Fâsit metin: "${_issue.suffix}" ile bitmeli.`;
-                if (_issue.format === "includes")
-                    return `Fâsit metin: "${_issue.includes}" ihtivâ etmeli.`;
-                if (_issue.format === "regex")
-                    return `Fâsit metin: ${_issue.pattern} nakşına uymalı.`;
-                return `Fâsit ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Fâsit sayı: ${issue.divisor} katı olmalıydı.`;
-            case "unrecognized_keys":
-                return `Tanınmayan anahtar ${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `${issue.origin} için tanınmayan anahtar var.`;
-            case "invalid_union":
-                return "Giren tanınamadı.";
-            case "invalid_element":
-                return `${issue.origin} için tanınmayan kıymet var.`;
-            default:
-                return `Kıymet tanınamadı.`;
-        }
-    };
-};
-/* export default */ function ota() {
-    return {
-        localeError: ota_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ps.js
-
-const ps_error = () => {
-    const Sizable = {
-        string: { unit: "توکي", verb: "ولري" },
-        file: { unit: "بایټس", verb: "ولري" },
-        array: { unit: "توکي", verb: "ولري" },
-        set: { unit: "توکي", verb: "ولري" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ورودي",
-        email: "بریښنالیک",
-        url: "یو آر ال",
-        emoji: "ایموجي",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "نیټه او وخت",
-        date: "نېټه",
-        time: "وخت",
-        duration: "موده",
-        ipv4: "د IPv4 پته",
-        ipv6: "د IPv6 پته",
-        cidrv4: "د IPv4 ساحه",
-        cidrv6: "د IPv6 ساحه",
-        base64: "base64-encoded متن",
-        base64url: "base64url-encoded متن",
-        json_string: "JSON متن",
-        e164: "د E.164 شمېره",
-        jwt: "JWT",
-        template_literal: "ورودي",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "عدد",
-        array: "ارې",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `ناسم ورودي: باید instanceof ${issue.expected} وای, مګر ${received} ترلاسه شو`;
-                }
-                return `ناسم ورودي: باید ${expected} وای, مګر ${received} ترلاسه شو`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1) {
-                    return `ناسم ورودي: باید ${util.stringifyPrimitive(issue.values[0])} وای`;
-                }
-                return `ناسم انتخاب: باید یو له ${util.joinValues(issue.values, "|")} څخه وای`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `ډیر لوی: ${issue.origin ?? "ارزښت"} باید ${adj}${issue.maximum.toString()} ${sizing.unit ?? "عنصرونه"} ولري`;
-                }
-                return `ډیر لوی: ${issue.origin ?? "ارزښت"} باید ${adj}${issue.maximum.toString()} وي`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `ډیر کوچنی: ${issue.origin} باید ${adj}${issue.minimum.toString()} ${sizing.unit} ولري`;
-                }
-                return `ډیر کوچنی: ${issue.origin} باید ${adj}${issue.minimum.toString()} وي`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `ناسم متن: باید د "${_issue.prefix}" سره پیل شي`;
-                }
-                if (_issue.format === "ends_with") {
-                    return `ناسم متن: باید د "${_issue.suffix}" سره پای ته ورسيږي`;
-                }
-                if (_issue.format === "includes") {
-                    return `ناسم متن: باید "${_issue.includes}" ولري`;
-                }
-                if (_issue.format === "regex") {
-                    return `ناسم متن: باید د ${_issue.pattern} سره مطابقت ولري`;
-                }
-                return `${FormatDictionary[_issue.format] ?? issue.format} ناسم دی`;
-            }
-            case "not_multiple_of":
-                return `ناسم عدد: باید د ${issue.divisor} مضرب وي`;
-            case "unrecognized_keys":
-                return `ناسم ${issue.keys.length > 1 ? "کلیډونه" : "کلیډ"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `ناسم کلیډ په ${issue.origin} کې`;
-            case "invalid_union":
-                return `ناسمه ورودي`;
-            case "invalid_element":
-                return `ناسم عنصر په ${issue.origin} کې`;
-            default:
-                return `ناسمه ورودي`;
-        }
-    };
-};
-/* export default */ function ps() {
-    return {
-        localeError: ps_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/pl.js
-
-const pl_error = () => {
-    const Sizable = {
-        string: { unit: "znaków", verb: "mieć" },
-        file: { unit: "bajtów", verb: "mieć" },
-        array: { unit: "elementów", verb: "mieć" },
-        set: { unit: "elementów", verb: "mieć" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "wyrażenie",
-        email: "adres email",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "data i godzina w formacie ISO",
-        date: "data w formacie ISO",
-        time: "godzina w formacie ISO",
-        duration: "czas trwania ISO",
-        ipv4: "adres IPv4",
-        ipv6: "adres IPv6",
-        cidrv4: "zakres IPv4",
-        cidrv6: "zakres IPv6",
-        base64: "ciąg znaków zakodowany w formacie base64",
-        base64url: "ciąg znaków zakodowany w formacie base64url",
-        json_string: "ciąg znaków w formacie JSON",
-        e164: "liczba E.164",
-        jwt: "JWT",
-        template_literal: "wejście",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "liczba",
-        array: "tablica",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Nieprawidłowe dane wejściowe: oczekiwano instanceof ${issue.expected}, otrzymano ${received}`;
-                }
-                return `Nieprawidłowe dane wejściowe: oczekiwano ${expected}, otrzymano ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Nieprawidłowe dane wejściowe: oczekiwano ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Nieprawidłowa opcja: oczekiwano jednej z wartości ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Za duża wartość: oczekiwano, że ${issue.origin ?? "wartość"} będzie mieć ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementów"}`;
-                }
-                return `Zbyt duż(y/a/e): oczekiwano, że ${issue.origin ?? "wartość"} będzie wynosić ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Za mała wartość: oczekiwano, że ${issue.origin ?? "wartość"} będzie mieć ${adj}${issue.minimum.toString()} ${sizing.unit ?? "elementów"}`;
-                }
-                return `Zbyt mał(y/a/e): oczekiwano, że ${issue.origin ?? "wartość"} będzie wynosić ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Nieprawidłowy ciąg znaków: musi zaczynać się od "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Nieprawidłowy ciąg znaków: musi kończyć się na "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Nieprawidłowy ciąg znaków: musi zawierać "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Nieprawidłowy ciąg znaków: musi odpowiadać wzorcowi ${_issue.pattern}`;
-                return `Nieprawidłow(y/a/e) ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Nieprawidłowa liczba: musi być wielokrotnością ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Nierozpoznane klucze${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Nieprawidłowy klucz w ${issue.origin}`;
-            case "invalid_union":
-                return "Nieprawidłowe dane wejściowe";
-            case "invalid_element":
-                return `Nieprawidłowa wartość w ${issue.origin}`;
-            default:
-                return `Nieprawidłowe dane wejściowe`;
-        }
-    };
-};
-/* export default */ function pl() {
-    return {
-        localeError: pl_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/pt.js
-
-const pt_error = () => {
-    const Sizable = {
-        string: { unit: "caracteres", verb: "ter" },
-        file: { unit: "bytes", verb: "ter" },
-        array: { unit: "itens", verb: "ter" },
-        set: { unit: "itens", verb: "ter" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "padrão",
-        email: "endereço de e-mail",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "data e hora ISO",
-        date: "data ISO",
-        time: "hora ISO",
-        duration: "duração ISO",
-        ipv4: "endereço IPv4",
-        ipv6: "endereço IPv6",
-        cidrv4: "faixa de IPv4",
-        cidrv6: "faixa de IPv6",
-        base64: "texto codificado em base64",
-        base64url: "URL codificada em base64",
-        json_string: "texto JSON",
-        e164: "número E.164",
-        jwt: "JWT",
-        template_literal: "entrada",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "número",
-        null: "nulo",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Tipo inválido: esperado instanceof ${issue.expected}, recebido ${received}`;
-                }
-                return `Tipo inválido: esperado ${expected}, recebido ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Entrada inválida: esperado ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Opção inválida: esperada uma das ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Muito grande: esperado que ${issue.origin ?? "valor"} tivesse ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementos"}`;
-                return `Muito grande: esperado que ${issue.origin ?? "valor"} fosse ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Muito pequeno: esperado que ${issue.origin} tivesse ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Muito pequeno: esperado que ${issue.origin} fosse ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Texto inválido: deve começar com "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Texto inválido: deve terminar com "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Texto inválido: deve incluir "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Texto inválido: deve corresponder ao padrão ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} inválido`;
-            }
-            case "not_multiple_of":
-                return `Número inválido: deve ser múltiplo de ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Chave${issue.keys.length > 1 ? "s" : ""} desconhecida${issue.keys.length > 1 ? "s" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Chave inválida em ${issue.origin}`;
-            case "invalid_union":
-                return "Entrada inválida";
-            case "invalid_element":
-                return `Valor inválido em ${issue.origin}`;
-            default:
-                return `Campo inválido`;
-        }
-    };
-};
-/* export default */ function pt() {
-    return {
-        localeError: pt_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ru.js
-
-function getRussianPlural(count, one, few, many) {
-    const absCount = Math.abs(count);
-    const lastDigit = absCount % 10;
-    const lastTwoDigits = absCount % 100;
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-        return many;
-    }
-    if (lastDigit === 1) {
-        return one;
-    }
-    if (lastDigit >= 2 && lastDigit <= 4) {
-        return few;
-    }
-    return many;
-}
-const ru_error = () => {
-    const Sizable = {
-        string: {
-            unit: {
-                one: "символ",
-                few: "символа",
-                many: "символов",
-            },
-            verb: "иметь",
-        },
-        file: {
-            unit: {
-                one: "байт",
-                few: "байта",
-                many: "байт",
-            },
-            verb: "иметь",
-        },
-        array: {
-            unit: {
-                one: "элемент",
-                few: "элемента",
-                many: "элементов",
-            },
-            verb: "иметь",
-        },
-        set: {
-            unit: {
-                one: "элемент",
-                few: "элемента",
-                many: "элементов",
-            },
-            verb: "иметь",
-        },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ввод",
-        email: "email адрес",
-        url: "URL",
-        emoji: "эмодзи",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO дата и время",
-        date: "ISO дата",
-        time: "ISO время",
-        duration: "ISO длительность",
-        ipv4: "IPv4 адрес",
-        ipv6: "IPv6 адрес",
-        cidrv4: "IPv4 диапазон",
-        cidrv6: "IPv6 диапазон",
-        base64: "строка в формате base64",
-        base64url: "строка в формате base64url",
-        json_string: "JSON строка",
-        e164: "номер E.164",
-        jwt: "JWT",
-        template_literal: "ввод",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "число",
-        array: "массив",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Неверный ввод: ожидалось instanceof ${issue.expected}, получено ${received}`;
-                }
-                return `Неверный ввод: ожидалось ${expected}, получено ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Неверный ввод: ожидалось ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Неверный вариант: ожидалось одно из ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    const maxValue = Number(issue.maximum);
-                    const unit = getRussianPlural(maxValue, sizing.unit.one, sizing.unit.few, sizing.unit.many);
-                    return `Слишком большое значение: ожидалось, что ${issue.origin ?? "значение"} будет иметь ${adj}${issue.maximum.toString()} ${unit}`;
-                }
-                return `Слишком большое значение: ожидалось, что ${issue.origin ?? "значение"} будет ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    const minValue = Number(issue.minimum);
-                    const unit = getRussianPlural(minValue, sizing.unit.one, sizing.unit.few, sizing.unit.many);
-                    return `Слишком маленькое значение: ожидалось, что ${issue.origin} будет иметь ${adj}${issue.minimum.toString()} ${unit}`;
-                }
-                return `Слишком маленькое значение: ожидалось, что ${issue.origin} будет ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Неверная строка: должна начинаться с "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Неверная строка: должна заканчиваться на "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Неверная строка: должна содержать "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Неверная строка: должна соответствовать шаблону ${_issue.pattern}`;
-                return `Неверный ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Неверное число: должно быть кратным ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Нераспознанн${issue.keys.length > 1 ? "ые" : "ый"} ключ${issue.keys.length > 1 ? "и" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Неверный ключ в ${issue.origin}`;
-            case "invalid_union":
-                return "Неверные входные данные";
-            case "invalid_element":
-                return `Неверное значение в ${issue.origin}`;
-            default:
-                return `Неверные входные данные`;
-        }
-    };
-};
-/* export default */ function ru() {
-    return {
-        localeError: ru_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/sl.js
-
-const sl_error = () => {
-    const Sizable = {
-        string: { unit: "znakov", verb: "imeti" },
-        file: { unit: "bajtov", verb: "imeti" },
-        array: { unit: "elementov", verb: "imeti" },
-        set: { unit: "elementov", verb: "imeti" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "vnos",
-        email: "e-poštni naslov",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO datum in čas",
-        date: "ISO datum",
-        time: "ISO čas",
-        duration: "ISO trajanje",
-        ipv4: "IPv4 naslov",
-        ipv6: "IPv6 naslov",
-        cidrv4: "obseg IPv4",
-        cidrv6: "obseg IPv6",
-        base64: "base64 kodiran niz",
-        base64url: "base64url kodiran niz",
-        json_string: "JSON niz",
-        e164: "E.164 številka",
-        jwt: "JWT",
-        template_literal: "vnos",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "število",
-        array: "tabela",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Neveljaven vnos: pričakovano instanceof ${issue.expected}, prejeto ${received}`;
-                }
-                return `Neveljaven vnos: pričakovano ${expected}, prejeto ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Neveljaven vnos: pričakovano ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Neveljavna možnost: pričakovano eno izmed ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Preveliko: pričakovano, da bo ${issue.origin ?? "vrednost"} imelo ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementov"}`;
-                return `Preveliko: pričakovano, da bo ${issue.origin ?? "vrednost"} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Premajhno: pričakovano, da bo ${issue.origin} imelo ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Premajhno: pričakovano, da bo ${issue.origin} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Neveljaven niz: mora se začeti z "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Neveljaven niz: mora se končati z "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Neveljaven niz: mora vsebovati "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Neveljaven niz: mora ustrezati vzorcu ${_issue.pattern}`;
-                return `Neveljaven ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Neveljavno število: mora biti večkratnik ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Neprepoznan${issue.keys.length > 1 ? "i ključi" : " ključ"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Neveljaven ključ v ${issue.origin}`;
-            case "invalid_union":
-                return "Neveljaven vnos";
-            case "invalid_element":
-                return `Neveljavna vrednost v ${issue.origin}`;
-            default:
-                return "Neveljaven vnos";
-        }
-    };
-};
-/* export default */ function sl() {
-    return {
-        localeError: sl_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/sv.js
-
-const sv_error = () => {
-    const Sizable = {
-        string: { unit: "tecken", verb: "att ha" },
-        file: { unit: "bytes", verb: "att ha" },
-        array: { unit: "objekt", verb: "att innehålla" },
-        set: { unit: "objekt", verb: "att innehålla" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "reguljärt uttryck",
-        email: "e-postadress",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO-datum och tid",
-        date: "ISO-datum",
-        time: "ISO-tid",
-        duration: "ISO-varaktighet",
-        ipv4: "IPv4-intervall",
-        ipv6: "IPv6-intervall",
-        cidrv4: "IPv4-spektrum",
-        cidrv6: "IPv6-spektrum",
-        base64: "base64-kodad sträng",
-        base64url: "base64url-kodad sträng",
-        json_string: "JSON-sträng",
-        e164: "E.164-nummer",
-        jwt: "JWT",
-        template_literal: "mall-literal",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "antal",
-        array: "lista",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Ogiltig inmatning: förväntat instanceof ${issue.expected}, fick ${received}`;
-                }
-                return `Ogiltig inmatning: förväntat ${expected}, fick ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Ogiltig inmatning: förväntat ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Ogiltigt val: förväntade en av ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `För stor(t): förväntade ${issue.origin ?? "värdet"} att ha ${adj}${issue.maximum.toString()} ${sizing.unit ?? "element"}`;
-                }
-                return `För stor(t): förväntat ${issue.origin ?? "värdet"} att ha ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `För lite(t): förväntade ${issue.origin ?? "värdet"} att ha ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `För lite(t): förväntade ${issue.origin ?? "värdet"} att ha ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `Ogiltig sträng: måste börja med "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `Ogiltig sträng: måste sluta med "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Ogiltig sträng: måste innehålla "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Ogiltig sträng: måste matcha mönstret "${_issue.pattern}"`;
-                return `Ogiltig(t) ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Ogiltigt tal: måste vara en multipel av ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `${issue.keys.length > 1 ? "Okända nycklar" : "Okänd nyckel"}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Ogiltig nyckel i ${issue.origin ?? "värdet"}`;
-            case "invalid_union":
-                return "Ogiltig input";
-            case "invalid_element":
-                return `Ogiltigt värde i ${issue.origin ?? "värdet"}`;
-            default:
-                return `Ogiltig input`;
-        }
-    };
-};
-/* export default */ function sv() {
-    return {
-        localeError: sv_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ta.js
-
-const ta_error = () => {
-    const Sizable = {
-        string: { unit: "எழுத்துக்கள்", verb: "கொண்டிருக்க வேண்டும்" },
-        file: { unit: "பைட்டுகள்", verb: "கொண்டிருக்க வேண்டும்" },
-        array: { unit: "உறுப்புகள்", verb: "கொண்டிருக்க வேண்டும்" },
-        set: { unit: "உறுப்புகள்", verb: "கொண்டிருக்க வேண்டும்" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "உள்ளீடு",
-        email: "மின்னஞ்சல் முகவரி",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO தேதி நேரம்",
-        date: "ISO தேதி",
-        time: "ISO நேரம்",
-        duration: "ISO கால அளவு",
-        ipv4: "IPv4 முகவரி",
-        ipv6: "IPv6 முகவரி",
-        cidrv4: "IPv4 வரம்பு",
-        cidrv6: "IPv6 வரம்பு",
-        base64: "base64-encoded சரம்",
-        base64url: "base64url-encoded சரம்",
-        json_string: "JSON சரம்",
-        e164: "E.164 எண்",
-        jwt: "JWT",
-        template_literal: "input",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "எண்",
-        array: "அணி",
-        null: "வெறுமை",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது instanceof ${issue.expected}, பெறப்பட்டது ${received}`;
-                }
-                return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது ${expected}, பெறப்பட்டது ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது ${util.stringifyPrimitive(issue.values[0])}`;
-                return `தவறான விருப்பம்: எதிர்பார்க்கப்பட்டது ${util.joinValues(issue.values, "|")} இல் ஒன்று`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `மிக பெரியது: எதிர்பார்க்கப்பட்டது ${issue.origin ?? "மதிப்பு"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "உறுப்புகள்"} ஆக இருக்க வேண்டும்`;
-                }
-                return `மிக பெரியது: எதிர்பார்க்கப்பட்டது ${issue.origin ?? "மதிப்பு"} ${adj}${issue.maximum.toString()} ஆக இருக்க வேண்டும்`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `மிகச் சிறியது: எதிர்பார்க்கப்பட்டது ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit} ஆக இருக்க வேண்டும்`; //
-                }
-                return `மிகச் சிறியது: எதிர்பார்க்கப்பட்டது ${issue.origin} ${adj}${issue.minimum.toString()} ஆக இருக்க வேண்டும்`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `தவறான சரம்: "${_issue.prefix}" இல் தொடங்க வேண்டும்`;
-                if (_issue.format === "ends_with")
-                    return `தவறான சரம்: "${_issue.suffix}" இல் முடிவடைய வேண்டும்`;
-                if (_issue.format === "includes")
-                    return `தவறான சரம்: "${_issue.includes}" ஐ உள்ளடக்க வேண்டும்`;
-                if (_issue.format === "regex")
-                    return `தவறான சரம்: ${_issue.pattern} முறைபாட்டுடன் பொருந்த வேண்டும்`;
-                return `தவறான ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `தவறான எண்: ${issue.divisor} இன் பலமாக இருக்க வேண்டும்`;
-            case "unrecognized_keys":
-                return `அடையாளம் தெரியாத விசை${issue.keys.length > 1 ? "கள்" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `${issue.origin} இல் தவறான விசை`;
-            case "invalid_union":
-                return "தவறான உள்ளீடு";
-            case "invalid_element":
-                return `${issue.origin} இல் தவறான மதிப்பு`;
-            default:
-                return `தவறான உள்ளீடு`;
-        }
-    };
-};
-/* export default */ function ta() {
-    return {
-        localeError: ta_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/th.js
-
-const th_error = () => {
-    const Sizable = {
-        string: { unit: "ตัวอักษร", verb: "ควรมี" },
-        file: { unit: "ไบต์", verb: "ควรมี" },
-        array: { unit: "รายการ", verb: "ควรมี" },
-        set: { unit: "รายการ", verb: "ควรมี" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ข้อมูลที่ป้อน",
-        email: "ที่อยู่อีเมล",
-        url: "URL",
-        emoji: "อิโมจิ",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "วันที่เวลาแบบ ISO",
-        date: "วันที่แบบ ISO",
-        time: "เวลาแบบ ISO",
-        duration: "ช่วงเวลาแบบ ISO",
-        ipv4: "ที่อยู่ IPv4",
-        ipv6: "ที่อยู่ IPv6",
-        cidrv4: "ช่วง IP แบบ IPv4",
-        cidrv6: "ช่วง IP แบบ IPv6",
-        base64: "ข้อความแบบ Base64",
-        base64url: "ข้อความแบบ Base64 สำหรับ URL",
-        json_string: "ข้อความแบบ JSON",
-        e164: "เบอร์โทรศัพท์ระหว่างประเทศ (E.164)",
-        jwt: "โทเคน JWT",
-        template_literal: "ข้อมูลที่ป้อน",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "ตัวเลข",
-        array: "อาร์เรย์ (Array)",
-        null: "ไม่มีค่า (null)",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `ประเภทข้อมูลไม่ถูกต้อง: ควรเป็น instanceof ${issue.expected} แต่ได้รับ ${received}`;
-                }
-                return `ประเภทข้อมูลไม่ถูกต้อง: ควรเป็น ${expected} แต่ได้รับ ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `ค่าไม่ถูกต้อง: ควรเป็น ${util.stringifyPrimitive(issue.values[0])}`;
-                return `ตัวเลือกไม่ถูกต้อง: ควรเป็นหนึ่งใน ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "ไม่เกิน" : "น้อยกว่า";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `เกินกำหนด: ${issue.origin ?? "ค่า"} ควรมี${adj} ${issue.maximum.toString()} ${sizing.unit ?? "รายการ"}`;
-                return `เกินกำหนด: ${issue.origin ?? "ค่า"} ควรมี${adj} ${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? "อย่างน้อย" : "มากกว่า";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `น้อยกว่ากำหนด: ${issue.origin} ควรมี${adj} ${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `น้อยกว่ากำหนด: ${issue.origin} ควรมี${adj} ${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `รูปแบบไม่ถูกต้อง: ข้อความต้องขึ้นต้นด้วย "${_issue.prefix}"`;
-                }
-                if (_issue.format === "ends_with")
-                    return `รูปแบบไม่ถูกต้อง: ข้อความต้องลงท้ายด้วย "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `รูปแบบไม่ถูกต้อง: ข้อความต้องมี "${_issue.includes}" อยู่ในข้อความ`;
-                if (_issue.format === "regex")
-                    return `รูปแบบไม่ถูกต้อง: ต้องตรงกับรูปแบบที่กำหนด ${_issue.pattern}`;
-                return `รูปแบบไม่ถูกต้อง: ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `ตัวเลขไม่ถูกต้อง: ต้องเป็นจำนวนที่หารด้วย ${issue.divisor} ได้ลงตัว`;
-            case "unrecognized_keys":
-                return `พบคีย์ที่ไม่รู้จัก: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `คีย์ไม่ถูกต้องใน ${issue.origin}`;
-            case "invalid_union":
-                return "ข้อมูลไม่ถูกต้อง: ไม่ตรงกับรูปแบบยูเนียนที่กำหนดไว้";
-            case "invalid_element":
-                return `ข้อมูลไม่ถูกต้องใน ${issue.origin}`;
-            default:
-                return `ข้อมูลไม่ถูกต้อง`;
-        }
-    };
-};
-/* export default */ function th() {
-    return {
-        localeError: th_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/tr.js
-
-const tr_error = () => {
-    const Sizable = {
-        string: { unit: "karakter", verb: "olmalı" },
-        file: { unit: "bayt", verb: "olmalı" },
-        array: { unit: "öğe", verb: "olmalı" },
-        set: { unit: "öğe", verb: "olmalı" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "girdi",
-        email: "e-posta adresi",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO tarih ve saat",
-        date: "ISO tarih",
-        time: "ISO saat",
-        duration: "ISO süre",
-        ipv4: "IPv4 adresi",
-        ipv6: "IPv6 adresi",
-        cidrv4: "IPv4 aralığı",
-        cidrv6: "IPv6 aralığı",
-        base64: "base64 ile şifrelenmiş metin",
-        base64url: "base64url ile şifrelenmiş metin",
-        json_string: "JSON dizesi",
-        e164: "E.164 sayısı",
-        jwt: "JWT",
-        template_literal: "Şablon dizesi",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Geçersiz değer: beklenen instanceof ${issue.expected}, alınan ${received}`;
-                }
-                return `Geçersiz değer: beklenen ${expected}, alınan ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Geçersiz değer: beklenen ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Geçersiz seçenek: aşağıdakilerden biri olmalı: ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Çok büyük: beklenen ${issue.origin ?? "değer"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "öğe"}`;
-                return `Çok büyük: beklenen ${issue.origin ?? "değer"} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Çok küçük: beklenen ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                return `Çok küçük: beklenen ${issue.origin} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Geçersiz metin: "${_issue.prefix}" ile başlamalı`;
-                if (_issue.format === "ends_with")
-                    return `Geçersiz metin: "${_issue.suffix}" ile bitmeli`;
-                if (_issue.format === "includes")
-                    return `Geçersiz metin: "${_issue.includes}" içermeli`;
-                if (_issue.format === "regex")
-                    return `Geçersiz metin: ${_issue.pattern} desenine uymalı`;
-                return `Geçersiz ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Geçersiz sayı: ${issue.divisor} ile tam bölünebilmeli`;
-            case "unrecognized_keys":
-                return `Tanınmayan anahtar${issue.keys.length > 1 ? "lar" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `${issue.origin} içinde geçersiz anahtar`;
-            case "invalid_union":
-                return "Geçersiz değer";
-            case "invalid_element":
-                return `${issue.origin} içinde geçersiz değer`;
-            default:
-                return `Geçersiz değer`;
-        }
-    };
-};
-/* export default */ function tr() {
-    return {
-        localeError: tr_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/uk.js
-
-const uk_error = () => {
-    const Sizable = {
-        string: { unit: "символів", verb: "матиме" },
-        file: { unit: "байтів", verb: "матиме" },
-        array: { unit: "елементів", verb: "матиме" },
-        set: { unit: "елементів", verb: "матиме" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "вхідні дані",
-        email: "адреса електронної пошти",
-        url: "URL",
-        emoji: "емодзі",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "дата та час ISO",
-        date: "дата ISO",
-        time: "час ISO",
-        duration: "тривалість ISO",
-        ipv4: "адреса IPv4",
-        ipv6: "адреса IPv6",
-        cidrv4: "діапазон IPv4",
-        cidrv6: "діапазон IPv6",
-        base64: "рядок у кодуванні base64",
-        base64url: "рядок у кодуванні base64url",
-        json_string: "рядок JSON",
-        e164: "номер E.164",
-        jwt: "JWT",
-        template_literal: "вхідні дані",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "число",
-        array: "масив",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Неправильні вхідні дані: очікується instanceof ${issue.expected}, отримано ${received}`;
-                }
-                return `Неправильні вхідні дані: очікується ${expected}, отримано ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Неправильні вхідні дані: очікується ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Неправильна опція: очікується одне з ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Занадто велике: очікується, що ${issue.origin ?? "значення"} ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "елементів"}`;
-                return `Занадто велике: очікується, що ${issue.origin ?? "значення"} буде ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Занадто мале: очікується, що ${issue.origin} ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Занадто мале: очікується, що ${issue.origin} буде ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Неправильний рядок: повинен починатися з "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Неправильний рядок: повинен закінчуватися на "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Неправильний рядок: повинен містити "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Неправильний рядок: повинен відповідати шаблону ${_issue.pattern}`;
-                return `Неправильний ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Неправильне число: повинно бути кратним ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Нерозпізнаний ключ${issue.keys.length > 1 ? "і" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Неправильний ключ у ${issue.origin}`;
-            case "invalid_union":
-                return "Неправильні вхідні дані";
-            case "invalid_element":
-                return `Неправильне значення у ${issue.origin}`;
-            default:
-                return `Неправильні вхідні дані`;
-        }
-    };
-};
-/* export default */ function locales_uk() {
-    return {
-        localeError: uk_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ua.js
-
-/** @deprecated Use `uk` instead. */
-/* export default */ function ua() {
-    return uk();
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/ur.js
-
-const ur_error = () => {
-    const Sizable = {
-        string: { unit: "حروف", verb: "ہونا" },
-        file: { unit: "بائٹس", verb: "ہونا" },
-        array: { unit: "آئٹمز", verb: "ہونا" },
-        set: { unit: "آئٹمز", verb: "ہونا" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ان پٹ",
-        email: "ای میل ایڈریس",
-        url: "یو آر ایل",
-        emoji: "ایموجی",
-        uuid: "یو یو آئی ڈی",
-        uuidv4: "یو یو آئی ڈی وی 4",
-        uuidv6: "یو یو آئی ڈی وی 6",
-        nanoid: "نینو آئی ڈی",
-        guid: "جی یو آئی ڈی",
-        cuid: "سی یو آئی ڈی",
-        cuid2: "سی یو آئی ڈی 2",
-        ulid: "یو ایل آئی ڈی",
-        xid: "ایکس آئی ڈی",
-        ksuid: "کے ایس یو آئی ڈی",
-        datetime: "آئی ایس او ڈیٹ ٹائم",
-        date: "آئی ایس او تاریخ",
-        time: "آئی ایس او وقت",
-        duration: "آئی ایس او مدت",
-        ipv4: "آئی پی وی 4 ایڈریس",
-        ipv6: "آئی پی وی 6 ایڈریس",
-        cidrv4: "آئی پی وی 4 رینج",
-        cidrv6: "آئی پی وی 6 رینج",
-        base64: "بیس 64 ان کوڈڈ سٹرنگ",
-        base64url: "بیس 64 یو آر ایل ان کوڈڈ سٹرنگ",
-        json_string: "جے ایس او این سٹرنگ",
-        e164: "ای 164 نمبر",
-        jwt: "جے ڈبلیو ٹی",
-        template_literal: "ان پٹ",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "نمبر",
-        array: "آرے",
-        null: "نل",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `غلط ان پٹ: instanceof ${issue.expected} متوقع تھا، ${received} موصول ہوا`;
-                }
-                return `غلط ان پٹ: ${expected} متوقع تھا، ${received} موصول ہوا`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `غلط ان پٹ: ${util.stringifyPrimitive(issue.values[0])} متوقع تھا`;
-                return `غلط آپشن: ${util.joinValues(issue.values, "|")} میں سے ایک متوقع تھا`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `بہت بڑا: ${issue.origin ?? "ویلیو"} کے ${adj}${issue.maximum.toString()} ${sizing.unit ?? "عناصر"} ہونے متوقع تھے`;
-                return `بہت بڑا: ${issue.origin ?? "ویلیو"} کا ${adj}${issue.maximum.toString()} ہونا متوقع تھا`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `بہت چھوٹا: ${issue.origin} کے ${adj}${issue.minimum.toString()} ${sizing.unit} ہونے متوقع تھے`;
-                }
-                return `بہت چھوٹا: ${issue.origin} کا ${adj}${issue.minimum.toString()} ہونا متوقع تھا`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `غلط سٹرنگ: "${_issue.prefix}" سے شروع ہونا چاہیے`;
-                }
-                if (_issue.format === "ends_with")
-                    return `غلط سٹرنگ: "${_issue.suffix}" پر ختم ہونا چاہیے`;
-                if (_issue.format === "includes")
-                    return `غلط سٹرنگ: "${_issue.includes}" شامل ہونا چاہیے`;
-                if (_issue.format === "regex")
-                    return `غلط سٹرنگ: پیٹرن ${_issue.pattern} سے میچ ہونا چاہیے`;
-                return `غلط ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `غلط نمبر: ${issue.divisor} کا مضاعف ہونا چاہیے`;
-            case "unrecognized_keys":
-                return `غیر تسلیم شدہ کی${issue.keys.length > 1 ? "ز" : ""}: ${util.joinValues(issue.keys, "، ")}`;
-            case "invalid_key":
-                return `${issue.origin} میں غلط کی`;
-            case "invalid_union":
-                return "غلط ان پٹ";
-            case "invalid_element":
-                return `${issue.origin} میں غلط ویلیو`;
-            default:
-                return `غلط ان پٹ`;
-        }
-    };
-};
-/* export default */ function ur() {
-    return {
-        localeError: ur_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/uz.js
-
-const uz_error = () => {
-    const Sizable = {
-        string: { unit: "belgi", verb: "bo‘lishi kerak" },
-        file: { unit: "bayt", verb: "bo‘lishi kerak" },
-        array: { unit: "element", verb: "bo‘lishi kerak" },
-        set: { unit: "element", verb: "bo‘lishi kerak" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "kirish",
-        email: "elektron pochta manzili",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO sana va vaqti",
-        date: "ISO sana",
-        time: "ISO vaqt",
-        duration: "ISO davomiylik",
-        ipv4: "IPv4 manzil",
-        ipv6: "IPv6 manzil",
-        mac: "MAC manzil",
-        cidrv4: "IPv4 diapazon",
-        cidrv6: "IPv6 diapazon",
-        base64: "base64 kodlangan satr",
-        base64url: "base64url kodlangan satr",
-        json_string: "JSON satr",
-        e164: "E.164 raqam",
-        jwt: "JWT",
-        template_literal: "kirish",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "raqam",
-        array: "massiv",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Noto‘g‘ri kirish: kutilgan instanceof ${issue.expected}, qabul qilingan ${received}`;
-                }
-                return `Noto‘g‘ri kirish: kutilgan ${expected}, qabul qilingan ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Noto‘g‘ri kirish: kutilgan ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Noto‘g‘ri variant: quyidagilardan biri kutilgan ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Juda katta: kutilgan ${issue.origin ?? "qiymat"} ${adj}${issue.maximum.toString()} ${sizing.unit} ${sizing.verb}`;
-                return `Juda katta: kutilgan ${issue.origin ?? "qiymat"} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Juda kichik: kutilgan ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit} ${sizing.verb}`;
-                }
-                return `Juda kichik: kutilgan ${issue.origin} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Noto‘g‘ri satr: "${_issue.prefix}" bilan boshlanishi kerak`;
-                if (_issue.format === "ends_with")
-                    return `Noto‘g‘ri satr: "${_issue.suffix}" bilan tugashi kerak`;
-                if (_issue.format === "includes")
-                    return `Noto‘g‘ri satr: "${_issue.includes}" ni o‘z ichiga olishi kerak`;
-                if (_issue.format === "regex")
-                    return `Noto‘g‘ri satr: ${_issue.pattern} shabloniga mos kelishi kerak`;
-                return `Noto‘g‘ri ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Noto‘g‘ri raqam: ${issue.divisor} ning karralisi bo‘lishi kerak`;
-            case "unrecognized_keys":
-                return `Noma’lum kalit${issue.keys.length > 1 ? "lar" : ""}: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `${issue.origin} dagi kalit noto‘g‘ri`;
-            case "invalid_union":
-                return "Noto‘g‘ri kirish";
-            case "invalid_element":
-                return `${issue.origin} da noto‘g‘ri qiymat`;
-            default:
-                return `Noto‘g‘ri kirish`;
-        }
-    };
-};
-/* export default */ function uz() {
-    return {
-        localeError: uz_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/vi.js
-
-const vi_error = () => {
-    const Sizable = {
-        string: { unit: "ký tự", verb: "có" },
-        file: { unit: "byte", verb: "có" },
-        array: { unit: "phần tử", verb: "có" },
-        set: { unit: "phần tử", verb: "có" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "đầu vào",
-        email: "địa chỉ email",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ngày giờ ISO",
-        date: "ngày ISO",
-        time: "giờ ISO",
-        duration: "khoảng thời gian ISO",
-        ipv4: "địa chỉ IPv4",
-        ipv6: "địa chỉ IPv6",
-        cidrv4: "dải IPv4",
-        cidrv6: "dải IPv6",
-        base64: "chuỗi mã hóa base64",
-        base64url: "chuỗi mã hóa base64url",
-        json_string: "chuỗi JSON",
-        e164: "số E.164",
-        jwt: "JWT",
-        template_literal: "đầu vào",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "số",
-        array: "mảng",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Đầu vào không hợp lệ: mong đợi instanceof ${issue.expected}, nhận được ${received}`;
-                }
-                return `Đầu vào không hợp lệ: mong đợi ${expected}, nhận được ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Đầu vào không hợp lệ: mong đợi ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Tùy chọn không hợp lệ: mong đợi một trong các giá trị ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Quá lớn: mong đợi ${issue.origin ?? "giá trị"} ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "phần tử"}`;
-                return `Quá lớn: mong đợi ${issue.origin ?? "giá trị"} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `Quá nhỏ: mong đợi ${issue.origin} ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `Quá nhỏ: mong đợi ${issue.origin} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Chuỗi không hợp lệ: phải bắt đầu bằng "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Chuỗi không hợp lệ: phải kết thúc bằng "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Chuỗi không hợp lệ: phải bao gồm "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Chuỗi không hợp lệ: phải khớp với mẫu ${_issue.pattern}`;
-                return `${FormatDictionary[_issue.format] ?? issue.format} không hợp lệ`;
-            }
-            case "not_multiple_of":
-                return `Số không hợp lệ: phải là bội số của ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Khóa không được nhận dạng: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Khóa không hợp lệ trong ${issue.origin}`;
-            case "invalid_union":
-                return "Đầu vào không hợp lệ";
-            case "invalid_element":
-                return `Giá trị không hợp lệ trong ${issue.origin}`;
-            default:
-                return `Đầu vào không hợp lệ`;
-        }
-    };
-};
-/* export default */ function vi() {
-    return {
-        localeError: vi_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/zh-CN.js
-
-const zh_CN_error = () => {
-    const Sizable = {
-        string: { unit: "字符", verb: "包含" },
-        file: { unit: "字节", verb: "包含" },
-        array: { unit: "项", verb: "包含" },
-        set: { unit: "项", verb: "包含" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "输入",
-        email: "电子邮件",
-        url: "URL",
-        emoji: "表情符号",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO日期时间",
-        date: "ISO日期",
-        time: "ISO时间",
-        duration: "ISO时长",
-        ipv4: "IPv4地址",
-        ipv6: "IPv6地址",
-        cidrv4: "IPv4网段",
-        cidrv6: "IPv6网段",
-        base64: "base64编码字符串",
-        base64url: "base64url编码字符串",
-        json_string: "JSON字符串",
-        e164: "E.164号码",
-        jwt: "JWT",
-        template_literal: "输入",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "数字",
-        array: "数组",
-        null: "空值(null)",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `无效输入：期望 instanceof ${issue.expected}，实际接收 ${received}`;
-                }
-                return `无效输入：期望 ${expected}，实际接收 ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `无效输入：期望 ${util.stringifyPrimitive(issue.values[0])}`;
-                return `无效选项：期望以下之一 ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `数值过大：期望 ${issue.origin ?? "值"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "个元素"}`;
-                return `数值过大：期望 ${issue.origin ?? "值"} ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `数值过小：期望 ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `数值过小：期望 ${issue.origin} ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `无效字符串：必须以 "${_issue.prefix}" 开头`;
-                if (_issue.format === "ends_with")
-                    return `无效字符串：必须以 "${_issue.suffix}" 结尾`;
-                if (_issue.format === "includes")
-                    return `无效字符串：必须包含 "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `无效字符串：必须满足正则表达式 ${_issue.pattern}`;
-                return `无效${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `无效数字：必须是 ${issue.divisor} 的倍数`;
-            case "unrecognized_keys":
-                return `出现未知的键(key): ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `${issue.origin} 中的键(key)无效`;
-            case "invalid_union":
-                return "无效输入";
-            case "invalid_element":
-                return `${issue.origin} 中包含无效值(value)`;
-            default:
-                return `无效输入`;
-        }
-    };
-};
-/* export default */ function zh_CN() {
-    return {
-        localeError: zh_CN_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/zh-TW.js
-
-const zh_TW_error = () => {
-    const Sizable = {
-        string: { unit: "字元", verb: "擁有" },
-        file: { unit: "位元組", verb: "擁有" },
-        array: { unit: "項目", verb: "擁有" },
-        set: { unit: "項目", verb: "擁有" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "輸入",
-        email: "郵件地址",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "ISO 日期時間",
-        date: "ISO 日期",
-        time: "ISO 時間",
-        duration: "ISO 期間",
-        ipv4: "IPv4 位址",
-        ipv6: "IPv6 位址",
-        cidrv4: "IPv4 範圍",
-        cidrv6: "IPv6 範圍",
-        base64: "base64 編碼字串",
-        base64url: "base64url 編碼字串",
-        json_string: "JSON 字串",
-        e164: "E.164 數值",
-        jwt: "JWT",
-        template_literal: "輸入",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `無效的輸入值：預期為 instanceof ${issue.expected}，但收到 ${received}`;
-                }
-                return `無效的輸入值：預期為 ${expected}，但收到 ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `無效的輸入值：預期為 ${util.stringifyPrimitive(issue.values[0])}`;
-                return `無效的選項：預期為以下其中之一 ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `數值過大：預期 ${issue.origin ?? "值"} 應為 ${adj}${issue.maximum.toString()} ${sizing.unit ?? "個元素"}`;
-                return `數值過大：預期 ${issue.origin ?? "值"} 應為 ${adj}${issue.maximum.toString()}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing) {
-                    return `數值過小：預期 ${issue.origin} 應為 ${adj}${issue.minimum.toString()} ${sizing.unit}`;
-                }
-                return `數值過小：預期 ${issue.origin} 應為 ${adj}${issue.minimum.toString()}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with") {
-                    return `無效的字串：必須以 "${_issue.prefix}" 開頭`;
-                }
-                if (_issue.format === "ends_with")
-                    return `無效的字串：必須以 "${_issue.suffix}" 結尾`;
-                if (_issue.format === "includes")
-                    return `無效的字串：必須包含 "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `無效的字串：必須符合格式 ${_issue.pattern}`;
-                return `無效的 ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `無效的數字：必須為 ${issue.divisor} 的倍數`;
-            case "unrecognized_keys":
-                return `無法識別的鍵值${issue.keys.length > 1 ? "們" : ""}：${util.joinValues(issue.keys, "、")}`;
-            case "invalid_key":
-                return `${issue.origin} 中有無效的鍵值`;
-            case "invalid_union":
-                return "無效的輸入值";
-            case "invalid_element":
-                return `${issue.origin} 中有無效的值`;
-            default:
-                return `無效的輸入值`;
-        }
-    };
-};
-/* export default */ function zh_TW() {
-    return {
-        localeError: zh_TW_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/yo.js
-
-const yo_error = () => {
-    const Sizable = {
-        string: { unit: "àmi", verb: "ní" },
-        file: { unit: "bytes", verb: "ní" },
-        array: { unit: "nkan", verb: "ní" },
-        set: { unit: "nkan", verb: "ní" },
-    };
-    function getSizing(origin) {
-        return Sizable[origin] ?? null;
-    }
-    const FormatDictionary = {
-        regex: "ẹ̀rọ ìbáwọlé",
-        email: "àdírẹ́sì ìmẹ́lì",
-        url: "URL",
-        emoji: "emoji",
-        uuid: "UUID",
-        uuidv4: "UUIDv4",
-        uuidv6: "UUIDv6",
-        nanoid: "nanoid",
-        guid: "GUID",
-        cuid: "cuid",
-        cuid2: "cuid2",
-        ulid: "ULID",
-        xid: "XID",
-        ksuid: "KSUID",
-        datetime: "àkókò ISO",
-        date: "ọjọ́ ISO",
-        time: "àkókò ISO",
-        duration: "àkókò tó pé ISO",
-        ipv4: "àdírẹ́sì IPv4",
-        ipv6: "àdírẹ́sì IPv6",
-        cidrv4: "àgbègbè IPv4",
-        cidrv6: "àgbègbè IPv6",
-        base64: "ọ̀rọ̀ tí a kọ́ ní base64",
-        base64url: "ọ̀rọ̀ base64url",
-        json_string: "ọ̀rọ̀ JSON",
-        e164: "nọ́mbà E.164",
-        jwt: "JWT",
-        template_literal: "ẹ̀rọ ìbáwọlé",
-    };
-    const TypeDictionary = {
-        nan: "NaN",
-        number: "nọ́mbà",
-        array: "akopọ",
-    };
-    return (issue) => {
-        switch (issue.code) {
-            case "invalid_type": {
-                const expected = TypeDictionary[issue.expected] ?? issue.expected;
-                const receivedType = util.parsedType(issue.input);
-                const received = TypeDictionary[receivedType] ?? receivedType;
-                if (/^[A-Z]/.test(issue.expected)) {
-                    return `Ìbáwọlé aṣìṣe: a ní láti fi instanceof ${issue.expected}, àmọ̀ a rí ${received}`;
-                }
-                return `Ìbáwọlé aṣìṣe: a ní láti fi ${expected}, àmọ̀ a rí ${received}`;
-            }
-            case "invalid_value":
-                if (issue.values.length === 1)
-                    return `Ìbáwọlé aṣìṣe: a ní láti fi ${util.stringifyPrimitive(issue.values[0])}`;
-                return `Àṣàyàn aṣìṣe: yan ọ̀kan lára ${util.joinValues(issue.values, "|")}`;
-            case "too_big": {
-                const adj = issue.inclusive ? "<=" : "<";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Tó pọ̀ jù: a ní láti jẹ́ pé ${issue.origin ?? "iye"} ${sizing.verb} ${adj}${issue.maximum} ${sizing.unit}`;
-                return `Tó pọ̀ jù: a ní láti jẹ́ ${adj}${issue.maximum}`;
-            }
-            case "too_small": {
-                const adj = issue.inclusive ? ">=" : ">";
-                const sizing = getSizing(issue.origin);
-                if (sizing)
-                    return `Kéré ju: a ní láti jẹ́ pé ${issue.origin} ${sizing.verb} ${adj}${issue.minimum} ${sizing.unit}`;
-                return `Kéré ju: a ní láti jẹ́ ${adj}${issue.minimum}`;
-            }
-            case "invalid_format": {
-                const _issue = issue;
-                if (_issue.format === "starts_with")
-                    return `Ọ̀rọ̀ aṣìṣe: gbọ́dọ̀ bẹ̀rẹ̀ pẹ̀lú "${_issue.prefix}"`;
-                if (_issue.format === "ends_with")
-                    return `Ọ̀rọ̀ aṣìṣe: gbọ́dọ̀ parí pẹ̀lú "${_issue.suffix}"`;
-                if (_issue.format === "includes")
-                    return `Ọ̀rọ̀ aṣìṣe: gbọ́dọ̀ ní "${_issue.includes}"`;
-                if (_issue.format === "regex")
-                    return `Ọ̀rọ̀ aṣìṣe: gbọ́dọ̀ bá àpẹẹrẹ mu ${_issue.pattern}`;
-                return `Aṣìṣe: ${FormatDictionary[_issue.format] ?? issue.format}`;
-            }
-            case "not_multiple_of":
-                return `Nọ́mbà aṣìṣe: gbọ́dọ̀ jẹ́ èyà pípín ti ${issue.divisor}`;
-            case "unrecognized_keys":
-                return `Bọtìnì àìmọ̀: ${util.joinValues(issue.keys, ", ")}`;
-            case "invalid_key":
-                return `Bọtìnì aṣìṣe nínú ${issue.origin}`;
-            case "invalid_union":
-                return "Ìbáwọlé aṣìṣe";
-            case "invalid_element":
-                return `Iye aṣìṣe nínú ${issue.origin}`;
-            default:
-                return "Ìbáwọlé aṣìṣe";
-        }
-    };
-};
-/* export default */ function yo() {
-    return {
-        localeError: yo_error(),
-    };
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/locales/index.js
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/registries.js
-var registries_a;
-const $output = Symbol("ZodOutput");
-const $input = Symbol("ZodInput");
-class $ZodRegistry {
-    constructor() {
-        this._map = new WeakMap();
-        this._idmap = new Map();
-    }
-    add(schema, ..._meta) {
-        const meta = _meta[0];
-        this._map.set(schema, meta);
-        if (meta && typeof meta === "object" && "id" in meta) {
-            this._idmap.set(meta.id, schema);
-        }
-        return this;
+    add(e, ...t) {
+        let n = t[0];
+        return this._map.set(e, n), n && "object" == typeof n && "id" in n && this._idmap.set(n.id, e), this;
     }
     clear() {
-        this._map = new WeakMap();
-        this._idmap = new Map();
-        return this;
-    }
-    remove(schema) {
-        const meta = this._map.get(schema);
-        if (meta && typeof meta === "object" && "id" in meta) {
-            this._idmap.delete(meta.id);
-        }
-        this._map.delete(schema);
-        return this;
-    }
-    get(schema) {
-        // return this._map.get(schema) as any;
-        // inherit metadata
-        const p = schema._zod.parent;
-        if (p) {
-            const pm = { ...(this.get(p) ?? {}) };
-            delete pm.id; // do not inherit id
-            const f = { ...pm, ...this._map.get(schema) };
-            return Object.keys(f).length ? f : undefined;
-        }
-        return this._map.get(schema);
-    }
-    has(schema) {
-        return this._map.has(schema);
-    }
-}
-// registries
-function registries_registry() {
-    return new $ZodRegistry();
-}
-(registries_a = globalThis).__zod_globalRegistry ?? (registries_a.__zod_globalRegistry = registries_registry());
-const registries_globalRegistry = globalThis.__zod_globalRegistry;
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/api.js
-
-
-
-
-// @__NO_SIDE_EFFECTS__
-function _string(Class, params) {
-    return new Class({
-        type: "string",
-        ...normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _coercedString(Class, params) {
-    return new Class({
-        type: "string",
-        coerce: true,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _email(Class, params) {
-    return new Class({
-        type: "string",
-        format: "email",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _guid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "guid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uuid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "uuid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uuidv4(Class, params) {
-    return new Class({
-        type: "string",
-        format: "uuid",
-        check: "string_format",
-        abort: false,
-        version: "v4",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uuidv6(Class, params) {
-    return new Class({
-        type: "string",
-        format: "uuid",
-        check: "string_format",
-        abort: false,
-        version: "v6",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uuidv7(Class, params) {
-    return new Class({
-        type: "string",
-        format: "uuid",
-        check: "string_format",
-        abort: false,
-        version: "v7",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _url(Class, params) {
-    return new Class({
-        type: "string",
-        format: "url",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function api_emoji(Class, params) {
-    return new Class({
-        type: "string",
-        format: "emoji",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _nanoid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "nanoid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _cuid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "cuid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _cuid2(Class, params) {
-    return new Class({
-        type: "string",
-        format: "cuid2",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _ulid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "ulid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _xid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "xid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _ksuid(Class, params) {
-    return new Class({
-        type: "string",
-        format: "ksuid",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _ipv4(Class, params) {
-    return new Class({
-        type: "string",
-        format: "ipv4",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _ipv6(Class, params) {
-    return new Class({
-        type: "string",
-        format: "ipv6",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _mac(Class, params) {
-    return new Class({
-        type: "string",
-        format: "mac",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _cidrv4(Class, params) {
-    return new Class({
-        type: "string",
-        format: "cidrv4",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _cidrv6(Class, params) {
-    return new Class({
-        type: "string",
-        format: "cidrv6",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _base64(Class, params) {
-    return new Class({
-        type: "string",
-        format: "base64",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _base64url(Class, params) {
-    return new Class({
-        type: "string",
-        format: "base64url",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _e164(Class, params) {
-    return new Class({
-        type: "string",
-        format: "e164",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _jwt(Class, params) {
-    return new Class({
-        type: "string",
-        format: "jwt",
-        check: "string_format",
-        abort: false,
-        ...util.normalizeParams(params),
-    });
-}
-const TimePrecision = (/* unused pure expression or super */ null && ({
-    Any: null,
-    Minute: -1,
-    Second: 0,
-    Millisecond: 3,
-    Microsecond: 6,
-}));
-// @__NO_SIDE_EFFECTS__
-function _isoDateTime(Class, params) {
-    return new Class({
-        type: "string",
-        format: "datetime",
-        check: "string_format",
-        offset: false,
-        local: false,
-        precision: null,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _isoDate(Class, params) {
-    return new Class({
-        type: "string",
-        format: "date",
-        check: "string_format",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _isoTime(Class, params) {
-    return new Class({
-        type: "string",
-        format: "time",
-        check: "string_format",
-        precision: null,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _isoDuration(Class, params) {
-    return new Class({
-        type: "string",
-        format: "duration",
-        check: "string_format",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _number(Class, params) {
-    return new Class({
-        type: "number",
-        checks: [],
-        ...normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _coercedNumber(Class, params) {
-    return new Class({
-        type: "number",
-        coerce: true,
-        checks: [],
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _int(Class, params) {
-    return new Class({
-        type: "number",
-        check: "number_format",
-        abort: false,
-        format: "safeint",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _float32(Class, params) {
-    return new Class({
-        type: "number",
-        check: "number_format",
-        abort: false,
-        format: "float32",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _float64(Class, params) {
-    return new Class({
-        type: "number",
-        check: "number_format",
-        abort: false,
-        format: "float64",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _int32(Class, params) {
-    return new Class({
-        type: "number",
-        check: "number_format",
-        abort: false,
-        format: "int32",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uint32(Class, params) {
-    return new Class({
-        type: "number",
-        check: "number_format",
-        abort: false,
-        format: "uint32",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _boolean(Class, params) {
-    return new Class({
-        type: "boolean",
-        ...normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _coercedBoolean(Class, params) {
-    return new Class({
-        type: "boolean",
-        coerce: true,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _bigint(Class, params) {
-    return new Class({
-        type: "bigint",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _coercedBigint(Class, params) {
-    return new Class({
-        type: "bigint",
-        coerce: true,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _int64(Class, params) {
-    return new Class({
-        type: "bigint",
-        check: "bigint_format",
-        abort: false,
-        format: "int64",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uint64(Class, params) {
-    return new Class({
-        type: "bigint",
-        check: "bigint_format",
-        abort: false,
-        format: "uint64",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _symbol(Class, params) {
-    return new Class({
-        type: "symbol",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function api_undefined(Class, params) {
-    return new Class({
-        type: "undefined",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function api_null(Class, params) {
-    return new Class({
-        type: "null",
-        ...normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _any(Class) {
-    return new Class({
-        type: "any",
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _unknown(Class) {
-    return new Class({
-        type: "unknown",
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _never(Class, params) {
-    return new Class({
-        type: "never",
-        ...normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _void(Class, params) {
-    return new Class({
-        type: "void",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _date(Class, params) {
-    return new Class({
-        type: "date",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _coercedDate(Class, params) {
-    return new Class({
-        type: "date",
-        coerce: true,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _nan(Class, params) {
-    return new Class({
-        type: "nan",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _lt(value, params) {
-    return new checks.$ZodCheckLessThan({
-        check: "less_than",
-        ...util.normalizeParams(params),
-        value,
-        inclusive: false,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _lte(value, params) {
-    return new checks.$ZodCheckLessThan({
-        check: "less_than",
-        ...util.normalizeParams(params),
-        value,
-        inclusive: true,
-    });
-}
-
-// @__NO_SIDE_EFFECTS__
-function _gt(value, params) {
-    return new checks.$ZodCheckGreaterThan({
-        check: "greater_than",
-        ...util.normalizeParams(params),
-        value,
-        inclusive: false,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _gte(value, params) {
-    return new checks.$ZodCheckGreaterThan({
-        check: "greater_than",
-        ...util.normalizeParams(params),
-        value,
-        inclusive: true,
-    });
-}
-
-// @__NO_SIDE_EFFECTS__
-function _positive(params) {
-    return _gt(0, params);
-}
-// negative
-// @__NO_SIDE_EFFECTS__
-function _negative(params) {
-    return _lt(0, params);
-}
-// nonpositive
-// @__NO_SIDE_EFFECTS__
-function _nonpositive(params) {
-    return _lte(0, params);
-}
-// nonnegative
-// @__NO_SIDE_EFFECTS__
-function _nonnegative(params) {
-    return _gte(0, params);
-}
-// @__NO_SIDE_EFFECTS__
-function _multipleOf(value, params) {
-    return new checks.$ZodCheckMultipleOf({
-        check: "multiple_of",
-        ...util.normalizeParams(params),
-        value,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _maxSize(maximum, params) {
-    return new checks.$ZodCheckMaxSize({
-        check: "max_size",
-        ...util.normalizeParams(params),
-        maximum,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _minSize(minimum, params) {
-    return new checks.$ZodCheckMinSize({
-        check: "min_size",
-        ...util.normalizeParams(params),
-        minimum,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _size(size, params) {
-    return new checks.$ZodCheckSizeEquals({
-        check: "size_equals",
-        ...util.normalizeParams(params),
-        size,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _maxLength(maximum, params) {
-    const ch = new checks.$ZodCheckMaxLength({
-        check: "max_length",
-        ...util.normalizeParams(params),
-        maximum,
-    });
-    return ch;
-}
-// @__NO_SIDE_EFFECTS__
-function _minLength(minimum, params) {
-    return new checks.$ZodCheckMinLength({
-        check: "min_length",
-        ...util.normalizeParams(params),
-        minimum,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _length(length, params) {
-    return new checks.$ZodCheckLengthEquals({
-        check: "length_equals",
-        ...util.normalizeParams(params),
-        length,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _regex(pattern, params) {
-    return new checks.$ZodCheckRegex({
-        check: "string_format",
-        format: "regex",
-        ...util.normalizeParams(params),
-        pattern,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _lowercase(params) {
-    return new checks.$ZodCheckLowerCase({
-        check: "string_format",
-        format: "lowercase",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _uppercase(params) {
-    return new checks.$ZodCheckUpperCase({
-        check: "string_format",
-        format: "uppercase",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _includes(includes, params) {
-    return new checks.$ZodCheckIncludes({
-        check: "string_format",
-        format: "includes",
-        ...util.normalizeParams(params),
-        includes,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _startsWith(prefix, params) {
-    return new checks.$ZodCheckStartsWith({
-        check: "string_format",
-        format: "starts_with",
-        ...util.normalizeParams(params),
-        prefix,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _endsWith(suffix, params) {
-    return new checks.$ZodCheckEndsWith({
-        check: "string_format",
-        format: "ends_with",
-        ...util.normalizeParams(params),
-        suffix,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _property(property, schema, params) {
-    return new checks.$ZodCheckProperty({
-        check: "property",
-        property,
-        schema,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _mime(types, params) {
-    return new checks.$ZodCheckMimeType({
-        check: "mime_type",
-        mime: types,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _overwrite(tx) {
-    return new checks.$ZodCheckOverwrite({
-        check: "overwrite",
-        tx,
-    });
-}
-// normalize
-// @__NO_SIDE_EFFECTS__
-function _normalize(form) {
-    return _overwrite((input) => input.normalize(form));
-}
-// trim
-// @__NO_SIDE_EFFECTS__
-function _trim() {
-    return _overwrite((input) => input.trim());
-}
-// toLowerCase
-// @__NO_SIDE_EFFECTS__
-function _toLowerCase() {
-    return _overwrite((input) => input.toLowerCase());
-}
-// toUpperCase
-// @__NO_SIDE_EFFECTS__
-function _toUpperCase() {
-    return _overwrite((input) => input.toUpperCase());
-}
-// slugify
-// @__NO_SIDE_EFFECTS__
-function _slugify() {
-    return _overwrite((input) => util.slugify(input));
-}
-// @__NO_SIDE_EFFECTS__
-function _array(Class, element, params) {
-    return new Class({
-        type: "array",
-        element,
-        // get element() {
-        //   return element;
-        // },
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _union(Class, options, params) {
-    return new Class({
-        type: "union",
-        options,
-        ...util.normalizeParams(params),
-    });
-}
-function _xor(Class, options, params) {
-    return new Class({
-        type: "union",
-        options,
-        inclusive: false,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _discriminatedUnion(Class, discriminator, options, params) {
-    return new Class({
-        type: "union",
-        options,
-        discriminator,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _intersection(Class, left, right) {
-    return new Class({
-        type: "intersection",
-        left,
-        right,
-    });
-}
-// export function _tuple(
-//   Class: util.SchemaClass<schemas.$ZodTuple>,
-//   items: [],
-//   params?: string | $ZodTupleParams
-// ): schemas.$ZodTuple<[], null>;
-// @__NO_SIDE_EFFECTS__
-function _tuple(Class, items, _paramsOrRest, _params) {
-    const hasRest = _paramsOrRest instanceof schemas.$ZodType;
-    const params = hasRest ? _params : _paramsOrRest;
-    const rest = hasRest ? _paramsOrRest : null;
-    return new Class({
-        type: "tuple",
-        items,
-        rest,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _record(Class, keyType, valueType, params) {
-    return new Class({
-        type: "record",
-        keyType,
-        valueType,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _map(Class, keyType, valueType, params) {
-    return new Class({
-        type: "map",
-        keyType,
-        valueType,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _set(Class, valueType, params) {
-    return new Class({
-        type: "set",
-        valueType,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _enum(Class, values, params) {
-    const entries = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
-    // if (Array.isArray(values)) {
-    //   for (const value of values) {
-    //     entries[value] = value;
-    //   }
-    // } else {
-    //   Object.assign(entries, values);
-    // }
-    // const entries: util.EnumLike = {};
-    // for (const val of values) {
-    //   entries[val] = val;
-    // }
-    return new Class({
-        type: "enum",
-        entries,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-/** @deprecated This API has been merged into `z.enum()`. Use `z.enum()` instead.
- *
- * ```ts
- * enum Colors { red, green, blue }
- * z.enum(Colors);
- * ```
- */
-function _nativeEnum(Class, entries, params) {
-    return new Class({
-        type: "enum",
-        entries,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _literal(Class, value, params) {
-    return new Class({
-        type: "literal",
-        values: Array.isArray(value) ? value : [value],
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _file(Class, params) {
-    return new Class({
-        type: "file",
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _transform(Class, fn) {
-    return new Class({
-        type: "transform",
-        transform: fn,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _optional(Class, innerType) {
-    return new Class({
-        type: "optional",
-        innerType,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _nullable(Class, innerType) {
-    return new Class({
-        type: "nullable",
-        innerType,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _default(Class, innerType, defaultValue) {
-    return new Class({
-        type: "default",
-        innerType,
-        get defaultValue() {
-            return typeof defaultValue === "function" ? defaultValue() : util.shallowClone(defaultValue);
-        },
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _nonoptional(Class, innerType, params) {
-    return new Class({
-        type: "nonoptional",
-        innerType,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _success(Class, innerType) {
-    return new Class({
-        type: "success",
-        innerType,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _catch(Class, innerType, catchValue) {
-    return new Class({
-        type: "catch",
-        innerType,
-        catchValue: (typeof catchValue === "function" ? catchValue : () => catchValue),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _pipe(Class, in_, out) {
-    return new Class({
-        type: "pipe",
-        in: in_,
-        out,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _readonly(Class, innerType) {
-    return new Class({
-        type: "readonly",
-        innerType,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _templateLiteral(Class, parts, params) {
-    return new Class({
-        type: "template_literal",
-        parts,
-        ...util.normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _lazy(Class, getter) {
-    return new Class({
-        type: "lazy",
-        getter,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _promise(Class, innerType) {
-    return new Class({
-        type: "promise",
-        innerType,
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function _custom(Class, fn, _params) {
-    const norm = util.normalizeParams(_params);
-    norm.abort ?? (norm.abort = true); // default to abort:false
-    const schema = new Class({
-        type: "custom",
-        check: "custom",
-        fn: fn,
-        ...norm,
-    });
-    return schema;
-}
-// same as _custom but defaults to abort:false
-// @__NO_SIDE_EFFECTS__
-function _refine(Class, fn, _params) {
-    const schema = new Class({
-        type: "custom",
-        check: "custom",
-        fn: fn,
-        ...util.normalizeParams(_params),
-    });
-    return schema;
-}
-// @__NO_SIDE_EFFECTS__
-function _superRefine(fn) {
-    const ch = _check((payload) => {
-        payload.addIssue = (issue) => {
-            if (typeof issue === "string") {
-                payload.issues.push(util.issue(issue, payload.value, ch._zod.def));
-            }
-            else {
-                // for Zod 3 backwards compatibility
-                const _issue = issue;
-                if (_issue.fatal)
-                    _issue.continue = false;
-                _issue.code ?? (_issue.code = "custom");
-                _issue.input ?? (_issue.input = payload.value);
-                _issue.inst ?? (_issue.inst = ch);
-                _issue.continue ?? (_issue.continue = !ch._zod.def.abort); // abort is always undefined, so this is always true...
-                payload.issues.push(util.issue(_issue));
-            }
-        };
-        return fn(payload.value, payload);
-    });
-    return ch;
-}
-// @__NO_SIDE_EFFECTS__
-function _check(fn, params) {
-    const ch = new checks.$ZodCheck({
-        check: "custom",
-        ...util.normalizeParams(params),
-    });
-    ch._zod.check = fn;
-    return ch;
-}
-// @__NO_SIDE_EFFECTS__
-function describe(description) {
-    const ch = new $ZodCheck({ check: "describe" });
-    ch._zod.onattach = [
-        (inst) => {
-            const existing = registries_globalRegistry.get(inst) ?? {};
-            registries_globalRegistry.add(inst, { ...existing, description });
-        },
-    ];
-    ch._zod.check = () => { }; // no-op check
-    return ch;
-}
-// @__NO_SIDE_EFFECTS__
-function api_meta(metadata) {
-    const ch = new $ZodCheck({ check: "meta" });
-    ch._zod.onattach = [
-        (inst) => {
-            const existing = registries_globalRegistry.get(inst) ?? {};
-            registries_globalRegistry.add(inst, { ...existing, ...metadata });
-        },
-    ];
-    ch._zod.check = () => { }; // no-op check
-    return ch;
-}
-// @__NO_SIDE_EFFECTS__
-function _stringbool(Classes, _params) {
-    const params = util.normalizeParams(_params);
-    let truthyArray = params.truthy ?? ["true", "1", "yes", "on", "y", "enabled"];
-    let falsyArray = params.falsy ?? ["false", "0", "no", "off", "n", "disabled"];
-    if (params.case !== "sensitive") {
-        truthyArray = truthyArray.map((v) => (typeof v === "string" ? v.toLowerCase() : v));
-        falsyArray = falsyArray.map((v) => (typeof v === "string" ? v.toLowerCase() : v));
-    }
-    const truthySet = new Set(truthyArray);
-    const falsySet = new Set(falsyArray);
-    const _Codec = Classes.Codec ?? schemas.$ZodCodec;
-    const _Boolean = Classes.Boolean ?? schemas.$ZodBoolean;
-    const _String = Classes.String ?? schemas.$ZodString;
-    const stringSchema = new _String({ type: "string", error: params.error });
-    const booleanSchema = new _Boolean({ type: "boolean", error: params.error });
-    const codec = new _Codec({
-        type: "pipe",
-        in: stringSchema,
-        out: booleanSchema,
-        transform: ((input, payload) => {
-            let data = input;
-            if (params.case !== "sensitive")
-                data = data.toLowerCase();
-            if (truthySet.has(data)) {
-                return true;
-            }
-            else if (falsySet.has(data)) {
-                return false;
-            }
-            else {
-                payload.issues.push({
-                    code: "invalid_value",
-                    expected: "stringbool",
-                    values: [...truthySet, ...falsySet],
-                    input: payload.value,
-                    inst: codec,
-                    continue: false,
-                });
-                return {};
-            }
-        }),
-        reverseTransform: ((input, _payload) => {
-            if (input === true) {
-                return truthyArray[0] || "true";
-            }
-            else {
-                return falsyArray[0] || "false";
-            }
-        }),
-        error: params.error,
-    });
-    return codec;
-}
-// @__NO_SIDE_EFFECTS__
-function _stringFormat(Class, format, fnOrRegex, _params = {}) {
-    const params = util.normalizeParams(_params);
-    const def = {
-        ...util.normalizeParams(_params),
-        check: "string_format",
-        type: "string",
-        format,
-        fn: typeof fnOrRegex === "function" ? fnOrRegex : (val) => fnOrRegex.test(val),
-        ...params,
-    };
-    if (fnOrRegex instanceof RegExp) {
-        def.pattern = fnOrRegex;
-    }
-    const inst = new Class(def);
-    return inst;
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/to-json-schema.js
-
-// function initializeContext<T extends schemas.$ZodType>(inputs: JSONSchemaGeneratorParams<T>): ToJSONSchemaContext<T> {
-//   return {
-//     processor: inputs.processor,
-//     metadataRegistry: inputs.metadata ?? globalRegistry,
-//     target: inputs.target ?? "draft-2020-12",
-//     unrepresentable: inputs.unrepresentable ?? "throw",
-//   };
-// }
-function to_json_schema_initializeContext(params) {
-    // Normalize target: convert old non-hyphenated versions to hyphenated versions
-    let target = params?.target ?? "draft-2020-12";
-    if (target === "draft-4")
-        target = "draft-04";
-    if (target === "draft-7")
-        target = "draft-07";
-    return {
-        processors: params.processors ?? {},
-        metadataRegistry: params?.metadata ?? globalRegistry,
-        target,
-        unrepresentable: params?.unrepresentable ?? "throw",
-        override: params?.override ?? (() => { }),
-        io: params?.io ?? "output",
-        counter: 0,
-        seen: new Map(),
-        cycles: params?.cycles ?? "ref",
-        reused: params?.reused ?? "inline",
-        external: params?.external ?? undefined,
-    };
-}
-function to_json_schema_process(schema, ctx, _params = { path: [], schemaPath: [] }) {
-    var _a;
-    const def = schema._zod.def;
-    // check for schema in seens
-    const seen = ctx.seen.get(schema);
-    if (seen) {
-        seen.count++;
-        // check if cycle
-        const isCycle = _params.schemaPath.includes(schema);
-        if (isCycle) {
-            seen.cycle = _params.path;
-        }
-        return seen.schema;
-    }
-    // initialize
-    const result = { schema: {}, count: 1, cycle: undefined, path: _params.path };
-    ctx.seen.set(schema, result);
-    // custom method overrides default behavior
-    const overrideSchema = schema._zod.toJSONSchema?.();
-    if (overrideSchema) {
-        result.schema = overrideSchema;
-    }
-    else {
-        const params = {
-            ..._params,
-            schemaPath: [..._params.schemaPath, schema],
-            path: _params.path,
-        };
-        if (schema._zod.processJSONSchema) {
-            schema._zod.processJSONSchema(ctx, result.schema, params);
-        }
-        else {
-            const _json = result.schema;
-            const processor = ctx.processors[def.type];
-            if (!processor) {
-                throw new Error(`[toJSONSchema]: Non-representable type encountered: ${def.type}`);
-            }
-            processor(schema, ctx, _json, params);
-        }
-        const parent = schema._zod.parent;
-        if (parent) {
-            // Also set ref if processor didn't (for inheritance)
-            if (!result.ref)
-                result.ref = parent;
-            to_json_schema_process(parent, ctx, params);
-            ctx.seen.get(parent).isParent = true;
-        }
-    }
-    // metadata
-    const meta = ctx.metadataRegistry.get(schema);
-    if (meta)
-        Object.assign(result.schema, meta);
-    if (ctx.io === "input" && isTransforming(schema)) {
-        // examples/defaults only apply to output type of pipe
-        delete result.schema.examples;
-        delete result.schema.default;
-    }
-    // set prefault as default
-    if (ctx.io === "input" && result.schema._prefault)
-        (_a = result.schema).default ?? (_a.default = result.schema._prefault);
-    delete result.schema._prefault;
-    // pulling fresh from ctx.seen in case it was overwritten
-    const _result = ctx.seen.get(schema);
-    return _result.schema;
-}
-function to_json_schema_extractDefs(ctx, schema
-// params: EmitParams
-) {
-    // iterate over seen map;
-    const root = ctx.seen.get(schema);
-    if (!root)
-        throw new Error("Unprocessed schema. This is a bug in Zod.");
-    // Track ids to detect duplicates across different schemas
-    const idToSchema = new Map();
-    for (const entry of ctx.seen.entries()) {
-        const id = ctx.metadataRegistry.get(entry[0])?.id;
-        if (id) {
-            const existing = idToSchema.get(id);
-            if (existing && existing !== entry[0]) {
-                throw new Error(`Duplicate schema id "${id}" detected during JSON Schema conversion. Two different schemas cannot share the same id when converted together.`);
-            }
-            idToSchema.set(id, entry[0]);
-        }
-    }
-    // returns a ref to the schema
-    // defId will be empty if the ref points to an external schema (or #)
-    const makeURI = (entry) => {
-        // comparing the seen objects because sometimes
-        // multiple schemas map to the same seen object.
-        // e.g. lazy
-        // external is configured
-        const defsSegment = ctx.target === "draft-2020-12" ? "$defs" : "definitions";
-        if (ctx.external) {
-            const externalId = ctx.external.registry.get(entry[0])?.id; // ?? "__shared";// `__schema${ctx.counter++}`;
-            // check if schema is in the external registry
-            const uriGenerator = ctx.external.uri ?? ((id) => id);
-            if (externalId) {
-                return { ref: uriGenerator(externalId) };
-            }
-            // otherwise, add to __shared
-            const id = entry[1].defId ?? entry[1].schema.id ?? `schema${ctx.counter++}`;
-            entry[1].defId = id; // set defId so it will be reused if needed
-            return { defId: id, ref: `${uriGenerator("__shared")}#/${defsSegment}/${id}` };
-        }
-        if (entry[1] === root) {
-            return { ref: "#" };
-        }
-        // self-contained schema
-        const uriPrefix = `#`;
-        const defUriPrefix = `${uriPrefix}/${defsSegment}/`;
-        const defId = entry[1].schema.id ?? `__schema${ctx.counter++}`;
-        return { defId, ref: defUriPrefix + defId };
-    };
-    // stored cached version in `def` property
-    // remove all properties, set $ref
-    const extractToDef = (entry) => {
-        // if the schema is already a reference, do not extract it
-        if (entry[1].schema.$ref) {
-            return;
-        }
-        const seen = entry[1];
-        const { ref, defId } = makeURI(entry);
-        seen.def = { ...seen.schema };
-        // defId won't be set if the schema is a reference to an external schema
-        // or if the schema is the root schema
-        if (defId)
-            seen.defId = defId;
-        // wipe away all properties except $ref
-        const schema = seen.schema;
-        for (const key in schema) {
-            delete schema[key];
-        }
-        schema.$ref = ref;
-    };
-    // throw on cycles
-    // break cycles
-    if (ctx.cycles === "throw") {
-        for (const entry of ctx.seen.entries()) {
-            const seen = entry[1];
-            if (seen.cycle) {
-                throw new Error("Cycle detected: " +
-                    `#/${seen.cycle?.join("/")}/<root>` +
-                    '\n\nSet the `cycles` parameter to `"ref"` to resolve cyclical schemas with defs.');
-            }
-        }
-    }
-    // extract schemas into $defs
-    for (const entry of ctx.seen.entries()) {
-        const seen = entry[1];
-        // convert root schema to # $ref
-        if (schema === entry[0]) {
-            extractToDef(entry); // this has special handling for the root schema
-            continue;
-        }
-        // extract schemas that are in the external registry
-        if (ctx.external) {
-            const ext = ctx.external.registry.get(entry[0])?.id;
-            if (schema !== entry[0] && ext) {
-                extractToDef(entry);
-                continue;
-            }
-        }
-        // extract schemas with `id` meta
-        const id = ctx.metadataRegistry.get(entry[0])?.id;
-        if (id) {
-            extractToDef(entry);
-            continue;
-        }
-        // break cycles
-        if (seen.cycle) {
-            // any
-            extractToDef(entry);
-            continue;
-        }
-        // extract reused schemas
-        if (seen.count > 1) {
-            if (ctx.reused === "ref") {
-                extractToDef(entry);
-                // biome-ignore lint:
-                continue;
-            }
-        }
-    }
-}
-function to_json_schema_finalize(ctx, schema) {
-    const root = ctx.seen.get(schema);
-    if (!root)
-        throw new Error("Unprocessed schema. This is a bug in Zod.");
-    // flatten refs - inherit properties from parent schemas
-    const flattenRef = (zodSchema) => {
-        const seen = ctx.seen.get(zodSchema);
-        // already processed
-        if (seen.ref === null)
-            return;
-        const schema = seen.def ?? seen.schema;
-        const _cached = { ...schema };
-        const ref = seen.ref;
-        seen.ref = null; // prevent infinite recursion
-        if (ref) {
-            flattenRef(ref);
-            const refSeen = ctx.seen.get(ref);
-            const refSchema = refSeen.schema;
-            // merge referenced schema into current
-            if (refSchema.$ref && (ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0")) {
-                // older drafts can't combine $ref with other properties
-                schema.allOf = schema.allOf ?? [];
-                schema.allOf.push(refSchema);
-            }
-            else {
-                Object.assign(schema, refSchema);
-            }
-            // restore child's own properties (child wins)
-            Object.assign(schema, _cached);
-            const isParentRef = zodSchema._zod.parent === ref;
-            // For parent chain, child is a refinement - remove parent-only properties
-            if (isParentRef) {
-                for (const key in schema) {
-                    if (key === "$ref" || key === "allOf")
-                        continue;
-                    if (!(key in _cached)) {
-                        delete schema[key];
-                    }
-                }
-            }
-            // When ref was extracted to $defs, remove properties that match the definition
-            if (refSchema.$ref && refSeen.def) {
-                for (const key in schema) {
-                    if (key === "$ref" || key === "allOf")
-                        continue;
-                    if (key in refSeen.def && JSON.stringify(schema[key]) === JSON.stringify(refSeen.def[key])) {
-                        delete schema[key];
-                    }
-                }
-            }
-        }
-        // If parent was extracted (has $ref), propagate $ref to this schema
-        // This handles cases like: readonly().meta({id}).describe()
-        // where processor sets ref to innerType but parent should be referenced
-        const parent = zodSchema._zod.parent;
-        if (parent && parent !== ref) {
-            // Ensure parent is processed first so its def has inherited properties
-            flattenRef(parent);
-            const parentSeen = ctx.seen.get(parent);
-            if (parentSeen?.schema.$ref) {
-                schema.$ref = parentSeen.schema.$ref;
-                // De-duplicate with parent's definition
-                if (parentSeen.def) {
-                    for (const key in schema) {
-                        if (key === "$ref" || key === "allOf")
-                            continue;
-                        if (key in parentSeen.def && JSON.stringify(schema[key]) === JSON.stringify(parentSeen.def[key])) {
-                            delete schema[key];
-                        }
-                    }
-                }
-            }
-        }
-        // execute overrides
-        ctx.override({
-            zodSchema: zodSchema,
-            jsonSchema: schema,
-            path: seen.path ?? [],
-        });
-    };
-    for (const entry of [...ctx.seen.entries()].reverse()) {
-        flattenRef(entry[0]);
-    }
-    const result = {};
-    if (ctx.target === "draft-2020-12") {
-        result.$schema = "https://json-schema.org/draft/2020-12/schema";
-    }
-    else if (ctx.target === "draft-07") {
-        result.$schema = "http://json-schema.org/draft-07/schema#";
-    }
-    else if (ctx.target === "draft-04") {
-        result.$schema = "http://json-schema.org/draft-04/schema#";
-    }
-    else if (ctx.target === "openapi-3.0") {
-        // OpenAPI 3.0 schema objects should not include a $schema property
-    }
-    else {
-        // Arbitrary string values are allowed but won't have a $schema property set
-    }
-    if (ctx.external?.uri) {
-        const id = ctx.external.registry.get(schema)?.id;
-        if (!id)
-            throw new Error("Schema is missing an `id` property");
-        result.$id = ctx.external.uri(id);
-    }
-    Object.assign(result, root.def ?? root.schema);
-    // build defs object
-    const defs = ctx.external?.defs ?? {};
-    for (const entry of ctx.seen.entries()) {
-        const seen = entry[1];
-        if (seen.def && seen.defId) {
-            defs[seen.defId] = seen.def;
-        }
-    }
-    // set definitions in result
-    if (ctx.external) {
-    }
-    else {
-        if (Object.keys(defs).length > 0) {
-            if (ctx.target === "draft-2020-12") {
-                result.$defs = defs;
-            }
-            else {
-                result.definitions = defs;
-            }
-        }
-    }
-    try {
-        // this "finalizes" this schema and ensures all cycles are removed
-        // each call to finalize() is functionally independent
-        // though the seen map is shared
-        const finalized = JSON.parse(JSON.stringify(result));
-        Object.defineProperty(finalized, "~standard", {
-            value: {
-                ...schema["~standard"],
-                jsonSchema: {
-                    input: createStandardJSONSchemaMethod(schema, "input", ctx.processors),
-                    output: createStandardJSONSchemaMethod(schema, "output", ctx.processors),
-                },
-            },
-            enumerable: false,
-            writable: false,
-        });
-        return finalized;
-    }
-    catch (_err) {
-        throw new Error("Error converting schema to JSON.");
-    }
-}
-function isTransforming(_schema, _ctx) {
-    const ctx = _ctx ?? { seen: new Set() };
-    if (ctx.seen.has(_schema))
-        return false;
-    ctx.seen.add(_schema);
-    const def = _schema._zod.def;
-    if (def.type === "transform")
-        return true;
-    if (def.type === "array")
-        return isTransforming(def.element, ctx);
-    if (def.type === "set")
-        return isTransforming(def.valueType, ctx);
-    if (def.type === "lazy")
-        return isTransforming(def.getter(), ctx);
-    if (def.type === "promise" ||
-        def.type === "optional" ||
-        def.type === "nonoptional" ||
-        def.type === "nullable" ||
-        def.type === "readonly" ||
-        def.type === "default" ||
-        def.type === "prefault") {
-        return isTransforming(def.innerType, ctx);
-    }
-    if (def.type === "intersection") {
-        return isTransforming(def.left, ctx) || isTransforming(def.right, ctx);
-    }
-    if (def.type === "record" || def.type === "map") {
-        return isTransforming(def.keyType, ctx) || isTransforming(def.valueType, ctx);
-    }
-    if (def.type === "pipe") {
-        return isTransforming(def.in, ctx) || isTransforming(def.out, ctx);
-    }
-    if (def.type === "object") {
-        for (const key in def.shape) {
-            if (isTransforming(def.shape[key], ctx))
-                return true;
-        }
-        return false;
-    }
-    if (def.type === "union") {
-        for (const option of def.options) {
-            if (isTransforming(option, ctx))
-                return true;
-        }
-        return false;
-    }
-    if (def.type === "tuple") {
-        for (const item of def.items) {
-            if (isTransforming(item, ctx))
-                return true;
-        }
-        if (def.rest && isTransforming(def.rest, ctx))
-            return true;
-        return false;
-    }
-    return false;
-}
-/**
- * Creates a toJSONSchema method for a schema instance.
- * This encapsulates the logic of initializing context, processing, extracting defs, and finalizing.
- */
-const createToJSONSchemaMethod = (schema, processors = {}) => (params) => {
-    const ctx = to_json_schema_initializeContext({ ...params, processors });
-    to_json_schema_process(schema, ctx);
-    to_json_schema_extractDefs(ctx, schema);
-    return to_json_schema_finalize(ctx, schema);
-};
-const createStandardJSONSchemaMethod = (schema, io, processors = {}) => (params) => {
-    const { libraryOptions, target } = params ?? {};
-    const ctx = to_json_schema_initializeContext({ ...(libraryOptions ?? {}), target, io, processors });
-    to_json_schema_process(schema, ctx);
-    to_json_schema_extractDefs(ctx, schema);
-    return to_json_schema_finalize(ctx, schema);
-};
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/json-schema-processors.js
-
-
-const formatMap = (/* unused pure expression or super */ null && ({
-    guid: "uuid",
-    url: "uri",
-    datetime: "date-time",
-    json_string: "json-string",
-    regex: "", // do not set
-}));
-// ==================== SIMPLE TYPE PROCESSORS ====================
-const stringProcessor = (schema, ctx, _json, _params) => {
-    const json = _json;
-    json.type = "string";
-    const { minimum, maximum, format, patterns, contentEncoding } = schema._zod
-        .bag;
-    if (typeof minimum === "number")
-        json.minLength = minimum;
-    if (typeof maximum === "number")
-        json.maxLength = maximum;
-    // custom pattern overrides format
-    if (format) {
-        json.format = formatMap[format] ?? format;
-        if (json.format === "")
-            delete json.format; // empty format is not valid
-        // JSON Schema format: "time" requires a full time with offset or Z
-        // z.iso.time() does not include timezone information, so format: "time" should never be used
-        if (format === "time") {
-            delete json.format;
-        }
-    }
-    if (contentEncoding)
-        json.contentEncoding = contentEncoding;
-    if (patterns && patterns.size > 0) {
-        const regexes = [...patterns];
-        if (regexes.length === 1)
-            json.pattern = regexes[0].source;
-        else if (regexes.length > 1) {
-            json.allOf = [
-                ...regexes.map((regex) => ({
-                    ...(ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0"
-                        ? { type: "string" }
-                        : {}),
-                    pattern: regex.source,
-                })),
-            ];
-        }
-    }
-};
-const numberProcessor = (schema, ctx, _json, _params) => {
-    const json = _json;
-    const { minimum, maximum, format, multipleOf, exclusiveMaximum, exclusiveMinimum } = schema._zod.bag;
-    if (typeof format === "string" && format.includes("int"))
-        json.type = "integer";
-    else
-        json.type = "number";
-    if (typeof exclusiveMinimum === "number") {
-        if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
-            json.minimum = exclusiveMinimum;
-            json.exclusiveMinimum = true;
-        }
-        else {
-            json.exclusiveMinimum = exclusiveMinimum;
-        }
-    }
-    if (typeof minimum === "number") {
-        json.minimum = minimum;
-        if (typeof exclusiveMinimum === "number" && ctx.target !== "draft-04") {
-            if (exclusiveMinimum >= minimum)
-                delete json.minimum;
-            else
-                delete json.exclusiveMinimum;
-        }
-    }
-    if (typeof exclusiveMaximum === "number") {
-        if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
-            json.maximum = exclusiveMaximum;
-            json.exclusiveMaximum = true;
-        }
-        else {
-            json.exclusiveMaximum = exclusiveMaximum;
-        }
-    }
-    if (typeof maximum === "number") {
-        json.maximum = maximum;
-        if (typeof exclusiveMaximum === "number" && ctx.target !== "draft-04") {
-            if (exclusiveMaximum <= maximum)
-                delete json.maximum;
-            else
-                delete json.exclusiveMaximum;
-        }
-    }
-    if (typeof multipleOf === "number")
-        json.multipleOf = multipleOf;
-};
-const booleanProcessor = (_schema, _ctx, json, _params) => {
-    json.type = "boolean";
-};
-const bigintProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("BigInt cannot be represented in JSON Schema");
-    }
-};
-const symbolProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Symbols cannot be represented in JSON Schema");
-    }
-};
-const nullProcessor = (_schema, ctx, json, _params) => {
-    if (ctx.target === "openapi-3.0") {
-        json.type = "string";
-        json.nullable = true;
-        json.enum = [null];
-    }
-    else {
-        json.type = "null";
-    }
-};
-const undefinedProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Undefined cannot be represented in JSON Schema");
-    }
-};
-const voidProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Void cannot be represented in JSON Schema");
-    }
-};
-const neverProcessor = (_schema, _ctx, json, _params) => {
-    json.not = {};
-};
-const anyProcessor = (_schema, _ctx, _json, _params) => {
-    // empty schema accepts anything
-};
-const unknownProcessor = (_schema, _ctx, _json, _params) => {
-    // empty schema accepts anything
-};
-const dateProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Date cannot be represented in JSON Schema");
-    }
-};
-const enumProcessor = (schema, _ctx, json, _params) => {
-    const def = schema._zod.def;
-    const values = getEnumValues(def.entries);
-    // Number enums can have both string and number values
-    if (values.every((v) => typeof v === "number"))
-        json.type = "number";
-    if (values.every((v) => typeof v === "string"))
-        json.type = "string";
-    json.enum = values;
-};
-const literalProcessor = (schema, ctx, json, _params) => {
-    const def = schema._zod.def;
-    const vals = [];
-    for (const val of def.values) {
-        if (val === undefined) {
-            if (ctx.unrepresentable === "throw") {
-                throw new Error("Literal `undefined` cannot be represented in JSON Schema");
-            }
-            else {
-                // do not add to vals
-            }
-        }
-        else if (typeof val === "bigint") {
-            if (ctx.unrepresentable === "throw") {
-                throw new Error("BigInt literals cannot be represented in JSON Schema");
-            }
-            else {
-                vals.push(Number(val));
-            }
-        }
-        else {
-            vals.push(val);
-        }
-    }
-    if (vals.length === 0) {
-        // do nothing (an undefined literal was stripped)
-    }
-    else if (vals.length === 1) {
-        const val = vals[0];
-        json.type = val === null ? "null" : typeof val;
-        if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
-            json.enum = [val];
-        }
-        else {
-            json.const = val;
-        }
-    }
-    else {
-        if (vals.every((v) => typeof v === "number"))
-            json.type = "number";
-        if (vals.every((v) => typeof v === "string"))
-            json.type = "string";
-        if (vals.every((v) => typeof v === "boolean"))
-            json.type = "boolean";
-        if (vals.every((v) => v === null))
-            json.type = "null";
-        json.enum = vals;
-    }
-};
-const nanProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("NaN cannot be represented in JSON Schema");
-    }
-};
-const templateLiteralProcessor = (schema, _ctx, json, _params) => {
-    const _json = json;
-    const pattern = schema._zod.pattern;
-    if (!pattern)
-        throw new Error("Pattern not found in template literal");
-    _json.type = "string";
-    _json.pattern = pattern.source;
-};
-const fileProcessor = (schema, _ctx, json, _params) => {
-    const _json = json;
-    const file = {
-        type: "string",
-        format: "binary",
-        contentEncoding: "binary",
-    };
-    const { minimum, maximum, mime } = schema._zod.bag;
-    if (minimum !== undefined)
-        file.minLength = minimum;
-    if (maximum !== undefined)
-        file.maxLength = maximum;
-    if (mime) {
-        if (mime.length === 1) {
-            file.contentMediaType = mime[0];
-            Object.assign(_json, file);
-        }
-        else {
-            Object.assign(_json, file); // shared props at root
-            _json.anyOf = mime.map((m) => ({ contentMediaType: m })); // only contentMediaType differs
-        }
-    }
-    else {
-        Object.assign(_json, file);
-    }
-};
-const successProcessor = (_schema, _ctx, json, _params) => {
-    json.type = "boolean";
-};
-const customProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Custom types cannot be represented in JSON Schema");
-    }
-};
-const functionProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Function types cannot be represented in JSON Schema");
-    }
-};
-const transformProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Transforms cannot be represented in JSON Schema");
-    }
-};
-const mapProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Map cannot be represented in JSON Schema");
-    }
-};
-const setProcessor = (_schema, ctx, _json, _params) => {
-    if (ctx.unrepresentable === "throw") {
-        throw new Error("Set cannot be represented in JSON Schema");
-    }
-};
-// ==================== COMPOSITE TYPE PROCESSORS ====================
-const arrayProcessor = (schema, ctx, _json, params) => {
-    const json = _json;
-    const def = schema._zod.def;
-    const { minimum, maximum } = schema._zod.bag;
-    if (typeof minimum === "number")
-        json.minItems = minimum;
-    if (typeof maximum === "number")
-        json.maxItems = maximum;
-    json.type = "array";
-    json.items = process(def.element, ctx, { ...params, path: [...params.path, "items"] });
-};
-const objectProcessor = (schema, ctx, _json, params) => {
-    const json = _json;
-    const def = schema._zod.def;
-    json.type = "object";
-    json.properties = {};
-    const shape = def.shape;
-    for (const key in shape) {
-        json.properties[key] = process(shape[key], ctx, {
-            ...params,
-            path: [...params.path, "properties", key],
-        });
-    }
-    // required keys
-    const allKeys = new Set(Object.keys(shape));
-    const requiredKeys = new Set([...allKeys].filter((key) => {
-        const v = def.shape[key]._zod;
-        if (ctx.io === "input") {
-            return v.optin === undefined;
-        }
-        else {
-            return v.optout === undefined;
-        }
-    }));
-    if (requiredKeys.size > 0) {
-        json.required = Array.from(requiredKeys);
-    }
-    // catchall
-    if (def.catchall?._zod.def.type === "never") {
-        // strict
-        json.additionalProperties = false;
-    }
-    else if (!def.catchall) {
-        // regular
-        if (ctx.io === "output")
-            json.additionalProperties = false;
-    }
-    else if (def.catchall) {
-        json.additionalProperties = process(def.catchall, ctx, {
-            ...params,
-            path: [...params.path, "additionalProperties"],
-        });
-    }
-};
-const unionProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    // Exclusive unions (inclusive === false) use oneOf (exactly one match) instead of anyOf (one or more matches)
-    // This includes both z.xor() and discriminated unions
-    const isExclusive = def.inclusive === false;
-    const options = def.options.map((x, i) => process(x, ctx, {
-        ...params,
-        path: [...params.path, isExclusive ? "oneOf" : "anyOf", i],
-    }));
-    if (isExclusive) {
-        json.oneOf = options;
-    }
-    else {
-        json.anyOf = options;
-    }
-};
-const intersectionProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    const a = process(def.left, ctx, {
-        ...params,
-        path: [...params.path, "allOf", 0],
-    });
-    const b = process(def.right, ctx, {
-        ...params,
-        path: [...params.path, "allOf", 1],
-    });
-    const isSimpleIntersection = (val) => "allOf" in val && Object.keys(val).length === 1;
-    const allOf = [
-        ...(isSimpleIntersection(a) ? a.allOf : [a]),
-        ...(isSimpleIntersection(b) ? b.allOf : [b]),
-    ];
-    json.allOf = allOf;
-};
-const tupleProcessor = (schema, ctx, _json, params) => {
-    const json = _json;
-    const def = schema._zod.def;
-    json.type = "array";
-    const prefixPath = ctx.target === "draft-2020-12" ? "prefixItems" : "items";
-    const restPath = ctx.target === "draft-2020-12" ? "items" : ctx.target === "openapi-3.0" ? "items" : "additionalItems";
-    const prefixItems = def.items.map((x, i) => process(x, ctx, {
-        ...params,
-        path: [...params.path, prefixPath, i],
-    }));
-    const rest = def.rest
-        ? process(def.rest, ctx, {
-            ...params,
-            path: [...params.path, restPath, ...(ctx.target === "openapi-3.0" ? [def.items.length] : [])],
-        })
-        : null;
-    if (ctx.target === "draft-2020-12") {
-        json.prefixItems = prefixItems;
-        if (rest) {
-            json.items = rest;
-        }
-    }
-    else if (ctx.target === "openapi-3.0") {
-        json.items = {
-            anyOf: prefixItems,
-        };
-        if (rest) {
-            json.items.anyOf.push(rest);
-        }
-        json.minItems = prefixItems.length;
-        if (!rest) {
-            json.maxItems = prefixItems.length;
-        }
-    }
-    else {
-        json.items = prefixItems;
-        if (rest) {
-            json.additionalItems = rest;
-        }
-    }
-    // length
-    const { minimum, maximum } = schema._zod.bag;
-    if (typeof minimum === "number")
-        json.minItems = minimum;
-    if (typeof maximum === "number")
-        json.maxItems = maximum;
-};
-const recordProcessor = (schema, ctx, _json, params) => {
-    const json = _json;
-    const def = schema._zod.def;
-    json.type = "object";
-    // For looseRecord with regex patterns, use patternProperties
-    // This correctly represents "only validate keys matching the pattern" semantics
-    // and composes well with allOf (intersections)
-    const keyType = def.keyType;
-    const keyBag = keyType._zod.bag;
-    const patterns = keyBag?.patterns;
-    if (def.mode === "loose" && patterns && patterns.size > 0) {
-        // Use patternProperties for looseRecord with regex patterns
-        const valueSchema = process(def.valueType, ctx, {
-            ...params,
-            path: [...params.path, "patternProperties", "*"],
-        });
-        json.patternProperties = {};
-        for (const pattern of patterns) {
-            json.patternProperties[pattern.source] = valueSchema;
-        }
-    }
-    else {
-        // Default behavior: use propertyNames + additionalProperties
-        if (ctx.target === "draft-07" || ctx.target === "draft-2020-12") {
-            json.propertyNames = process(def.keyType, ctx, {
-                ...params,
-                path: [...params.path, "propertyNames"],
-            });
-        }
-        json.additionalProperties = process(def.valueType, ctx, {
-            ...params,
-            path: [...params.path, "additionalProperties"],
-        });
-    }
-    // Add required for keys with discrete values (enum, literal, etc.)
-    const keyValues = keyType._zod.values;
-    if (keyValues) {
-        const validKeyValues = [...keyValues].filter((v) => typeof v === "string" || typeof v === "number");
-        if (validKeyValues.length > 0) {
-            json.required = validKeyValues;
-        }
-    }
-};
-const nullableProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    const inner = process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    if (ctx.target === "openapi-3.0") {
-        seen.ref = def.innerType;
-        json.nullable = true;
-    }
-    else {
-        json.anyOf = [inner, { type: "null" }];
-    }
-};
-const nonoptionalProcessor = (schema, ctx, _json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-};
-const defaultProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-    json.default = JSON.parse(JSON.stringify(def.defaultValue));
-};
-const prefaultProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-    if (ctx.io === "input")
-        json._prefault = JSON.parse(JSON.stringify(def.defaultValue));
-};
-const catchProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-    let catchValue;
-    try {
-        catchValue = def.catchValue(undefined);
-    }
-    catch {
-        throw new Error("Dynamic catch values are not supported in JSON Schema");
-    }
-    json.default = catchValue;
-};
-const pipeProcessor = (schema, ctx, _json, params) => {
-    const def = schema._zod.def;
-    const innerType = ctx.io === "input" ? (def.in._zod.def.type === "transform" ? def.out : def.in) : def.out;
-    process(innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = innerType;
-};
-const readonlyProcessor = (schema, ctx, json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-    json.readOnly = true;
-};
-const promiseProcessor = (schema, ctx, _json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-};
-const optionalProcessor = (schema, ctx, _json, params) => {
-    const def = schema._zod.def;
-    process(def.innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = def.innerType;
-};
-const lazyProcessor = (schema, ctx, _json, params) => {
-    const innerType = schema._zod.innerType;
-    process(innerType, ctx, params);
-    const seen = ctx.seen.get(schema);
-    seen.ref = innerType;
-};
-// ==================== ALL PROCESSORS ====================
-const json_schema_processors_allProcessors = (/* unused pure expression or super */ null && ({
-    string: stringProcessor,
-    number: numberProcessor,
-    boolean: booleanProcessor,
-    bigint: bigintProcessor,
-    symbol: symbolProcessor,
-    null: nullProcessor,
-    undefined: undefinedProcessor,
-    void: voidProcessor,
-    never: neverProcessor,
-    any: anyProcessor,
-    unknown: unknownProcessor,
-    date: dateProcessor,
-    enum: enumProcessor,
-    literal: literalProcessor,
-    nan: nanProcessor,
-    template_literal: templateLiteralProcessor,
-    file: fileProcessor,
-    success: successProcessor,
-    custom: customProcessor,
-    function: functionProcessor,
-    transform: transformProcessor,
-    map: mapProcessor,
-    set: setProcessor,
-    array: arrayProcessor,
-    object: objectProcessor,
-    union: unionProcessor,
-    intersection: intersectionProcessor,
-    tuple: tupleProcessor,
-    record: recordProcessor,
-    nullable: nullableProcessor,
-    nonoptional: nonoptionalProcessor,
-    default: defaultProcessor,
-    prefault: prefaultProcessor,
-    catch: catchProcessor,
-    pipe: pipeProcessor,
-    readonly: readonlyProcessor,
-    promise: promiseProcessor,
-    optional: optionalProcessor,
-    lazy: lazyProcessor,
-}));
-function toJSONSchema(input, params) {
-    if ("_idmap" in input) {
-        // Registry case
-        const registry = input;
-        const ctx = initializeContext({ ...params, processors: json_schema_processors_allProcessors });
-        const defs = {};
-        // First pass: process all schemas to build the seen map
-        for (const entry of registry._idmap.entries()) {
-            const [_, schema] = entry;
-            process(schema, ctx);
-        }
-        const schemas = {};
-        const external = {
-            registry,
-            uri: params?.uri,
-            defs,
-        };
-        // Update the context with external configuration
-        ctx.external = external;
-        // Second pass: emit each schema
-        for (const entry of registry._idmap.entries()) {
-            const [key, schema] = entry;
-            extractDefs(ctx, schema);
-            schemas[key] = finalize(ctx, schema);
-        }
-        if (Object.keys(defs).length > 0) {
-            const defsSegment = ctx.target === "draft-2020-12" ? "$defs" : "definitions";
-            schemas.__shared = {
-                [defsSegment]: defs,
+        return this._map = new WeakMap(), this._idmap = new Map(), this;
+    }
+    remove(e) {
+        let t = this._map.get(e);
+        return t && "object" == typeof t && "id" in t && this._idmap.delete(t.id), this._map.delete(e), this;
+    }
+    get(e) {
+        let t = e._zod.parent;
+        if (t) {
+            let n = {
+                ...this.get(t) ?? {}
             };
+            delete n.id;
+            let r = {
+                ...n,
+                ...this._map.get(e)
+            };
+            return Object.keys(r).length ? r : void 0;
         }
-        return { schemas };
+        return this._map.get(e);
     }
-    // Single schema case
-    const ctx = initializeContext({ ...params, processors: json_schema_processors_allProcessors });
-    process(input, ctx);
-    extractDefs(ctx, input);
-    return finalize(ctx, input);
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/json-schema-generator.js
-
-
-/**
- * Legacy class-based interface for JSON Schema generation.
- * This class wraps the new functional implementation to provide backward compatibility.
- *
- * @deprecated Use the `toJSONSchema` function instead for new code.
- *
- * @example
- * ```typescript
- * // Legacy usage (still supported)
- * const gen = new JSONSchemaGenerator({ target: "draft-07" });
- * gen.process(schema);
- * const result = gen.emit(schema);
- *
- * // Preferred modern usage
- * const result = toJSONSchema(schema, { target: "draft-07" });
- * ```
- */
-class JSONSchemaGenerator {
-    /** @deprecated Access via ctx instead */
-    get metadataRegistry() {
-        return this.ctx.metadataRegistry;
+    has(e) {
+        return this._map.has(e);
     }
-    /** @deprecated Access via ctx instead */
-    get target() {
-        return this.ctx.target;
-    }
-    /** @deprecated Access via ctx instead */
-    get unrepresentable() {
-        return this.ctx.unrepresentable;
-    }
-    /** @deprecated Access via ctx instead */
-    get override() {
-        return this.ctx.override;
-    }
-    /** @deprecated Access via ctx instead */
-    get io() {
-        return this.ctx.io;
-    }
-    /** @deprecated Access via ctx instead */
-    get counter() {
-        return this.ctx.counter;
-    }
-    set counter(value) {
-        this.ctx.counter = value;
-    }
-    /** @deprecated Access via ctx instead */
-    get seen() {
-        return this.ctx.seen;
-    }
-    constructor(params) {
-        // Normalize target for internal context
-        let normalizedTarget = params?.target ?? "draft-2020-12";
-        if (normalizedTarget === "draft-4")
-            normalizedTarget = "draft-04";
-        if (normalizedTarget === "draft-7")
-            normalizedTarget = "draft-07";
-        this.ctx = initializeContext({
-            processors: allProcessors,
-            target: normalizedTarget,
-            ...(params?.metadata && { metadata: params.metadata }),
-            ...(params?.unrepresentable && { unrepresentable: params.unrepresentable }),
-            ...(params?.override && { override: params.override }),
-            ...(params?.io && { io: params.io }),
-        });
-    }
-    /**
-     * Process a schema to prepare it for JSON Schema generation.
-     * This must be called before emit().
-     */
-    process(schema, _params = { path: [], schemaPath: [] }) {
-        return process(schema, this.ctx, _params);
-    }
-    /**
-     * Emit the final JSON Schema after processing.
-     * Must call process() first.
-     */
-    emit(schema, _params) {
-        // Apply emit params to the context
-        if (_params) {
-            if (_params.cycles)
-                this.ctx.cycles = _params.cycles;
-            if (_params.reused)
-                this.ctx.reused = _params.reused;
-            if (_params.external)
-                this.ctx.external = _params.external;
-        }
-        extractDefs(this.ctx, schema);
-        const result = finalize(this.ctx, schema);
-        // Strip ~standard property to match old implementation's return type
-        const { "~standard": _, ...plainResult } = result;
-        return plainResult;
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/core/index.js
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/mini/parse.js
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/mini/schemas.js
-
-
-
-const ZodMiniType = /*@__PURE__*/ $constructor("ZodMiniType", (inst, def) => {
-    if (!inst._zod)
-        throw new Error("Uninitialized schema in ZodMiniType.");
-    $ZodType.init(inst, def);
-    inst.def = def;
-    inst.type = def.type;
-    inst.parse = (data, params) => parse_parse(inst, data, params, { callee: inst.parse });
-    inst.safeParse = (data, params) => safeParse(inst, data, params);
-    inst.parseAsync = async (data, params) => parse_parseAsync(inst, data, params, { callee: inst.parseAsync });
-    inst.safeParseAsync = async (data, params) => safeParseAsync(inst, data, params);
-    inst.check = (...checks) => {
-        return inst.clone({
-            ...def,
+}());
+const ec = s("ZodMiniType", (e, t)=>{
+    if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
+    F.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>N(e, t, n, {
+            callee: e.parse
+        }), e.safeParse = (t, n)=>M(e, t, n), e.parseAsync = async (t, n)=>A(e, t, n, {
+            callee: e.parseAsync
+        }), e.safeParseAsync = async (t, n)=>D(e, t, n), e.check = (...n)=>e.clone({
+            ...t,
             checks: [
-                ...(def.checks ?? []),
-                ...checks.map((ch) => typeof ch === "function" ? { _zod: { check: ch, def: { check: "custom" }, onattach: [] } } : ch),
-            ],
-        }, { parent: true });
-    };
-    inst.with = inst.check;
-    inst.clone = (_def, params) => clone(inst, _def, params);
-    inst.brand = () => inst;
-    inst.register = ((reg, meta) => {
-        reg.add(inst, meta);
-        return inst;
-    });
-    inst.apply = (fn) => fn(inst);
+                ...t.checks ?? [],
+                ...n.map((e)=>"function" == typeof e ? {
+                        _zod: {
+                            check: e,
+                            def: {
+                                check: "custom"
+                            },
+                            onattach: []
+                        }
+                    } : e)
+            ]
+        }, {
+            parent: !0
+        }), e.with = e.check, e.clone = (t, n)=>k(e, t, n), e.brand = ()=>e, e.register = (t, n)=>(t.add(e, n), e), e.apply = (t)=>t(e);
+}), eu = s("ZodMiniString", (e, t)=>{
+    q.init(e, t), ec.init(e, t);
 });
-const ZodMiniString = /*@__PURE__*/ $constructor("ZodMiniString", (inst, def) => {
-    $ZodString.init(inst, def);
-    ZodMiniType.init(inst, def);
-});
-// @__NO_SIDE_EFFECTS__
-function schemas_string(params) {
-    return _string(ZodMiniString, params);
-}
-const ZodMiniStringFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniStringFormat", (inst, def) => {
-    core.$ZodStringFormat.init(inst, def);
-    ZodMiniString.init(inst, def);
-})));
-const ZodMiniEmail = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniEmail", (inst, def) => {
-    core.$ZodEmail.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_email(params) {
-    return core._email(ZodMiniEmail, params);
-}
-const ZodMiniGUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniGUID", (inst, def) => {
-    core.$ZodGUID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_guid(params) {
-    return core._guid(ZodMiniGUID, params);
-}
-const ZodMiniUUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniUUID", (inst, def) => {
-    core.$ZodUUID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_uuid(params) {
-    return core._uuid(ZodMiniUUID, params);
-}
-// @__NO_SIDE_EFFECTS__
-function uuidv4(params) {
-    return core._uuidv4(ZodMiniUUID, params);
-}
-// ZodMiniUUIDv6
-// @__NO_SIDE_EFFECTS__
-function uuidv6(params) {
-    return core._uuidv6(ZodMiniUUID, params);
-}
-// ZodMiniUUIDv7
-// @__NO_SIDE_EFFECTS__
-function uuidv7(params) {
-    return core._uuidv7(ZodMiniUUID, params);
-}
-const ZodMiniURL = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniURL", (inst, def) => {
-    core.$ZodURL.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_url(params) {
-    return core._url(ZodMiniURL, params);
-}
-// @__NO_SIDE_EFFECTS__
-function httpUrl(params) {
-    return core._url(ZodMiniURL, {
-        protocol: /^https?$/,
-        hostname: core.regexes.domain,
-        ...util.normalizeParams(params),
+function ep(e) {
+    return new eu({
+        type: "string",
+        ...$(e)
     });
 }
-const ZodMiniEmoji = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniEmoji", (inst, def) => {
-    core.$ZodEmoji.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_emoji(params) {
-    return core._emoji(ZodMiniEmoji, params);
-}
-const ZodMiniNanoID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniNanoID", (inst, def) => {
-    core.$ZodNanoID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_nanoid(params) {
-    return core._nanoid(ZodMiniNanoID, params);
-}
-const ZodMiniCUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCUID", (inst, def) => {
-    core.$ZodCUID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_cuid(params) {
-    return core._cuid(ZodMiniCUID, params);
-}
-const ZodMiniCUID2 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCUID2", (inst, def) => {
-    core.$ZodCUID2.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_cuid2(params) {
-    return core._cuid2(ZodMiniCUID2, params);
-}
-const ZodMiniULID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniULID", (inst, def) => {
-    core.$ZodULID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_ulid(params) {
-    return core._ulid(ZodMiniULID, params);
-}
-const ZodMiniXID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniXID", (inst, def) => {
-    core.$ZodXID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_xid(params) {
-    return core._xid(ZodMiniXID, params);
-}
-const ZodMiniKSUID = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniKSUID", (inst, def) => {
-    core.$ZodKSUID.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_ksuid(params) {
-    return core._ksuid(ZodMiniKSUID, params);
-}
-const ZodMiniIPv4 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniIPv4", (inst, def) => {
-    core.$ZodIPv4.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_ipv4(params) {
-    return core._ipv4(ZodMiniIPv4, params);
-}
-const ZodMiniIPv6 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniIPv6", (inst, def) => {
-    core.$ZodIPv6.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_ipv6(params) {
-    return core._ipv6(ZodMiniIPv6, params);
-}
-const ZodMiniCIDRv4 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCIDRv4", (inst, def) => {
-    core.$ZodCIDRv4.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_cidrv4(params) {
-    return core._cidrv4(ZodMiniCIDRv4, params);
-}
-const ZodMiniCIDRv6 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCIDRv6", (inst, def) => {
-    core.$ZodCIDRv6.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_cidrv6(params) {
-    return core._cidrv6(ZodMiniCIDRv6, params);
-}
-const ZodMiniMAC = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniMAC", (inst, def) => {
-    core.$ZodMAC.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_mac(params) {
-    return core._mac(ZodMiniMAC, params);
-}
-const ZodMiniBase64 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniBase64", (inst, def) => {
-    core.$ZodBase64.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_base64(params) {
-    return core._base64(ZodMiniBase64, params);
-}
-const ZodMiniBase64URL = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniBase64URL", (inst, def) => {
-    core.$ZodBase64URL.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_base64url(params) {
-    return core._base64url(ZodMiniBase64URL, params);
-}
-const ZodMiniE164 = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniE164", (inst, def) => {
-    core.$ZodE164.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_e164(params) {
-    return core._e164(ZodMiniE164, params);
-}
-const ZodMiniJWT = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniJWT", (inst, def) => {
-    core.$ZodJWT.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function jwt(params) {
-    return core._jwt(ZodMiniJWT, params);
-}
-const ZodMiniCustomStringFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCustomStringFormat", (inst, def) => {
-    core.$ZodCustomStringFormat.init(inst, def);
-    ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function stringFormat(format, fnOrRegex, _params = {}) {
-    return core._stringFormat(ZodMiniCustomStringFormat, format, fnOrRegex, _params);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_hostname(_params) {
-    return core._stringFormat(ZodMiniCustomStringFormat, "hostname", core.regexes.hostname, _params);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_hex(_params) {
-    return core._stringFormat(ZodMiniCustomStringFormat, "hex", core.regexes.hex, _params);
-}
-// @__NO_SIDE_EFFECTS__
-function hash(alg, params) {
-    const enc = params?.enc ?? "hex";
-    const format = `${alg}_${enc}`;
-    const regex = core.regexes[format];
-    // check for unrecognized format
-    if (!regex)
-        throw new Error(`Unrecognized hash format: ${format}`);
-    return core._stringFormat(ZodMiniCustomStringFormat, format, regex, params);
-}
-const ZodMiniNumber = /*@__PURE__*/ $constructor("ZodMiniNumber", (inst, def) => {
-    $ZodNumber.init(inst, def);
-    ZodMiniType.init(inst, def);
+const e_ = s("ZodMiniNumber", (e, t)=>{
+    W.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function schemas_number(params) {
-    return _number(ZodMiniNumber, params);
+function ef(e) {
+    return new e_({
+        type: "number",
+        checks: [],
+        ...$(e)
+    });
 }
-const ZodMiniNumberFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniNumberFormat", (inst, def) => {
-    core.$ZodNumberFormat.init(inst, def);
-    ZodMiniNumber.init(inst, def);
-})));
-// int
-// @__NO_SIDE_EFFECTS__
-function schemas_int(params) {
-    return core._int(ZodMiniNumberFormat, params);
-}
-// float32
-// @__NO_SIDE_EFFECTS__
-function float32(params) {
-    return core._float32(ZodMiniNumberFormat, params);
-}
-// float64
-// @__NO_SIDE_EFFECTS__
-function float64(params) {
-    return core._float64(ZodMiniNumberFormat, params);
-}
-// int32
-// @__NO_SIDE_EFFECTS__
-function int32(params) {
-    return core._int32(ZodMiniNumberFormat, params);
-}
-// uint32
-// @__NO_SIDE_EFFECTS__
-function uint32(params) {
-    return core._uint32(ZodMiniNumberFormat, params);
-}
-const ZodMiniBoolean = /*@__PURE__*/ $constructor("ZodMiniBoolean", (inst, def) => {
-    $ZodBoolean.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eh = s("ZodMiniBoolean", (e, t)=>{
+    V.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function schemas_boolean(params) {
-    return _boolean(ZodMiniBoolean, params);
+function eg(e) {
+    return new eh({
+        type: "boolean",
+        ...$(e)
+    });
 }
-const ZodMiniBigInt = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniBigInt", (inst, def) => {
-    core.$ZodBigInt.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_bigint(params) {
-    return core._bigint(ZodMiniBigInt, params);
-}
-const ZodMiniBigIntFormat = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniBigIntFormat", (inst, def) => {
-    core.$ZodBigIntFormat.init(inst, def);
-    ZodMiniBigInt.init(inst, def);
-})));
-// int64
-// @__NO_SIDE_EFFECTS__
-function int64(params) {
-    return core._int64(ZodMiniBigIntFormat, params);
-}
-// uint64
-// @__NO_SIDE_EFFECTS__
-function uint64(params) {
-    return core._uint64(ZodMiniBigIntFormat, params);
-}
-const ZodMiniSymbol = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniSymbol", (inst, def) => {
-    core.$ZodSymbol.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function symbol(params) {
-    return core._symbol(ZodMiniSymbol, params);
-}
-const ZodMiniUndefined = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniUndefined", (inst, def) => {
-    core.$ZodUndefined.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_undefined(params) {
-    return core._undefined(ZodMiniUndefined, params);
-}
-
-const ZodMiniNull = /*@__PURE__*/ $constructor("ZodMiniNull", (inst, def) => {
-    $ZodNull.init(inst, def);
-    ZodMiniType.init(inst, def);
+const ev = s("ZodMiniNull", (e, t)=>{
+    J.init(e, t), ec.init(e, t);
+}), em = s("ZodMiniNever", (e, t)=>{
+    G.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function schemas_null(params) {
-    return api_null(ZodMiniNull, params);
+function ey(e) {
+    return new em({
+        type: "never",
+        ...$(e)
+    });
 }
-
-const ZodMiniAny = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniAny", (inst, def) => {
-    core.$ZodAny.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function any() {
-    return core._any(ZodMiniAny);
-}
-const ZodMiniUnknown = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniUnknown", (inst, def) => {
-    core.$ZodUnknown.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function unknown() {
-    return core._unknown(ZodMiniUnknown);
-}
-const ZodMiniNever = /*@__PURE__*/ $constructor("ZodMiniNever", (inst, def) => {
-    $ZodNever.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eb = s("ZodMiniArray", (e, t)=>{
+    X.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function never(params) {
-    return _never(ZodMiniNever, params);
-}
-const ZodMiniVoid = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniVoid", (inst, def) => {
-    core.$ZodVoid.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_void(params) {
-    return core._void(ZodMiniVoid, params);
-}
-
-const ZodMiniDate = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniDate", (inst, def) => {
-    core.$ZodDate.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_date(params) {
-    return core._date(ZodMiniDate, params);
-}
-const ZodMiniArray = /*@__PURE__*/ $constructor("ZodMiniArray", (inst, def) => {
-    $ZodArray.init(inst, def);
-    ZodMiniType.init(inst, def);
-});
-// @__NO_SIDE_EFFECTS__
-function schemas_array(element, params) {
-    return new ZodMiniArray({
+function ew(e, t) {
+    return new eb({
         type: "array",
-        element: element,
-        ...normalizeParams(params),
+        element: e,
+        ...$(t)
     });
 }
-// .keyof
-// @__NO_SIDE_EFFECTS__
-function keyof(schema) {
-    const shape = schema._zod.def.shape;
-    return schemas_enum(Object.keys(shape));
-}
-const ZodMiniObject = /*@__PURE__*/ $constructor("ZodMiniObject", (inst, def) => {
-    $ZodObject.init(inst, def);
-    ZodMiniType.init(inst, def);
-    defineLazy(inst, "shape", () => def.shape);
+const ez = s("ZodMiniObject", (e, t)=>{
+    Q.init(e, t), ec.init(e, t), g(e, "shape", ()=>t.shape);
 });
-// @__NO_SIDE_EFFECTS__
-function schemas_object(shape, params) {
-    const def = {
+function ex(e, t) {
+    return new ez({
         type: "object",
-        shape: shape ?? {},
-        ...normalizeParams(params),
-    };
-    return new ZodMiniObject(def);
-}
-// strictObject
-// @__NO_SIDE_EFFECTS__
-function strictObject(shape, params) {
-    return new ZodMiniObject({
-        type: "object",
-        shape,
-        catchall: never(),
-        ...util.normalizeParams(params),
+        shape: e ?? {},
+        ...$(t)
     });
 }
-// looseObject
-// @__NO_SIDE_EFFECTS__
-function looseObject(shape, params) {
-    return new ZodMiniObject({
-        type: "object",
-        shape,
-        catchall: unknown(),
-        ...util.normalizeParams(params),
-    });
-}
-// object methods
-// @__NO_SIDE_EFFECTS__
-function schemas_extend(schema, shape) {
-    return extend(schema, shape);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_safeExtend(schema, shape) {
-    return util.safeExtend(schema, shape);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_merge(schema, shape) {
-    return util.extend(schema, shape);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_pick(schema, mask) {
-    return util.pick(schema, mask);
-}
-// .omit
-// @__NO_SIDE_EFFECTS__
-function schemas_omit(schema, mask) {
-    return util.omit(schema, mask);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_partial(schema, mask) {
-    return partial(ZodMiniOptional, schema, mask);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_required(schema, mask) {
-    return util.required(ZodMiniNonOptional, schema, mask);
-}
-// @__NO_SIDE_EFFECTS__
-function schemas_catchall(inst, catchall) {
-    return inst.clone({ ...inst._zod.def, catchall: catchall });
-}
-const ZodMiniUnion = /*@__PURE__*/ $constructor("ZodMiniUnion", (inst, def) => {
-    $ZodUnion.init(inst, def);
-    ZodMiniType.init(inst, def);
+const ek = s("ZodMiniUnion", (e, t)=>{
+    ee.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function union(options, params) {
-    return new ZodMiniUnion({
+function e$(e, t) {
+    return new ek({
         type: "union",
-        options: options,
-        ...normalizeParams(params),
+        options: e,
+        ...$(t)
     });
 }
-const ZodMiniXor = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniXor", (inst, def) => {
-    ZodMiniUnion.init(inst, def);
-    core.$ZodXor.init(inst, def);
-})));
-/** Creates an exclusive union (XOR) where exactly one option must match.
- * Unlike regular unions that succeed when any option matches, xor fails if
- * zero or more than one option matches the input. */
-function xor(options, params) {
-    return new ZodMiniXor({
+const eO = s("ZodMiniDiscriminatedUnion", (e, t)=>{
+    et.init(e, t), ec.init(e, t);
+});
+function ej(e, t, n) {
+    return new eO({
         type: "union",
-        options: options,
-        inclusive: false,
-        ...util.normalizeParams(params),
+        options: t,
+        discriminator: e,
+        ...$(n)
     });
 }
-const ZodMiniDiscriminatedUnion = /*@__PURE__*/ $constructor("ZodMiniDiscriminatedUnion", (inst, def) => {
-    $ZodDiscriminatedUnion.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eP = s("ZodMiniRecord", (e, t)=>{
+    en.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function discriminatedUnion(discriminator, options, params) {
-    return new ZodMiniDiscriminatedUnion({
-        type: "union",
-        options,
-        discriminator,
-        ...normalizeParams(params),
+function eS(e, t, n) {
+    return new eP({
+        type: "record",
+        keyType: e,
+        valueType: t,
+        ...$(n)
     });
 }
-const ZodMiniIntersection = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniIntersection", (inst, def) => {
-    core.$ZodIntersection.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function intersection(left, right) {
-    return new ZodMiniIntersection({
-        type: "intersection",
-        left: left,
-        right: right,
-    });
-}
-const ZodMiniTuple = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniTuple", (inst, def) => {
-    core.$ZodTuple.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function tuple(items, _paramsOrRest, _params) {
-    const hasRest = _paramsOrRest instanceof core.$ZodType;
-    const params = hasRest ? _params : _paramsOrRest;
-    const rest = hasRest ? _paramsOrRest : null;
-    return new ZodMiniTuple({
-        type: "tuple",
-        items: items,
-        rest,
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniRecord = /*@__PURE__*/ $constructor("ZodMiniRecord", (inst, def) => {
-    $ZodRecord.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eC = s("ZodMiniEnum", (e, t)=>{
+    er.init(e, t), ec.init(e, t), e.options = Object.values(t.entries);
 });
-// @__NO_SIDE_EFFECTS__
-function record(keyType, valueType, params) {
-    return new ZodMiniRecord({
-        type: "record",
-        keyType,
-        valueType: valueType,
-        ...normalizeParams(params),
-    });
-}
-// @__NO_SIDE_EFFECTS__
-function partialRecord(keyType, valueType, params) {
-    const k = core.clone(keyType);
-    k._zod.values = undefined;
-    return new ZodMiniRecord({
-        type: "record",
-        keyType: k,
-        valueType: valueType,
-        ...util.normalizeParams(params),
-    });
-}
-function looseRecord(keyType, valueType, params) {
-    return new ZodMiniRecord({
-        type: "record",
-        keyType,
-        valueType: valueType,
-        mode: "loose",
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniMap = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniMap", (inst, def) => {
-    core.$ZodMap.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_map(keyType, valueType, params) {
-    return new ZodMiniMap({
-        type: "map",
-        keyType: keyType,
-        valueType: valueType,
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniSet = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniSet", (inst, def) => {
-    core.$ZodSet.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_set(valueType, params) {
-    return new ZodMiniSet({
-        type: "set",
-        valueType: valueType,
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniEnum = /*@__PURE__*/ $constructor("ZodMiniEnum", (inst, def) => {
-    $ZodEnum.init(inst, def);
-    ZodMiniType.init(inst, def);
-    inst.options = Object.values(def.entries);
-});
-// @__NO_SIDE_EFFECTS__
-function schemas_enum(values, params) {
-    const entries = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
-    return new ZodMiniEnum({
+function eE(e, t) {
+    return new eC({
         type: "enum",
-        entries,
-        ...normalizeParams(params),
+        entries: Array.isArray(e) ? Object.fromEntries(e.map((e)=>[
+                e,
+                e
+            ])) : e,
+        ...$(t)
     });
 }
-
-// @__NO_SIDE_EFFECTS__
-/** @deprecated This API has been merged into `z.enum()`. Use `z.enum()` instead.
- *
- * ```ts
- * enum Colors { red, green, blue }
- * z.enum(Colors);
- * ```
- */
-function nativeEnum(entries, params) {
-    return new ZodMiniEnum({
-        type: "enum",
-        entries,
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniLiteral = /*@__PURE__*/ $constructor("ZodMiniLiteral", (inst, def) => {
-    $ZodLiteral.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eT = s("ZodMiniLiteral", (e, t)=>{
+    ei.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function literal(value, params) {
-    return new ZodMiniLiteral({
+function eR(e, t) {
+    return new eT({
         type: "literal",
-        values: Array.isArray(value) ? value : [value],
-        ...normalizeParams(params),
+        values: Array.isArray(e) ? e : [
+            e
+        ],
+        ...$(t)
     });
 }
-const ZodMiniFile = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniFile", (inst, def) => {
-    core.$ZodFile.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_file(params) {
-    return core._file(ZodMiniFile, params);
-}
-const ZodMiniTransform = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniTransform", (inst, def) => {
-    core.$ZodTransform.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function transform(fn) {
-    return new ZodMiniTransform({
-        type: "transform",
-        transform: fn,
-    });
-}
-const ZodMiniOptional = /*@__PURE__*/ $constructor("ZodMiniOptional", (inst, def) => {
-    $ZodOptional.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eN = s("ZodMiniOptional", (e, t)=>{
+    ea.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function optional(innerType) {
-    return new ZodMiniOptional({
+function eA(e) {
+    return new eN({
         type: "optional",
-        innerType: innerType,
+        innerType: e
     });
 }
-const ZodMiniExactOptional = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniExactOptional", (inst, def) => {
-    core.$ZodExactOptional.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function exactOptional(innerType) {
-    return new ZodMiniExactOptional({
-        type: "optional",
-        innerType: innerType,
-    });
-}
-const ZodMiniNullable = /*@__PURE__*/ $constructor("ZodMiniNullable", (inst, def) => {
-    $ZodNullable.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eM = s("ZodMiniNullable", (e, t)=>{
+    es.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function nullable(innerType) {
-    return new ZodMiniNullable({
+function eD(e) {
+    return new eM({
         type: "nullable",
-        innerType: innerType,
+        innerType: e
     });
 }
-// nullish
-// @__NO_SIDE_EFFECTS__
-function schemas_nullish(innerType) {
-    return optional(nullable(innerType));
-}
-const ZodMiniDefault = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniDefault", (inst, def) => {
-    core.$ZodDefault.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_default(innerType, defaultValue) {
-    return new ZodMiniDefault({
-        type: "default",
-        innerType: innerType,
-        get defaultValue() {
-            return typeof defaultValue === "function" ? defaultValue() : util.shallowClone(defaultValue);
-        },
-    });
-}
-const ZodMiniPrefault = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniPrefault", (inst, def) => {
-    core.$ZodPrefault.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function prefault(innerType, defaultValue) {
-    return new ZodMiniPrefault({
-        type: "prefault",
-        innerType: innerType,
-        get defaultValue() {
-            return typeof defaultValue === "function" ? defaultValue() : util.shallowClone(defaultValue);
-        },
-    });
-}
-const ZodMiniNonOptional = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniNonOptional", (inst, def) => {
-    core.$ZodNonOptional.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function nonoptional(innerType, params) {
-    return new ZodMiniNonOptional({
-        type: "nonoptional",
-        innerType: innerType,
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniSuccess = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniSuccess", (inst, def) => {
-    core.$ZodSuccess.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function success(innerType) {
-    return new ZodMiniSuccess({
-        type: "success",
-        innerType: innerType,
-    });
-}
-const ZodMiniCatch = /*@__PURE__*/ $constructor("ZodMiniCatch", (inst, def) => {
-    $ZodCatch.init(inst, def);
-    ZodMiniType.init(inst, def);
+const eI = s("ZodMiniCatch", (e, t)=>{
+    el.init(e, t), ec.init(e, t);
+}), eL = s("ZodMiniLazy", (e, t)=>{
+    ed.init(e, t), ec.init(e, t);
 });
-// @__NO_SIDE_EFFECTS__
-function schemas_catch(innerType, catchValue) {
-    return new ZodMiniCatch({
-        type: "catch",
-        innerType: innerType,
-        catchValue: (typeof catchValue === "function" ? catchValue : () => catchValue),
-    });
-}
-
-const ZodMiniNaN = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniNaN", (inst, def) => {
-    core.$ZodNaN.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function nan(params) {
-    return core._nan(ZodMiniNaN, params);
-}
-const ZodMiniPipe = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniPipe", (inst, def) => {
-    core.$ZodPipe.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function pipe(in_, out) {
-    return new ZodMiniPipe({
-        type: "pipe",
-        in: in_,
-        out: out,
-    });
-}
-const ZodMiniCodec = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCodec", (inst, def) => {
-    ZodMiniPipe.init(inst, def);
-    core.$ZodCodec.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function schemas_codec(in_, out, params) {
-    return new ZodMiniCodec({
-        type: "pipe",
-        in: in_,
-        out: out,
-        transform: params.decode,
-        reverseTransform: params.encode,
-    });
-}
-const ZodMiniReadonly = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniReadonly", (inst, def) => {
-    core.$ZodReadonly.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function readonly(innerType) {
-    return new ZodMiniReadonly({
-        type: "readonly",
-        innerType: innerType,
-    });
-}
-const ZodMiniTemplateLiteral = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniTemplateLiteral", (inst, def) => {
-    core.$ZodTemplateLiteral.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function templateLiteral(parts, params) {
-    return new ZodMiniTemplateLiteral({
-        type: "template_literal",
-        parts,
-        ...util.normalizeParams(params),
-    });
-}
-const ZodMiniLazy = /*@__PURE__*/ $constructor("ZodMiniLazy", (inst, def) => {
-    $ZodLazy.init(inst, def);
-    ZodMiniType.init(inst, def);
-});
-// export function lazy<T extends object>(getter: () => T): T {
-//   return util.createTransparentProxy<T>(getter);
-// }
-// @__NO_SIDE_EFFECTS__
-function schemas_lazy(getter) {
-    return new ZodMiniLazy({
+function eZ() {
+    let e = new eL({
         type: "lazy",
-        getter: getter,
+        getter: ()=>e$([
+                ep(),
+                ef(),
+                eg(),
+                new ev({
+                    type: "null",
+                    ...$(void 0)
+                }),
+                ew(e),
+                eS(ep(), e)
+            ])
     });
+    return e;
 }
-
-const ZodMiniPromise = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniPromise", (inst, def) => {
-    core.$ZodPromise.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function promise(innerType) {
-    return new ZodMiniPromise({
-        type: "promise",
-        innerType: innerType,
-    });
-}
-const ZodMiniCustom = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniCustom", (inst, def) => {
-    core.$ZodCustom.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// custom checks
-// @__NO_SIDE_EFFECTS__
-function check(fn, params) {
-    const ch = new core.$ZodCheck({
-        check: "custom",
-        ...util.normalizeParams(params),
-    });
-    ch._zod.check = fn;
-    return ch;
-}
-// ZodCustom
-// custom schema
-// @__NO_SIDE_EFFECTS__
-function custom(fn, _params) {
-    return core._custom(ZodMiniCustom, fn ?? (() => true), _params);
-}
-// refine
-// @__NO_SIDE_EFFECTS__
-function refine(fn, _params = {}) {
-    return core._refine(ZodMiniCustom, fn, _params);
-}
-// superRefine
-// @__NO_SIDE_EFFECTS__
-function superRefine(fn) {
-    return core._superRefine(fn);
-}
-// Re-export describe and meta from core
-const schemas_describe = describe;
-const schemas_meta = api_meta;
-// instanceof
-class schemas_Class {
-    constructor(..._args) { }
-}
-// @__NO_SIDE_EFFECTS__
-function _instanceof(cls, params = {}) {
-    const inst = custom((data) => data instanceof cls, params);
-    inst._zod.bag.Class = cls;
-    // Override check to emit invalid_type instead of custom
-    inst._zod.check = (payload) => {
-        if (!(payload.value instanceof cls)) {
-            payload.issues.push({
-                code: "invalid_type",
-                expected: cls.name,
-                input: payload.value,
-                inst,
-                path: [...(inst._zod.def.path ?? [])],
-            });
-        }
-    };
-    return inst;
-}
-
-// stringbool
-const stringbool = (...args) => core._stringbool({
-    Codec: ZodMiniCodec,
-    Boolean: ZodMiniBoolean,
-    String: ZodMiniString,
-}, ...args);
-// @__NO_SIDE_EFFECTS__
-function schemas_json() {
-    const jsonSchema = schemas_lazy(() => {
-        return union([schemas_string(), schemas_number(), schemas_boolean(), schemas_null(), schemas_array(jsonSchema), record(schemas_string(), jsonSchema)]);
-    });
-    return jsonSchema;
-}
-const ZodMiniFunction = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniFunction", (inst, def) => {
-    core.$ZodFunction.init(inst, def);
-    ZodMiniType.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function _function(params) {
-    return new ZodMiniFunction({
-        type: "function",
-        input: Array.isArray(params?.input) ? tuple(params?.input) : (params?.input ?? schemas_array(unknown())),
-        output: params?.output ?? unknown(),
-    });
-}
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/mini/checks.js
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/mini/iso.js
-
-
-const ZodMiniISODateTime = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniISODateTime", (inst, def) => {
-    core.$ZodISODateTime.init(inst, def);
-    schemas.ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function iso_datetime(params) {
-    return core._isoDateTime(ZodMiniISODateTime, params);
-}
-const ZodMiniISODate = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniISODate", (inst, def) => {
-    core.$ZodISODate.init(inst, def);
-    schemas.ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function iso_date(params) {
-    return core._isoDate(ZodMiniISODate, params);
-}
-const ZodMiniISOTime = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniISOTime", (inst, def) => {
-    core.$ZodISOTime.init(inst, def);
-    schemas.ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function iso_time(params) {
-    return core._isoTime(ZodMiniISOTime, params);
-}
-const ZodMiniISODuration = /*@__PURE__*/ (/* unused pure expression or super */ null && (core.$constructor("ZodMiniISODuration", (inst, def) => {
-    core.$ZodISODuration.init(inst, def);
-    schemas.ZodMiniStringFormat.init(inst, def);
-})));
-// @__NO_SIDE_EFFECTS__
-function iso_duration(params) {
-    return core._isoDuration(ZodMiniISODuration, params);
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/mini/coerce.js
-
-
-// @__NO_SIDE_EFFECTS__
-function coerce_string(params) {
-    return core._coercedString(schemas.ZodMiniString, params);
-}
-// @__NO_SIDE_EFFECTS__
-function coerce_number(params) {
-    return core._coercedNumber(schemas.ZodMiniNumber, params);
-}
-// @__NO_SIDE_EFFECTS__
-function coerce_boolean(params) {
-    return core._coercedBoolean(schemas.ZodMiniBoolean, params);
-}
-// @__NO_SIDE_EFFECTS__
-function coerce_bigint(params) {
-    return core._coercedBigint(schemas.ZodMiniBigInt, params);
-}
-// @__NO_SIDE_EFFECTS__
-function coerce_date(params) {
-    return core._coercedDate(schemas.ZodMiniDate, params);
-}
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/v4/mini/external.js
-
-
-
-
-
-
-
-/** A special constant with type `never` */
-// export const NEVER = {} as never;
-// iso
-
-
-// coerce
-
-
-;// CONCATENATED MODULE: ./node_modules/.pnpm/zod@4.3.6/node_modules/zod/mini/index.js
-
-
-
-
-;// CONCATENATED MODULE: ./src/view/contracts/common.ts
-
-const errorReply = schemas_object({
-    error: union([
-        schemas_string(),
-        schemas_object({
-            code: schemas_string(),
-            message: schemas_string()
+let eU = ex({
+    error: e$([
+        ep(),
+        ex({
+            code: ep(),
+            message: ep()
         })
     ])
 });
-class RpcError extends Error {
+class eB extends Error {
     code;
-    constructor(code, message){
-        super(message), this.code = code;
-        this.name = "RpcError";
+    constructor(e, t){
+        super(t), this.code = e, this.name = "RpcError";
     }
 }
-function common_checked(value) {
-    const failure = errorReply.safeParse(value);
-    if (failure.success) {
-        const error = failure.data.error;
-        throw typeof error === "string" ? new RpcError("rpc", error) : new RpcError(error.code, error.message);
+function eF(e) {
+    let t = eU.safeParse(e);
+    if (t.success) {
+        let e = t.data.error;
+        throw "string" == typeof e ? new eB("rpc", e) : new eB(e.code, e.message);
     }
-    return value;
+    return e;
 }
-const jobStart = schemas_object({
-    status: literal("pending"),
-    job: schemas_string()
-});
-const jobChunk = discriminatedUnion("status", [
-    schemas_object({
-        status: literal("pending")
+const eq = ex({
+    status: eR("pending"),
+    job: ep()
+}), eW = ej("status", [
+    ex({
+        status: eR("pending")
     }),
-    schemas_object({
-        status: literal("ready"),
-        chunk: schemas_number(),
-        chunks: schemas_number(),
-        bytes: schemas_number(),
-        data: schemas_string()
+    ex({
+        status: eR("ready"),
+        chunk: ef(),
+        chunks: ef(),
+        bytes: ef(),
+        data: ep()
     })
 ]);
-function common_assertNever(value) {
-    throw new RpcError("unexpected_variant", `Unexpected variant: ${String(value)}`);
-}
-
-;// CONCATENATED MODULE: ./src/view/contracts/provisioning.ts
-
-const provisioning_str = schemas_string();
-const num = schemas_number();
-const bool = schemas_boolean();
-const optString = optional(provisioning_str);
-const optNumber = optional(num);
-const optBool = optional(bool);
-const operationPhase = schemas_enum([
+let eV = ep(), eJ = ef(), eG = eg(), eK = eA(eV), eX = eA(eJ), eH = eA(eG);
+const eQ = eE([
     "waiting",
     "wan_reconciling",
     "wan_verifying",
@@ -12947,8 +1023,7 @@ const operationPhase = schemas_enum([
     "not_started",
     "reset_pending",
     "interrupted"
-]);
-const wifiSync = schemas_enum([
+]), eY = eE([
     "not_configured",
     "stale_revision",
     "stale_management",
@@ -12956,49 +1031,48 @@ const wifiSync = schemas_enum([
     "attention_required",
     "accepted_unverified",
     "pending"
-]);
-const syncItem = schemas_object({
-    id: provisioning_str,
-    name: optional(nullable(provisioning_str)),
-    kind: schemas_enum([
+]), e0 = ex({
+    id: eV,
+    name: eA(eD(eV)),
+    kind: eE([
         "device_service",
         "ssid",
         "port_binding",
         "wan_activation"
     ]),
-    service_type: provisioning_str,
-    state: provisioning_str,
-    reason: optString,
-    revision: optString,
-    current_revision: optBool,
-    management_fresh: optBool,
-    operation_id: optNumber,
-    task_id: optional(nullable(num)),
-    updated_at: optNumber,
-    changes: optional(schemas_array(schemas_object({
-        name: provisioning_str,
-        desired: provisioning_str
+    service_type: eV,
+    state: eV,
+    reason: eK,
+    revision: eK,
+    current_revision: eH,
+    management_fresh: eH,
+    operation_id: eX,
+    task_id: eA(eD(eJ)),
+    updated_at: eX,
+    changes: eA(ew(ex({
+        name: eV,
+        desired: eV
     })))
 });
-const lifecycle = schemas_object({
-    state: provisioning_str,
-    reason: optString,
-    task_id: optional(nullable(num)),
-    instance: optNumber
+let e1 = ex({
+    state: eV,
+    reason: eK,
+    task_id: eA(eD(eJ)),
+    instance: eX
 });
-const management = schemas_object({
-    cwmp_id: provisioning_str,
-    state: schemas_enum([
+const e2 = ex({
+    cwmp_id: eV,
+    state: eE([
         "online",
         "waiting_inform",
         "offline_or_stale"
     ]),
-    optical_online: bool,
-    last_inform: nullable(num),
-    age_seconds: nullable(num)
+    optical_online: eG,
+    last_inform: eD(eJ),
+    age_seconds: eD(eJ)
 });
-const bootstrapSnapshot = schemas_object({
-    state: schemas_enum([
+let e5 = ex({
+    state: eE([
         "waiting_transport",
         "waiting_identity",
         "reading",
@@ -13015,81 +1089,122 @@ const bootstrapSnapshot = schemas_object({
         "configuring_management_wan",
         "verifying_management_wan"
     ]),
-    method: optString,
-    reason: optString,
-    mqtt_target: nullable(provisioning_str),
-    binding_source: optString,
-    link_identity_error: nullable(provisioning_str),
-    mqtt_last_seen: nullable(num),
-    cwmp_id: optString,
-    desired_version: optString,
-    generation: optNumber,
-    inflight: optBool,
-    attempts: optNumber,
-    next_retry_at: optNumber,
-    updated_at: optNumber,
-    settings_verified_at: nullable(num),
-    last_inform: nullable(num),
-    last_error: optional(nullable(provisioning_str)),
-    persistence_error: optional(nullable(provisioning_str)),
-    desired: optional(nullable(schemas_object({
-        vlan: num,
-        vlans: schemas_array(num),
-        priority: num,
-        acs_url: provisioning_str
+    method: eK,
+    reason: eK,
+    mqtt_target: eD(eV),
+    binding_source: eK,
+    link_identity_error: eD(eV),
+    mqtt_last_seen: eD(eJ),
+    cwmp_id: eK,
+    desired_version: eK,
+    generation: eX,
+    inflight: eH,
+    attempts: eX,
+    next_retry_at: eX,
+    updated_at: eX,
+    settings_verified_at: eD(eJ),
+    last_inform: eD(eJ),
+    last_error: eA(eD(eV)),
+    persistence_error: eA(eD(eV)),
+    desired: eA(eD(ex({
+        vlan: eJ,
+        vlans: ew(eJ),
+        priority: eJ,
+        acs_url: eV
     }))),
-    listener: optional(schemas_object({
-        enabled: bool,
-        listen: provisioning_str,
-        path: provisioning_str,
-        error: nullable(provisioning_str)
+    listener: eA(ex({
+        enabled: eG,
+        listen: eV,
+        path: eV,
+        error: eD(eV)
     })),
-    endpoint_notice: optString,
-    manual_steps: optional(schemas_array(provisioning_str))
+    endpoint_notice: eK,
+    manual_steps: eA(ew(eV))
 });
-const acsBootstrap = discriminatedUnion("state", [
-    bootstrapSnapshot,
-    schemas_extend(schemas_partial(bootstrapSnapshot), {
-        state: schemas_enum([
+const e3 = ej("state", [
+    e5,
+    function(e, t) {
+        if (!w(t)) throw Error("Invalid input to extend: expected a plain object");
+        let n = e._zod.def.checks;
+        if (n && n.length > 0) {
+            let n = e._zod.def.shape;
+            for(let e in t)if (void 0 !== Object.getOwnPropertyDescriptor(n, e)) throw Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
+        }
+        let r = m(e._zod.def, {
+            get shape () {
+                let n = {
+                    ...e._zod.def.shape,
+                    ...t
+                };
+                return v(this, "shape", n), n;
+            }
+        });
+        return k(e, r);
+    }(function(e) {
+        var t = void 0;
+        let n = e._zod.def.checks;
+        if (n && n.length > 0) throw Error(".partial() cannot be used on object schemas containing refinements");
+        let r = m(e._zod.def, {
+            get shape () {
+                let n = e._zod.def.shape, r = {
+                    ...n
+                };
+                if (t) for(let e in t){
+                    if (!(e in n)) throw Error(`Unrecognized key: "${e}"`);
+                    t[e] && (r[e] = eN ? new eN({
+                        type: "optional",
+                        innerType: n[e]
+                    }) : n[e]);
+                }
+                else for(let e in n)r[e] = eN ? new eN({
+                    type: "optional",
+                    innerType: n[e]
+                }) : n[e];
+                return v(this, "shape", r), r;
+            },
+            checks: []
+        });
+        return k(e, r);
+    }(e5), {
+        state: eE([
             "pending",
             "unavailable"
         ]),
-        reason: provisioning_str
+        reason: eV
     })
-]);
-const provisioning_provisioning = schemas_object({
-    state: operationPhase,
-    operation_id: optNumber,
-    device: optString,
-    optical_sn: optString,
-    cwmp_id: optString,
-    revision: optString,
-    mode: optional(schemas_enum([
+]), e4 = ex({
+    state: eQ,
+    operation_id: eX,
+    device: eK,
+    optical_sn: eK,
+    cwmp_id: eK,
+    revision: eK,
+    mode: eA(eE([
         "apply",
         "plan"
     ])),
-    started_at: optNumber,
-    current_revision: optBool,
-    management_fresh: optBool,
-    reason: optString,
-    error: optString,
-    items: schemas_array(syncItem),
-    cwmp_contract: optional(schemas_object({
-        state: provisioning_str,
-        requested: provisioning_str,
-        contract: nullable(provisioning_str),
-        reason: provisioning_str,
-        cache_hit: bool,
-        schema: provisioning_str,
-        capabilities: nullable(schemas_object({
-            wan: provisioning_str,
-            wlan: provisioning_str,
-            binding: provisioning_str
+    started_at: eX,
+    current_revision: eH,
+    management_fresh: eH,
+    reason: eK,
+    error: eK,
+    items: ew(e0),
+    cwmp_contract: eA(ex({
+        state: eV,
+        requested: eV,
+        contract: eD(eV),
+        reason: eV,
+        cache_hit: eG,
+        schema: eV,
+        capabilities: eD(ex({
+            wan: eV,
+            wlan: eV,
+            binding: eV
         }))
     })),
-    wan_objects: optional(record(provisioning_str, schemas_json())),
-    wan_lifecycle: optional(record(provisioning_str, lifecycle)),
-    wan_stage: optional(schemas_enum([
+    wan_objects: eA(eS(eV, eZ())),
+    wan_lifecycle: eA(eS(eV, e1)),
+    wan_stage: eA(eE([
         "waiting",
         "inventory",
         "classifying",
@@ -13105,13 +1220,13 @@ const provisioning_provisioning = schemas_object({
         "next",
         "done"
     ])),
-    wifi_objects: optional(schemas_object({
-        owned: schemas_array(num),
-        pending: nullable(provisioning_str),
-        pending_instance: nullable(num)
+    wifi_objects: eA(ex({
+        owned: ew(eJ),
+        pending: eD(eV),
+        pending_instance: eD(eJ)
     })),
-    wifi_lifecycle: optional(record(provisioning_str, lifecycle)),
-    wifi_stage: optional(schemas_enum([
+    wifi_lifecycle: eA(eS(eV, e1)),
+    wifi_stage: eA(eE([
         "waiting",
         "inventory",
         "adding",
@@ -13124,28 +1239,27 @@ const provisioning_provisioning = schemas_object({
         "next",
         "done"
     ])),
-    wifi_cleanup: optional(schemas_enum([
+    wifi_cleanup: eA(eE([
         "disable",
         "preserve",
         "delete"
     ]))
 });
-const networkConfig = schemas_object({
-    enabled: bool,
-    mode: schemas_enum([
+let e7 = ex({
+    enabled: eG,
+    mode: eE([
         "auto",
         "manual"
     ]),
-    vlan: schemas_array(num),
-    priority: num,
-    address: provisioning_str,
-    acs_url: provisioning_str,
-    port: num,
-    path: provisioning_str,
-    dhcp_enabled: bool
-});
-const network = schemas_object({
-    state: schemas_enum([
+    vlan: ew(eJ),
+    priority: eJ,
+    address: eV,
+    acs_url: eV,
+    port: eJ,
+    path: eV,
+    dhcp_enabled: eG
+}), e8 = ex({
+    state: eE([
         "discovering",
         "comparing",
         "planning",
@@ -13160,93 +1274,85 @@ const network = schemas_object({
         "blocked",
         "retry_wait"
     ]),
-    error: nullable(provisioning_str),
-    inflight: bool,
-    ready: bool,
-    desired_version: nullable(provisioning_str),
-    applied_version: nullable(provisioning_str),
-    next_retry_at: num,
-    attempts: num,
-    desired: nullable(networkConfig),
-    applied: nullable(networkConfig),
-    previous: nullable(networkConfig),
-    plan: schemas_array(schemas_object({
-        operation: provisioning_str,
-        key: provisioning_str,
-        value: schemas_array(provisioning_str)
+    error: eD(eV),
+    inflight: eG,
+    ready: eG,
+    desired_version: eD(eV),
+    applied_version: eD(eV),
+    next_retry_at: eJ,
+    attempts: eJ,
+    desired: eD(e7),
+    applied: eD(e7),
+    previous: eD(e7),
+    plan: ew(ex({
+        operation: eV,
+        key: eV,
+        value: ew(eV)
     }))
 });
-const deviceSync = schemas_object({
-    device: provisioning_str,
-    name: nullable(provisioning_str),
-    group: nullable(provisioning_str),
-    group_name: nullable(provisioning_str),
-    template: nullable(provisioning_str),
-    template_name: nullable(provisioning_str),
-    optical_sn: provisioning_str,
-    adapter: provisioning_str,
-    omci_management: schemas_object({
-        state: provisioning_str,
-        reason: optString
+const e6 = ex({
+    device: eV,
+    name: eD(eV),
+    group: eD(eV),
+    group_name: eD(eV),
+    template: eD(eV),
+    template_name: eD(eV),
+    optical_sn: eV,
+    adapter: eV,
+    omci_management: ex({
+        state: eV,
+        reason: eK
     }),
-    management: nullable(management),
-    acs_bootstrap: acsBootstrap,
-    provisioning: provisioning_provisioning,
-    services: schemas_array(syncItem),
-    ssids: schemas_array(syncItem),
-    wifi_sync: wifiSync
-});
-const provisioning_syncStatus = schemas_object({
-    enabled: bool,
-    mode: schemas_enum([
+    management: eD(e2),
+    acs_bootstrap: e3,
+    provisioning: e4,
+    services: ew(e0),
+    ssids: ew(e0),
+    wifi_sync: eY
+}), e9 = ex({
+    enabled: eG,
+    mode: eE([
         "auto",
         "manual"
     ]),
-    method: literal("diff"),
-    revision: provisioning_str,
-    triggers: schemas_array(provisioning_str),
-    interval: num,
-    error: nullable(provisioning_str),
-    devices: schemas_array(deviceSync),
-    management_network: network,
-    omci_management: schemas_json(),
-    groups: schemas_array(schemas_object({
-        id: provisioning_str,
-        name: nullable(provisioning_str),
-        template: provisioning_str
+    method: eR("diff"),
+    revision: eV,
+    triggers: ew(eV),
+    interval: eJ,
+    error: eD(eV),
+    devices: ew(e6),
+    management_network: e8,
+    omci_management: eZ(),
+    groups: ew(ex({
+        id: eV,
+        name: eD(eV),
+        template: eV
     })),
-    pending_devices: schemas_array(provisioning_str)
+    pending_devices: ew(eV)
 });
-const provisioning_configCheck = union([
-    schemas_object({
-        valid: literal(true),
-        revision: provisioning_str,
-        devices: num,
-        error: optional(never())
+e$([
+    ex({
+        valid: eR(!0),
+        revision: eV,
+        devices: eJ,
+        error: eA(ey())
     }),
-    schemas_object({
-        error: provisioning_str,
-        valid: optional(never()),
-        revision: optional(never()),
-        devices: optional(never())
+    ex({
+        error: eV,
+        valid: eA(ey()),
+        revision: eA(ey()),
+        devices: eA(ey())
     })
 ]);
-
-;// CONCATENATED MODULE: ./src/view/contracts/status.ts
-
-
-const status_str = schemas_string();
-const status_num = schemas_number();
-const nullableNumber = nullable(status_num);
-const measurements = record(status_str, schemas_object({
-    source: status_str,
-    unit: status_str,
-    reason: nullable(status_str),
-    raw: nullable(status_str),
-    age_seconds: nullableNumber
+let te = ep(), tt = ef(), tn = eD(tt), tr = eS(te, ex({
+    source: te,
+    unit: te,
+    reason: eD(te),
+    raw: eD(te),
+    age_seconds: tn
 }));
-const businessStatus = schemas_object({
-    phase: schemas_enum([
+const ti = ex({
+    phase: eE([
         "not_started",
         "collecting_identity",
         "retrying_identity",
@@ -13258,10 +1364,9 @@ const businessStatus = schemas_object({
         "retrying",
         "offline"
     ]),
-    generation: status_num,
-    error: nullable(status_str)
-});
-const registrationState = schemas_enum([
+    generation: tt,
+    error: eD(te)
+}), to = eE([
     "o1_initial",
     "o2_standby",
     "o3_serial_number",
@@ -13270,109 +1375,110 @@ const registrationState = schemas_enum([
     "o6_intermittent_lods",
     "o7_emergency_stop"
 ]);
-const status_optical = schemas_object({
-    model: status_str,
-    wavelength_tx_nm: status_num,
-    wavelength_rx_nm: status_num,
-    phy_rate_downlink_gbps: status_num,
-    phy_rate_uplink_gbps: status_num,
-    tx_power_dbm: nullableNumber,
-    laser_bias_current_ma: nullableNumber,
-    temperature_celsius: nullableNumber,
-    vcc_voltage: nullableNumber,
-    cdr_locked: nullable(schemas_boolean()),
-    measurements
+let ta = ex({
+    model: te,
+    wavelength_tx_nm: tt,
+    wavelength_rx_nm: tt,
+    phy_rate_downlink_gbps: tt,
+    phy_rate_uplink_gbps: tt,
+    tx_power_dbm: tn,
+    laser_bias_current_ma: tn,
+    temperature_celsius: tn,
+    vcc_voltage: tn,
+    cdr_locked: eD(eg()),
+    measurements: tr
+}), ts = ex({
+    equipment_id: eD(te),
+    hardware_version: eD(te),
+    software_images: ew(te),
+    omcc_version: tn,
+    errors: ew(te)
 });
-const identity = schemas_object({
-    equipment_id: nullable(status_str),
-    hardware_version: nullable(status_str),
-    software_images: schemas_array(status_str),
-    omcc_version: nullableNumber,
-    errors: schemas_array(status_str)
-});
-const subGateway = schemas_object({
-    onu_id: status_num,
-    vendor: status_str,
-    model: status_str,
-    serial_number: status_str,
-    state: registrationState,
-    business_status: businessStatus,
-    management: nullable(management),
-    provisioning: nullable(provisioning_provisioning),
-    services: schemas_array(syncItem),
-    ssids: schemas_array(syncItem),
-    wifi_sync: wifiSync,
-    acs_bootstrap: optional(acsBootstrap),
-    identity: nullable(identity),
-    identity_age_seconds: nullableNumber,
-    identity_current: schemas_boolean(),
-    fiber_distance_m: nullableNumber,
-    ranging_delay_rtd_ns: nullableNumber,
-    equalization_delay_bits: schemas_catch(nullableNumber, null),
-    optical_rx_power_dbm: nullableNumber,
-    optical_tx_power_dbm: nullableNumber,
-    firmware_version: status_str,
-    hardware_version: status_str,
-    uptime_seconds: nullableNumber,
-    data_path: schemas_object({
-        interface: status_str,
-        gem_ports: nullable(schemas_array(status_num)),
-        vlan_id: nullableNumber,
-        tx_bytes: nullableNumber,
-        rx_bytes: nullableNumber,
-        current_tx_kbps: nullableNumber,
-        current_rx_kbps: nullableNumber,
-        measurements
+const tl = ex({
+    onu_id: tt,
+    vendor: te,
+    model: te,
+    serial_number: te,
+    state: to,
+    business_status: ti,
+    management: eD(e2),
+    provisioning: eD(e4),
+    services: ew(e0),
+    ssids: ew(e0),
+    wifi_sync: eY,
+    acs_bootstrap: eA(e3),
+    identity: eD(ts),
+    identity_age_seconds: tn,
+    identity_current: eg(),
+    fiber_distance_m: tn,
+    ranging_delay_rtd_ns: tn,
+    equalization_delay_bits: new eI({
+        type: "catch",
+        innerType: tn,
+        catchValue: ()=>null
     }),
-    wifi_mesh: schemas_object({
-        channel_2g: nullableNumber,
-        channel_5g: nullableNumber,
-        bandwidth_5g: nullable(status_str),
-        tx_power_pct: nullableNumber,
-        measurements
+    optical_rx_power_dbm: tn,
+    optical_tx_power_dbm: tn,
+    firmware_version: te,
+    hardware_version: te,
+    uptime_seconds: tn,
+    data_path: ex({
+        interface: te,
+        gem_ports: eD(ew(tt)),
+        vlan_id: tn,
+        tx_bytes: tn,
+        rx_bytes: tn,
+        current_tx_kbps: tn,
+        current_rx_kbps: tn,
+        measurements: tr
     }),
-    connected_clients: nullable(schemas_array(schemas_object({
-        mac: status_str,
-        ip: status_str,
-        band: status_str,
-        rssi_dbm: nullableNumber,
-        rx_rate_mbps: nullableNumber,
-        tx_rate_mbps: nullableNumber
+    wifi_mesh: ex({
+        channel_2g: tn,
+        channel_5g: tn,
+        bandwidth_5g: eD(te),
+        tx_power_pct: tn,
+        measurements: tr
+    }),
+    connected_clients: eD(ew(ex({
+        mac: te,
+        ip: te,
+        band: te,
+        rssi_dbm: tn,
+        rx_rate_mbps: tn,
+        tx_rate_mbps: tn
     }))),
-    measurements
+    measurements: tr
 });
-const switchPort = schemas_object({
-    port: status_num,
-    interface: status_str,
-    carrier: schemas_boolean(),
-    status: status_str,
-    onu_id: optional(status_num),
-    onu_sn: optional(status_str),
-    link_state: status_str
+let td = ex({
+    port: tt,
+    interface: te,
+    carrier: eg(),
+    status: te,
+    onu_id: eA(tt),
+    onu_sn: eA(te),
+    link_state: te
 });
-const status_status = schemas_object({
-    fpga_status: status_str,
-    provisioning: nullable(provisioning_syncStatus),
-    optical_transceiver: status_optical,
-    switch_ports: schemas_array(switchPort),
-    sub_gateways: schemas_array(subGateway),
-    telemetry_gateways: schemas_array(schemas_object({
-        id: status_str,
-        last_seen_sec_ago: status_num,
-        last_payload_bytes: status_num
+const tc = ex({
+    fpga_status: te,
+    provisioning: eD(e9),
+    optical_transceiver: ta,
+    switch_ports: ew(td),
+    sub_gateways: ew(tl),
+    telemetry_gateways: ew(ex({
+        id: te,
+        last_seen_sec_ago: tt,
+        last_payload_bytes: tt
     }))
-});
-const networkDevices = record(status_str, schemas_object({
-    carrier: optional(schemas_boolean()),
-    mac: optional(status_str),
-    link: optional(schemas_object({
-        speed: optional(status_num),
-        duplex: optional(status_str),
-        autoneg: optional(schemas_boolean())
+}), tu = eS(te, ex({
+    carrier: eA(eg()),
+    mac: eA(te),
+    link: eA(ex({
+        speed: eA(tt),
+        duplex: eA(te),
+        autoneg: eA(eg())
     })),
-    stats: optional(record(status_str, status_num))
-}));
-const businessLabels = {
+    stats: eA(eS(te, tt))
+})), tp = {
     not_started: "Not started",
     collecting_identity: "Collecting identity",
     retrying_identity: "Retrying identity",
@@ -13384,100 +1490,70 @@ const businessLabels = {
     retrying: "Retrying",
     offline: "Offline"
 };
-function businessText(value) {
-    return `${_(businessLabels[value.phase])} \xb7 ${value.generation}${value.error ? ` \xb7 ${value.error}` : ""}`;
+function t_(e) {
+    return `${_(tp[e.phase])} \xb7 ${e.generation}${e.error ? ` \xb7 ${e.error}` : ""}`;
 }
-function eqdText(value) {
-    return value === null ? "\u2014" : `${value} bits`;
-}
-
-;// CONCATENATED MODULE: ./src/view/contracts/api.ts
-
-
-
-
-const rawStatus = L.rpc.declare({
+let tf = L.rpc.declare({
     object: "luci.fttr",
     method: "get_status",
-    reject: true
-});
-const rawSync = L.rpc.declare({
+    reject: !0
+}), th = (L.rpc.declare({
     object: "luci.fttr",
     method: "get_sync",
-    reject: true
-});
-const rawCheck = L.rpc.declare({
+    reject: !0
+}), L.rpc.declare({
     object: "luci.fttr",
     method: "config_check",
-    reject: true
-});
-const rawReload = L.rpc.declare({
+    reject: !0
+}), L.rpc.declare({
     object: "luci.fttr",
     method: "config_reload",
-    reject: true
-});
-const rawRestart = L.rpc.declare({
+    reject: !0
+}), L.rpc.declare({
     object: "luci.fttr",
     method: "restart_service",
-    reject: true
-});
-const rawNetwork = L.rpc.declare({
+    reject: !0
+}), L.rpc.declare({
     object: "luci-rpc",
     method: "getNetworkDevices",
     expect: {
         "": {}
     },
-    reject: true
-});
-const rawSyncAction = L.rpc.declare({
+    reject: !0
+}));
+L.rpc.declare({
     object: "luci.fttr",
     method: "sync",
     params: [
         "action",
         "target"
     ],
-    reject: true
+    reject: !0
 });
-const getStatus = async ()=>status_status.parse(common_checked(await rawStatus()));
-const getSync = async ()=>syncStatus.parse(checked(await rawSync()));
-const checkConfig = async ()=>configCheck.parse(await rawCheck());
-const reloadConfig = async ()=>syncStatus.parse(checked(await rawReload()));
-const restartService = async ()=>z.object({
-        restarting: z.literal(true)
-    }).parse(checked(await rawRestart()));
-const getNetworkDevices = async ()=>networkDevices.parse(common_checked(await rawNetwork()));
-const actionResult = union([
-    schemas_object({
-        operation_ids: schemas_array(schemas_number()),
-        revision: schemas_string()
+const tg = async ()=>tc.parse(eF(await tf())), tv = async ()=>tu.parse(eF(await th()));
+e$([
+    ex({
+        operation_ids: ew(ef()),
+        revision: ep()
     }),
-    schemas_object({
-        started: literal(true),
-        mode: schemas_enum([
+    ex({
+        started: eR(!0),
+        mode: eE([
             "apply",
             "plan"
         ])
     }),
-    schemas_object({
-        reset: literal(true),
-        device: schemas_string()
+    ex({
+        reset: eR(!0),
+        device: ep()
     })
 ]);
-const sync = async (action, target)=>actionResult.parse(checked(await rawSyncAction(action, target)));
-
-;// CONCATENATED MODULE: ./src/view/contracts/mib.ts
-
-
-const mib_str = schemas_string();
-const mib_num = schemas_number();
-const mib_bool = schemas_boolean();
-const reference = schemas_object({
-    id: mib_str,
-    url: mib_str
-});
-const mib_definition = schemas_object({
-    name: mib_str,
-    kind: schemas_enum([
+let tm = ep(), ty = ef(), tb = eg(), tw = ex({
+    id: tm,
+    url: tm
+}), tz = ex({
+    name: tm,
+    kind: eE([
         "unknown",
         "octets",
         "string",
@@ -13489,137 +1565,132 @@ const mib_definition = schemas_object({
         "enumeration",
         "counter"
     ]),
-    index: mib_num,
-    mask: mib_num,
-    size: mib_num,
-    read: mib_bool,
-    write: mib_bool,
-    set_by_create: mib_bool,
-    avc: mib_bool,
-    optional: mib_bool,
-    deprecated: mib_bool,
-    default_hex: nullable(mib_str),
-    reference
-});
-const mib_value = discriminatedUnion("type", [
-    schemas_object({
-        type: literal("unsigned"),
-        value: mib_num
+    index: ty,
+    mask: ty,
+    size: ty,
+    read: tb,
+    write: tb,
+    set_by_create: tb,
+    avc: tb,
+    optional: tb,
+    deprecated: tb,
+    default_hex: eD(tm),
+    reference: tw
+}), tx = ej("type", [
+    ex({
+        type: eR("unsigned"),
+        value: ty
     }),
-    schemas_object({
-        type: literal("signed"),
-        value: mib_num
+    ex({
+        type: eR("signed"),
+        value: ty
     }),
-    schemas_object({
-        type: literal("decimal"),
-        value: mib_str
+    ex({
+        type: eR("decimal"),
+        value: tm
     }),
-    schemas_object({
-        type: literal("text"),
-        value: nullable(mib_str)
+    ex({
+        type: eR("text"),
+        value: eD(tm)
     }),
-    schemas_object({
-        type: literal("octets"),
-        hex: mib_str
+    ex({
+        type: eR("octets"),
+        hex: tm
     }),
-    schemas_object({
-        type: literal("table_length"),
-        bytes: mib_num
+    ex({
+        type: eR("table_length"),
+        bytes: ty
     })
-]);
-const diagnostic = schemas_object({
-    code: mib_str,
-    message: mib_str,
-    offset: mib_num,
-    mask: mib_num
-});
-const support = schemas_enum([
+]), tk = ex({
+    code: tm,
+    message: tm,
+    offset: ty,
+    mask: ty
+}), t$ = eE([
     "layout",
     "name_only",
     "unknown"
-]);
-const vlanRule = schemas_object({
-    raw_hex: mib_str,
-    filter_outer_priority: mib_num,
-    filter_outer_vid: mib_num,
-    filter_outer_tpid_dei: mib_num,
-    filter_inner_priority: mib_num,
-    filter_inner_vid: mib_num,
-    filter_inner_tpid_dei: mib_num,
-    filter_ethertype: mib_num,
-    tags_to_remove: mib_num,
-    treatment_outer_priority: mib_num,
-    treatment_outer_vid: mib_num,
-    treatment_outer_tpid_dei: mib_num,
-    treatment_inner_priority: mib_num,
-    treatment_inner_vid: mib_num,
-    treatment_inner_tpid_dei: mib_num,
-    delete_entry: mib_bool
-});
-const mib_report = schemas_object({
-    schema_version: literal(1),
-    reference_version: mib_str,
-    onu_id: nullable(mib_num),
-    uploaded_complete: mib_bool,
-    expected_records: mib_num,
-    received_records: mib_num,
-    decoded_records: mib_num,
-    partial_records: mib_num,
-    basic_records: mib_num,
-    tables_requested: mib_bool,
-    tables_collected: mib_bool,
-    classes: schemas_array(schemas_object({
-        class_id: mib_num,
-        name: nullable(mib_str),
-        entities: mib_num,
-        records: mib_num,
-        support
+]), tO = ex({
+    raw_hex: tm,
+    filter_outer_priority: ty,
+    filter_outer_vid: ty,
+    filter_outer_tpid_dei: ty,
+    filter_inner_priority: ty,
+    filter_inner_vid: ty,
+    filter_inner_tpid_dei: ty,
+    filter_ethertype: ty,
+    tags_to_remove: ty,
+    treatment_outer_priority: ty,
+    treatment_outer_vid: ty,
+    treatment_outer_tpid_dei: ty,
+    treatment_inner_priority: ty,
+    treatment_inner_vid: ty,
+    treatment_inner_tpid_dei: ty,
+    delete_entry: tb
+}), tj = ex({
+    schema_version: eR(1),
+    reference_version: tm,
+    onu_id: eD(ty),
+    uploaded_complete: tb,
+    expected_records: ty,
+    received_records: ty,
+    decoded_records: ty,
+    partial_records: ty,
+    basic_records: ty,
+    tables_requested: tb,
+    tables_collected: tb,
+    classes: ew(ex({
+        class_id: ty,
+        name: eD(tm),
+        entities: ty,
+        records: ty,
+        support: t$
     })),
-    entities: schemas_array(schemas_object({
-        class_id: mib_num,
-        entity_id: mib_num,
-        name: nullable(mib_str),
-        support,
-        reference: nullable(reference),
-        sequences: schemas_array(mib_num),
-        attributes: schemas_array(schemas_object({
-            definition: mib_definition,
-            value: nullable(mib_value),
-            observations: schemas_array(schemas_object({
-                raw_hex: mib_str,
-                value: mib_value,
-                sequences: schemas_array(mib_num)
+    entities: ew(ex({
+        class_id: ty,
+        entity_id: ty,
+        name: eD(tm),
+        support: t$,
+        reference: eD(tw),
+        sequences: ew(ty),
+        attributes: ew(ex({
+            definition: tz,
+            value: eD(tx),
+            observations: ew(ex({
+                raw_hex: tm,
+                value: tx,
+                sequences: ew(ty)
             }))
         })),
-        diagnostics: schemas_array(diagnostic)
+        diagnostics: ew(tk)
     })),
-    records: schemas_array(schemas_object({
-        class_id: mib_num,
-        entity_id: mib_num,
-        sequence: mib_num,
-        attribute_mask: mib_num,
-        raw_hex: mib_str,
-        consumed: mib_num,
-        remaining_hex: mib_str,
-        undecoded_mask: mib_num
+    records: ew(ex({
+        class_id: ty,
+        entity_id: ty,
+        sequence: ty,
+        attribute_mask: ty,
+        raw_hex: tm,
+        consumed: ty,
+        remaining_hex: tm,
+        undecoded_mask: ty
     })),
-    tables: schemas_array(schemas_object({
-        class_id: mib_num,
-        entity_id: mib_num,
-        attribute: mib_definition,
-        collected: mib_bool,
-        error: nullable(mib_str),
-        raw_hex: mib_str,
-        rows: schemas_array(mib_str),
-        vlan_rules: schemas_array(vlanRule)
+    tables: ew(ex({
+        class_id: ty,
+        entity_id: ty,
+        attribute: tz,
+        collected: tb,
+        error: eD(tm),
+        raw_hex: tm,
+        rows: ew(tm),
+        vlan_rules: ew(tO)
     })),
-    diagnostics: schemas_array(diagnostic)
+    diagnostics: ew(tk)
 });
-const mibSnapshot = schemas_object({
-    status: literal("ready"),
-    report: mib_report
+const tP = ex({
+    status: eR("ready"),
+    report: tj
 });
-const rawStart = L.rpc.declare({
+let tS = L.rpc.declare({
     object: "luci.fttr",
     method: "mib_start",
     params: [
@@ -13627,584 +1698,30 @@ const rawStart = L.rpc.declare({
         "optical_sn",
         "tables"
     ],
-    reject: true
-});
-const rawResult = L.rpc.declare({
+    reject: !0
+}), tC = L.rpc.declare({
     object: "luci.fttr",
     method: "mib_result",
     params: [
         "job",
         "chunk"
     ],
-    reject: true
+    reject: !0
 });
-const startMib = async (onu, serial, tables)=>jobStart.parse(common_checked(await rawStart(onu, serial, tables)));
-const getMib = async (job, chunk)=>jobChunk.parse(common_checked(await rawResult(job, chunk)));
-
-;// CONCATENATED MODULE: ./src/view/components/onu-details.tsx
-
-// SPDX-License-Identifier: Apache-2.0
-
-
-
-
-const onu_details_text = (v)=>v == null || v === "" ? "\u2014" : String(v);
-const onu_details_json = (v)=>JSON.stringify(v, null, 2);
-function valueText(value) {
-    if (value === null) return _("Conflicting values; inspect observations");
-    switch(value.type){
-        case "unsigned":
-        case "signed":
-        case "decimal":
-        case "text":
-            return onu_details_text(value.value);
-        case "octets":
-            return onu_details_text(value.hex);
-        case "table_length":
-            return onu_details_text(value.bytes);
-        default:
-            return common_assertNever(value);
-    }
-}
-function onu_details_reference(definition) {
-    const ref = definition.reference;
-    return ref?.url.startsWith("https://github.com/opencord/omci-lib-go/blob/v2.2.4/") ? /*#__PURE__*/ jsx("a", {
-        href: ref.url,
+const tE = async (e, t, n)=>eq.parse(eF(await tS(e, t, n))), tT = async (e, t)=>eW.parse(eF(await tC(e, t)));
+let tR = (e)=>null == e || "" === e ? "\u2014" : String(e), tN = (e)=>JSON.stringify(e, null, 2);
+function tA(e) {
+    let t = e.reference;
+    return t?.url.startsWith("https://github.com/opencord/omci-lib-go/blob/v2.2.4/") ? a("a", {
+        href: t.url,
         target: "_blank",
         rel: "noopener noreferrer",
-        children: ref.id
-    }) : /*#__PURE__*/ jsx("span", {
+        children: t.id
+    }) : a("span", {
         children: "\u2014"
     });
 }
-function browser(report) {
-    const content = /*#__PURE__*/ jsx("div", {
-        style: "min-width:0;flex:1"
-    });
-    const filter = /*#__PURE__*/ jsx("input", {
-        type: "search",
-        placeholder: _("Search ME name or Class ID")
-    });
-    const classes = /*#__PURE__*/ jsx("div", {});
-    function select(id) {
-        content.replaceChildren(...report.entities.filter((e)=>e.class_id === id).map((entity)=>/*#__PURE__*/ jsxs("details", {
-                children: [
-                    /*#__PURE__*/ jsxs("summary", {
-                        children: [
-                            onu_details_text(entity.name),
-                            " \xb7 ",
-                            _("Entity"),
-                            " ",
-                            entity.entity_id,
-                            " (0x",
-                            entity.entity_id.toString(16),
-                            ") \xb7",
-                            " ",
-                            entity.support
-                        ]
-                    }),
-                    /*#__PURE__*/ jsxs("table", {
-                        class: "table",
-                        children: [
-                            /*#__PURE__*/ jsx("thead", {
-                                children: /*#__PURE__*/ jsxs("tr", {
-                                    children: [
-                                        /*#__PURE__*/ jsx("th", {
-                                            children: _("Attribute")
-                                        }),
-                                        /*#__PURE__*/ jsx("th", {
-                                            children: _("Type")
-                                        }),
-                                        /*#__PURE__*/ jsx("th", {
-                                            children: _("Value")
-                                        }),
-                                        /*#__PURE__*/ jsx("th", {
-                                            children: _("Definition")
-                                        })
-                                    ]
-                                })
-                            }),
-                            /*#__PURE__*/ jsx("tbody", {
-                                children: entity.attributes.map((attribute)=>/*#__PURE__*/ jsxs("tr", {
-                                        children: [
-                                            /*#__PURE__*/ jsx("td", {
-                                                children: attribute.definition.name
-                                            }),
-                                            /*#__PURE__*/ jsx("td", {
-                                                children: attribute.definition.kind
-                                            }),
-                                            /*#__PURE__*/ jsxs("td", {
-                                                children: [
-                                                    valueText(attribute.value),
-                                                    /*#__PURE__*/ jsxs("details", {
-                                                        children: [
-                                                            /*#__PURE__*/ jsx("summary", {
-                                                                children: _("Raw data / observations")
-                                                            }),
-                                                            /*#__PURE__*/ jsx("pre", {
-                                                                style: "white-space:pre-wrap;overflow-wrap:anywhere",
-                                                                children: onu_details_json(attribute.observations)
-                                                            })
-                                                        ]
-                                                    })
-                                                ]
-                                            }),
-                                            /*#__PURE__*/ jsx("td", {
-                                                children: onu_details_reference(attribute.definition)
-                                            })
-                                        ]
-                                    }))
-                            })
-                        ]
-                    }),
-                    !entity.attributes.length ? /*#__PURE__*/ jsx("p", {
-                        children: _("Basic display only; raw records are preserved.")
-                    }) : null,
-                    report.tables.filter((t)=>t.class_id === id && t.entity_id === entity.entity_id).map((table)=>/*#__PURE__*/ jsxs("details", {
-                            children: [
-                                /*#__PURE__*/ jsxs("summary", {
-                                    children: [
-                                        table.attribute.name,
-                                        " \xb7",
-                                        " ",
-                                        table.collected ? `${table.rows.length} ${_("rows")}` : onu_details_text(table.error)
-                                    ]
-                                }),
-                                table.vlan_rules.length ? /*#__PURE__*/ jsxs("table", {
-                                    class: "table",
-                                    children: [
-                                        /*#__PURE__*/ jsx("thead", {
-                                            children: /*#__PURE__*/ jsxs("tr", {
-                                                children: [
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("Outer filter (priority / VID / TPID-DEI)")
-                                                    }),
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("Inner filter (priority / VID / TPID-DEI)")
-                                                    }),
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("EtherType code")
-                                                    }),
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("Remove tags")
-                                                    }),
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("Outer treatment (priority / VID / TPID-DEI)")
-                                                    }),
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("Inner treatment (priority / VID / TPID-DEI)")
-                                                    }),
-                                                    /*#__PURE__*/ jsx("th", {
-                                                        children: _("Delete entry")
-                                                    })
-                                                ]
-                                            })
-                                        }),
-                                        /*#__PURE__*/ jsx("tbody", {
-                                            children: table.vlan_rules.map((rule)=>/*#__PURE__*/ jsxs("tr", {
-                                                    children: [
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: `${rule.filter_outer_priority} / ${rule.filter_outer_vid} / ${rule.filter_outer_tpid_dei}`
-                                                        }),
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: `${rule.filter_inner_priority} / ${rule.filter_inner_vid} / ${rule.filter_inner_tpid_dei}`
-                                                        }),
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: onu_details_text(rule.filter_ethertype)
-                                                        }),
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: onu_details_text(rule.tags_to_remove)
-                                                        }),
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: `${rule.treatment_outer_priority} / ${rule.treatment_outer_vid} / ${rule.treatment_outer_tpid_dei}`
-                                                        }),
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: `${rule.treatment_inner_priority} / ${rule.treatment_inner_vid} / ${rule.treatment_inner_tpid_dei}`
-                                                        }),
-                                                        /*#__PURE__*/ jsx("td", {
-                                                            children: onu_details_text(rule.delete_entry)
-                                                        })
-                                                    ]
-                                                }))
-                                        })
-                                    ]
-                                }) : null,
-                                /*#__PURE__*/ jsxs("p", {
-                                    children: [
-                                        _("G.988 encoded field values"),
-                                        ": ",
-                                        onu_details_reference(table.attribute)
-                                    ]
-                                }),
-                                /*#__PURE__*/ jsx("pre", {
-                                    style: "white-space:pre-wrap;overflow-wrap:anywhere",
-                                    children: onu_details_json(table.vlan_rules.length ? table.vlan_rules : table.rows)
-                                })
-                            ]
-                        })),
-                    /*#__PURE__*/ jsxs("details", {
-                        children: [
-                            /*#__PURE__*/ jsx("summary", {
-                                children: _("Records / diagnostics")
-                            }),
-                            /*#__PURE__*/ jsx("pre", {
-                                style: "white-space:pre-wrap;overflow-wrap:anywhere",
-                                children: onu_details_json({
-                                    diagnostics: entity.diagnostics,
-                                    records: report.records.filter((r)=>r.class_id === id && r.entity_id === entity.entity_id)
-                                })
-                            })
-                        ]
-                    })
-                ]
-            })));
-    }
-    function list() {
-        const query = filter.value.toLowerCase();
-        classes.replaceChildren(...report.classes.filter((c)=>`${c.class_id} ${c.name ?? ""}`.toLowerCase().includes(query)).map((c)=>/*#__PURE__*/ jsx("div", {
-                children: /*#__PURE__*/ jsxs("button", {
-                    type: "button",
-                    class: "cbi-button",
-                    style: "margin:.2em 0;white-space:normal;text-align:left",
-                    onclick: ()=>select(c.class_id),
-                    children: [
-                        c.class_id,
-                        " \xb7 ",
-                        c.name ?? _("Unknown class"),
-                        " (",
-                        c.entities,
-                        ")"
-                    ]
-                })
-            })));
-    }
-    filter.addEventListener("input", list);
-    list();
-    if (report.classes.length) select(report.classes[0].class_id);
-    return /*#__PURE__*/ jsxs("div", {
-        style: "display:flex;gap:1em;flex-wrap:wrap",
-        children: [
-            /*#__PURE__*/ jsxs("div", {
-                style: "flex:0 1 240px",
-                children: [
-                    filter,
-                    classes
-                ]
-            }),
-            content
-        ]
-    });
-}
-function showOnuDetails(initial) {
-    let initialTab = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "basic";
-    let closed = false;
-    let busy = false;
-    let report = null;
-    const basic = /*#__PURE__*/ jsx("table", {
-        class: "table",
-        children: /*#__PURE__*/ jsx("tbody", {
-            children: [
-                [
-                    _("Vendor"),
-                    initial.vendor
-                ],
-                [
-                    _("Model"),
-                    initial.identity?.equipment_id ?? initial.model
-                ],
-                [
-                    _("Optical serial"),
-                    initial.serial_number
-                ],
-                [
-                    _("ONU ID"),
-                    initial.onu_id
-                ],
-                [
-                    _("Registration"),
-                    initial.state
-                ],
-                [
-                    _("Business"),
-                    businessText(initial.business_status)
-                ],
-                [
-                    _("Data interface"),
-                    initial.data_path?.interface
-                ],
-                [
-                    _("Receive optical power"),
-                    initial.optical_rx_power_dbm == null ? null : `${initial.optical_rx_power_dbm.toFixed(3)} dBm`
-                ],
-                [
-                    _("Transmit optical power"),
-                    initial.optical_tx_power_dbm == null ? null : `${initial.optical_tx_power_dbm.toFixed(3)} dBm`
-                ],
-                [
-                    _("Uptime"),
-                    initial.uptime_seconds == null ? null : `${Math.floor(initial.uptime_seconds)} s`
-                ],
-                [
-                    _("Equalization delay (EQD)"),
-                    eqdText(initial.equalization_delay_bits)
-                ],
-                [
-                    _("Hardware version"),
-                    initial.identity?.hardware_version ?? initial.hardware_version
-                ],
-                [
-                    _("Software images"),
-                    initial.identity?.software_images?.join(", ") ?? initial.firmware_version
-                ],
-                [
-                    _("OMCC version"),
-                    initial.identity?.omcc_version == null ? null : `0x${initial.identity.omcc_version.toString(16)}`
-                ],
-                [
-                    _("Identity source"),
-                    initial.identity ? initial.identity_current === false ? _("Cached identity") : initial.identity_current === true ? _("Current registration") : _("Registration freshness unavailable") : _("Not collected")
-                ],
-                [
-                    _("Identity age"),
-                    initial.identity_age_seconds == null ? null : `${initial.identity_age_seconds} s`
-                ],
-                [
-                    _("Identity read errors"),
-                    initial.identity?.errors?.join("; ")
-                ]
-            ].map((param)=>{
-                let [name, value] = param;
-                return /*#__PURE__*/ jsxs("tr", {
-                    children: [
-                        /*#__PURE__*/ jsx("th", {
-                            children: name
-                        }),
-                        /*#__PURE__*/ jsx("td", {
-                            children: onu_details_text(value)
-                        })
-                    ]
-                });
-            })
-        })
-    });
-    const message = /*#__PURE__*/ jsx("p", {
-        role: "status",
-        children: _("Read MIB on demand. Results are a snapshot, not live polling.")
-    });
-    const results = /*#__PURE__*/ jsx("div", {});
-    const raw = /*#__PURE__*/ jsx("textarea", {
-        readOnly: true,
-        rows: 20,
-        style: "width:100%;font-family:monospace"
-    });
-    const copyMessage = /*#__PURE__*/ jsx("span", {
-        role: "status"
-    });
-    const copy = /*#__PURE__*/ jsx("button", {
-        type: "button",
-        class: "cbi-button",
-        onclick: async ()=>{
-            try {
-                await navigator.clipboard.writeText(raw.value);
-                copyMessage.textContent = _("Copied");
-            } catch  {
-                raw.focus();
-                raw.select();
-                copyMessage.textContent = _("Select and copy the JSON manually.");
-            }
-        },
-        children: _("Copy JSON")
-    });
-    const download = /*#__PURE__*/ jsx("a", {
-        href: "data:application/json,%7B%7D",
-        class: "cbi-button",
-        download: `mib-${initial.serial_number}.json`,
-        children: _("Download JSON")
-    });
-    let downloadUrl = null;
-    const rawPanel = /*#__PURE__*/ jsxs("div", {
-        children: [
-            /*#__PURE__*/ jsxs("p", {
-                children: [
-                    copy,
-                    " ",
-                    download,
-                    " ",
-                    copyMessage
-                ]
-            }),
-            raw
-        ]
-    });
-    const read = /*#__PURE__*/ jsx("button", {
-        type: "button",
-        class: "cbi-button cbi-button-action",
-        onclick: ()=>run(false),
-        children: _("Read MIB")
-    });
-    const tables = /*#__PURE__*/ jsx("button", {
-        type: "button",
-        class: "cbi-button cbi-button-action",
-        onclick: ()=>run(true),
-        children: _("Read MIB and VLAN tables")
-    });
-    const mib = /*#__PURE__*/ jsxs("div", {
-        children: [
-            /*#__PURE__*/ jsxs("p", {
-                children: [
-                    read,
-                    " ",
-                    tables
-                ]
-            }),
-            message,
-            results
-        ]
-    });
-    const panels = {
-        basic,
-        mib,
-        raw: rawPanel
-    };
-    const buttons = new Map();
-    function tab(name) {
-        for (const [key, panel] of Object.entries(panels)){
-            if (key === name) panel.style.removeProperty("display");
-            else panel.style.setProperty("display", "none", "important");
-        }
-        for (const [key, button] of buttons)button.disabled = key === name;
-    }
-    const navigation = /*#__PURE__*/ jsx("p", {
-        children: [
-            [
-                "basic",
-                _("Basic information")
-            ],
-            [
-                "mib",
-                "OMCI / MIB"
-            ],
-            [
-                "raw",
-                _("Raw JSON")
-            ]
-        ].map((param)=>{
-            let [key, label] = param;
-            const button = /*#__PURE__*/ jsx("button", {
-                type: "button",
-                class: "cbi-button",
-                onclick: ()=>tab(key),
-                children: label
-            });
-            buttons.set(key, button);
-            return button;
-        })
-    });
-    const body = /*#__PURE__*/ jsxs(Fragment, {
-        children: [
-            navigation,
-            basic,
-            mib,
-            rawPanel,
-            /*#__PURE__*/ jsx("div", {
-                class: "right",
-                children: /*#__PURE__*/ jsx("button", {
-                    type: "button",
-                    class: "cbi-button",
-                    onclick: ()=>{
-                        closed = true;
-                        if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-                        L.ui.hideModal();
-                    },
-                    children: _("Close")
-                })
-            })
-        ]
-    });
-    // The body is a Fragment; track a persistent element after its children are mounted.
-    const active = ()=>!closed && navigation.isConnected && navigation.getClientRects().length > 0;
-    async function run(withTables) {
-        if (busy) return;
-        busy = true;
-        read.disabled = tables.disabled = true;
-        message.textContent = _("Reading MIB\u2026");
-        try {
-            const status = await getStatus();
-            const current = status.sub_gateways?.find((o)=>o.serial_number === initial.serial_number);
-            if (current?.state !== "o5_operation") throw new Error(_("Device is offline; reopen details after registration."));
-            if (!active()) return;
-            const started = await startMib(current.onu_id, current.serial_number, withTables);
-            const deadline = Date.now() + 140000;
-            while(active()){
-                const result = await getMib(started.job, 0);
-                if (!active()) return;
-                if (result.status === "ready") {
-                    if (!result.chunks || result.chunks > 1024 || !result.bytes || result.bytes > 32 * 1024 * 1024 || result.chunk !== 0 || !result.data) throw new Error(_("Invalid MIB snapshot"));
-                    const buffer = new Uint8Array(result.bytes);
-                    let offset = 0;
-                    for(let chunk = 0; chunk < result.chunks; chunk++){
-                        const part = chunk === 0 ? result : await getMib(started.job, chunk);
-                        if (!active()) return;
-                        if (part.status !== "ready" || part.chunk !== chunk || part.chunks !== result.chunks || part.bytes !== result.bytes || !part.data) throw new Error(_("Invalid MIB snapshot chunk"));
-                        const decoded = atob(part.data);
-                        if (decoded.length > 32768 || offset + decoded.length > buffer.length) throw new Error(_("Invalid MIB snapshot size"));
-                        for(let index = 0; index < decoded.length; index++)buffer[offset++] = decoded.charCodeAt(index);
-                        message.textContent = `${_("Downloading MIB snapshot")}: ${chunk + 1}/${result.chunks}`;
-                    }
-                    if (offset !== buffer.length) throw new Error(_("Incomplete MIB snapshot"));
-                    const snapshot = mibSnapshot.parse(common_checked(JSON.parse(new TextDecoder("utf-8", {
-                        fatal: true
-                    }).decode(buffer))));
-                    report = snapshot.report;
-                    if (report.schema_version !== 1 || report.onu_id !== current.onu_id) throw new Error(_("Unexpected MIB response"));
-                    message.textContent = `${new Date().toLocaleString()} \xb7 ONU ${report.onu_id} \xb7 ${_("Upload complete")}: ${report.uploaded_complete} \xb7 ${report.received_records}/${report.expected_records} \xb7 ${_("Decoded / partial / basic")}: ${report.decoded_records}/${report.partial_records}/${report.basic_records} \xb7 ${_("Tables requested / collected")}: ${report.tables_requested}/${report.tables_collected}`;
-                    results.replaceChildren(browser(report), /*#__PURE__*/ jsxs("details", {
-                        children: [
-                            /*#__PURE__*/ jsx("summary", {
-                                children: _("Upload diagnostics")
-                            }),
-                            /*#__PURE__*/ jsx("pre", {
-                                children: onu_details_json(report.diagnostics)
-                            })
-                        ]
-                    }));
-                    raw.value = onu_details_json(report);
-                    if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-                    downloadUrl = URL.createObjectURL(new Blob([
-                        raw.value
-                    ], {
-                        type: "application/json"
-                    }));
-                    download.href = downloadUrl;
-                    copy.disabled = false;
-                    download.style.display = "";
-                    return;
-                }
-                if (Date.now() >= deadline) throw new Error(_("MIB query timed out; retry."));
-                await new Promise((resolve)=>setTimeout(resolve, 1000));
-            }
-        } catch (error) {
-            if (active()) message.textContent = `${String(error)}${report ? ` \xb7 ${_("Previous snapshot retained")}` : ""}`;
-        } finally{
-            busy = false;
-            read.disabled = tables.disabled = false;
-        }
-    }
-    copy.disabled = true;
-    download.style.display = "none";
-    tab(initialTab);
-    L.ui.showModal(`${initial.model} \u{2014} ${initial.serial_number}`, body);
-}
-
-;// CONCATENATED MODULE: ./src/view/index.tsx
-
-// SPDX-License-Identifier: Apache-2.0
-
-
-
-const view = L.view;
-const poll = L.Poll;
-const I18N_DICT = {
+let tM = L.view, tD = L.Poll, tI = {
     "FTTR overview": "FTTR \u603B\u89C8",
     Controller: "\u4E3B\u63A7\u5236\u5668",
     FPGA: "FPGA",
@@ -14286,371 +1803,30 @@ const I18N_DICT = {
     verifying: "\u6821\u9A8C\u4E2D",
     settling: "\u7A33\u5B9A\u4E2D"
 };
-function view_tr(key) {
-    const translated = _(key);
-    if (translated && translated !== key) return translated;
-    const isZh = /zh/i.test(document.documentElement.getAttribute("lang") || window.L?.env?.lang || navigator.language || "");
-    if (isZh && I18N_DICT[key]) return I18N_DICT[key];
-    return translated || key;
+function tL(e) {
+    let t = _(e);
+    return t && t !== e ? t : /zh/i.test(document.documentElement.getAttribute("lang") || window.L?.env?.lang || navigator.language || "") && tI[e] ? tI[e] : t || e;
 }
-const view_text = (value)=>value === null || value === undefined || value === "" ? "\u2014" : String(value);
-function updateBadge(node, type, label, title) {
-    node.textContent = label;
-    if (type === "none") {
-        node.className = "";
-    } else {
-        node.className = `fttr-badge fttr-badge-${type}`;
-    }
-    if (title) {
-        node.setAttribute("title", title);
-    } else {
-        node.removeAttribute("title");
-    }
+let tZ = (e)=>null == e || "" === e ? "\u2014" : String(e);
+function tU(e, t, n, r) {
+    e.textContent = n, "none" === t ? e.className = "" : e.className = `fttr-badge fttr-badge-${t}`, r ? e.setAttribute("title", r) : e.removeAttribute("title");
 }
-/** Extract primary firmware version and preserve all software images for hover tooltip */ function formatFirmware(raw) {
-    if (!raw) return {
-        display: "\u2014"
-    };
-    const match = raw.match(/image\s*\d+:\s*([^;,\s]+)/i);
-    if (match?.[1]) {
-        return {
-            display: match[1],
-            full: raw.replace(/;\s*/g, "\n")
-        };
-    }
-    return {
-        display: raw
-    };
-}
-function formatBytes(value) {
-    if (value === undefined || !Number.isFinite(value) || value < 0) return "\u2014";
-    if (value < 1024) return `${value} B`;
-    const units = [
+function tB(e) {
+    if (void 0 === e || !Number.isFinite(e) || e < 0) return "\u2014";
+    if (e < 1024) return `${e} B`;
+    let t = [
         "KiB",
         "MiB",
         "GiB",
         "TiB"
-    ];
-    let amount = value / 1024;
-    let unit = 0;
-    while(amount >= 1024 && unit < units.length - 1){
-        amount /= 1024;
-        unit++;
-    }
-    return `${amount.toFixed(1)} ${units[unit]}`;
+    ], n = e / 1024, r = 0;
+    for(; n >= 1024 && r < t.length - 1;)n /= 1024, r++;
+    return `${n.toFixed(1)} ${t[r]}`;
 }
-function formatPackets(value) {
-    if (value === undefined || !Number.isFinite(value) || value < 0) return "\u2014";
-    if (value < 1000) return `${value} ${view_tr("Received packets").includes("\u5305") ? "\u5305" : "Pkts."}`;
-    return `${(value / 1000).toFixed(2)} K${view_tr("Received packets").includes("\u5305") ? "\u5305" : "Pkts."}`;
+function tF(e) {
+    return void 0 === e || !Number.isFinite(e) || e < 0 ? "\u2014" : e < 1000 ? `${e} ${tL("Received packets").includes("\u5305") ? "\u5305" : "Pkts."}` : `${(e / 1000).toFixed(2)} K${tL("Received packets").includes("\u5305") ? "\u5305" : "Pkts."}`;
 }
-function formatLinkSpeed(speed) {
-    if (speed === undefined || !Number.isFinite(speed) || speed <= 0) return view_tr("Unknown");
-    if (speed >= 1000) return `${speed / 1000}\u{202F}GbE`;
-    return `${speed}\u{202F}MbE`;
-}
-function createPortCard(number) {
-    const ifnameNode = /*#__PURE__*/ jsx("span", {});
-    const speedNode = /*#__PURE__*/ jsx("span", {
-        children: view_tr("Unknown")
-    });
-    const iconNode = /*#__PURE__*/ jsx("img", {
-        src: "/luci-static/resources/icons/port_down.svg",
-        alt: "",
-        "aria-hidden": "true"
-    });
-    const linkBarNode = /*#__PURE__*/ jsx("div", {
-        style: "flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"
-    });
-    const portStateNode = /*#__PURE__*/ jsx("span", {});
-    const onuNode = /*#__PURE__*/ jsx("span", {});
-    const macNode = /*#__PURE__*/ jsx("span", {});
-    const txSummaryNode = /*#__PURE__*/ jsx("span", {});
-    const rxSummaryNode = /*#__PURE__*/ jsx("span", {});
-    const rxBytesNode = /*#__PURE__*/ jsx("span", {});
-    const rxPacketsNode = /*#__PURE__*/ jsx("span", {});
-    const rxMulticastNode = /*#__PURE__*/ jsx("span", {});
-    const rxErrorsNode = /*#__PURE__*/ jsx("span", {});
-    const rxDroppedNode = /*#__PURE__*/ jsx("span", {});
-    const txBytesNode = /*#__PURE__*/ jsx("span", {});
-    const txPacketsNode = /*#__PURE__*/ jsx("span", {});
-    const txErrorsNode = /*#__PURE__*/ jsx("span", {});
-    const txDroppedNode = /*#__PURE__*/ jsx("span", {});
-    const element = /*#__PURE__*/ jsxs("div", {
-        class: "ifacebox fttr-port-card",
-        "data-fttr-port": String(number),
-        style: "box-sizing:border-box;width:100%;margin:0;cursor:pointer",
-        children: [
-            /*#__PURE__*/ jsx("div", {
-                class: "ifacebox-head",
-                style: "font-weight:bold",
-                children: ifnameNode
-            }),
-            /*#__PURE__*/ jsxs("div", {
-                class: "ifacebox-body",
-                children: [
-                    iconNode,
-                    /*#__PURE__*/ jsx("br", {}),
-                    speedNode
-                ]
-            }),
-            /*#__PURE__*/ jsxs("div", {
-                class: "ifacebox-head cbi-tooltip-container",
-                style: "display:flex",
-                children: [
-                    linkBarNode,
-                    /*#__PURE__*/ jsxs("span", {
-                        class: "cbi-tooltip left",
-                        children: [
-                            /*#__PURE__*/ jsxs("strong", {
-                                children: [
-                                    view_tr("Port status"),
-                                    ": "
-                                ]
-                            }),
-                            portStateNode,
-                            /*#__PURE__*/ jsx("br", {}),
-                            /*#__PURE__*/ jsxs("strong", {
-                                children: [
-                                    view_tr("ONU"),
-                                    ": "
-                                ]
-                            }),
-                            onuNode,
-                            /*#__PURE__*/ jsx("br", {}),
-                            /*#__PURE__*/ jsxs("strong", {
-                                children: [
-                                    view_tr("MAC address"),
-                                    ": "
-                                ]
-                            }),
-                            macNode
-                        ]
-                    })
-                ]
-            }),
-            /*#__PURE__*/ jsx("div", {
-                class: "ifacebox-body",
-                children: /*#__PURE__*/ jsxs("div", {
-                    class: "cbi-tooltip-container",
-                    style: "text-align:left;font-size:80%;line-height:1.4",
-                    children: [
-                        /*#__PURE__*/ jsxs("div", {
-                            style: "white-space:nowrap",
-                            children: [
-                                "\u25B2\u202F",
-                                txSummaryNode
-                            ]
-                        }),
-                        /*#__PURE__*/ jsxs("div", {
-                            style: "white-space:nowrap",
-                            children: [
-                                "\u25BC\u202F",
-                                rxSummaryNode
-                            ]
-                        }),
-                        /*#__PURE__*/ jsx("span", {
-                            class: "cbi-tooltip",
-                            children: /*#__PURE__*/ jsxs("span", {
-                                children: [
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Received bytes"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            rxBytesNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Received packets"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            rxPacketsNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Received multicast"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            rxMulticastNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Receive errors"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            rxErrorsNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Receive dropped"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            rxDroppedNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Transmitted bytes"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            txBytesNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Transmitted packets"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            txPacketsNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Transmit errors"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            txErrorsNode
-                                        ]
-                                    }),
-                                    /*#__PURE__*/ jsx("br", {}),
-                                    /*#__PURE__*/ jsxs("span", {
-                                        class: "nowrap",
-                                        children: [
-                                            /*#__PURE__*/ jsxs("strong", {
-                                                children: [
-                                                    view_tr("Transmit dropped"),
-                                                    ": "
-                                                ]
-                                            }),
-                                            txDroppedNode
-                                        ]
-                                    })
-                                ]
-                            })
-                        })
-                    ]
-                })
-            })
-        ]
-    });
-    element.addEventListener("mouseenter", ()=>{
-        const currentOnuId = element.getAttribute("data-active-onu-id");
-        if (currentOnuId) {
-            const targetRow = document.querySelector(`[data-fttr-onu-id="${currentOnuId}"]`);
-            targetRow?.classList.add("fttr-row-highlight");
-        }
-    });
-    element.addEventListener("mouseleave", ()=>{
-        document.querySelectorAll(".fttr-row-highlight").forEach((el)=>{
-            el.classList.remove("fttr-row-highlight");
-        });
-    });
-    element.addEventListener("click", ()=>{
-        const currentOnuId = element.getAttribute("data-active-onu-id");
-        if (currentOnuId) {
-            const targetRow = document.querySelector(`[data-fttr-onu-id="${currentOnuId}"]`);
-            if (targetRow) {
-                targetRow.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest"
-                });
-                targetRow.classList.add("fttr-row-highlight");
-                window.setTimeout(()=>targetRow.classList.remove("fttr-row-highlight"), 1500);
-            }
-        }
-    });
-    return {
-        element,
-        update (status, devices) {
-            const port = (status.switch_ports ?? []).find((item)=>item.port === number);
-            const ifname = port?.interface ?? `fttr${number}`;
-            const device = devices[ifname];
-            const stats = device?.stats;
-            const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
-            const onu = (status.sub_gateways ?? []).find((item)=>item.onu_id === port?.onu_id);
-            const connected = carrier === true;
-            const rxBytes = stats?.rx_bytes;
-            const txBytes = stats?.tx_bytes;
-            if (port?.onu_id !== undefined) {
-                element.setAttribute("data-active-onu-id", String(port.onu_id));
-            } else {
-                element.removeAttribute("data-active-onu-id");
-            }
-            if (connected) {
-                element.classList.add("port-up");
-                element.classList.remove("port-down");
-            } else {
-                element.classList.add("port-down");
-                element.classList.remove("port-up");
-            }
-            ifnameNode.textContent = ifname;
-            iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
-            speedNode.textContent = connected ? device?.link?.speed !== undefined ? formatLinkSpeed(device.link.speed) : view_tr("Connected") : carrier === false ? view_tr("Disconnected") : view_tr("Unknown");
-            speedNode.setAttribute("title", _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(view_text(device?.link?.speed), view_text(device?.link?.duplex)));
-            linkBarNode.style.opacity = connected ? "1" : "0.25";
-            linkBarNode.style.backgroundColor = connected ? "rgb(46, 204, 113)" : "rgba(200, 200, 200, 0.4)";
-            portStateNode.textContent = view_text(port?.link_state ?? port?.status ?? (device ? carrier ? view_tr("Link up") : view_tr("Link down") : view_tr("Unavailable")));
-            onuNode.textContent = view_text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id);
-            macNode.textContent = view_text(device?.mac);
-            txSummaryNode.textContent = !connected && !txBytes ? "\u2014" : formatBytes(txBytes);
-            rxSummaryNode.textContent = !connected && !rxBytes ? "\u2014" : formatBytes(rxBytes);
-            rxBytesNode.textContent = formatBytes(rxBytes);
-            rxPacketsNode.textContent = formatPackets(stats?.rx_packets);
-            rxMulticastNode.textContent = formatPackets(stats?.rx_multicast ?? stats?.multicast);
-            rxErrorsNode.textContent = formatPackets(stats?.rx_errors);
-            rxDroppedNode.textContent = formatPackets(stats?.rx_dropped);
-            txBytesNode.textContent = formatBytes(txBytes);
-            txPacketsNode.textContent = formatPackets(stats?.tx_packets);
-            txErrorsNode.textContent = formatPackets(stats?.tx_errors);
-            txDroppedNode.textContent = formatPackets(stats?.tx_dropped);
-        }
-    };
-}
-const REGISTRATION_STATE_LABELS = {
+let tq = {
     o1_initial: _("O1 Initial"),
     o2_standby: _("O2 Standby"),
     o3_serial_number: _("O3 Serial Number"),
@@ -14658,13 +1834,11 @@ const REGISTRATION_STATE_LABELS = {
     o5_operation: _("O5 (Operation)"),
     o6_intermittent_lods: _("O6 Intermittent LODS"),
     o7_emergency_stop: _("O7 Emergency Stop")
-};
-const CWMP_STATE_LABELS = {
+}, tW = {
     online: _("Online"),
     waiting_inform: _("Waiting Inform"),
     offline_or_stale: _("Offline or stale")
-};
-const PROVISIONING_STATE_LABELS = {
+}, tV = {
     waiting: _("Waiting"),
     wan_reconciling: _("WAN reconciling"),
     wan_verifying: _("WAN verifying"),
@@ -14682,8 +1856,7 @@ const PROVISIONING_STATE_LABELS = {
     error: _("Error"),
     blocked: _("Blocked"),
     not_started: _("Not started")
-};
-const WIFI_SYNC_STATE_LABELS = {
+}, tJ = {
     not_configured: _("Not configured"),
     stale_revision: _("Stale revision"),
     stale_management: _("Stale management"),
@@ -14692,355 +1865,1008 @@ const WIFI_SYNC_STATE_LABELS = {
     accepted_unverified: _("Unverified"),
     pending: _("Pending")
 };
-function renderCwmpBadge(node, state) {
-    if (!state) {
-        updateBadge(node, "none", "\u2014");
-    } else if (state === "online") {
-        updateBadge(node, "success", view_tr(CWMP_STATE_LABELS.online));
-    } else if (state === "waiting_inform") {
-        updateBadge(node, "warning", view_tr(CWMP_STATE_LABELS.waiting_inform));
-    } else if (state === "offline_or_stale") {
-        updateBadge(node, "danger", view_tr(CWMP_STATE_LABELS.offline_or_stale));
-    } else {
-        updateBadge(node, "neutral", view_text(state));
-    }
-}
-function renderProvisioningBadge(node, state, title) {
-    if (!state || state === "not_started") {
-        updateBadge(node, "neutral", view_tr(PROVISIONING_STATE_LABELS.not_started), title);
-    } else if (state === "completed" || state === "verified") {
-        updateBadge(node, "success", state === "completed" ? view_tr(PROVISIONING_STATE_LABELS.completed) : view_tr("Ready"), title);
-    } else if (state === "wan_reconciling" || state === "wan_verifying" || state === "wifi_reconciling" || state === "discovering" || state === "reading" || state === "disabling" || state === "disabling_read" || state === "writing" || state === "verifying" || state === "settling") {
-        const rawLabel = PROVISIONING_STATE_LABELS[state] ?? state;
-        updateBadge(node, "info", view_tr(rawLabel), title);
-    } else if (state === "interrupted" || state === "failed" || state === "error" || state === "blocked") {
-        const rawLabel = state === "blocked" ? PROVISIONING_STATE_LABELS.blocked : PROVISIONING_STATE_LABELS.interrupted;
-        updateBadge(node, "danger", view_tr(rawLabel), title);
-    } else if (state === "waiting" || state === "pending") {
-        updateBadge(node, "warning", view_tr(PROVISIONING_STATE_LABELS.waiting), title);
-    } else {
-        updateBadge(node, "neutral", view_text(state), title);
-    }
-}
-function renderWifiSyncBadge(node, state) {
-    if (!state || state === "not_configured") {
-        updateBadge(node, "neutral", view_tr(WIFI_SYNC_STATE_LABELS.not_configured));
-    } else if (state === "verified") {
-        updateBadge(node, "success", view_tr(WIFI_SYNC_STATE_LABELS.verified));
-    } else if (state === "attention_required") {
-        updateBadge(node, "danger", view_tr(WIFI_SYNC_STATE_LABELS.attention_required));
-    } else if (state === "stale_revision" || state === "stale_management") {
-        updateBadge(node, "warning", view_tr(WIFI_SYNC_STATE_LABELS[state]));
-    } else if (state === "accepted_unverified" || state === "pending") {
-        updateBadge(node, "warning", view_tr(WIFI_SYNC_STATE_LABELS[state]));
-    } else {
-        updateBadge(node, "neutral", view_text(state));
-    }
-}
-function createOnuRow(onu) {
-    let current = onu;
-    const onuIdNode = /*#__PURE__*/ jsx("span", {});
-    const vendorNode = /*#__PURE__*/ jsx("span", {});
-    const modelNode = /*#__PURE__*/ jsx("span", {});
-    const serialNode = /*#__PURE__*/ jsx("code", {
+function tG(e) {
+    var t, n, r;
+    let i = e, s = a("span", {}), l = a("span", {}), d = a("span", {}), c = a("code", {
         style: "font-size:90%"
-    });
-    const registrationNode = /*#__PURE__*/ jsx("span", {
+    }), u = a("span", {
         class: "fttr-badge"
-    });
-    const businessNode = /*#__PURE__*/ jsx("span", {
+    }), p = a("span", {
         class: "fttr-badge"
-    });
-    const firmwareNode = /*#__PURE__*/ jsx("span", {
+    }), f = a("span", {
         style: "font-size:90%"
-    });
-    const dataInterfaceNode = /*#__PURE__*/ jsx("code", {
+    }), h = a("code", {
         style: "font-size:90%"
-    });
-    const cwmpNode = /*#__PURE__*/ jsx("span", {
+    }), g = a("span", {
         class: "fttr-badge"
-    });
-    const provisioningNode = /*#__PURE__*/ jsx("span", {
+    }), v = a("span", {
         class: "fttr-badge"
-    });
-    const wifiSyncNode = /*#__PURE__*/ jsx("span", {
+    }), m = a("span", {
         class: "fttr-badge"
-    });
-    const element = /*#__PURE__*/ jsxs("tr", {
-        "data-fttr-onu-id": String(onu.onu_id),
+    }), y = (r = {
+        "data-fttr-onu-id": String(e.onu_id),
         children: [
-            /*#__PURE__*/ jsx("td", {
-                children: onuIdNode
+            a("td", {
+                children: s
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: vendorNode
+            a("td", {
+                children: l
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: modelNode
+            a("td", {
+                children: d
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: serialNode
+            a("td", {
+                children: c
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: registrationNode
+            a("td", {
+                children: u
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: businessNode
+            a("td", {
+                children: p
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: firmwareNode
+            a("td", {
+                children: f
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: dataInterfaceNode
+            a("td", {
+                children: h
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: cwmpNode
+            a("td", {
+                children: g
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: provisioningNode
+            a("td", {
+                children: v
             }),
-            /*#__PURE__*/ jsx("td", {
-                children: wifiSyncNode
+            a("td", {
+                children: m
             }),
-            /*#__PURE__*/ jsx("td", {
+            (n = {
                 style: "text-align:right",
-                children: /*#__PURE__*/ jsx("button", {
+                children: (t = {
                     type: "button",
                     class: "cbi-button cbi-button-neutral",
-                    onclick: ()=>showOnuDetails(current),
-                    children: view_tr("Details")
-                })
-            })
+                    onclick: ()=>(function(e) {
+                            var t, n, r, i, s, l, d, c;
+                            let u = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "basic", p = !1, f = !1, h = null, g = (r = {
+                                class: "table",
+                                children: (n = {
+                                    children: [
+                                        [
+                                            _("Vendor"),
+                                            e.vendor
+                                        ],
+                                        [
+                                            _("Model"),
+                                            e.identity?.equipment_id ?? e.model
+                                        ],
+                                        [
+                                            _("Optical serial"),
+                                            e.serial_number
+                                        ],
+                                        [
+                                            _("ONU ID"),
+                                            e.onu_id
+                                        ],
+                                        [
+                                            _("Registration"),
+                                            e.state
+                                        ],
+                                        [
+                                            _("Business"),
+                                            t_(e.business_status)
+                                        ],
+                                        [
+                                            _("Data interface"),
+                                            e.data_path?.interface
+                                        ],
+                                        [
+                                            _("Receive optical power"),
+                                            null == e.optical_rx_power_dbm ? null : `${e.optical_rx_power_dbm.toFixed(3)} dBm`
+                                        ],
+                                        [
+                                            _("Transmit optical power"),
+                                            null == e.optical_tx_power_dbm ? null : `${e.optical_tx_power_dbm.toFixed(3)} dBm`
+                                        ],
+                                        [
+                                            _("Uptime"),
+                                            null == e.uptime_seconds ? null : `${Math.floor(e.uptime_seconds)} s`
+                                        ],
+                                        [
+                                            _("Equalization delay (EQD)"),
+                                            null === (t = e.equalization_delay_bits) ? "\u2014" : `${t} bits`
+                                        ],
+                                        [
+                                            _("Hardware version"),
+                                            e.identity?.hardware_version ?? e.hardware_version
+                                        ],
+                                        [
+                                            _("Software images"),
+                                            e.identity?.software_images?.join(", ") ?? e.firmware_version
+                                        ],
+                                        [
+                                            _("OMCC version"),
+                                            e.identity?.omcc_version == null ? null : `0x${e.identity.omcc_version.toString(16)}`
+                                        ],
+                                        [
+                                            _("Identity source"),
+                                            e.identity ? !1 === e.identity_current ? _("Cached identity") : !0 === e.identity_current ? _("Current registration") : _("Registration freshness unavailable") : _("Not collected")
+                                        ],
+                                        [
+                                            _("Identity age"),
+                                            null == e.identity_age_seconds ? null : `${e.identity_age_seconds} s`
+                                        ],
+                                        [
+                                            _("Identity read errors"),
+                                            e.identity?.errors?.join("; ")
+                                        ]
+                                    ].map((e)=>{
+                                        var t;
+                                        let [n, r] = e;
+                                        return t = {
+                                            children: [
+                                                a("th", {
+                                                    children: n
+                                                }),
+                                                a("td", {
+                                                    children: tR(r)
+                                                })
+                                            ]
+                                        }, a("tr", t);
+                                    })
+                                }, a("tbody", n))
+                            }, a("table", r)), v = a("p", {
+                                role: "status",
+                                children: _("Read MIB on demand. Results are a snapshot, not live polling.")
+                            }), m = a("div", {}), y = a("textarea", {
+                                readOnly: !0,
+                                rows: 20,
+                                style: "width:100%;font-family:monospace"
+                            }), b = a("span", {
+                                role: "status"
+                            }), w = a("button", {
+                                type: "button",
+                                class: "cbi-button",
+                                onclick: async ()=>{
+                                    try {
+                                        await navigator.clipboard.writeText(y.value), b.textContent = _("Copied");
+                                    } catch  {
+                                        y.focus(), y.select(), b.textContent = _("Select and copy the JSON manually.");
+                                    }
+                                },
+                                children: _("Copy JSON")
+                            }), z = a("a", {
+                                href: "data:application/json,%7B%7D",
+                                class: "cbi-button",
+                                download: `mib-${e.serial_number}.json`,
+                                children: _("Download JSON")
+                            }), x = null, k = (i = {
+                                children: [
+                                    a("p", {
+                                        children: [
+                                            w,
+                                            " ",
+                                            z,
+                                            " ",
+                                            b
+                                        ]
+                                    }),
+                                    y
+                                ]
+                            }, a("div", i)), $ = a("button", {
+                                type: "button",
+                                class: "cbi-button cbi-button-action",
+                                onclick: ()=>A(!1),
+                                children: _("Read MIB")
+                            }), O = a("button", {
+                                type: "button",
+                                class: "cbi-button cbi-button-action",
+                                onclick: ()=>A(!0),
+                                children: _("Read MIB and VLAN tables")
+                            }), j = (s = {
+                                children: [
+                                    a("p", {
+                                        children: [
+                                            $,
+                                            " ",
+                                            O
+                                        ]
+                                    }),
+                                    v,
+                                    m
+                                ]
+                            }, a("div", s)), P = {
+                                basic: g,
+                                mib: j,
+                                raw: k
+                            }, S = new Map();
+                            function C(e) {
+                                for (let [t, n] of Object.entries(P))t === e ? n.style.removeProperty("display") : n.style.setProperty("display", "none", "important");
+                                for (let [t, n] of S)n.disabled = t === e;
+                            }
+                            let T = (l = {
+                                children: [
+                                    [
+                                        "basic",
+                                        _("Basic information")
+                                    ],
+                                    [
+                                        "mib",
+                                        "OMCI / MIB"
+                                    ],
+                                    [
+                                        "raw",
+                                        _("Raw JSON")
+                                    ]
+                                ].map((e)=>{
+                                    let [t, n] = e, r = a("button", {
+                                        type: "button",
+                                        class: "cbi-button",
+                                        onclick: ()=>C(t),
+                                        children: n
+                                    });
+                                    return S.set(t, r), r;
+                                })
+                            }, a("p", l)), R = (c = {
+                                children: [
+                                    T,
+                                    g,
+                                    j,
+                                    k,
+                                    (d = {
+                                        class: "right",
+                                        children: a("button", {
+                                            type: "button",
+                                            class: "cbi-button",
+                                            onclick: ()=>{
+                                                p = !0, x && URL.revokeObjectURL(x), L.ui.hideModal();
+                                            },
+                                            children: _("Close")
+                                        })
+                                    }, a("div", d))
+                                ]
+                            }, a(o, c)), N = ()=>!p && T.isConnected && T.getClientRects().length > 0;
+                            async function A(t) {
+                                if (!f) {
+                                    f = !0, $.disabled = O.disabled = !0, v.textContent = _("Reading MIB\u2026");
+                                    try {
+                                        let o = await tg(), s = o.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
+                                        if (s?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
+                                        if (!N()) return;
+                                        let l = await tE(s.onu_id, s.serial_number, t), d = Date.now() + 140000;
+                                        for(; N();){
+                                            let e = await tT(l.job, 0);
+                                            if (!N()) return;
+                                            if ("ready" === e.status) {
+                                                var n, r, i;
+                                                if (!e.chunks || e.chunks > 1024 || !e.bytes || e.bytes > 33554432 || 0 !== e.chunk || !e.data) throw Error(_("Invalid MIB snapshot"));
+                                                let t = new Uint8Array(e.bytes), o = 0;
+                                                for(let n = 0; n < e.chunks; n++){
+                                                    let r = 0 === n ? e : await tT(l.job, n);
+                                                    if (!N()) return;
+                                                    if ("ready" !== r.status || r.chunk !== n || r.chunks !== e.chunks || r.bytes !== e.bytes || !r.data) throw Error(_("Invalid MIB snapshot chunk"));
+                                                    let i = atob(r.data);
+                                                    if (i.length > 32768 || o + i.length > t.length) throw Error(_("Invalid MIB snapshot size"));
+                                                    for(let e = 0; e < i.length; e++)t[o++] = i.charCodeAt(e);
+                                                    v.textContent = `${_("Downloading MIB snapshot")}: ${n + 1}/${e.chunks}`;
+                                                }
+                                                if (o !== t.length) throw Error(_("Incomplete MIB snapshot"));
+                                                if (h = tP.parse(eF(JSON.parse(new TextDecoder("utf-8", {
+                                                    fatal: !0
+                                                }).decode(t)))).report, 1 !== h.schema_version || h.onu_id !== s.onu_id) throw Error(_("Unexpected MIB response"));
+                                                v.textContent = `${new Date().toLocaleString()} \xb7 ONU ${h.onu_id} \xb7 ${_("Upload complete")}: ${h.uploaded_complete} \xb7 ${h.received_records}/${h.expected_records} \xb7 ${_("Decoded / partial / basic")}: ${h.decoded_records}/${h.partial_records}/${h.basic_records} \xb7 ${_("Tables requested / collected")}: ${h.tables_requested}/${h.tables_collected}`, m.replaceChildren(function(e) {
+                                                    var t, n, r, i, o;
+                                                    let s = (t = {
+                                                        style: "min-width:0;flex:1"
+                                                    }, a("div", t)), l = (n = {
+                                                        type: "search",
+                                                        placeholder: _("Search ME name or Class ID")
+                                                    }, a("input", n)), d = (r = {}, a("div", r));
+                                                    function c(t) {
+                                                        s.replaceChildren(...e.entities.filter((e)=>e.class_id === t).map((n)=>{
+                                                            var r, i, o, s, l, d, c, u, p, f, h, g, v, m;
+                                                            return m = {
+                                                                children: [
+                                                                    (r = {
+                                                                        children: [
+                                                                            tR(n.name),
+                                                                            " \xb7 ",
+                                                                            _("Entity"),
+                                                                            " ",
+                                                                            n.entity_id,
+                                                                            " (0x",
+                                                                            n.entity_id.toString(16),
+                                                                            ") \xb7",
+                                                                            " ",
+                                                                            n.support
+                                                                        ]
+                                                                    }, a("summary", r)),
+                                                                    (p = {
+                                                                        class: "table",
+                                                                        children: [
+                                                                            (c = {
+                                                                                children: (d = {
+                                                                                    children: [
+                                                                                        (i = {
+                                                                                            children: _("Attribute")
+                                                                                        }, a("th", i)),
+                                                                                        (o = {
+                                                                                            children: _("Type")
+                                                                                        }, a("th", o)),
+                                                                                        (s = {
+                                                                                            children: _("Value")
+                                                                                        }, a("th", s)),
+                                                                                        (l = {
+                                                                                            children: _("Definition")
+                                                                                        }, a("th", l))
+                                                                                    ]
+                                                                                }, a("tr", d))
+                                                                            }, a("thead", c)),
+                                                                            (u = {
+                                                                                children: n.attributes.map((e)=>{
+                                                                                    var t, n, r, i, o, s, l, d;
+                                                                                    return d = {
+                                                                                        children: [
+                                                                                            (t = {
+                                                                                                children: e.definition.name
+                                                                                            }, a("td", t)),
+                                                                                            (n = {
+                                                                                                children: e.definition.kind
+                                                                                            }, a("td", n)),
+                                                                                            (s = {
+                                                                                                children: [
+                                                                                                    function(e) {
+                                                                                                        if (null === e) return _("Conflicting values; inspect observations");
+                                                                                                        switch(e.type){
+                                                                                                            case "unsigned":
+                                                                                                            case "signed":
+                                                                                                            case "decimal":
+                                                                                                            case "text":
+                                                                                                                return tR(e.value);
+                                                                                                            case "octets":
+                                                                                                                return tR(e.hex);
+                                                                                                            case "table_length":
+                                                                                                                return tR(e.bytes);
+                                                                                                            default:
+                                                                                                                throw new eB("unexpected_variant", `Unexpected variant: ${String(e)}`);
+                                                                                                        }
+                                                                                                    }(e.value),
+                                                                                                    (o = {
+                                                                                                        children: [
+                                                                                                            (r = {
+                                                                                                                children: _("Raw data / observations")
+                                                                                                            }, a("summary", r)),
+                                                                                                            (i = {
+                                                                                                                style: "white-space:pre-wrap;overflow-wrap:anywhere",
+                                                                                                                children: tN(e.observations)
+                                                                                                            }, a("pre", i))
+                                                                                                        ]
+                                                                                                    }, a("details", o))
+                                                                                                ]
+                                                                                            }, a("td", s)),
+                                                                                            (l = {
+                                                                                                children: tA(e.definition)
+                                                                                            }, a("td", l))
+                                                                                        ]
+                                                                                    }, a("tr", d);
+                                                                                })
+                                                                            }, a("tbody", u))
+                                                                        ]
+                                                                    }, a("table", p)),
+                                                                    n.attributes.length ? null : (f = {
+                                                                        children: _("Basic display only; raw records are preserved.")
+                                                                    }, a("p", f)),
+                                                                    e.tables.filter((e)=>e.class_id === t && e.entity_id === n.entity_id).map((e)=>{
+                                                                        var t, n, r, i, o, s, l, d, c, u, p, f, h, g, v;
+                                                                        return v = {
+                                                                            children: [
+                                                                                (t = {
+                                                                                    children: [
+                                                                                        e.attribute.name,
+                                                                                        " \xb7",
+                                                                                        " ",
+                                                                                        e.collected ? `${e.rows.length} ${_("rows")}` : tR(e.error)
+                                                                                    ]
+                                                                                }, a("summary", t)),
+                                                                                e.vlan_rules.length ? (f = {
+                                                                                    class: "table",
+                                                                                    children: [
+                                                                                        (u = {
+                                                                                            children: (c = {
+                                                                                                children: [
+                                                                                                    (n = {
+                                                                                                        children: _("Outer filter (priority / VID / TPID-DEI)")
+                                                                                                    }, a("th", n)),
+                                                                                                    (r = {
+                                                                                                        children: _("Inner filter (priority / VID / TPID-DEI)")
+                                                                                                    }, a("th", r)),
+                                                                                                    (i = {
+                                                                                                        children: _("EtherType code")
+                                                                                                    }, a("th", i)),
+                                                                                                    (o = {
+                                                                                                        children: _("Remove tags")
+                                                                                                    }, a("th", o)),
+                                                                                                    (s = {
+                                                                                                        children: _("Outer treatment (priority / VID / TPID-DEI)")
+                                                                                                    }, a("th", s)),
+                                                                                                    (l = {
+                                                                                                        children: _("Inner treatment (priority / VID / TPID-DEI)")
+                                                                                                    }, a("th", l)),
+                                                                                                    (d = {
+                                                                                                        children: _("Delete entry")
+                                                                                                    }, a("th", d))
+                                                                                                ]
+                                                                                            }, a("tr", c))
+                                                                                        }, a("thead", u)),
+                                                                                        (p = {
+                                                                                            children: e.vlan_rules.map((e)=>{
+                                                                                                var t, n, r, i, o, s, l, d;
+                                                                                                return d = {
+                                                                                                    children: [
+                                                                                                        (t = {
+                                                                                                            children: `${e.filter_outer_priority} / ${e.filter_outer_vid} / ${e.filter_outer_tpid_dei}`
+                                                                                                        }, a("td", t)),
+                                                                                                        (n = {
+                                                                                                            children: `${e.filter_inner_priority} / ${e.filter_inner_vid} / ${e.filter_inner_tpid_dei}`
+                                                                                                        }, a("td", n)),
+                                                                                                        (r = {
+                                                                                                            children: tR(e.filter_ethertype)
+                                                                                                        }, a("td", r)),
+                                                                                                        (i = {
+                                                                                                            children: tR(e.tags_to_remove)
+                                                                                                        }, a("td", i)),
+                                                                                                        (o = {
+                                                                                                            children: `${e.treatment_outer_priority} / ${e.treatment_outer_vid} / ${e.treatment_outer_tpid_dei}`
+                                                                                                        }, a("td", o)),
+                                                                                                        (s = {
+                                                                                                            children: `${e.treatment_inner_priority} / ${e.treatment_inner_vid} / ${e.treatment_inner_tpid_dei}`
+                                                                                                        }, a("td", s)),
+                                                                                                        (l = {
+                                                                                                            children: tR(e.delete_entry)
+                                                                                                        }, a("td", l))
+                                                                                                    ]
+                                                                                                }, a("tr", d);
+                                                                                            })
+                                                                                        }, a("tbody", p))
+                                                                                    ]
+                                                                                }, a("table", f)) : null,
+                                                                                (h = {
+                                                                                    children: [
+                                                                                        _("G.988 encoded field values"),
+                                                                                        ": ",
+                                                                                        tA(e.attribute)
+                                                                                    ]
+                                                                                }, a("p", h)),
+                                                                                (g = {
+                                                                                    style: "white-space:pre-wrap;overflow-wrap:anywhere",
+                                                                                    children: tN(e.vlan_rules.length ? e.vlan_rules : e.rows)
+                                                                                }, a("pre", g))
+                                                                            ]
+                                                                        }, a("details", v);
+                                                                    }),
+                                                                    (v = {
+                                                                        children: [
+                                                                            (h = {
+                                                                                children: _("Records / diagnostics")
+                                                                            }, a("summary", h)),
+                                                                            (g = {
+                                                                                style: "white-space:pre-wrap;overflow-wrap:anywhere",
+                                                                                children: tN({
+                                                                                    diagnostics: n.diagnostics,
+                                                                                    records: e.records.filter((e)=>e.class_id === t && e.entity_id === n.entity_id)
+                                                                                })
+                                                                            }, a("pre", g))
+                                                                        ]
+                                                                    }, a("details", v))
+                                                                ]
+                                                            }, a("details", m);
+                                                        }));
+                                                    }
+                                                    function u() {
+                                                        let t = l.value.toLowerCase();
+                                                        d.replaceChildren(...e.classes.filter((e)=>`${e.class_id} ${e.name ?? ""}`.toLowerCase().includes(t)).map((e)=>{
+                                                            var t, n;
+                                                            return n = {
+                                                                children: (t = {
+                                                                    type: "button",
+                                                                    class: "cbi-button",
+                                                                    style: "margin:.2em 0;white-space:normal;text-align:left",
+                                                                    onclick: ()=>c(e.class_id),
+                                                                    children: [
+                                                                        e.class_id,
+                                                                        " \xb7 ",
+                                                                        e.name ?? _("Unknown class"),
+                                                                        " (",
+                                                                        e.entities,
+                                                                        ")"
+                                                                    ]
+                                                                }, a("button", t))
+                                                            }, a("div", n);
+                                                        }));
+                                                    }
+                                                    return l.addEventListener("input", u), u(), e.classes.length && c(e.classes[0].class_id), o = {
+                                                        style: "display:flex;gap:1em;flex-wrap:wrap",
+                                                        children: [
+                                                            (i = {
+                                                                style: "flex:0 1 240px",
+                                                                children: [
+                                                                    l,
+                                                                    d
+                                                                ]
+                                                            }, a("div", i)),
+                                                            s
+                                                        ]
+                                                    }, a("div", o);
+                                                }(h), (i = {
+                                                    children: [
+                                                        (n = {
+                                                            children: _("Upload diagnostics")
+                                                        }, a("summary", n)),
+                                                        (r = {
+                                                            children: tN(h.diagnostics)
+                                                        }, a("pre", r))
+                                                    ]
+                                                }, a("details", i))), y.value = tN(h), x && URL.revokeObjectURL(x), z.href = x = URL.createObjectURL(new Blob([
+                                                    y.value
+                                                ], {
+                                                    type: "application/json"
+                                                })), w.disabled = !1, z.style.display = "";
+                                                return;
+                                            }
+                                            if (Date.now() >= d) throw Error(_("MIB query timed out; retry."));
+                                            await new Promise((e)=>setTimeout(e, 1000));
+                                        }
+                                    } catch (e) {
+                                        N() && (v.textContent = `${String(e)}${h ? ` \xb7 ${_("Previous snapshot retained")}` : ""}`);
+                                    } finally{
+                                        f = !1, $.disabled = O.disabled = !1;
+                                    }
+                                }
+                            }
+                            w.disabled = !0, z.style.display = "none", C(u), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, R);
+                        })(i),
+                    children: tL("Details")
+                }, a("button", t))
+            }, a("td", n))
         ]
-    });
-    element.addEventListener("mouseenter", ()=>{
-        const ifname = current.data_path?.interface;
-        if (ifname) {
-            const portMatch = ifname.match(/fttr(\d+)/);
-            if (portMatch) {
-                const portEl = document.querySelector(`[data-fttr-port="${portMatch[1]}"]`);
-                portEl?.classList.add("fttr-port-highlight");
+    }, a("tr", r));
+    y.addEventListener("mouseenter", ()=>{
+        let e = i.data_path?.interface;
+        if (e) {
+            let t = e.match(/fttr(\d+)/);
+            if (t) {
+                let e = document.querySelector(`[data-fttr-port="${t[1]}"]`);
+                e?.classList.add("fttr-port-highlight");
             }
         }
-    });
-    element.addEventListener("mouseleave", ()=>{
-        document.querySelectorAll(".fttr-port-highlight").forEach((el)=>{
-            el.classList.remove("fttr-port-highlight");
+    }), y.addEventListener("mouseleave", ()=>{
+        document.querySelectorAll(".fttr-port-highlight").forEach((e)=>{
+            e.classList.remove("fttr-port-highlight");
         });
     });
-    const row = {
-        element,
-        update (value) {
-            current = value;
-            element.setAttribute("data-fttr-onu-id", String(value.onu_id));
-            onuIdNode.textContent = String(value.onu_id);
-            vendorNode.textContent = view_text(value.vendor);
-            modelNode.textContent = view_text(value.identity?.equipment_id ?? value.model);
-            serialNode.textContent = view_text(value.serial_number);
-            if (value.state === "o5_operation") {
-                updateBadge(registrationNode, "success", view_tr(REGISTRATION_STATE_LABELS.o5_operation), value.state);
-            } else if (value.state) {
-                const rawLabel = REGISTRATION_STATE_LABELS[value.state] ?? value.state;
-                updateBadge(registrationNode, "warning", view_tr(rawLabel));
-            } else {
-                updateBadge(registrationNode, "none", "\u2014");
-            }
-            const bStatus = value.business_status;
-            const tone = bStatus.phase === "verified" ? "success" : bStatus.error || bStatus.phase === "wan_bootstrap_pending" ? "warning" : "neutral";
-            updateBadge(businessNode, tone, businessText(bStatus));
-            const fw = formatFirmware(value.firmware_version || value.identity?.software_images?.join("; "));
-            firmwareNode.textContent = fw.display;
-            if (fw.full) {
-                firmwareNode.setAttribute("title", fw.full);
-            } else {
-                firmwareNode.removeAttribute("title");
-            }
-            dataInterfaceNode.textContent = view_text(value.data_path?.interface);
-            renderCwmpBadge(cwmpNode, value.management?.state);
-            const provState = value.provisioning?.state;
-            const provTitle = value.provisioning?.current_revision === false ? view_tr("Previous configuration") : value.provisioning?.management_fresh === false ? view_tr("Management stale") : value.provisioning?.error;
-            renderProvisioningBadge(provisioningNode, provState, provTitle);
-            renderWifiSyncBadge(wifiSyncNode, value.wifi_sync);
+    let b = {
+        element: y,
+        update (e) {
+            var t, n;
+            i = e, y.setAttribute("data-fttr-onu-id", String(e.onu_id)), s.textContent = String(e.onu_id), l.textContent = tZ(e.vendor), d.textContent = tZ(e.identity?.equipment_id ?? e.model), c.textContent = tZ(e.serial_number), "o5_operation" === e.state ? tU(u, "success", tL(tq.o5_operation), e.state) : e.state ? tU(u, "warning", tL(tq[e.state] ?? e.state)) : tU(u, "none", "\u2014");
+            let r = e.business_status;
+            tU(p, "verified" === r.phase ? "success" : r.error || "wan_bootstrap_pending" === r.phase ? "warning" : "neutral", t_(r));
+            let o = function(e) {
+                if (!e) return {
+                    display: "\u2014"
+                };
+                let t = e.match(/image\s*\d+:\s*([^;,\s]+)/i);
+                return t?.[1] ? {
+                    display: t[1],
+                    full: e.replace(/;\s*/g, "\n")
+                } : {
+                    display: e
+                };
+            }(e.firmware_version || e.identity?.software_images?.join("; "));
+            f.textContent = o.display, o.full ? f.setAttribute("title", o.full) : f.removeAttribute("title"), h.textContent = tZ(e.data_path?.interface), (t = e.management?.state) ? "online" === t ? tU(g, "success", tL(tW.online)) : "waiting_inform" === t ? tU(g, "warning", tL(tW.waiting_inform)) : "offline_or_stale" === t ? tU(g, "danger", tL(tW.offline_or_stale)) : tU(g, "neutral", tZ(t)) : tU(g, "none", "\u2014");
+            let a = e.provisioning?.state, b = e.provisioning?.current_revision === !1 ? tL("Previous configuration") : e.provisioning?.management_fresh === !1 ? tL("Management stale") : e.provisioning?.error;
+            a && "not_started" !== a ? "completed" === a || "verified" === a ? tU(v, "success", "completed" === a ? tL(tV.completed) : tL("Ready"), b) : "wan_reconciling" === a || "wan_verifying" === a || "wifi_reconciling" === a || "discovering" === a || "reading" === a || "disabling" === a || "disabling_read" === a || "writing" === a || "verifying" === a || "settling" === a ? tU(v, "info", tL(tV[a] ?? a), b) : "interrupted" === a || "failed" === a || "error" === a || "blocked" === a ? tU(v, "danger", tL("blocked" === a ? tV.blocked : tV.interrupted), b) : "waiting" === a || "pending" === a ? tU(v, "warning", tL(tV.waiting), b) : tU(v, "neutral", tZ(a), b) : tU(v, "neutral", tL(tV.not_started), b), (n = e.wifi_sync) && "not_configured" !== n ? "verified" === n ? tU(m, "success", tL(tJ.verified)) : "attention_required" === n ? tU(m, "danger", tL(tJ.attention_required)) : "stale_revision" === n || "stale_management" === n || "accepted_unverified" === n || "pending" === n ? tU(m, "warning", tL(tJ[n])) : tU(m, "neutral", tZ(n)) : tU(m, "neutral", tL(tJ.not_configured));
         }
     };
-    row.update(onu);
-    return row;
+    return b.update(e), b;
 }
-function createOnuTable(onus) {
-    const rows = new Map();
-    for (const onu of onus)rows.set(onu.onu_id, createOnuRow(onu));
-    const emptyRow = /*#__PURE__*/ jsx("tr", {
-        children: /*#__PURE__*/ jsx("td", {
-            colSpan: 12,
-            children: view_tr("No registered sub-gateways.")
-        })
-    });
-    let showingEmpty = onus.length === 0;
-    const body = /*#__PURE__*/ jsx("tbody", {
-        children: showingEmpty ? emptyRow : [
-            ...rows.values()
-        ].map((row)=>row.element)
-    });
-    const element = /*#__PURE__*/ jsx("div", {
-        class: "table-wrapper",
-        children: /*#__PURE__*/ jsxs("table", {
-            class: "table",
+let tK = null, tX = null, tH = !1;
+const main = tM.extend({
+    async load () {
+        let [e, t] = await Promise.all([
+            tg(),
+            tv().catch((e)=>(console.warn("Failed to load network device details", e), {}))
+        ]);
+        return {
+            status: e,
+            devices: t
+        };
+    },
+    render (e) {
+        var t, n, r, i, o, s, l, d, c, u, p, f, h, g;
+        let v, m, y, b, w, z, x, k, $, O, j, P, S;
+        return t = e.status, n = e.devices, v = t.optical_transceiver ?? {}, m = function(e) {
+            var t, n, r, i, o;
+            let s = new Map();
+            for (let t of e)s.set(t.onu_id, tG(t));
+            let l = (t = {
+                children: a("td", {
+                    colSpan: 12,
+                    children: tL("No registered sub-gateways.")
+                })
+            }, a("tr", t)), d = 0 === e.length, c = a("tbody", {
+                children: d ? l : [
+                    ...s.values()
+                ].map((e)=>e.element)
+            });
+            return {
+                element: (o = {
+                    class: "table-wrapper",
+                    children: (i = {
+                        class: "table",
+                        children: [
+                            (r = {
+                                children: (n = {
+                                    children: [
+                                        a("th", {
+                                            children: tL("ONU ID")
+                                        }),
+                                        a("th", {
+                                            children: tL("Vendor")
+                                        }),
+                                        a("th", {
+                                            children: tL("Model")
+                                        }),
+                                        a("th", {
+                                            children: tL("Optical serial")
+                                        }),
+                                        a("th", {
+                                            children: tL("Registration")
+                                        }),
+                                        a("th", {
+                                            children: tL("Business")
+                                        }),
+                                        a("th", {
+                                            children: tL("Firmware")
+                                        }),
+                                        a("th", {
+                                            children: tL("Data interface")
+                                        }),
+                                        a("th", {
+                                            children: tL("CWMP")
+                                        }),
+                                        a("th", {
+                                            children: tL("Synchronization")
+                                        }),
+                                        a("th", {
+                                            children: tL("Wi-Fi sync")
+                                        }),
+                                        a("th", {
+                                            style: "text-align:right",
+                                            children: tL("Details")
+                                        })
+                                    ]
+                                }, a("tr", n))
+                            }, a("thead", r)),
+                            c
+                        ]
+                    }, a("table", i))
+                }, a("div", o)),
+                update (e) {
+                    let t = new Set(e.map((e)=>e.onu_id));
+                    for (let [e, n] of s)t.has(e) || (n.element.remove(), s.delete(e));
+                    if (0 === e.length) {
+                        d || c.append(l), d = !0;
+                        return;
+                    }
+                    for (let [t, n] of (d && (l.remove(), d = !1), e.entries())){
+                        let e = s.get(n.onu_id);
+                        e || (e = tG(n), s.set(n.onu_id, e)), e.update(n);
+                        let r = c.children.item(t);
+                        r !== e.element && c.insertBefore(e.element, r);
+                    }
+                }
+            };
+        }(t.sub_gateways ?? []), y = Array.from({
+            length: 16
+        }, (e, t)=>{
+            var n, r, i, o, s, l, d, c, u, p, f, h, g, v, m, y, b, w;
+            let z, x, k, $, O, j, P, S, C, T, R, N, A, M, D, I, Z, U, B;
+            return n = t + 1, z = a("span", {}), x = a("span", {
+                children: tL("Unknown")
+            }), k = a("img", {
+                src: "/luci-static/resources/icons/port_down.svg",
+                alt: "",
+                "aria-hidden": "true"
+            }), $ = a("div", {
+                style: "flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)"
+            }), O = a("span", {}), j = a("span", {}), P = a("span", {}), S = a("span", {}), C = a("span", {}), T = a("span", {}), R = a("span", {}), N = a("span", {}), A = a("span", {}), M = a("span", {}), D = a("span", {}), I = a("span", {}), Z = a("span", {}), U = a("span", {}), (w = {
+                class: "ifacebox fttr-port-card",
+                "data-fttr-port": String(n),
+                style: "box-sizing:border-box;width:100%;margin:0;cursor:pointer",
+                children: [
+                    a("div", {
+                        class: "ifacebox-head",
+                        style: "font-weight:bold",
+                        children: z
+                    }),
+                    (r = {
+                        class: "ifacebox-body",
+                        children: [
+                            k,
+                            a("br", {}),
+                            x
+                        ]
+                    }, a("div", r)),
+                    (o = {
+                        class: "ifacebox-head cbi-tooltip-container",
+                        style: "display:flex",
+                        children: [
+                            $,
+                            (i = {
+                                class: "cbi-tooltip left",
+                                children: [
+                                    a("strong", {
+                                        children: [
+                                            tL("Port status"),
+                                            ": "
+                                        ]
+                                    }),
+                                    O,
+                                    a("br", {}),
+                                    a("strong", {
+                                        children: [
+                                            tL("ONU"),
+                                            ": "
+                                        ]
+                                    }),
+                                    j,
+                                    a("br", {}),
+                                    a("strong", {
+                                        children: [
+                                            tL("MAC address"),
+                                            ": "
+                                        ]
+                                    }),
+                                    P
+                                ]
+                            }, a("span", i))
+                        ]
+                    }, a("div", o)),
+                    (b = {
+                        class: "ifacebox-body",
+                        children: (y = {
+                            class: "cbi-tooltip-container",
+                            style: "text-align:left;font-size:80%;line-height:1.4",
+                            children: [
+                                a("div", {
+                                    style: "white-space:nowrap",
+                                    children: [
+                                        "\u25B2\u202F",
+                                        S
+                                    ]
+                                }),
+                                a("div", {
+                                    style: "white-space:nowrap",
+                                    children: [
+                                        "\u25BC\u202F",
+                                        C
+                                    ]
+                                }),
+                                (m = {
+                                    class: "cbi-tooltip",
+                                    children: (v = {
+                                        children: [
+                                            (s = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Received bytes"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    T
+                                                ]
+                                            }, a("span", s)),
+                                            a("br", {}),
+                                            (l = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Received packets"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    R
+                                                ]
+                                            }, a("span", l)),
+                                            a("br", {}),
+                                            (d = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Received multicast"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    N
+                                                ]
+                                            }, a("span", d)),
+                                            a("br", {}),
+                                            (c = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Receive errors"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    A
+                                                ]
+                                            }, a("span", c)),
+                                            a("br", {}),
+                                            (u = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Receive dropped"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    M
+                                                ]
+                                            }, a("span", u)),
+                                            a("br", {}),
+                                            (p = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Transmitted bytes"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    D
+                                                ]
+                                            }, a("span", p)),
+                                            a("br", {}),
+                                            (f = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Transmitted packets"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    I
+                                                ]
+                                            }, a("span", f)),
+                                            a("br", {}),
+                                            (h = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Transmit errors"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    Z
+                                                ]
+                                            }, a("span", h)),
+                                            a("br", {}),
+                                            (g = {
+                                                class: "nowrap",
+                                                children: [
+                                                    a("strong", {
+                                                        children: [
+                                                            tL("Transmit dropped"),
+                                                            ": "
+                                                        ]
+                                                    }),
+                                                    U
+                                                ]
+                                            }, a("span", g))
+                                        ]
+                                    }, a("span", v))
+                                }, a("span", m))
+                            ]
+                        }, a("div", y))
+                    }, a("div", b))
+                ]
+            }, B = a("div", w)).addEventListener("mouseenter", ()=>{
+                let e = B.getAttribute("data-active-onu-id");
+                if (e) {
+                    let t = document.querySelector(`[data-fttr-onu-id="${e}"]`);
+                    t?.classList.add("fttr-row-highlight");
+                }
+            }), B.addEventListener("mouseleave", ()=>{
+                document.querySelectorAll(".fttr-row-highlight").forEach((e)=>{
+                    e.classList.remove("fttr-row-highlight");
+                });
+            }), B.addEventListener("click", ()=>{
+                let e = B.getAttribute("data-active-onu-id");
+                if (e) {
+                    let t = document.querySelector(`[data-fttr-onu-id="${e}"]`);
+                    t && (t.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest"
+                    }), t.classList.add("fttr-row-highlight"), window.setTimeout(()=>t.classList.remove("fttr-row-highlight"), 1500));
+                }
+            }), {
+                element: B,
+                update (e, t) {
+                    var r;
+                    let i = (e.switch_ports ?? []).find((e)=>e.port === n), o = i?.interface ?? `fttr${n}`, a = t[o], s = a?.stats, l = i?.carrier ?? a?.carrier ?? (a?.link?.speed !== void 0 || void 0), d = (e.sub_gateways ?? []).find((e)=>e.onu_id === i?.onu_id), c = !0 === l, u = s?.rx_bytes, p = s?.tx_bytes;
+                    i?.onu_id !== void 0 ? B.setAttribute("data-active-onu-id", String(i.onu_id)) : B.removeAttribute("data-active-onu-id"), c ? (B.classList.add("port-up"), B.classList.remove("port-down")) : (B.classList.add("port-down"), B.classList.remove("port-up")), z.textContent = o, k.setAttribute("src", `/luci-static/resources/icons/${c ? "port_up.svg" : "port_down.svg"}`), x.textContent = c ? a?.link?.speed !== void 0 ? void 0 === (r = a.link.speed) || !Number.isFinite(r) || r <= 0 ? tL("Unknown") : r >= 1000 ? `${r / 1000}\u{202F}GbE` : `${r}\u{202F}MbE` : tL("Connected") : !1 === l ? tL("Disconnected") : tL("Unknown"), x.setAttribute("title", _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(tZ(a?.link?.speed), tZ(a?.link?.duplex))), $.style.opacity = c ? "1" : "0.25", $.style.backgroundColor = c ? "rgb(46, 204, 113)" : "rgba(200, 200, 200, 0.4)", O.textContent = tZ(i?.link_state ?? i?.status ?? (a ? l ? tL("Link up") : tL("Link down") : tL("Unavailable"))), j.textContent = tZ(i?.onu_sn ?? d?.serial_number ?? i?.onu_id), P.textContent = tZ(a?.mac), S.textContent = c || p ? tB(p) : "\u2014", C.textContent = c || u ? tB(u) : "\u2014", T.textContent = tB(u), R.textContent = tF(s?.rx_packets), N.textContent = tF(s?.rx_multicast ?? s?.multicast), A.textContent = tF(s?.rx_errors), M.textContent = tF(s?.rx_dropped), D.textContent = tB(p), I.textContent = tF(s?.tx_packets), Z.textContent = tF(s?.tx_errors), U.textContent = tF(s?.tx_dropped);
+                }
+            };
+        }), b = a("span", {
+            class: "fttr-badge"
+        }), w = a("span", {
+            class: "fttr-badge fttr-badge-info"
+        }), z = a("code", {
+            style: "font-size:90%"
+        }), x = a("span", {
+            class: "fttr-badge fttr-badge-danger",
+            style: "margin-left:.5em"
+        }), s = {
+            "data-provisioning-summary": "true",
+            style: "display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%",
             children: [
-                /*#__PURE__*/ jsx("thead", {
-                    children: /*#__PURE__*/ jsxs("tr", {
-                        children: [
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("ONU ID")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Vendor")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Model")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Optical serial")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Registration")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Business")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Firmware")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Data interface")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("CWMP")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Synchronization")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                children: view_tr("Wi-Fi sync")
-                            }),
-                            /*#__PURE__*/ jsx("th", {
-                                style: "text-align:right",
-                                children: view_tr("Details")
-                            })
-                        ]
-                    })
-                }),
-                body
+                (r = {
+                    children: [
+                        a("strong", {
+                            style: "margin-right:.4em",
+                            children: [
+                                tL("Provisioning"),
+                                ":"
+                            ]
+                        }),
+                        b
+                    ]
+                }, a("span", r)),
+                (i = {
+                    children: [
+                        a("span", {
+                            style: "color:#888;margin-right:.3em",
+                            children: [
+                                tL("Mode"),
+                                ":"
+                            ]
+                        }),
+                        w
+                    ]
+                }, a("span", i)),
+                (o = {
+                    children: [
+                        a("span", {
+                            style: "color:#888;margin-right:.3em",
+                            children: [
+                                tL("Revision"),
+                                ":"
+                            ]
+                        }),
+                        z
+                    ]
+                }, a("span", o)),
+                x
             ]
-        })
-    });
-    return {
-        element,
-        update (nextOnus) {
-            const nextIds = new Set(nextOnus.map((onu)=>onu.onu_id));
-            for (const [onuId, row] of rows){
-                if (!nextIds.has(onuId)) {
-                    row.element.remove();
-                    rows.delete(onuId);
-                }
-            }
-            if (nextOnus.length === 0) {
-                if (!showingEmpty) body.append(emptyRow);
-                showingEmpty = true;
-                return;
-            }
-            if (showingEmpty) {
-                emptyRow.remove();
-                showingEmpty = false;
-            }
-            for (const [index, onu] of nextOnus.entries()){
-                let row = rows.get(onu.onu_id);
-                if (!row) {
-                    row = createOnuRow(onu);
-                    rows.set(onu.onu_id, row);
-                }
-                row.update(onu);
-                const current = body.children.item(index);
-                if (current !== row.element) body.insertBefore(row.element, current);
-            }
-        }
-    };
-}
-function createStatusView(initialStatus, initialDevices) {
-    const initialOptical = initialStatus.optical_transceiver ?? {};
-    const onuTable = createOnuTable(initialStatus.sub_gateways ?? []);
-    const ports = Array.from({
-        length: 16
-    }, (_port, index)=>createPortCard(index + 1));
-    const provisioningStatusNode = /*#__PURE__*/ jsx("span", {
-        class: "fttr-badge"
-    });
-    const provisioningModeNode = /*#__PURE__*/ jsx("span", {
-        class: "fttr-badge fttr-badge-info"
-    });
-    const provisioningRevNode = /*#__PURE__*/ jsx("code", {
-        style: "font-size:90%"
-    });
-    const provisioningErrorNode = /*#__PURE__*/ jsx("span", {
-        class: "fttr-badge fttr-badge-danger",
-        style: "margin-left:.5em"
-    });
-    const provisioningNode = /*#__PURE__*/ jsxs("div", {
-        "data-provisioning-summary": "true",
-        style: "display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%",
-        children: [
-            /*#__PURE__*/ jsxs("span", {
-                children: [
-                    /*#__PURE__*/ jsxs("strong", {
-                        style: "margin-right:.4em",
-                        children: [
-                            view_tr("Provisioning"),
-                            ":"
-                        ]
-                    }),
-                    provisioningStatusNode
-                ]
-            }),
-            /*#__PURE__*/ jsxs("span", {
-                children: [
-                    /*#__PURE__*/ jsxs("span", {
-                        style: "color:#888;margin-right:.3em",
-                        children: [
-                            view_tr("Mode"),
-                            ":"
-                        ]
-                    }),
-                    provisioningModeNode
-                ]
-            }),
-            /*#__PURE__*/ jsxs("span", {
-                children: [
-                    /*#__PURE__*/ jsxs("span", {
-                        style: "color:#888;margin-right:.3em",
-                        children: [
-                            view_tr("Revision"),
-                            ":"
-                        ]
-                    }),
-                    provisioningRevNode
-                ]
-            }),
-            provisioningErrorNode
-        ]
-    });
-    const fpgaNode = /*#__PURE__*/ jsx("span", {
-        class: "fttr-badge"
-    });
-    const opticalNode = /*#__PURE__*/ jsx("span", {
-        children: view_text(initialOptical.model)
-    });
-    const cdrNode = /*#__PURE__*/ jsx("span", {
-        class: "fttr-badge"
-    });
-    const element = /*#__PURE__*/ jsxs("div", {
-        class: "cbi-map fttr-overview",
-        children: [
-            /*#__PURE__*/ jsx("style", {
-                children: `
+        }, k = a("div", s), $ = a("span", {
+            class: "fttr-badge"
+        }), O = a("span", {
+            children: tZ(v.model)
+        }), j = a("span", {
+            class: "fttr-badge"
+        }), g = {
+            class: "cbi-map fttr-overview",
+            children: [
+                a("style", {
+                    children: `
 				.fttr-overview {
 					--fttr-success-bg: rgba(46, 204, 113, 0.15);
 					--fttr-success-color: #27ae60;
@@ -15179,163 +3005,105 @@ function createStatusView(initialStatus, initialDevices) {
 					vertical-align: middle;
 				}
 				`
-            }),
-            /*#__PURE__*/ jsx("h2", {
-                children: view_tr("FTTR overview")
-            }),
-            provisioningNode,
-            /*#__PURE__*/ jsxs("div", {
-                class: "cbi-section",
-                children: [
-                    /*#__PURE__*/ jsx("h3", {
-                        children: view_tr("Controller")
-                    }),
-                    /*#__PURE__*/ jsx("table", {
-                        class: "table",
-                        children: /*#__PURE__*/ jsxs("tbody", {
-                            children: [
-                                /*#__PURE__*/ jsxs("tr", {
-                                    children: [
-                                        /*#__PURE__*/ jsx("th", {
-                                            style: "width:15%",
-                                            children: view_tr("FPGA status")
-                                        }),
-                                        /*#__PURE__*/ jsx("td", {
-                                            style: "width:35%",
-                                            children: fpgaNode
-                                        }),
-                                        /*#__PURE__*/ jsx("th", {
-                                            style: "width:15%",
-                                            children: view_tr("CDR lock")
-                                        }),
-                                        /*#__PURE__*/ jsx("td", {
-                                            style: "width:35%",
-                                            children: cdrNode
-                                        })
-                                    ]
-                                }),
-                                /*#__PURE__*/ jsxs("tr", {
-                                    children: [
-                                        /*#__PURE__*/ jsx("th", {
-                                            children: view_tr("Optical module")
-                                        }),
-                                        /*#__PURE__*/ jsx("td", {
-                                            colSpan: 3,
-                                            children: opticalNode
-                                        })
-                                    ]
-                                })
-                            ]
+                }),
+                a("h2", {
+                    children: tL("FTTR overview")
+                }),
+                k,
+                (p = {
+                    class: "cbi-section",
+                    children: [
+                        a("h3", {
+                            children: tL("Controller")
+                        }),
+                        (u = {
+                            class: "table",
+                            children: (c = {
+                                children: [
+                                    (l = {
+                                        children: [
+                                            a("th", {
+                                                style: "width:15%",
+                                                children: tL("FPGA status")
+                                            }),
+                                            a("td", {
+                                                style: "width:35%",
+                                                children: $
+                                            }),
+                                            a("th", {
+                                                style: "width:15%",
+                                                children: tL("CDR lock")
+                                            }),
+                                            a("td", {
+                                                style: "width:35%",
+                                                children: j
+                                            })
+                                        ]
+                                    }, a("tr", l)),
+                                    (d = {
+                                        children: [
+                                            a("th", {
+                                                children: tL("Optical module")
+                                            }),
+                                            a("td", {
+                                                colSpan: 3,
+                                                children: O
+                                            })
+                                        ]
+                                    }, a("tr", d))
+                                ]
+                            }, a("tbody", c))
+                        }, a("table", u))
+                    ]
+                }, a("div", p)),
+                (f = {
+                    class: "cbi-section",
+                    children: [
+                        a("h3", {
+                            children: tL("Sub-gateways")
+                        }),
+                        m.element
+                    ]
+                }, a("div", f)),
+                (h = {
+                    class: "cbi-section",
+                    children: [
+                        a("h3", {
+                            children: tL("Downstream ports")
+                        }),
+                        a("div", {
+                            class: "fttr-ports-grid",
+                            children: y.map((e)=>e.element)
                         })
-                    })
-                ]
-            }),
-            /*#__PURE__*/ jsxs("div", {
-                class: "cbi-section",
-                children: [
-                    /*#__PURE__*/ jsx("h3", {
-                        children: view_tr("Sub-gateways")
-                    }),
-                    onuTable.element
-                ]
-            }),
-            /*#__PURE__*/ jsxs("div", {
-                class: "cbi-section",
-                children: [
-                    /*#__PURE__*/ jsx("h3", {
-                        children: view_tr("Downstream ports")
-                    }),
-                    /*#__PURE__*/ jsx("div", {
-                        class: "fttr-ports-grid",
-                        children: ports.map((port)=>port.element)
-                    })
-                ]
-            })
-        ]
-    });
-    const update = (status, devices)=>{
-        const optical = status.optical_transceiver;
-        const provisioning = status.provisioning;
-        if (provisioning) {
-            updateBadge(provisioningStatusNode, provisioning.enabled ? "success" : "neutral", provisioning.enabled ? view_tr("Enabled") : view_tr("Disabled"));
-            provisioningModeNode.textContent = view_text(provisioning.mode);
-            provisioningRevNode.textContent = view_text(provisioning.revision);
-            if (provisioning.error) {
-                provisioningErrorNode.textContent = provisioning.error;
-                provisioningErrorNode.style.display = "";
-            } else {
-                provisioningErrorNode.style.display = "none";
-            }
-            provisioningNode.style.display = "";
-        } else {
-            provisioningNode.textContent = view_tr("Provisioning status unavailable");
-        }
-        if (status.fpga_status === "ready") {
-            updateBadge(fpgaNode, "success", view_tr("Ready"));
-        } else if (status.fpga_status) {
-            updateBadge(fpgaNode, "neutral", view_text(status.fpga_status));
-        } else {
-            updateBadge(fpgaNode, "none", "\u2014");
-        }
-        opticalNode.textContent = view_text(optical.model);
-        if (optical.cdr_locked == null) {
-            updateBadge(cdrNode, "none", view_tr("Unknown"));
-        } else if (optical.cdr_locked) {
-            updateBadge(cdrNode, "success", view_tr("Locked"));
-        } else {
-            updateBadge(cdrNode, "warning", view_tr("Unlocked"));
-        }
-        onuTable.update(status.sub_gateways ?? []);
-        for (const port of ports)port.update(status, devices);
-    };
-    update(initialStatus, initialDevices);
-    return {
-        element,
-        update
-    };
-}
-let pageRoot = null;
-let pageView = null;
-let refreshing = false;
-const main = view.extend({
-    async load () {
-        const [status, deviceResult] = await Promise.all([
-            getStatus(),
-            getNetworkDevices().catch((error)=>{
-                console.warn("Failed to load network device details", error);
-                return {};
-            })
-        ]);
-        return {
-            status,
-            devices: deviceResult
-        };
-    },
-    render (data) {
-        pageView = createStatusView(data.status, data.devices);
-        pageRoot = pageView.element;
-        poll.add(async ()=>{
-            if (refreshing || !pageRoot?.isConnected || !pageView) return;
-            const activeView = pageView;
-            refreshing = true;
+                    ]
+                }, a("div", h))
+            ]
+        }, P = a("div", g), (S = (e, t)=>{
+            let n = e.optical_transceiver, r = e.provisioning;
+            for (let i of (r ? (tU(b, r.enabled ? "success" : "neutral", r.enabled ? tL("Enabled") : tL("Disabled")), w.textContent = tZ(r.mode), z.textContent = tZ(r.revision), r.error ? (x.textContent = r.error, x.style.display = "") : x.style.display = "none", k.style.display = "") : k.textContent = tL("Provisioning status unavailable"), "ready" === e.fpga_status ? tU($, "success", tL("Ready")) : e.fpga_status ? tU($, "neutral", tZ(e.fpga_status)) : tU($, "none", "\u2014"), O.textContent = tZ(n.model), null == n.cdr_locked ? tU(j, "none", tL("Unknown")) : n.cdr_locked ? tU(j, "success", tL("Locked")) : tU(j, "warning", tL("Unlocked")), m.update(e.sub_gateways ?? []), y))i.update(e, t);
+        })(t, n), tK = (tX = {
+            element: P,
+            update: S
+        }).element, tD.add(async ()=>{
+            if (tH || !tK?.isConnected || !tX) return;
+            let e = tX;
+            tH = !0;
             try {
-                const [status, devices] = await Promise.all([
-                    getStatus(),
-                    getNetworkDevices().catch(()=>({}))
+                let [t, n] = await Promise.all([
+                    tg(),
+                    tv().catch(()=>({}))
                 ]);
-                if (pageView === activeView && activeView.element.isConnected) activeView.update(status, devices);
-            } catch (error) {
-                console.error("Failed to refresh FTTR status", error);
+                tX === e && e.element.isConnected && e.update(t, n);
+            } catch (e) {
+                console.error("Failed to refresh FTTR status", e);
             } finally{
-                refreshing = false;
+                tH = !1;
             }
-        }, 10);
-        return pageRoot;
+        }, 10), tK;
     },
     handleSaveApply: null,
     handleSave: null,
     handleReset: null
 });
-
 
 return main;

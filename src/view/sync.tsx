@@ -196,6 +196,22 @@ function renderFreshness(currentRev?: boolean, mgmtFresh?: boolean): HTMLElement
 }
 
 type ItemRow = Partial<Omit<SyncItem, "kind">> & Lifecycle & { id: string; kind: string };
+function formatItemType(serviceType: string, kind: string): string {
+	switch (serviceType) {
+		case "wifi":
+			return "Wi-Fi";
+		case "wan":
+			return "WAN";
+		case "internet":
+			return "Internet";
+		case "iptv":
+			return "IPTV";
+		case "tr069":
+			return "TR-069";
+		default:
+			return kind === "port_binding" ? tr("Binding") : text(serviceType || kind);
+	}
+}
 function itemTable(items: ItemRow[]): HTMLElement {
 	return (
 		<div class="table-wrapper">
@@ -219,11 +235,7 @@ function itemTable(items: ItemRow[]): HTMLElement {
 								</td>
 								<td>
 									<span class="fttr-badge fttr-badge-info" style="font-size:80%">
-										{item.service_type === "wifi" || item.kind === "ssid"
-											? "Wi-Fi"
-											: item.service_type === "wan" || item.kind === "wan_activation"
-												? "WAN"
-												: text(item.service_type || item.kind)}
+										{formatItemType(item.service_type ?? "", item.kind)}
 									</span>
 								</td>
 								<td>{renderStateBadge(item.state)}</td>
@@ -420,12 +432,14 @@ function deviceCard(
 		...Object.entries(op.wan_lifecycle ?? {}).map(([id, item]) => ({
 			...item,
 			id: `WAN ${id}`,
-			kind: "WAN",
+			kind: "wan_activation",
+			service_type: "wan",
 		})),
 		...Object.entries(op.wifi_lifecycle ?? {}).map(([id, item]) => ({
 			...item,
 			id: `WLAN ${id}`,
-			kind: "Wi-Fi",
+			kind: "ssid",
+			service_type: "wifi",
 		})),
 	];
 

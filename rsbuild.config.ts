@@ -17,7 +17,7 @@ export default defineConfig({
 		distPath: { root: "./package/luci-app-fttr/htdocs/luci-static/resources/view/fttr", js: "." },
 		filename: { js: "[name].js" },
 		assetPrefix: "",
-		minify: false,
+		minify: true,
 		cleanDistPath: false,
 	},
 	tools: {
@@ -27,6 +27,14 @@ export default defineConfig({
 				parser: { syntax: "typescript", tsx: true },
 				transform: {
 					react: { runtime: "automatic", importSource: "@lazulikao/luci-types" },
+					optimizer: {
+						simplify: true,
+					},
+				},
+				minify: {
+					compress: true,
+					// The LuCI footer references this name outside the module transform.
+					mangle: { reserved: ["main"] },
 				},
 			},
 		},
@@ -35,7 +43,17 @@ export default defineConfig({
 			config.optimization = config.optimization || {};
 			config.optimization.splitChunks = false;
 			config.optimization.runtimeChunk = false;
-			config.optimization.minimize = false;
+			config.optimization.minimize = true;
+			config.optimization.minimizer = [
+				new rspack.SwcJsMinimizerRspackPlugin({
+					minimizerOptions: {
+						module: false, 
+						minify: false,
+						compress: { toplevel: true, top_retain: ["main"] },
+						mangle: { toplevel: true, reserved: ["main"] },
+					},
+				}),
+			];
 			config.optimization.avoidEntryIife = true;
 			config.plugins = config.plugins || [];
 			config.plugins.push(
@@ -49,8 +67,16 @@ export default defineConfig({
 					].join("\n"),
 					raw: true,
 					entryOnly: true,
+					// Add LuCI directives and the top-level return only after minification.
+					stage: rspack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
 				}),
-				new rspack.BannerPlugin({ banner: "return main;", raw: true, entryOnly: true, footer: true }),
+				new rspack.BannerPlugin({
+					banner: "return main;",
+					raw: true,
+					entryOnly: true,
+					footer: true,
+					stage: rspack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+				}),
 			);
 			return config;
 		},
