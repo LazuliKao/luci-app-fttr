@@ -42,5 +42,13 @@
 			"type": "view",
 			"path": "fttr/hardware"
 		}
+	},
+	"admin/network/fttr/calibration": {
+		"title": "Optical calibration",
+		"order": 32,
+		"action": {
+			"type": "view",
+			"path": "fttr/calibration"
+		}
 	}
 }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-16 23:32+0800\n"
+"POT-Creation-Date: 2026-10-19 15:42+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -63,9 +63,6 @@ msgstr ""
 msgid "Cached identity"
 msgstr ""
 
-msgid "Cannot start MIB query"
-msgstr ""
-
 msgid "Check"
 msgstr ""
 
@@ -108,6 +105,9 @@ msgid "Copy JSON"
 msgstr ""
 
 msgid "Current registration"
+msgstr ""
+
+msgid "CWMP"
 msgstr ""
 
 msgid "CWMP boot"
@@ -222,6 +222,9 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
+msgid "Equalization delay (EQD)"
+msgstr ""
+
 msgid "Error"
 msgstr ""
 
@@ -284,7 +287,13 @@ msgstr ""
 msgid "Identity source"
 msgstr ""
 
+msgid "Incomplete job result"
+msgstr ""
+
 msgid "Incomplete MIB snapshot"
+msgstr ""
+
+msgid "Inconsistent job result chunks"
 msgstr ""
 
 msgid ""
@@ -314,9 +323,6 @@ msgstr ""
 msgid "Invalid MIB snapshot size"
 msgstr ""
 
-msgid "Invalid response"
-msgstr ""
-
 msgid ""
 "Job polling timed out; execution outcome is unknown. Do not automatically "
 "retry."
@@ -329,6 +335,9 @@ msgid "Keep current key"
 msgstr ""
 
 msgid "LAN / WLAN port bindings"
+msgstr ""
+
+msgid "Last Inform"
 msgstr ""
 
 msgid "Leave unchanged"
@@ -367,12 +376,6 @@ msgstr ""
 msgid "MIB query timed out; retry."
 msgstr ""
 
-msgid "Missing job identifier"
-msgstr ""
-
-msgid "Missing MIB report"
-msgstr ""
-
 msgid "Model"
 msgstr ""
 
@@ -395,6 +398,9 @@ msgid "New template"
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "None (Open)"
 msgstr ""
 
 msgid "Not collected"
@@ -421,7 +427,7 @@ msgstr ""
 msgid "O5 (Operation)"
 msgstr ""
 
-msgid "O6 POPUP"
+msgid "O6 Intermittent LODS"
 msgstr ""
 
 msgid "O7 Emergency Stop"
@@ -443,6 +449,9 @@ msgid "ONU ID"
 msgstr ""
 
 msgid "Open Synchronization"
+msgstr ""
+
+msgid "Optical calibration"
 msgstr ""
 
 msgid "Optical serial"
@@ -505,7 +514,13 @@ msgstr ""
 msgid "Reading MIB…"
 msgstr ""
 
+msgid "Receive optical power"
+msgstr ""
+
 msgid "Records / diagnostics"
+msgstr ""
+
+msgid "Recovering"
 msgstr ""
 
 msgid "Registration"
@@ -518,9 +533,6 @@ msgid "Reload"
 msgstr ""
 
 msgid "Remove tags"
-msgstr ""
-
-msgid "Request failed"
 msgstr ""
 
 msgid "Restart"
@@ -614,6 +626,9 @@ msgstr ""
 msgid "TR069 VLANs"
 msgstr ""
 
+msgid "Transmit optical power"
+msgstr ""
+
 msgid "Type"
 msgstr ""
 
@@ -641,6 +656,9 @@ msgstr ""
 msgid "Upload diagnostics"
 msgstr ""
 
+msgid "Uptime"
+msgstr ""
+
 msgid "Use 0 to disable, or 30–86400 seconds."
 msgstr ""
 
@@ -663,6 +681,12 @@ msgid "Waiting"
 msgstr ""
 
 msgid "Waiting Inform"
+msgstr ""
+
+msgid "Waiting management"
+msgstr ""
+
+msgid "Waiting task"
 msgstr ""
 
 msgid "WAN reconciling"

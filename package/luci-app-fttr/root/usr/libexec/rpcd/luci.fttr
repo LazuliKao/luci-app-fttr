@@ -63,7 +63,7 @@ fi
 
 case "$1" in
 	list)
-		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{"target":{}},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0}}\n'
+		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{"target":{}},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{}}\n'
 		exit 0
 		;;
 	call)
@@ -127,7 +127,7 @@ case "$1" in
 				json_load "$request" || error 'Invalid JSON request'
 				json_get_var action action
 				json_get_var target target
-                case "$action" in plan|apply|management_plan|management_apply|reset_state) ;; *) error 'Invalid synchronization action';; esac
+                case "$action" in plan|apply|management_plan|management_apply|reset_state|reconcile|retry) ;; *) error 'Invalid synchronization action';; esac
 				case "$target" in group:*) identifier "${target#group:}" || error 'Invalid group';; *) identifier "$target" || error 'Invalid device';; esac
 				set -- sync "$action" "$target"
 				;;
@@ -144,6 +144,158 @@ case "$1" in
 					exit 1
 				fi
 				printf '%s\n' "$status"
+				exit 0
+				;;
+			get_calibration)
+				# 1. Try finding factory device (UBI volume or MTD partition)
+				factory_dev=""
+				for d in /sys/class/ubi/ubi*_*; do
+					if [ -f "$d/name" ] && [ "$(cat "$d/name" 2>/dev/null)" = "factory" ]; then
+						d_name="${d##*/}"
+						[ -e "/dev/$d_name" ] && { factory_dev="/dev/$d_name"; break; }
+					fi
+				done
+				if [ -z "$factory_dev" ] && [ -e "/dev/ubi0_factory" ]; then
+					factory_dev="/dev/ubi0_factory"
+				fi
+				if [ -z "$factory_dev" ] && [ -f "/proc/mtd" ]; then
+					m_line="$(grep -E '"factory"' /proc/mtd 2>/dev/null)"
+					if [ -n "$m_line" ]; then
+						m_name="${m_line%%:*}"
+						if [ -e "/dev/${m_name}ro" ]; then
+							factory_dev="/dev/${m_name}ro"
+						elif [ -e "/dev/$m_name" ]; then
+							factory_dev="/dev/$m_name"
+						fi
+					fi
+				fi
+
+				factory_has_data=0
+				factory_b64=""
+				factory_sha256=""
+				if [ -n "$factory_dev" ]; then
+					# Read 288 bytes at offset 0x2200 (8704)
+					factory_b64="$(ucode -e '
+						import { open } from "fs";
+						let f = open(ARGV[0], "r");
+						if (!f) exit(1);
+						if (!f.seek(8704)) { f.close(); exit(1); }
+						let b = f.read(288);
+						f.close();
+						if (!b || length(b) != 288) exit(1);
+						let is_blank = true;
+						for (let i = 0; i < 288; i++) {
+							let v = ord(b, i);
+							if (v != 0xff && v != 0x00) { is_blank = false; break; }
+						}
+						if (is_blank) exit(1);
+						print(b64enc(b));
+					' "$factory_dev" 2>/dev/null)"
+					if [ -n "$factory_b64" ]; then
+						factory_has_data=1
+						factory_sha256="$(printf '%s' "$factory_b64" | ucode -e 'import { stdin } from "fs"; print(sha256(b64dec(stdin.read("all"))));' 2>/dev/null)"
+					fi
+				fi
+
+				fw_file="/lib/firmware/modified_UX3326.bin"
+				fw_has_data=0
+				fw_size=0
+				fw_sha256=""
+				fw_b64=""
+				if [ -f "$fw_file" ]; then
+					fw_size="$(wc -c <"$fw_file" | tr -d ' ')"
+					if [ "$fw_size" -ge 56 ]; then
+						fw_has_data=1
+						fw_sha256="$(sha256sum "$fw_file" 2>/dev/null | awk '{print $1}')"
+						fw_b64="$(base64 <"$fw_file" 2>/dev/null | tr -d '\r\n')"
+					fi
+				fi
+
+				# Strict priority:
+				# 1. 1MB Factory partition
+				# 2. /lib/firmware/modified_UX3326.bin
+				# 3. Builtin static fallback
+				active_source="builtin"
+				active_path="内置静态默认版本 (Fallback)"
+				active_size=288
+				active_sha256="a9447a85073b61016d8ef1e736e944c9942e1b138ba9a35663b48abcf47c1bd4"
+				active_b64=""
+
+				if [ "$factory_has_data" -eq 1 ]; then
+					active_source="factory"
+					active_path="1MB Factory 分区 (偏移 0x2200)"
+					active_size=288
+					active_sha256="$factory_sha256"
+					active_b64="$factory_b64"
+				elif [ "$fw_has_data" -eq 1 ]; then
+					active_source="firmware"
+					active_path="/lib/firmware/modified_UX3326.bin"
+					active_size="$fw_size"
+					active_sha256="$fw_sha256"
+					active_b64="$fw_b64"
+				fi
+
+				printf '{"source":"%s","active_path":"%s","size":%s,"sha256":"%s","data":"%s","factory":{"detected":%s,"device":"%s","has_data":%s,"sha256":"%s","data":"%s"},"firmware":{"exists":%s,"path":"%s","size":%s,"sha256":"%s","data":"%s"}}\n' \
+					"$active_source" \
+					"$active_path" \
+					"$active_size" \
+					"$active_sha256" \
+					"$active_b64" \
+					"$([ -n "$factory_dev" ] && printf 'true' || printf 'false')" \
+					"$factory_dev" \
+					"$([ "$factory_has_data" -eq 1 ] && printf 'true' || printf 'false')" \
+					"$factory_sha256" \
+					"$factory_b64" \
+					"$([ "$fw_has_data" -eq 1 ] && printf 'true' || printf 'false')" \
+					"$fw_file" \
+					"$fw_size" \
+					"$fw_sha256" \
+					"$fw_b64"
+				exit 0
+				;;
+			save_calibration)
+				read -r request
+				json_load "$request" || error 'Invalid JSON request'
+				json_get_var b64_data data
+				[ -n "$b64_data" ] || error 'Missing calibration data'
+				# Fixed strictly to /lib/firmware/modified_UX3326.bin
+				target_path="/lib/firmware/modified_UX3326.bin"
+				dir="/lib/firmware"
+				mkdir -p "$dir" || error 'Cannot create target directory'
+				tmp_file="${target_path}.tmp.$$"
+				if command -v ucode >/dev/null 2>&1; then
+					if ! printf '%s' "$b64_data" | ucode -e 'import { stdin, writefile } from "fs"; let b = b64dec(stdin.read("all")); if (!b || (length(b) != 288 && length(b) != 56)) { exit(1); } writefile(ARGV[0], b);' "$tmp_file"; then
+						rm -f "$tmp_file"
+						error 'Calibration payload must be valid base64 and 288 or 56 bytes'
+					fi
+				else
+					printf '%s' "$b64_data" | base64 -d >"$tmp_file" 2>/dev/null
+					file_size="$(wc -c <"$tmp_file" 2>/dev/null | tr -d ' ')"
+					if [ "$file_size" -ne 288 ] && [ "$file_size" -ne 56 ]; then
+						rm -f "$tmp_file"
+						error 'Calibration file size must be 288 or 56 bytes'
+					fi
+				fi
+				chmod 0644 "$tmp_file"
+				mv -f "$tmp_file" "$target_path" || { rm -f "$tmp_file"; error 'Cannot write calibration file'; }
+				sync
+				bytes="$(wc -c <"$target_path" | tr -d ' ')"
+				sha256="$(sha256sum "$target_path" 2>/dev/null | awk '{print $1}')"
+				printf '{"success":true,"path":"%s","size":%s,"sha256":"%s"}\n' "$target_path" "$bytes" "$sha256"
+				exit 0
+				;;
+			apply_calibration)
+				if [ -x /usr/sbin/fttrctl ]; then
+					out="$(/usr/sbin/fttrctl bosa-init 2>&1)"
+					rc=$?
+					if [ "$rc" -eq 0 ]; then
+						printf '{"success":true,"output":%s}\n' "$(printf '%s' "$out" | ucode -e 'import { stdin } from "fs"; print(json(stdin.read("all")));' 2>/dev/null || printf '"OK"')"
+					else
+						printf '{"success":false,"error":%s}\n' "$(printf '%s' "$out" | ucode -e 'import { stdin } from "fs"; print(json(stdin.read("all")));' 2>/dev/null || printf '"Failed to initialize BOSA"')"
+					fi
+				else
+					error 'fttrctl not found'
+				fi
 				exit 0
 				;;
 			*) exit 1 ;;

@@ -14,6 +14,10 @@ const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | 
 	awaiting_apply: { label: "待应用授权", type: "warning" },
 	syncing: { label: "同步中", type: "info" },
 	discovering: { label: "探测中", type: "info" },
+	recovering: { label: "核对恢复中", type: "info" },
+	waiting_management: { label: "等待管理连接", type: "warning" },
+	waiting_task: { label: "等待任务完成", type: "info" },
+	reconcile_required: { label: "待核对差异", type: "warning" },
 	not_started: { label: "未启动", type: "neutral" },
 	disabled: { label: "已禁用", type: "neutral" },
 	enabled: { label: "已启用", type: "success" },
@@ -26,6 +30,10 @@ const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | 
 
 const STATE_EN_LABELS: Record<string, string> = {
 	waiting_inform: "Waiting Inform",
+	waiting_management: "Waiting Management",
+	waiting_task: "Waiting Task",
+	recovering: "Recovering",
+	reconcile_required: "Reconcile Required",
 	not_started: "Not Started",
 	awaiting_apply: "Awaiting Apply",
 	ready: "Ready",
@@ -45,112 +53,31 @@ const STATE_EN_LABELS: Record<string, string> = {
 	pending: "Pending",
 };
 
-const I18N_DICT: Record<string, string> = {
-	"FTTR synchronization": "FTTR 配置同步",
-	Provisioning: "配置下发引擎",
-	Mode: "工作模式",
-	Revision: "版本号",
-	Triggers: "触发事件",
-	Interval: "轮询间隔",
-	Enabled: "已启用",
-	Disabled: "已禁用",
-	"Isolated TR069 management network": "TR069 隔离管理网络",
-	"Management network": "管理网络",
-	"Management interface": "管理接口",
-	"Management VLAN": "管理 VLAN",
-	Priority: "优先级",
-	"Service IP / Netmask": "服务 IP / 掩码",
-	"ACS URL": "ACS 服务地址",
-	"DHCP service": "DHCP 服务",
-	"Desired version": "期望版本",
-	"Applied version": "已应用版本",
-	"Next retry": "下次重试",
-	Synchronized: "已同步",
-	"Pending apply": "待应用",
-	"Check management differences (read-only)": "检查管理差异（只读）",
-	"Apply management configuration": "应用管理网络配置",
-	"Saving in manual mode does not create interfaces, change firewall rules or configure child devices. Apply explicitly to authorize the current management configuration.":
-		"手动模式下保存不会自动创建接口、修改防火墙规则或配置子网关。请显式点击应用以授权并生效当前管理配置。",
-	"Pending configuration changes": "待生效配置变更",
-	"No pending changes. Management network is in sync.": "无待生效变更，管理网络处于同步状态。",
-	"Advanced diagnostics / Raw configuration (JSON)": "高级诊断 / 原始配置差异 (JSON)",
-	"Manual synchronization": "手动同步操作",
-	Target: "目标对象",
-	"All devices": "全部子网关",
-	"Preview differences (read-only)": "预览差异（只读）",
-	"Apply differences": "下发差异配置",
-	"Reset synchronization state": "重置同步状态",
-	"Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again.":
-		"在子网关恢复出厂设置后清除历史任务和托管对象记录，下次预览或下发将重新读取该设备状态。",
-	"Are you sure you want to reset the synchronization state for %s?":
-		"确定要重置 %s 的同步状态吗？重置后将清除历史任务记录，重新同步。",
-	"Configuration item": "配置项",
-	Type: "类型",
-	State: "状态",
-	"Evidence freshness": "证据时效",
-	"Last update / task": "最后更新 / 任务",
-	"Reason / desired changes": "原因 / 期望变更",
-	"Current configuration": "当前修订",
-	"Previous configuration": "历史修订",
-	"Management fresh": "有效",
-	"Management stale": "失效",
-	Task: "任务",
-	"No desired items configured.": "未配置期望同步项。",
-	"CWMP contract": "CWMP 契约能力",
-	Capabilities: "能力集",
-	Bindings: "绑定关系",
-	Schema: "数据模型",
-	Cache: "契约缓存",
-	Matched: "已命中缓存",
-	"Fresh discovery": "全新探测发现",
-	"ACS bootstrap": "ACS 引导与接入",
-	Method: "引导方式",
-	Attempts: "重试次数",
-	"Command in progress": "指令执行中",
-	"Authorize and apply management settings": "授权并应用管理设置",
-	"Required after management drift or service restart; verifies the child ACS settings before business synchronization.":
-		"管理网络配置漂移或服务重启后必需；在业务同步前校验子网关 ACS 设置。",
-	"MQTT target": "MQTT 主题",
-	"Last telemetry": "最后遥测",
-	"Identity source": "标识来源",
-	"Settings verified": "设置校验时间",
-	"Last Inform": "最后 Inform",
-	Generation: "迭代代数",
-	Updated: "更新时间",
-	"Local ACS listener": "本地 ACS 监听器",
-	"Management setup / reachability guidance": "管理网络配置与可达性排障指引",
-	"WAN / WLAN lifecycle results": "WAN / WLAN 生命周期结果",
-	"Managed objects and lifecycle intent": "托管对象与生命周期意图",
-	"Wi-Fi cleanup policy": "Wi-Fi 清理策略",
-	"Wi-Fi stage": "Wi-Fi 阶段",
-	Operation: "操作 ID",
-	Started: "启动时间",
-	Group: "分组",
-	Template: "模板",
-	"Synchronization state reset for %s. Preview differences to read the current device state.":
-		"已重置 %s 的同步状态。请点击“预览差异”以读取该设备的最新状态。",
-	"Management operation started; status is refreshed below.": "管理网络操作已启动，最新状态将在下方刷新。",
-	"Started: %s": "已启动操作：%s",
-	"Status refresh failed: %s": "状态刷新失败：%s",
-	None: "无",
-};
-
 function tr(key: string): string {
-	const translated = _(key);
-	const isZh = /zh/i.test(
-		document.documentElement.getAttribute("lang") ||
-			(window as unknown as { L?: { env?: { lang?: string } } }).L?.env?.lang ||
-			navigator.language ||
-			"",
-	);
-	if (isZh && I18N_DICT[key]) return I18N_DICT[key];
-	return translated || key;
+	return _(key) || key;
 }
 
 const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
 const date = (value?: number | null): string => (value ? new Date(value * 1000).toLocaleString() : "—");
 
-function renderStateBadge(value?: string): HTMLElement {
+function formatAge(seconds: number | null | undefined): string | null {
+	if (seconds == null || seconds < 0) return null;
+	if (seconds < 60) {
+		return tr(seconds === 1 ? "%d second ago" : "%d seconds ago").replace("%d", String(seconds));
+	}
+	const mins = Math.floor(seconds / 60);
+	if (mins < 60) {
+		return tr(mins === 1 ? "%d minute ago" : "%d minutes ago").replace("%d", String(mins));
+	}
+	const hours = Math.floor(seconds / 3600);
+	if (hours < 24) {
+		return tr(hours === 1 ? "%d hour ago" : "%d hours ago").replace("%d", String(hours));
+	}
+	const days = Math.floor(seconds / 86400);
+	return tr(days === 1 ? "%d day ago" : "%d days ago").replace("%d", String(days));
+}
+
+function renderStateBadge(value?: string, customTitle?: string): HTMLElement {
 	if (!value) return <span class="fttr-badge fttr-badge-neutral">—</span>;
 	const isZh = /zh/i.test(
 		document.documentElement.getAttribute("lang") ||
@@ -162,7 +89,7 @@ function renderStateBadge(value?: string): HTMLElement {
 	const label = isZh ? entry?.label || value : STATE_EN_LABELS[value] || value;
 	const badgeType = entry?.type || "neutral";
 	return (
-		<span class={`fttr-badge fttr-badge-${badgeType}`} title={value}>
+		<span class={`fttr-badge fttr-badge-${badgeType}`} title={customTitle || value}>
 			{label}
 		</span>
 	);
@@ -501,7 +428,17 @@ function deviceCard(
 			<div class="fttr-device-status-strip">
 				<div class="fttr-status-pill-group">
 					<span>
-						<span class="fttr-pill-label">CWMP:</span> {renderStateBadge(device.management?.state)}
+						<span class="fttr-pill-label">CWMP:</span>{" "}
+						{renderStateBadge(
+							device.management?.state,
+							device.management?.last_inform
+								? `${tr("Last Inform: %s").replace("%s", date(device.management.last_inform))}${
+										device.management.age_seconds != null
+											? ` (${formatAge(device.management.age_seconds)})`
+											: ""
+									}`
+								: undefined,
+						)}
 					</span>
 					<span>
 						<span class="fttr-pill-label">{tr("Synchronization")}:</span> {renderStateBadge(op.state)}
@@ -522,8 +459,33 @@ function deviceCard(
 					<span>
 						{tr("Revision")}: <code>{text(op.revision)}</code>
 					</span>
+					{op.attempts ? (
+						<>
+							<span>·</span>
+							<span style="color:#e67e22">
+								{tr("Attempts")}: <strong>{op.attempts}</strong>
+							</span>
+						</>
+					) : null}
+					{op.next_retry_at && op.next_retry_at > Math.floor(Date.now() / 1000) ? (
+						<>
+							<span>·</span>
+							<span style="color:#d35400">
+								{tr("Next self-healing retry in %d seconds").replace(
+									"%d",
+									String(op.next_retry_at - Math.floor(Date.now() / 1000)),
+								)}
+							</span>
+						</>
+					) : null}
 				</div>
 			</div>
+
+			{op.reconcile_reason ? (
+				<div class="alert-message info" style="margin:8px 0;font-size:85%">
+					{tr(op.reconcile_reason)}
+				</div>
+			) : null}
 
 			{itemTable(op.items ?? [])}
 
@@ -681,7 +643,27 @@ const main = L.view.extend({
 				{tr("Apply differences")}
 			</button>
 		) as HTMLButtonElement;
-		buttons.push(plan, apply);
+		const reconcile = (
+			<button
+				type="button"
+				class="cbi-button cbi-button-action"
+				title={tr("Read current device parameters and auto-verify matching settings without writing to device")}
+				onclick={() => run("reconcile")}
+			>
+				{tr("Reconcile (read-only)")}
+			</button>
+		) as HTMLButtonElement;
+		const retry = (
+			<button
+				type="button"
+				class="cbi-button cbi-button-positive"
+				title={tr("Clear backoff delays and retry safe difference synchronization")}
+				onclick={() => run("retry")}
+			>
+				{tr("Self-heal / retry")}
+			</button>
+		) as HTMLButtonElement;
+		buttons.push(plan, apply, reconcile, retry);
 
 		const managementPlan = (
 			<button type="button" class="cbi-button cbi-button-action" onclick={() => run("management_plan")}>
@@ -714,9 +696,11 @@ const main = L.view.extend({
 						<span>{tr("Target")}:</span>
 						{target}
 					</label>
-					<div style="display:flex;gap:8px">
+					<div style="display:flex;gap:8px;flex-wrap:wrap">
 						{plan}
 						{apply}
+						{reconcile}
+						{retry}
 					</div>
 				</div>
 			</div>

@@ -7,99 +7,8 @@ import { businessText, type FttrStatus, type NetworkDevices, type SubGateway } f
 const view = L.view;
 const poll = L.Poll;
 
-const I18N_DICT: Record<string, string> = {
-	"FTTR overview": "FTTR 总览",
-	Controller: "主控制器",
-	FPGA: "FPGA",
-	"FPGA status": "FPGA 状态",
-	"Optical module": "光模块",
-	"CDR lock": "CDR 锁定",
-	"Sub-gateways": "从网关列表",
-	"Downstream ports": "下行端口",
-	"ONU ID": "ONU ID",
-	Vendor: "供应商",
-	Model: "型号",
-	"Optical serial": "光纤 SN",
-	Registration: "注册状态",
-	Business: "业务状态",
-	Firmware: "固件版本",
-	"Data interface": "数据接口",
-	CWMP: "CWMP",
-	Synchronization: "配置同步",
-	"Wi-Fi sync": "Wi-Fi 同步",
-	Details: "详情",
-	"Port status": "端口状态",
-	ONU: "ONU",
-	"MAC address": "MAC 地址",
-	Locked: "已锁定",
-	Unlocked: "未锁定",
-	Connected: "已连接",
-	Disconnected: "未连接",
-	Ready: "已就绪",
-	Online: "在线",
-	Offline: "离线",
-	"Waiting Inform": "等待 Inform",
-	"Offline or stale": "离线或过期",
-	Discovering: "发现中",
-	Completed: "已完成",
-	Interrupted: "已中断",
-	Blocked: "已阻塞",
-	Reconciling: "调谐中",
-	Pending: "等待中",
-	"Not started": "未开始",
-	Verified: "已校验",
-	"WAN pending": "WAN 引导中",
-	Synced: "已同步",
-	"Not configured": "未配置",
-	"Attention required": "需注意",
-	"Stale revision": "版本过期",
-	"Stale management": "管理过期",
-	Unverified: "下发未校验",
-	Enabled: "已启用",
-	Disabled: "已禁用",
-	Provisioning: "配置下发",
-	Mode: "模式",
-	Revision: "版本号",
-	"No registered sub-gateways.": "无已注册从网关。",
-	"O5 (Operation)": "O5 运行",
-	"Link up": "已连通",
-	"Link down": "已断开",
-	Unavailable: "不可用",
-	Unknown: "未知",
-	"Received bytes": "接收字节数",
-	"Received packets": "接收数据包",
-	"Received multicast": "接收组播包",
-	"Receive errors": "接收错误",
-	"Receive dropped": "接收丢弃",
-	"Transmitted bytes": "发送字节数",
-	"Transmitted packets": "发送数据包",
-	"Transmit errors": "发送错误",
-	"Transmit dropped": "发送丢弃",
-	"Previous configuration": "历史配置",
-	"Management stale": "管理信息过期",
-	"Provisioning status unavailable": "配置下发状态不可用",
-	wan_reconciling: "WAN 调谐中",
-	wan_verifying: "WAN 校验中",
-	wifi_reconciling: "Wi-Fi 调谐中",
-	discovering: "发现中",
-	reading: "读取中",
-	disabling: "禁用中",
-	disabling_read: "禁用校验中",
-	writing: "写入中",
-	verifying: "校验中",
-	settling: "稳定中",
-};
-
 function tr(key: string): string {
 	const translated = _(key);
-	if (translated && translated !== key) return translated;
-	const isZh = /zh/i.test(
-		document.documentElement.getAttribute("lang") ||
-			(window as unknown as { L?: { env?: { lang?: string } } }).L?.env?.lang ||
-			navigator.language ||
-			"",
-	);
-	if (isZh && I18N_DICT[key]) return I18N_DICT[key];
 	return translated || key;
 }
 
@@ -394,6 +303,9 @@ const PROVISIONING_STATE_LABELS: Record<string, string> = {
 	settling: _("Settling"),
 	completed: _("Completed"),
 	interrupted: _("Interrupted"),
+	recovering: _("Recovering"),
+	waiting_management: _("Waiting management"),
+	waiting_task: _("Waiting task"),
 	failed: _("Failed"),
 	error: _("Error"),
 	blocked: _("Blocked"),
@@ -408,20 +320,54 @@ const WIFI_SYNC_STATE_LABELS: Record<string, string> = {
 	attention_required: _("Attention required"),
 	accepted_unverified: _("Unverified"),
 	pending: _("Pending"),
+	recovering: _("Recovering"),
+	waiting_management: _("Waiting management"),
 };
 
-function renderCwmpBadge(node: HTMLElement, state: string | undefined): void {
-	if (!state) {
-		updateBadge(node, "none", "—");
-	} else if (state === "online") {
-		updateBadge(node, "success", tr(CWMP_STATE_LABELS.online));
-	} else if (state === "waiting_inform") {
-		updateBadge(node, "warning", tr(CWMP_STATE_LABELS.waiting_inform));
-	} else if (state === "offline_or_stale") {
-		updateBadge(node, "danger", tr(CWMP_STATE_LABELS.offline_or_stale));
-	} else {
-		updateBadge(node, "neutral", text(state));
+function formatAge(seconds: number | null | undefined): string | null {
+	if (seconds == null || seconds < 0) return null;
+	if (seconds < 60) {
+		return tr(seconds === 1 ? "%d second ago" : "%d seconds ago").replace("%d", String(seconds));
 	}
+	const mins = Math.floor(seconds / 60);
+	if (mins < 60) {
+		return tr(mins === 1 ? "%d minute ago" : "%d minutes ago").replace("%d", String(mins));
+	}
+	const hours = Math.floor(seconds / 3600);
+	if (hours < 24) {
+		return tr(hours === 1 ? "%d hour ago" : "%d hours ago").replace("%d", String(hours));
+	}
+	const days = Math.floor(seconds / 86400);
+	return tr(days === 1 ? "%d day ago" : "%d days ago").replace("%d", String(days));
+}
+
+function renderCwmpStatus(node: HTMLElement, mgmt: SubGateway["management"]): void {
+	const state = mgmt?.state;
+	const age =
+		mgmt?.age_seconds ?? (mgmt?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - mgmt.last_inform) : null);
+	const ageText = formatAge(age);
+	const fullTime = mgmt?.last_inform ? new Date(mgmt.last_inform * 1000).toLocaleString() : null;
+	const title = fullTime ? tr("Last Inform: %s").replace("%s", fullTime) : undefined;
+
+	let label = "—";
+	let type: "success" | "warning" | "danger" | "neutral" | "none" = "none";
+
+	if (state === "online") {
+		type = "success";
+		label = tr(CWMP_STATE_LABELS.online);
+	} else if (state === "waiting_inform") {
+		type = "warning";
+		label = tr(CWMP_STATE_LABELS.waiting_inform);
+	} else if (state === "offline_or_stale") {
+		type = "danger";
+		label = tr(CWMP_STATE_LABELS.offline_or_stale);
+	} else if (state) {
+		type = "neutral";
+		label = text(state);
+	}
+
+	const displayLabel = ageText && state ? `${label} · ${ageText}` : label;
+	updateBadge(node, type, displayLabel, title);
 }
 
 function renderProvisioningBadge(node: HTMLElement, state: string | undefined, title?: string): void {
@@ -444,7 +390,9 @@ function renderProvisioningBadge(node: HTMLElement, state: string | undefined, t
 		state === "disabling_read" ||
 		state === "writing" ||
 		state === "verifying" ||
-		state === "settling"
+		state === "settling" ||
+		state === "recovering" ||
+		state === "waiting_task"
 	) {
 		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? state;
 		updateBadge(node, "info", tr(rawLabel), title);
@@ -452,8 +400,9 @@ function renderProvisioningBadge(node: HTMLElement, state: string | undefined, t
 		const rawLabel =
 			state === "blocked" ? PROVISIONING_STATE_LABELS.blocked : PROVISIONING_STATE_LABELS.interrupted;
 		updateBadge(node, "danger", tr(rawLabel), title);
-	} else if (state === "waiting" || state === "pending") {
-		updateBadge(node, "warning", tr(PROVISIONING_STATE_LABELS.waiting), title);
+	} else if (state === "waiting" || state === "pending" || state === "waiting_management") {
+		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? PROVISIONING_STATE_LABELS.waiting;
+		updateBadge(node, "warning", tr(rawLabel), title);
 	} else {
 		updateBadge(node, "neutral", text(state), title);
 	}
@@ -466,8 +415,10 @@ function renderWifiSyncBadge(node: HTMLElement, state: string | undefined): void
 		updateBadge(node, "success", tr(WIFI_SYNC_STATE_LABELS.verified));
 	} else if (state === "attention_required") {
 		updateBadge(node, "danger", tr(WIFI_SYNC_STATE_LABELS.attention_required));
-	} else if (state === "stale_revision" || state === "stale_management") {
+	} else if (state === "stale_revision" || state === "stale_management" || state === "waiting_management") {
 		updateBadge(node, "warning", tr(WIFI_SYNC_STATE_LABELS[state]));
+	} else if (state === "recovering") {
+		updateBadge(node, "info", tr(WIFI_SYNC_STATE_LABELS.recovering));
 	} else if (state === "accepted_unverified" || state === "pending") {
 		updateBadge(node, "warning", tr(WIFI_SYNC_STATE_LABELS[state]));
 	} else {
@@ -565,15 +516,24 @@ function createOnuRow(onu: SubGateway): OnuRow {
 
 			dataInterfaceNode.textContent = text(value.data_path?.interface);
 
-			renderCwmpBadge(cwmpNode, value.management?.state);
+			renderCwmpStatus(cwmpNode, value.management);
 
 			const provState = value.provisioning?.state;
+			const provData = value.provisioning;
+			const nextRetry =
+				provData?.next_retry_at && provData.next_retry_at > Math.floor(Date.now() / 1000)
+					? provData.next_retry_at - Math.floor(Date.now() / 1000)
+					: 0;
 			const provTitle =
-				value.provisioning?.current_revision === false
+				provData?.current_revision === false
 					? tr("Previous configuration")
-					: value.provisioning?.management_fresh === false
+					: provData?.management_fresh === false
 						? tr("Management stale")
-						: value.provisioning?.error;
+						: provData?.reconcile_reason
+							? tr(provData.reconcile_reason)
+							: nextRetry > 0
+								? tr("Next self-healing retry in %d seconds").replace("%d", String(nextRetry))
+								: (provData?.reason ?? provData?.error);
 
 			renderProvisioningBadge(provisioningNode, provState, provTitle);
 

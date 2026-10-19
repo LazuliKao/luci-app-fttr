@@ -6,6 +6,7 @@ export default defineConfig({
 			index: "./src/view/index.tsx",
 			config: "./src/view/config.tsx",
 			hardware: "./src/view/hardware.tsx",
+			calibration: "./src/view/calibration.tsx",
 			sync: "./src/view/sync.tsx",
 			hl202: "./src/view/hl202.tsx",
 		},
@@ -47,7 +48,7 @@ export default defineConfig({
 			config.optimization.minimizer = [
 				new rspack.SwcJsMinimizerRspackPlugin({
 					minimizerOptions: {
-						module: false, 
+						module: false,
 						minify: false,
 						compress: { toplevel: true, top_retain: ["main"] },
 						mangle: { toplevel: true, reserved: ["main"] },

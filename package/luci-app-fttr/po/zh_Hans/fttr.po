@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-16 23:32+0800\n"
+"POT-Creation-Date: 2026-10-19 15:43+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LuCI FTTR Team\n"
@@ -63,9 +63,6 @@ msgstr "默认情况下，多余的 WLAN 仅被禁用并保留。删除对象属
 msgid "Cached identity"
 msgstr "已缓存的设备标识"
 
-msgid "Cannot start MIB query"
-msgstr "无法启动 MIB 查询"
-
 msgid "Check"
 msgstr "检查"
 
@@ -109,6 +106,9 @@ msgstr "复制 JSON"
 
 msgid "Current registration"
 msgstr "当前注册状态"
+
+msgid "CWMP"
+msgstr "CWMP"
 
 msgid "CWMP boot"
 msgstr "CWMP 启动状态"
@@ -224,6 +224,9 @@ msgstr "请至少输入一个 1–4094 之间的 VLAN ID。"
 msgid "Entity"
 msgstr "实体"
 
+msgid "Equalization delay (EQD)"
+msgstr "均衡延迟 (EQD)"
+
 msgid "Error"
 msgstr "错误"
 
@@ -286,8 +289,14 @@ msgstr "标识读取错误"
 msgid "Identity source"
 msgstr "标识来源"
 
+msgid "Incomplete job result"
+msgstr "作业结果不完整"
+
 msgid "Incomplete MIB snapshot"
 msgstr "MIB 快照不完整"
+
+msgid "Inconsistent job result chunks"
+msgstr "作业结果块不一致"
 
 msgid ""
 "Independent of the optical adapter. Parameter paths, types and writable "
@@ -316,9 +325,6 @@ msgstr "无效的 MIB 快照数据分片"
 msgid "Invalid MIB snapshot size"
 msgstr "无效的 MIB 快照大小"
 
-msgid "Invalid response"
-msgstr "无效的响应"
-
 msgid ""
 "Job polling timed out; execution outcome is unknown. Do not automatically "
 "retry."
@@ -332,6 +338,9 @@ msgstr "保持当前密钥"
 
 msgid "LAN / WLAN port bindings"
 msgstr "LAN / WLAN 端口绑定"
+
+msgid "Last Inform"
+msgstr "最后通知"
 
 msgid "Leave unchanged"
 msgstr "保持不变"
@@ -369,12 +378,6 @@ msgstr "手动模式仅保存配置；请在“同步”页面中点击“应用
 msgid "MIB query timed out; retry."
 msgstr "MIB 查询超时；请重试。"
 
-msgid "Missing job identifier"
-msgstr "缺少任务标识符"
-
-msgid "Missing MIB report"
-msgstr "缺少 MIB 报告"
-
 msgid "Model"
 msgstr "型号"
 
@@ -398,6 +401,9 @@ msgstr "新建模板"
 
 msgid "None"
 msgstr "无"
+
+msgid "None (Open)"
+msgstr "无（开放网络）"
 
 msgid "Not collected"
 msgstr "未采集"
@@ -423,8 +429,8 @@ msgstr "O4 测距"
 msgid "O5 (Operation)"
 msgstr "O5 运行"
 
-msgid "O6 POPUP"
-msgstr "O6 弹出"
+msgid "O6 Intermittent LODS"
+msgstr "O6 间歇性 LODS"
 
 msgid "O7 Emergency Stop"
 msgstr "O7 紧急停止"
@@ -446,6 +452,9 @@ msgstr "ONU ID"
 
 msgid "Open Synchronization"
 msgstr "打开同步页面"
+
+msgid "Optical calibration"
+msgstr "光路校准"
 
 msgid "Optical serial"
 msgstr "光纤 SN"
@@ -507,8 +516,14 @@ msgstr "读取中"
 msgid "Reading MIB…"
 msgstr "正在读取 MIB…"
 
+msgid "Receive optical power"
+msgstr "接收光功率"
+
 msgid "Records / diagnostics"
 msgstr "记录 / 诊断信息"
+
+msgid "Recovering"
+msgstr "恢复中"
 
 msgid "Registration"
 msgstr "注册状态"
@@ -521,9 +536,6 @@ msgstr "重新加载"
 
 msgid "Remove tags"
 msgstr "剥离 VLAN 标签"
-
-msgid "Request failed"
-msgstr "请求失败"
 
 msgid "Restart"
 msgstr "重启"
@@ -616,6 +628,9 @@ msgstr "结果分片过多"
 msgid "TR069 VLANs"
 msgstr "TR069 VLAN 列表"
 
+msgid "Transmit optical power"
+msgstr "发送光功率"
+
 msgid "Type"
 msgstr "类型"
 
@@ -643,6 +658,9 @@ msgstr "上传完成"
 msgid "Upload diagnostics"
 msgstr "上传诊断信息"
 
+msgid "Uptime"
+msgstr "运行时间"
+
 msgid "Use 0 to disable, or 30–86400 seconds."
 msgstr "设为 0 表示禁用，或输入 30–86400 秒。"
 
@@ -667,6 +685,12 @@ msgstr "等待中"
 msgid "Waiting Inform"
 msgstr "等待 Inform"
 
+msgid "Waiting management"
+msgstr "等待管理"
+
+msgid "Waiting task"
+msgstr "等待任务"
+
 msgid "WAN reconciling"
 msgstr "WAN 调谐中"
 
@@ -687,6 +711,3 @@ msgstr "写入中"
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
-
-msgid "None (Open)"
-msgstr "无（开放网络）"

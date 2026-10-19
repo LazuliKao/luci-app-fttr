@@ -220,6 +220,17 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 						initial.identity_age_seconds == null ? null : `${initial.identity_age_seconds} s`,
 					],
 					[_("Identity read errors"), initial.identity?.errors?.join("; ")],
+					[_("CWMP"), initial.management?.state],
+					[
+						_("Last Inform"),
+						initial.management?.last_inform
+							? `${new Date(initial.management.last_inform * 1000).toLocaleString()}${
+									initial.management.age_seconds != null
+										? ` (${initial.management.age_seconds} s)`
+										: ""
+								}`
+							: null,
+					],
 				].map(([name, value]) => (
 					<tr>
 						<th>{name}</th>

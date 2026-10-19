@@ -22,6 +22,9 @@ export const operationPhase = z.enum([
 	"not_started",
 	"reset_pending",
 	"interrupted",
+	"recovering",
+	"waiting_management",
+	"waiting_task",
 ]);
 export const wifiSync = z.enum([
 	"not_configured",
@@ -31,6 +34,8 @@ export const wifiSync = z.enum([
 	"attention_required",
 	"accepted_unverified",
 	"pending",
+	"recovering",
+	"waiting_management",
 ]);
 export const syncItem = z.object({
 	id: str,
@@ -117,6 +122,9 @@ export const provisioning = z.object({
 	management_fresh: optBool,
 	reason: optString,
 	error: optString,
+	attempts: optNumber,
+	next_retry_at: optNumber,
+	reconcile_reason: optString,
 	items: z.array(syncItem),
 	cwmp_contract: z.optional(
 		z.object({

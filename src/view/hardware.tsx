@@ -6,64 +6,8 @@ import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from 
 
 const view = L.view;
 
-const I18N_DICT: Record<string, string> = {
-	"FTTR hardware status": "FTTR 硬件与光模块状态",
-	"Controller hardware": "主控制器硬件",
-	"Controller & optical transceiver": "主控制器与光模块",
-	"Sub-gateways & optical links": "子网关光链路与硬件",
-	"FPGA status": "FPGA 状态",
-	"Optical transceiver": "SFP+ 光模块",
-	"TX wavelength": "发射波长 (TX)",
-	"RX wavelength": "接收波长 (RX)",
-	"Downlink PHY rate": "下行物理速率",
-	"Uplink PHY rate": "上行物理速率",
-	"CDR lock": "CDR 锁相环",
-	Locked: "已锁定",
-	Unlocked: "未锁定",
-	"Sub-gateway %s — %s": "子网关 #%s — %s",
-	"View OMCI / MIB": "查看 OMCI / MIB",
-	"View OMCI / MIB details": "查看 OMCI / MIB 详情",
-	Vendor: "供应商",
-	"Optical serial": "光路序列号 (SN)",
-	"Registration state": "注册状态",
-	"Identity source": "身份数据源",
-	"Current registration": "当前注册",
-	"Cached identity": "缓存身份",
-	"Not collected": "未采集",
-	"Identity age": "身份时效",
-	"Equipment ID": "设备型号",
-	"Hardware version": "硬件版本",
-	"Firmware version": "固件版本",
-	"Software images": "软件镜像",
-	"OMCC version": "OMCC 版本",
-	"Identity read errors": "身份读取异常",
-	"No sub-gateways are currently registered.": "当前暂无已注册的子网关。",
-	"Identity information is read-only and limited to fields provided by fttrctl status.":
-		"硬件与身份信息均为只读，数据来源于 fttrctl status。",
-	"Equalization delay (EQD)": "均衡时延 (EQD)",
-	"Optical RX power": "接收光功率 (RX)",
-	"Optical TX power": "发射光功率 (TX)",
-	"Data interface": "数据接口",
-	Temperature: "工作温度",
-	Voltage: "工作电压",
-	"Bias current": "偏置电流",
-	"TX power": "发射功率",
-	Ready: "就绪",
-	Online: "在线",
-	Offline: "离线",
-	Connected: "已连接 (O5)",
-};
-
 function tr(key: string): string {
-	const translated = _(key);
-	const isZh = /zh/i.test(
-		document.documentElement.getAttribute("lang") ||
-			(window as unknown as { L?: { env?: { lang?: string } } }).L?.env?.lang ||
-			navigator.language ||
-			"",
-	);
-	if (isZh && I18N_DICT[key]) return I18N_DICT[key];
-	return translated || key;
+	return _(key) || key;
 }
 
 const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
