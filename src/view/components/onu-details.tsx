@@ -413,6 +413,17 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					download.style.display = "";
 					return;
 				}
+				if (result.progress) {
+					const { phase, received, expected } = result.progress;
+					message.textContent =
+						phase === "starting"
+							? _("Starting OMCI MIB read…")
+							: phase === "tables"
+								? `${_("Collecting VLAN tables")}${expected == null ? "" : `: ${received}/${expected}`}`
+								: expected == null
+									? _("Reading OMCI MIB records…")
+									: `${_("Reading OMCI MIB records")}: ${received}/${expected}`;
+				}
 				if (Date.now() >= deadline) throw new Error(_("MIB query timed out; retry."));
 				await new Promise((resolve) => setTimeout(resolve, 1000));
 			}

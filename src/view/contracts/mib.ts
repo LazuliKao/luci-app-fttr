@@ -1,5 +1,5 @@
 import * as z from "zod/mini";
-import { checked, jobChunk, jobStart } from "./common";
+import { checked, jobStart } from "./common";
 
 const str = z.string();
 const num = z.number();
@@ -117,6 +117,21 @@ const report = z.object({
 	diagnostics: z.array(diagnostic),
 });
 export const mibSnapshot = z.object({ status: z.literal("ready"), report });
+const progress = z.object({
+	phase: z.enum(["starting", "upload", "tables"]),
+	received: num,
+	expected: z.nullable(num),
+});
+const mibResult = z.discriminatedUnion("status", [
+	z.object({ status: z.literal("pending"), progress: z.optional(progress) }),
+	z.object({
+		status: z.literal("ready"),
+		chunk: num,
+		chunks: num,
+		bytes: num,
+		data: str,
+	}),
+]);
 export type Definition = z.infer<typeof definition>;
 export type Value = z.infer<typeof value>;
 export type MibReport = z.infer<typeof report>;
@@ -134,4 +149,4 @@ const rawResult = L.rpc.declare<unknown, [string, number]>({
 });
 export const startMib = async (onu: number, serial: string, tables: boolean) =>
 	jobStart.parse(checked(await rawStart(onu, serial, tables)));
-export const getMib = async (job: string, chunk: number) => jobChunk.parse(checked(await rawResult(job, chunk)));
+export const getMib = async (job: string, chunk: number) => mibResult.parse(checked(await rawResult(job, chunk)));
