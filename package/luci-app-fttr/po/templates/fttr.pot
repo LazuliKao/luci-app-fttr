@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-19 15:42+0800\n"
+"POT-Creation-Date: 2026-10-19 17:49+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -67,6 +67,9 @@ msgid "Check"
 msgstr ""
 
 msgid "Close"
+msgstr ""
+
+msgid "Collecting VLAN tables"
 msgstr ""
 
 msgid ""
@@ -475,7 +478,7 @@ msgstr ""
 msgid "Periodic"
 msgstr ""
 
-msgid "Periodic synchronization interval (seconds)"
+msgid "Periodic synchronization interval (minutes)"
 msgstr ""
 
 msgid "Port bindings"
@@ -488,6 +491,9 @@ msgid "Previous snapshot retained"
 msgstr ""
 
 msgid "Priority"
+msgstr ""
+
+msgid "Program start"
 msgstr ""
 
 msgid "Provision management VLAN and ACS via OMCI"
@@ -512,6 +518,12 @@ msgid "Reading"
 msgstr ""
 
 msgid "Reading MIB…"
+msgstr ""
+
+msgid "Reading OMCI MIB records"
+msgstr ""
+
+msgid "Reading OMCI MIB records…"
 msgstr ""
 
 msgid "Receive optical power"
@@ -583,6 +595,9 @@ msgid "Stale management"
 msgstr ""
 
 msgid "Stale revision"
+msgstr ""
+
+msgid "Starting OMCI MIB read…"
 msgstr ""
 
 msgid "Status"
@@ -659,7 +674,7 @@ msgstr ""
 msgid "Uptime"
 msgstr ""
 
-msgid "Use 0 to disable, or 30–86400 seconds."
+msgid "Use 0 to disable, or 1–1440 minutes."
 msgstr ""
 
 msgid "Value"

@@ -63,12 +63,16 @@ if [ "$1" = worker ]; then
 	fi
 	rm -f "$dir/report" "$dir/stderr"
 	mv "$dir/result.new" "$dir/result"
+	rm -f "$dir/running"
+	if [ -f "$dir/release" ]; then
+		rm -rf "$dir"
+	fi
 	exit 0
 fi
 
 case "$1" in
 	list)
-		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{"target":{}},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{}}\n'
+		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{}}\n'
 		exit 0
 		;;
 	call)
@@ -90,9 +94,27 @@ case "$1" in
 				umask 077
 				dir="$(mktemp -d /tmp/fttr-mib.XXXXXXXX)" || error 'Cannot create MIB job'
 				date +%s >"$dir/created"
+				: >"$dir/running"
 				printf '{"phase":"starting","received":0,"expected":null}\n' >"$dir/progress"
 				"$0" worker "$dir" "$onu" "$sn" "$tables" "$expected" >/dev/null 2>&1 </dev/null &
 				printf '{"job":"%s","status":"pending"}\n' "${dir##*/}"
+				exit 0
+				;;
+			mib_release)
+				read -r request
+				json_load "$request" || error 'Invalid JSON request'
+				json_get_var job job
+				case "$job" in fttr-mib.*) ;; *) error 'Invalid MIB job';; esac
+				identifier "${job#fttr-mib.}" || error 'Invalid MIB job'
+				dir="/tmp/$job"
+				if [ -d "$dir" ] && [ ! -L "$dir" ]; then
+					if [ -f "$dir/running" ] && [ ! -L "$dir/running" ]; then
+						: >"$dir/release"
+					else
+						rm -rf "$dir"
+					fi
+				fi
+				printf '{"released":true}\n'
 				exit 0
 				;;
 			mib_result)

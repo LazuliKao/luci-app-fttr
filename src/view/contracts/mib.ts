@@ -147,6 +147,13 @@ const rawResult = L.rpc.declare<unknown, [string, number]>({
 	params: ["job", "chunk"],
 	reject: true,
 });
+const rawRelease = L.rpc.declare<unknown, [string]>({
+	object: "luci.fttr",
+	method: "mib_release",
+	params: ["job"],
+	reject: true,
+});
 export const startMib = async (onu: number, serial: string, tables: boolean) =>
 	jobStart.parse(checked(await rawStart(onu, serial, tables)));
 export const getMib = async (job: string, chunk: number) => mibResult.parse(checked(await rawResult(job, chunk)));
+export const releaseMib = async (job: string) => z.object({ released: bool }).parse(checked(await rawRelease(job)));

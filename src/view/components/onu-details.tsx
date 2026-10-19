@@ -2,11 +2,69 @@
 
 import { getStatus } from "../contracts/api";
 import { assertNever, checked } from "../contracts/common";
-import { type Definition, getMib, type MibReport, mibSnapshot, startMib, type Value } from "../contracts/mib";
+import {
+	type Definition,
+	getMib,
+	type MibReport,
+	mibSnapshot,
+	releaseMib,
+	startMib,
+	type Value,
+} from "../contracts/mib";
 import { businessText, eqdText, type SubGateway as OnuDetails } from "../contracts/status";
 
 const text = (v: unknown): string => (v == null || v === "" ? "—" : String(v));
 const json = (v: unknown): string => JSON.stringify(v, null, 2);
+async function reportBlob(report: MibReport): Promise<Blob> {
+	const parts: BlobPart[] = ["{"];
+	let first = true;
+	for (const [key, value] of Object.entries(report)) {
+		if (!first) parts.push(",");
+		first = false;
+		parts.push(JSON.stringify(key), ":");
+		if (Array.isArray(value)) {
+			parts.push("[");
+			for (let index = 0; index < value.length; index++) {
+				if (index) parts.push(",");
+				const item = JSON.stringify(value[index]);
+				if (item === undefined) throw new Error(_("MIB snapshot cannot be serialized"));
+				parts.push(item);
+				if (index % 32 === 31) await new Promise((resolve) => setTimeout(resolve, 0));
+			}
+			parts.push("]");
+		} else {
+			const item = JSON.stringify(value);
+			if (item === undefined) throw new Error(_("MIB snapshot cannot be serialized"));
+			parts.push(item);
+		}
+	}
+	parts.push("}");
+	return new Blob(parts, { type: "application/json" });
+}
+
+function jsonPreview(report: MibReport): string {
+	return json({
+		schema_version: report.schema_version,
+		reference_version: report.reference_version,
+		onu_id: report.onu_id,
+		uploaded_complete: report.uploaded_complete,
+		expected_records: report.expected_records,
+		received_records: report.received_records,
+		decoded_records: report.decoded_records,
+		partial_records: report.partial_records,
+		basic_records: report.basic_records,
+		tables_requested: report.tables_requested,
+		tables_collected: report.tables_collected,
+		class_count: report.classes.length,
+		classes: report.classes.slice(0, 25),
+		additional_classes: Math.max(0, report.classes.length - 25),
+		record_count: report.records.length,
+		first_record: report.records[0] ?? null,
+		table_count: report.tables.length,
+		diagnostics_count: report.diagnostics.length,
+	});
+}
+
 function valueText(value: Value | null): string {
 	if (value === null) return _("Conflicting values; inspect observations");
 	switch (value.type) {
@@ -176,6 +234,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 	let closed = false;
 	let busy = false;
 	let report: MibReport | null = null;
+	let job: string | null = null;
 	const basic = (
 		<table class="table">
 			<tbody>
@@ -242,37 +301,47 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 	);
 	const message = <p role="status">{_("Read MIB on demand. Results are a snapshot, not live polling.")}</p>;
 	const results = <div />;
-	const raw = (<textarea readOnly rows={20} style="width:100%;font-family:monospace" />) as HTMLTextAreaElement;
-	const copyMessage = <span role="status" />;
-	const copy = (
+	const raw = (
+		<pre style="max-height:20em;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere" />
+	) as HTMLElement;
+	const downloadMessage = <span role="status" />;
+	const download = (
 		<button
 			type="button"
 			class="cbi-button"
+			disabled
 			onclick={async () => {
+				if (!report || closed) return;
+				download.disabled = true;
+				downloadMessage.textContent = _("Preparing JSON download…");
 				try {
-					await navigator.clipboard.writeText(raw.value);
-					copyMessage.textContent = _("Copied");
-				} catch {
-					raw.focus();
-					raw.select();
-					copyMessage.textContent = _("Select and copy the JSON manually.");
+					const blob = await reportBlob(report);
+					if (closed) return;
+					if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+					downloadUrl = URL.createObjectURL(blob);
+					const anchor = document.createElement("a");
+					anchor.href = downloadUrl;
+					anchor.download = `mib-${initial.serial_number}.json`;
+					anchor.click();
+					downloadMessage.textContent = _("JSON download started");
+					window.setTimeout(() => {
+						URL.revokeObjectURL(anchor.href);
+						if (downloadUrl === anchor.href) downloadUrl = null;
+					}, 1000);
+				} catch (error) {
+					downloadMessage.textContent = String(error);
+				} finally {
+					download.disabled = !report || closed;
 				}
 			}}
 		>
-			{_("Copy JSON")}
+			{_("Download JSON")}
 		</button>
 	) as HTMLButtonElement;
-	const download = (
-		<a href="data:application/json,%7B%7D" class="cbi-button" download={`mib-${initial.serial_number}.json`}>
-			{_("Download JSON")}
-		</a>
-	) as HTMLAnchorElement;
 	let downloadUrl: string | null = null;
 	const rawPanel = (
 		<div>
-			<p>
-				{copy} {download} {copyMessage}
-			</p>
+			<p>{_("This is a lightweight preview. Download JSON to save the complete MIB snapshot.")}</p>
 			{raw}
 		</div>
 	);
@@ -319,6 +388,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 				buttons.set(key, button);
 				return button;
 			})}
+			{download} {downloadMessage}
 		</p>
 	);
 	const body = (
@@ -334,6 +404,10 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					onclick={() => {
 						closed = true;
 						if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+						downloadUrl = null;
+						report = null;
+						raw.textContent = "";
+						results.replaceChildren();
 						L.ui.hideModal();
 					}}
 				>
@@ -356,6 +430,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 				throw new Error(_("Device is offline; reopen details after registration."));
 			if (!active()) return;
 			const started = await startMib(current.onu_id, current.serial_number, withTables);
+			job = started.job;
 			const deadline = Date.now() + 140000;
 			while (active()) {
 				const result = await getMib(started.job, 0);
@@ -391,6 +466,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 						message.textContent = `${_("Downloading MIB snapshot")}: ${chunk + 1}/${result.chunks}`;
 					}
 					if (offset !== buffer.length) throw new Error(_("Incomplete MIB snapshot"));
+					await releaseJob();
 					const snapshot = mibSnapshot.parse(
 						checked(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer))),
 					);
@@ -405,12 +481,8 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 							<pre>{json(report.diagnostics)}</pre>
 						</details>,
 					);
-					raw.value = json(report);
-					if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-					downloadUrl = URL.createObjectURL(new Blob([raw.value], { type: "application/json" }));
-					download.href = downloadUrl;
-					copy.disabled = false;
-					download.style.display = "";
+					raw.textContent = jsonPreview(report);
+					download.disabled = false;
 					return;
 				}
 				if (result.progress) {
@@ -431,12 +503,21 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 			if (active())
 				message.textContent = `${String(error)}${report ? ` · ${_("Previous snapshot retained")}` : ""}`;
 		} finally {
+			await releaseJob();
 			busy = false;
 			read.disabled = tables.disabled = false;
 		}
 	}
-	copy.disabled = true;
-	download.style.display = "none";
+	async function releaseJob(): Promise<void> {
+		if (!job) return;
+		const completedJob = job;
+		job = null;
+		try {
+			await releaseMib(completedJob);
+		} catch (error) {
+			console.warn("Failed to release MIB snapshot", error);
+		}
+	}
 	tab(initialTab);
 	L.ui.showModal(`${initial.model} — ${initial.serial_number}`, body);
 }

@@ -956,10 +956,10 @@ const main = L.view.extend({
 							<code>{(status.triggers ?? []).join(", ")}</code>
 						</span>
 					) : null}
-					{status.interval ? (
+					{status.interval_minutes ? (
 						<span>
-							<span style="color:#888;margin-right:.3em">{tr("Interval")}:</span>
-							<span>{status.interval} s</span>
+							<span style="color:#888;margin-right:.3em">{tr("Interval (minutes)")}:</span>
+							<span>{status.interval_minutes}</span>
 						</span>
 					) : null}
 				</div>,

@@ -1065,7 +1065,7 @@ const e6 = eD([
     "recovering",
     "waiting_management",
     "waiting_task"
-]), e3 = eD([
+]), e5 = eD([
     "not_configured",
     "stale_revision",
     "stale_management",
@@ -1075,7 +1075,7 @@ const e6 = eD([
     "pending",
     "recovering",
     "waiting_management"
-]), e5 = eO({
+]), e7 = eO({
     id: eQ,
     name: eU(eF(eQ)),
     kind: eD([
@@ -1098,7 +1098,7 @@ const e6 = eD([
         desired: eQ
     })))
 });
-let e7 = eO({
+let e3 = eO({
     state: eQ,
     reason: e1,
     task_id: eU(eF(eY)),
@@ -1235,7 +1235,7 @@ const te = eV("state", [
     attempts: e2,
     next_retry_at: e2,
     reconcile_reason: e1,
-    items: eN(e5),
+    items: eN(e7),
     cwmp_contract: eU(eO({
         state: eQ,
         requested: eQ,
@@ -1250,7 +1250,7 @@ const te = eV("state", [
         }))
     })),
     wan_objects: eU(eC(eQ, eq())),
-    wan_lifecycle: eU(eC(eQ, e7)),
+    wan_lifecycle: eU(eC(eQ, e3)),
     wan_stage: eU(eD([
         "waiting",
         "inventory",
@@ -1272,7 +1272,7 @@ const te = eV("state", [
         pending: eF(eQ),
         pending_instance: eF(eY)
     })),
-    wifi_lifecycle: eU(eC(eQ, e7)),
+    wifi_lifecycle: eU(eC(eQ, e3)),
     wifi_stage: eU(eD([
         "waiting",
         "inventory",
@@ -1353,9 +1353,9 @@ const tr = eO({
     management: eF(e9),
     acs_bootstrap: te,
     provisioning: tt,
-    services: eN(e5),
-    ssids: eN(e5),
-    wifi_sync: e3
+    services: eN(e7),
+    ssids: eN(e7),
+    wifi_sync: e5
 }), ta = eO({
     enabled: e0,
     mode: eD([
@@ -1365,7 +1365,12 @@ const tr = eO({
     method: eR("diff"),
     revision: eQ,
     triggers: eN(eQ),
-    interval: eY,
+    interval_minutes: new ew({
+        type: "number",
+        coerce: !0,
+        checks: [],
+        ...V(void 0)
+    }),
     error: eF(eQ),
     devices: eN(tr),
     management_network: ti,
@@ -1449,9 +1454,9 @@ const tm = eO({
     business_status: tu,
     management: eF(e9),
     provisioning: eF(tt),
-    services: eN(e5),
-    ssids: eN(e5),
-    wifi_sync: e3,
+    services: eN(e7),
+    ssids: eN(e7),
+    wifi_sync: e5,
     acs_bootstrap: eU(te),
     identity: eF(tf),
     identity_age_seconds: td,
@@ -1743,6 +1748,10 @@ let main = tP.extend({
                     _("CWMP boot")
                 ],
                 [
+                    "program_start",
+                    _("Program start")
+                ],
+                [
                     "periodic",
                     _("Periodic")
                 ]
@@ -1751,7 +1760,7 @@ let main = tP.extend({
                 "config_change",
                 "device_online",
                 "cwmp_boot"
-            ], r.retain = !0, r.depends("mode", "auto"), (r = l(s, L.form.Value, "interval", _("Periodic synchronization interval (seconds)"))).default = "0", r.retain = !0, r.depends("mode", "auto"), r.validate = (e, t)=>!!(/^(0|[1-9][0-9]*)$/.test(t) && (0 === Number(t) || Number(t) >= 30 && 86400 >= Number(t))) || _("Use 0 to disable, or 30\u201386400 seconds."), (r = l(s, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)")).default = "180";
+            ], r.retain = !0, r.depends("mode", "auto"), (r = l(s, L.form.Value, "interval_minutes", _("Periodic synchronization interval (minutes)"))).default = "30", r.retain = !0, r.depends("mode", "auto"), r.validate = (e, t)=>!!(/^(0|[1-9][0-9]*)$/.test(t) && (0 === Number(t) || Number(t) >= 1 && 1440 >= Number(t))) || _("Use 0 to disable, or 1\u20131440 minutes."), (r = l(s, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)")).default = "180";
         })(y, _("Basic"), v), r = new Map((t = e.connectedDevices ?? []).map((e)=>[
                 e.serial_number,
                 e

@@ -40,8 +40,10 @@ After installing the package, open **Network → FTTR** in LuCI.
 
 ### Synchronization
 
-In automatic mode, choose configuration-change, online, CWMP boot, and/or periodic
-triggers. Periodic intervals are 30–86400 seconds; `0` disables the timer. In
+In automatic mode, choose configuration-change, device-online, CWMP boot,
+program-start, and/or periodic triggers. Program-start synchronization waits
+until a configured device is online and its CWMP state is fresh. Periodic
+intervals are 1–1440 minutes (default 30); `0` disables the timer. In
 manual mode, preview is optional; **Apply** starts a background operation, which
 continues if you leave the page. Review item-level results and any blocked or
 failed reasons rather than treating a completed operation as proof that every

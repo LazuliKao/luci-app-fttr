@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-19 15:43+0800\n"
+"POT-Creation-Date: 2026-10-19 17:49+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LuCI FTTR Team\n"
@@ -68,6 +68,9 @@ msgstr "检查"
 
 msgid "Close"
 msgstr "关闭"
+
+msgid "Collecting VLAN tables"
+msgstr ""
 
 msgid ""
 "Committed configuration has not been loaded. Check Configuration "
@@ -477,8 +480,8 @@ msgstr "等待中"
 msgid "Periodic"
 msgstr "周期性触发"
 
-msgid "Periodic synchronization interval (seconds)"
-msgstr "周期性同步间隔（秒）"
+msgid "Periodic synchronization interval (minutes)"
+msgstr "周期性同步间隔（分钟）"
 
 msgid "Port bindings"
 msgstr "端口绑定"
@@ -491,6 +494,9 @@ msgstr "保留的历史快照"
 
 msgid "Priority"
 msgstr "优先级"
+
+msgid "Program start"
+msgstr ""
 
 msgid "Provision management VLAN and ACS via OMCI"
 msgstr "通过 OMCI 下发管理 VLAN 与 ACS 配置"
@@ -515,6 +521,12 @@ msgstr "读取中"
 
 msgid "Reading MIB…"
 msgstr "正在读取 MIB…"
+
+msgid "Reading OMCI MIB records"
+msgstr ""
+
+msgid "Reading OMCI MIB records…"
+msgstr ""
 
 msgid "Receive optical power"
 msgstr "接收光功率"
@@ -586,6 +598,9 @@ msgstr "管理过期"
 
 msgid "Stale revision"
 msgstr "版本过期"
+
+msgid "Starting OMCI MIB read…"
+msgstr ""
 
 msgid "Status"
 msgstr "状态"
@@ -661,8 +676,8 @@ msgstr "上传诊断信息"
 msgid "Uptime"
 msgstr "运行时间"
 
-msgid "Use 0 to disable, or 30–86400 seconds."
-msgstr "设为 0 表示禁用，或输入 30–86400 秒。"
+msgid "Use 0 to disable, or 1–1440 minutes."
+msgstr "设为 0 表示禁用，或输入 1–1440 分钟。"
 
 msgid "Value"
 msgstr "数值"

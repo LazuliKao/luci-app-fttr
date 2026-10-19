@@ -75,7 +75,11 @@ interface PortCard {
 
 function createPortCard(number: number): PortCard {
 	const ifnameNode = <span />;
-	const speedNode = <span>{tr("Unknown")}</span>;
+	const speedNode = (
+		<span style="display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:90%">
+			{tr("Unknown")}
+		</span>
+	);
 	const iconNode = <img src="/luci-static/resources/icons/port_down.svg" alt="" aria-hidden="true" />;
 	const linkBarNode = <div style="flex:1;height:3px;opacity:0.25;background-color:rgb(240, 144, 144)" />;
 	const portStateNode = <span />;
@@ -97,14 +101,13 @@ function createPortCard(number: number): PortCard {
 		<div
 			class="ifacebox fttr-port-card"
 			data-fttr-port={String(number)}
-			style="box-sizing:border-box;width:100%;margin:0;cursor:pointer"
+			style="box-sizing:border-box;margin:0;cursor:pointer"
 		>
-			<div class="ifacebox-head" style="font-weight:bold">
+			<div class="ifacebox-head fttr-port-name" style="font-weight:bold">
 				{ifnameNode}
 			</div>
-			<div class="ifacebox-body">
+			<div class="ifacebox-body fttr-port-identity">
 				{iconNode}
-				<br />
 				{speedNode}
 			</div>
 			<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
@@ -121,9 +124,14 @@ function createPortCard(number: number): PortCard {
 				</span>
 			</div>
 			<div class="ifacebox-body">
-				<div class="cbi-tooltip-container" style="text-align:left;font-size:80%;line-height:1.4">
-					<div style="white-space:nowrap">▲ {txSummaryNode}</div>
-					<div style="white-space:nowrap">▼ {rxSummaryNode}</div>
+				<div
+					class="cbi-tooltip-container fttr-port-stats"
+					style="display:flex;flex-direction:column;align-items:center;font-size:80%;line-height:1.4;cursor:pointer;width:100%"
+				>
+					<div style="display:flex;flex-direction:column;align-items:center">
+						<div style="white-space:nowrap">▲ {txSummaryNode}</div>
+						<div style="white-space:nowrap">▼ {rxSummaryNode}</div>
+					</div>
 					<span class="cbi-tooltip">
 						<span>
 							<span class="nowrap">
@@ -746,29 +754,61 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 
 				.fttr-overview .fttr-ports-grid {
 					display: grid;
-					grid-template-columns: repeat(8, minmax(0, 1fr));
+					grid-template-columns: repeat(8, 100px);
 					gap: 8px;
 					margin-bottom: 1em;
+					margin-inline: auto;
+					width: fit-content;
+					max-width: 100%;
 				}
 
-				@media (max-width: 1200px) {
+				@media (max-width: 1100px) {
 					.fttr-overview .fttr-ports-grid {
-						grid-template-columns: repeat(4, minmax(0, 1fr));
+						grid-template-columns: repeat(4, 100px);
 					}
 				}
 
-				@media (max-width: 600px) {
+				@media (max-width: 520px) {
 					.fttr-overview .fttr-ports-grid {
-						grid-template-columns: repeat(2, minmax(0, 1fr));
+						grid-template-columns: repeat(2, 100px);
 					}
 				}
 
 				.fttr-overview .fttr-port-card {
 					box-sizing: border-box;
-					width: 100%;
+					width: 100px;
 					margin: 0;
 					cursor: pointer;
+					text-align: center;
 					transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+				}
+
+				.fttr-overview .fttr-port-name {
+					text-align: center;
+				}
+
+				.fttr-overview .fttr-port-identity {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+				}
+
+				.fttr-overview .fttr-port-identity > span {
+					text-align: center;
+				}
+
+				.fttr-overview .fttr-port-stats {
+					display: flex !important;
+					flex-direction: column !important;
+					align-items: center;
+					font-size: 80%;
+					line-height: 1.4;
+					width: 100%;
+					box-sizing: border-box;
+				}
+
+				.fttr-overview .fttr-port-stats > div {
+					white-space: nowrap;
 				}
 
 				.fttr-overview .fttr-port-card.port-down {

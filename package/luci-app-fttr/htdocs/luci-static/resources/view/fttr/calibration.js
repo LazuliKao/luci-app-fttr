@@ -1326,7 +1326,12 @@ const e8 = ex({
     method: eU("diff"),
     revision: eI,
     triggers: ew(eI),
-    interval: eH,
+    interval_minutes: new ef({
+        type: "number",
+        coerce: !0,
+        checks: [],
+        ...j(void 0)
+    }),
     error: eN(eI),
     devices: ew(e8),
     management_network: e4,
