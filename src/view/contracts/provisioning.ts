@@ -240,7 +240,7 @@ export const syncStatus = z.object({
 	method: z.literal("diff"),
 	revision: str,
 	triggers: z.array(str),
-	interval: num,
+	interval_minutes: z.coerce.number<number>(),
 	error: z.nullable(str),
 	devices: z.array(deviceSync),
 	management_network: network,

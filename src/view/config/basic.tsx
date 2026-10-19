@@ -126,20 +126,21 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 		["config_change", _("Configuration changed")],
 		["device_online", _("Device online")],
 		["cwmp_boot", _("CWMP boot")],
+		["program_start", _("Program start")],
 		["periodic", _("Periodic")],
 	])
 		option.value(value, label);
 	option.default = ["config_change", "device_online", "cwmp_boot"];
 	option.retain = true;
 	option.depends("mode", "auto");
-	option = field(p, L.form.Value, "interval", _("Periodic synchronization interval (seconds)"));
-	option.default = "0";
+	option = field(p, L.form.Value, "interval_minutes", _("Periodic synchronization interval (minutes)"));
+	option.default = "30";
 	option.retain = true;
 	option.depends("mode", "auto");
 	option.validate = (_id: string, value: string) =>
-		/^(0|[1-9][0-9]*)$/.test(value) && (Number(value) === 0 || (Number(value) >= 30 && Number(value) <= 86400))
+		/^(0|[1-9][0-9]*)$/.test(value) && (Number(value) === 0 || (Number(value) >= 1 && Number(value) <= 1440))
 			? true
-			: _("Use 0 to disable, or 30–86400 seconds.");
+			: _("Use 0 to disable, or 1–1440 minutes.");
 	option = field(p, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)");
 	option.default = "180";
 }
