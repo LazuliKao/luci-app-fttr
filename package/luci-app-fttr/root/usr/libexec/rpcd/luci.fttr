@@ -42,9 +42,9 @@ if [ "$1" = worker ]; then
 	if [ "$(registration "$onu" "$sn")" != "$expected" ]; then
 		printf '{"error":"Device registration changed; reopen device details"}\n' >"$dir/result.new"
 	else
-		set -- /usr/sbin/fttrctl mib "$onu" --json
+		set -- /usr/sbin/fttrctl mib "$onu" --json --progress-id "${dir##*.}"
 		[ "$tables" = 1 ] && set -- "$@" --tables
-		if "$@" >"$dir/report" 2>/dev/null; then
+		if "$@" >"$dir/report" 2>"$dir/stderr"; then
 			if [ "$(registration "$onu" "$sn")" = "$expected" ]; then
 				printf '{"status":"ready","report":' >"$dir/result.new"
 				cat "$dir/report" >>"$dir/result.new"
@@ -53,10 +53,15 @@ if [ "$1" = worker ]; then
 				printf '{"error":"Device registration changed during MIB read"}\n' >"$dir/result.new"
 			fi
 		else
-			printf '{"error":"MIB read failed or timed out; check device registration and retry"}\n' >"$dir/result.new"
+			rc=$?
+			detail="$(head -c 512 "$dir/stderr" 2>/dev/null)"
+			[ -n "$detail" ] || detail="fttrctl exited with status $rc"
+			json_init
+			json_add_string error "MIB read failed; check device registration and retry: $detail"
+			json_dump >"$dir/result.new"
 		fi
 	fi
-	rm -f "$dir/report"
+	rm -f "$dir/report" "$dir/stderr"
 	mv "$dir/result.new" "$dir/result"
 	exit 0
 fi
@@ -85,6 +90,7 @@ case "$1" in
 				umask 077
 				dir="$(mktemp -d /tmp/fttr-mib.XXXXXXXX)" || error 'Cannot create MIB job'
 				date +%s >"$dir/created"
+				printf '{"phase":"starting","received":0,"expected":null}\n' >"$dir/progress"
 				"$0" worker "$dir" "$onu" "$sn" "$tables" "$expected" >/dev/null 2>&1 </dev/null &
 				printf '{"job":"%s","status":"pending"}\n' "${dir##*/}"
 				exit 0
@@ -116,6 +122,10 @@ case "$1" in
 					encoded="$(dd if="$dir/result" bs=32768 skip="$chunk" count=1 2>/dev/null | ucode -e 'import { stdin } from "fs"; print(b64enc(stdin.read("all")));')" || error 'Cannot encode MIB chunk'
 					[ -n "$encoded" ] || error 'Cannot read MIB chunk'
 					printf '{"status":"ready","chunk":%s,"chunks":%s,"bytes":%s,"data":"%s"}\n' "$chunk" "$chunks" "$bytes" "$encoded"
+				elif [ -f "$dir/progress" ] && [ ! -L "$dir/progress" ]; then
+					printf '{"status":"pending","progress":'
+					cat "$dir/progress"
+					printf '}\n'
 				else printf '{"status":"pending"}\n'; fi
 				exit 0
 				;;
