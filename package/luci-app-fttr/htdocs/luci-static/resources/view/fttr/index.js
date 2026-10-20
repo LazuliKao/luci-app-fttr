@@ -2512,7 +2512,7 @@ function tH(e) {
                                     console.warn("Failed to release MIB snapshot", e);
                                 }
                             }
-                            P(u), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, T);
+                            P(u), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, T, "modal-wide");
                         })(i),
                     children: tU("Details")
                 }, o("button", t))

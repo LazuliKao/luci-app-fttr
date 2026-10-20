@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-19 17:49+0800\n"
+"POT-Creation-Date: 2026-10-20 09:47+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LuCI FTTR Team\n"
@@ -19,6 +19,9 @@ msgid ""
 "existing listed management VLAN; the first VLAN is the fallback."
 msgstr "所有列出的 VLAN 共享同一个管理网桥和 DHCP 地址池。请保留已列出的管理 VLAN；第一个 VLAN 将作为回退默认值。"
 
+msgid "Allow unsupported ONUs as bridge"
+msgstr "允许将不支持的 ONU 作为桥接"
+
 msgid "Attention required"
 msgstr "需注意"
 
@@ -33,6 +36,11 @@ msgstr "自动（只读能力发现）"
 
 msgid "Automatic triggers"
 msgstr "自动触发机制"
+
+msgid ""
+"Automatically provision standard G.988 transparent Layer 2 bridge for "
+"unrecognized or third-party GPON ONUs in O5 state."
+msgstr "为处于 O5 状态的未识别或第三方 GPON ONU 自动配置标准的 G.988 透明二层桥接"
 
 msgid "Band"
 msgstr "频段"
@@ -70,7 +78,7 @@ msgid "Close"
 msgstr "关闭"
 
 msgid "Collecting VLAN tables"
-msgstr ""
+msgstr "收集 VLAN 表"
 
 msgid ""
 "Committed configuration has not been loaded. Check Configuration "
@@ -100,12 +108,6 @@ msgstr "已连接"
 
 msgid "Connected device"
 msgstr "已连接设备"
-
-msgid "Copied"
-msgstr "已复制"
-
-msgid "Copy JSON"
-msgstr "复制 JSON"
 
 msgid "Current registration"
 msgstr "当前注册状态"
@@ -145,6 +147,9 @@ msgstr "删除该 WLAN 对象"
 
 msgid "Device"
 msgstr "设备"
+
+msgid "Device adapter"
+msgstr "设备适配器"
 
 msgid "Device already configured."
 msgstr "设备已配置。"
@@ -262,6 +267,9 @@ msgstr "通用设置"
 msgid "Generated ACS URL"
 msgstr "生成的 ACS URL"
 
+msgid "Generic G.988 Bridge"
+msgstr "通用 G.988 桥接"
+
 msgid "Group"
 msgstr "分组"
 
@@ -336,6 +344,9 @@ msgstr "任务轮询超时，执行结果未知。请勿自动重试。"
 msgid "Job result exceeds the transport limit"
 msgstr "任务结果超出了传输大小限制"
 
+msgid "JSON download started"
+msgstr "JSON 下载已开始"
+
 msgid "Keep current key"
 msgstr "保持当前密钥"
 
@@ -380,6 +391,9 @@ msgstr "手动模式仅保存配置；请在“同步”页面中点击“应用
 
 msgid "MIB query timed out; retry."
 msgstr "MIB 查询超时；请重试。"
+
+msgid "MIB snapshot cannot be serialized"
+msgstr "MIB 快照无法序列化"
 
 msgid "Model"
 msgstr "型号"
@@ -489,6 +503,9 @@ msgstr "端口绑定"
 msgid "Ports"
 msgstr "端口"
 
+msgid "Preparing JSON download…"
+msgstr "准备 JSON 下载…"
+
 msgid "Previous snapshot retained"
 msgstr "保留的历史快照"
 
@@ -496,7 +513,7 @@ msgid "Priority"
 msgstr "优先级"
 
 msgid "Program start"
-msgstr ""
+msgstr "程序启动"
 
 msgid "Provision management VLAN and ACS via OMCI"
 msgstr "通过 OMCI 下发管理 VLAN 与 ACS 配置"
@@ -523,10 +540,10 @@ msgid "Reading MIB…"
 msgstr "正在读取 MIB…"
 
 msgid "Reading OMCI MIB records"
-msgstr ""
+msgstr "读取 OMCI MIB 记录"
 
 msgid "Reading OMCI MIB records…"
-msgstr ""
+msgstr "读取 OMCI MIB 记录…"
 
 msgid "Receive optical power"
 msgstr "接收光功率"
@@ -572,9 +589,6 @@ msgstr "搜索 ME 名称或 Class ID"
 msgid "Security"
 msgstr "安全加密"
 
-msgid "Select and copy the JSON manually."
-msgstr "请手动选中并复制 JSON 内容。"
-
 msgid "Select device."
 msgstr "请选择设备。"
 
@@ -600,7 +614,7 @@ msgid "Stale revision"
 msgstr "版本过期"
 
 msgid "Starting OMCI MIB read…"
-msgstr ""
+msgstr "开始读取 OMCI MIB…"
 
 msgid "Status"
 msgstr "状态"
@@ -636,6 +650,11 @@ msgstr "路径必须以 '/' 开头。"
 
 msgid "The state file path must be absolute."
 msgstr "状态文件路径必须为绝对路径。"
+
+msgid ""
+"This is a lightweight preview. Download JSON to save the complete MIB "
+"snapshot."
+msgstr "这是一个轻量级预览。下载 JSON 以保存完整的 MIB 快照。"
 
 msgid "Too many result chunks"
 msgstr "结果分片过多"

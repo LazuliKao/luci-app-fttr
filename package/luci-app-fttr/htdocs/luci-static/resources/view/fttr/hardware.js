@@ -2668,7 +2668,7 @@ function tU(e) {
                                                     console.warn("Failed to release MIB snapshot", e);
                                                 }
                                             }
-                                            M(u), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, T);
+                                            M(u), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, T, "modal-wide");
                                         })(e, "mib"),
                                     children: [
                                         tZ("View OMCI / MIB details"),

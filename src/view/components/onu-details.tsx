@@ -519,5 +519,5 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		}
 	}
 	tab(initialTab);
-	L.ui.showModal(`${initial.model} — ${initial.serial_number}`, body);
+	L.ui.showModal(`${initial.model} — ${initial.serial_number}`, body, "modal-wide");
 }

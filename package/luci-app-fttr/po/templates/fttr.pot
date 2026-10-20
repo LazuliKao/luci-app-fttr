@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-19 17:49+0800\n"
+"POT-Creation-Date: 2026-10-20 09:47+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -19,6 +19,9 @@ msgid ""
 "existing listed management VLAN; the first VLAN is the fallback."
 msgstr ""
 
+msgid "Allow unsupported ONUs as bridge"
+msgstr ""
+
 msgid "Attention required"
 msgstr ""
 
@@ -32,6 +35,11 @@ msgid "Automatic (read-only capability discovery)"
 msgstr ""
 
 msgid "Automatic triggers"
+msgstr ""
+
+msgid ""
+"Automatically provision standard G.988 transparent Layer 2 bridge for "
+"unrecognized or third-party GPON ONUs in O5 state."
 msgstr ""
 
 msgid "Band"
@@ -101,12 +109,6 @@ msgstr ""
 msgid "Connected device"
 msgstr ""
 
-msgid "Copied"
-msgstr ""
-
-msgid "Copy JSON"
-msgstr ""
-
 msgid "Current registration"
 msgstr ""
 
@@ -144,6 +146,9 @@ msgid "Delete the WLAN object"
 msgstr ""
 
 msgid "Device"
+msgstr ""
+
+msgid "Device adapter"
 msgstr ""
 
 msgid "Device already configured."
@@ -260,6 +265,9 @@ msgstr ""
 msgid "Generated ACS URL"
 msgstr ""
 
+msgid "Generic G.988 Bridge"
+msgstr ""
+
 msgid "Group"
 msgstr ""
 
@@ -334,6 +342,9 @@ msgstr ""
 msgid "Job result exceeds the transport limit"
 msgstr ""
 
+msgid "JSON download started"
+msgstr ""
+
 msgid "Keep current key"
 msgstr ""
 
@@ -377,6 +388,9 @@ msgid ""
 msgstr ""
 
 msgid "MIB query timed out; retry."
+msgstr ""
+
+msgid "MIB snapshot cannot be serialized"
 msgstr ""
 
 msgid "Model"
@@ -487,6 +501,9 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
+msgid "Preparing JSON download…"
+msgstr ""
+
 msgid "Previous snapshot retained"
 msgstr ""
 
@@ -570,9 +587,6 @@ msgstr ""
 msgid "Security"
 msgstr ""
 
-msgid "Select and copy the JSON manually."
-msgstr ""
-
 msgid "Select device."
 msgstr ""
 
@@ -633,6 +647,11 @@ msgid "The path must start with '/'."
 msgstr ""
 
 msgid "The state file path must be absolute."
+msgstr ""
+
+msgid ""
+"This is a lightweight preview. Download JSON to save the complete MIB "
+"snapshot."
 msgstr ""
 
 msgid "Too many result chunks"
