@@ -13,3 +13,4 @@ _("Synchronization");
 _("Hardware status");
 _("Optical calibration");
 _("HL202 management");
+_("About");

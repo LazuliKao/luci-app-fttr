@@ -9,6 +9,7 @@ export default defineConfig({
 			calibration: "./src/view/calibration.tsx",
 			sync: "./src/view/sync.tsx",
 			hl202: "./src/view/hl202.tsx",
+			about: "./src/view/about.tsx",
 		},
 		tsconfigPath: "./tsconfig.json",
 	},

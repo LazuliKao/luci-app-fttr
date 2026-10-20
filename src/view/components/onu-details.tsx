@@ -94,97 +94,130 @@ function reference(definition: Definition): HTMLElement {
 }
 
 function browser(report: MibReport): HTMLElement {
-	const content = <div style="min-width:0;flex:1" />;
-	const filter = (<input type="search" placeholder={_("Search ME name or Class ID")} />) as HTMLInputElement;
-	const classes = <div />;
+	let selectedId: number | null = report.classes.length ? report.classes[0].class_id : null;
+	const content = <div class="mib-content" />;
+	const filter = (
+		<input type="search" class="cbi-input-text mib-search-input" placeholder={_("Search ME name or Class ID…")} />
+	) as HTMLInputElement;
+	const classes = <div class="mib-class-list" />;
+	const classButtons = new Map<number, HTMLElement>();
+
 	function select(id: number): void {
+		selectedId = id;
+		for (const [classId, btn] of classButtons) {
+			if (classId === id) {
+				btn.classList.add("active");
+			} else {
+				btn.classList.remove("active");
+			}
+		}
+
+		const entities = report.entities.filter((e) => e.class_id === id);
+		if (!entities.length) {
+			content.replaceChildren(
+				<div class="mib-empty-content">
+					<p>{_("No entities recorded for this ME class.")}</p>
+				</div>,
+			);
+			return;
+		}
+
 		content.replaceChildren(
-			...report.entities
-				.filter((e) => e.class_id === id)
-				.map((entity) => (
-					<details>
-						<summary>
-							{text(entity.name)} · {_("Entity")} {entity.entity_id} (0x{entity.entity_id.toString(16)}) ·{" "}
-							{entity.support}
-						</summary>
-						<table class="table">
-							<thead>
-								<tr>
-									<th>{_("Attribute")}</th>
-									<th>{_("Type")}</th>
-									<th>{_("Value")}</th>
-									<th>{_("Definition")}</th>
-								</tr>
-							</thead>
-							<tbody>
-								{entity.attributes.map((attribute) => (
+			...entities.map((entity, index) => (
+				<details open={index === 0} class="mib-entity-details">
+					<summary class="mib-entity-summary">
+						<span class="mib-entity-title">
+							<strong>{text(entity.name)}</strong>
+							<span class="mib-entity-id-tag">
+								{_("Entity")} {entity.entity_id} (0x{entity.entity_id.toString(16)})
+							</span>
+						</span>
+						<span class="mib-entity-support">{entity.support}</span>
+					</summary>
+					<div class="mib-entity-body">
+						{entity.attributes.length ? (
+							<table class="table mib-attributes-table">
+								<thead>
 									<tr>
-										<td>{attribute.definition.name}</td>
-										<td>{attribute.definition.kind}</td>
-										<td>
-											{valueText(attribute.value)}
-											<details>
-												<summary>{_("Raw data / observations")}</summary>
-												<pre style="white-space:pre-wrap;overflow-wrap:anywhere">
-													{json(attribute.observations)}
-												</pre>
-											</details>
-										</td>
-										<td>{reference(attribute.definition)}</td>
+										<th style="width:28%">{_("Attribute")}</th>
+										<th style="width:14%">{_("Type")}</th>
+										<th>{_("Value")}</th>
+										<th style="width:18%">{_("Definition")}</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
-						{!entity.attributes.length ? (
+								</thead>
+								<tbody>
+									{entity.attributes.map((attribute) => (
+										<tr>
+											<td class="mib-attr-name">{attribute.definition.name}</td>
+											<td class="mib-attr-kind">
+												<code>{attribute.definition.kind}</code>
+											</td>
+											<td class="mib-attr-value">
+												<span class="mib-val-display">{valueText(attribute.value)}</span>
+												{attribute.observations?.length ? (
+													<details class="mib-obs-details">
+														<summary>{_("Raw data / observations")}</summary>
+														<pre class="mib-pre">{json(attribute.observations)}</pre>
+													</details>
+												) : null}
+											</td>
+											<td class="mib-attr-ref">{reference(attribute.definition)}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						) : (
 							<p>{_("Basic display only; raw records are preserved.")}</p>
-						) : null}
+						)}
 						{report.tables
 							.filter((t) => t.class_id === id && t.entity_id === entity.entity_id)
 							.map((table) => (
-								<details>
+								<details class="mib-table-details">
 									<summary>
 										{table.attribute.name} ·{" "}
 										{table.collected ? `${table.rows.length} ${_("rows")}` : text(table.error)}
 									</summary>
 									{table.vlan_rules.length ? (
-										<table class="table">
-											<thead>
-												<tr>
-													<th>{_("Outer filter (priority / VID / TPID-DEI)")}</th>
-													<th>{_("Inner filter (priority / VID / TPID-DEI)")}</th>
-													<th>{_("EtherType code")}</th>
-													<th>{_("Remove tags")}</th>
-													<th>{_("Outer treatment (priority / VID / TPID-DEI)")}</th>
-													<th>{_("Inner treatment (priority / VID / TPID-DEI)")}</th>
-													<th>{_("Delete entry")}</th>
-												</tr>
-											</thead>
-											<tbody>
-												{table.vlan_rules.map((rule) => (
+										<div class="mib-table-overflow">
+											<table class="table">
+												<thead>
 													<tr>
-														<td>{`${rule.filter_outer_priority} / ${rule.filter_outer_vid} / ${rule.filter_outer_tpid_dei}`}</td>
-														<td>{`${rule.filter_inner_priority} / ${rule.filter_inner_vid} / ${rule.filter_inner_tpid_dei}`}</td>
-														<td>{text(rule.filter_ethertype)}</td>
-														<td>{text(rule.tags_to_remove)}</td>
-														<td>{`${rule.treatment_outer_priority} / ${rule.treatment_outer_vid} / ${rule.treatment_outer_tpid_dei}`}</td>
-														<td>{`${rule.treatment_inner_priority} / ${rule.treatment_inner_vid} / ${rule.treatment_inner_tpid_dei}`}</td>
-														<td>{text(rule.delete_entry)}</td>
+														<th>{_("Outer filter (priority / VID / TPID-DEI)")}</th>
+														<th>{_("Inner filter (priority / VID / TPID-DEI)")}</th>
+														<th>{_("EtherType code")}</th>
+														<th>{_("Remove tags")}</th>
+														<th>{_("Outer treatment (priority / VID / TPID-DEI)")}</th>
+														<th>{_("Inner treatment (priority / VID / TPID-DEI)")}</th>
+														<th>{_("Delete entry")}</th>
 													</tr>
-												))}
-											</tbody>
-										</table>
+												</thead>
+												<tbody>
+													{table.vlan_rules.map((rule) => (
+														<tr>
+															<td>{`${rule.filter_outer_priority} / ${rule.filter_outer_vid} / ${rule.filter_outer_tpid_dei}`}</td>
+															<td>{`${rule.filter_inner_priority} / ${rule.filter_inner_vid} / ${rule.filter_inner_tpid_dei}`}</td>
+															<td>{text(rule.filter_ethertype)}</td>
+															<td>{text(rule.tags_to_remove)}</td>
+															<td>{`${rule.treatment_outer_priority} / ${rule.treatment_outer_vid} / ${rule.treatment_outer_tpid_dei}`}</td>
+															<td>{`${rule.treatment_inner_priority} / ${rule.treatment_inner_vid} / ${rule.treatment_inner_tpid_dei}`}</td>
+															<td>{text(rule.delete_entry)}</td>
+														</tr>
+													))}
+												</tbody>
+											</table>
+										</div>
 									) : null}
-									<p>
+									<p style="margin-top:6px">
 										{_("G.988 encoded field values")}: {reference(table.attribute)}
 									</p>
-									<pre style="white-space:pre-wrap;overflow-wrap:anywhere">
+									<pre class="mib-pre">
 										{json(table.vlan_rules.length ? table.vlan_rules : table.rows)}
 									</pre>
 								</details>
 							))}
-						<details>
+						<details class="mib-diag-details">
 							<summary>{_("Records / diagnostics")}</summary>
-							<pre style="white-space:pre-wrap;overflow-wrap:anywhere">
+							<pre class="mib-pre">
 								{json({
 									diagnostics: entity.diagnostics,
 									records: report.records.filter(
@@ -193,39 +226,82 @@ function browser(report: MibReport): HTMLElement {
 								})}
 							</pre>
 						</details>
-					</details>
-				)),
-		);
-	}
-	function list(): void {
-		const query = filter.value.toLowerCase();
-		classes.replaceChildren(
-			...report.classes
-				.filter((c) => `${c.class_id} ${c.name ?? ""}`.toLowerCase().includes(query))
-				.map((c) => (
-					<div>
-						<button
-							type="button"
-							class="cbi-button"
-							style="margin:.2em 0;white-space:normal;text-align:left"
-							onclick={() => select(c.class_id)}
-						>
-							{c.class_id} · {c.name ?? _("Unknown class")} ({c.entities})
-						</button>
 					</div>
-				)),
+				</details>
+			)),
 		);
 	}
+
+	function list(): void {
+		const query = filter.value.trim().toLowerCase();
+		classButtons.clear();
+		const filtered = report.classes.filter((c) => `${c.class_id} ${c.name ?? ""}`.toLowerCase().includes(query));
+		if (!filtered.length) {
+			classes.replaceChildren(<div class="mib-empty-list">{_("No matching ME classes")}</div>);
+			return;
+		}
+		classes.replaceChildren(
+			...filtered.map((c) => {
+				const btn = (
+					<button
+						type="button"
+						class={`mib-class-btn${c.class_id === selectedId ? " active" : ""}`}
+						onclick={() => select(c.class_id)}
+					>
+						<span class="mib-class-id">{c.class_id}</span>
+						<span class="mib-class-name" title={c.name ?? _("Unknown class")}>
+							{c.name ?? _("Unknown class")}
+						</span>
+						<span class="mib-class-count">{c.entities}</span>
+					</button>
+				) as HTMLElement;
+				classButtons.set(c.class_id, btn);
+				return btn;
+			}),
+		);
+	}
+
 	filter.addEventListener("input", list);
 	list();
 	if (report.classes.length) select(report.classes[0].class_id);
+
 	return (
-		<div style="display:flex;gap:1em;flex-wrap:wrap">
-			<div style="flex:0 1 240px">
-				{filter}
+		<div class="mib-browser">
+			<div class="mib-sidebar">
+				<div class="mib-search-box">{filter}</div>
 				{classes}
 			</div>
 			{content}
+		</div>
+	);
+}
+
+function renderStatusChips(report: MibReport): HTMLElement {
+	return (
+		<div class="mib-chips">
+			<span class="mib-chip mib-chip-primary">ONU {report.onu_id}</span>
+			<span class={`mib-chip ${report.uploaded_complete ? "mib-chip-success" : "mib-chip-warning"}`}>
+				{report.uploaded_complete ? _("Upload complete") : _("Upload incomplete")}
+			</span>
+			<span class="mib-chip mib-chip-info">
+				{_("Records")}: {report.received_records}
+				{report.expected_records !== report.received_records ? ` / ${report.expected_records}` : ""}
+			</span>
+			<span class="mib-chip">
+				{_("Decoded")}: {report.decoded_records}
+			</span>
+			{report.partial_records > 0 ? (
+				<span class="mib-chip mib-chip-warning">
+					{_("Partial")}: {report.partial_records}
+				</span>
+			) : null}
+			<span class="mib-chip mib-chip-neutral">
+				{_("Basic")}: {report.basic_records}
+			</span>
+			<span class="mib-chip">
+				{report.tables_collected ? _("VLAN tables collected") : _("VLAN tables not collected")}
+			</span>
+			<span class="mib-chip mib-chip-subtle">{new Date().toLocaleTimeString()}</span>
 		</div>
 	);
 }
@@ -235,80 +311,110 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 	let busy = false;
 	let report: MibReport | null = null;
 	let job: string | null = null;
+
+	const basicGroups = [
+		{
+			title: _("Device identification"),
+			rows: [
+				[_("Vendor"), initial.vendor],
+				[_("Model"), initial.identity?.equipment_id ?? initial.model],
+				[_("Optical serial"), initial.serial_number],
+				[_("ONU ID"), initial.onu_id],
+				[_("Hardware version"), initial.identity?.hardware_version ?? initial.hardware_version],
+				[_("Software images"), initial.identity?.software_images?.join(", ") ?? initial.firmware_version],
+				[
+					_("OMCC version"),
+					initial.identity?.omcc_version == null ? null : `0x${initial.identity.omcc_version.toString(16)}`,
+				],
+			],
+		},
+		{
+			title: _("Optical & link status"),
+			rows: [
+				[_("Registration"), initial.state],
+				[_("Business"), businessText(initial.business_status)],
+				[
+					_("Receive optical power"),
+					initial.optical_rx_power_dbm == null ? null : `${initial.optical_rx_power_dbm.toFixed(3)} dBm`,
+				],
+				[
+					_("Transmit optical power"),
+					initial.optical_tx_power_dbm == null ? null : `${initial.optical_tx_power_dbm.toFixed(3)} dBm`,
+				],
+				[_("Equalization delay (EQD)"), eqdText(initial.equalization_delay_bits)],
+				[_("Data interface"), initial.data_path?.interface],
+				[_("Uptime"), initial.uptime_seconds == null ? null : `${Math.floor(initial.uptime_seconds)} s`],
+			],
+		},
+		{
+			title: _("Management & cache"),
+			rows: [
+				[_("CWMP"), initial.management?.state],
+				[
+					_("Last Inform"),
+					initial.management?.last_inform
+						? `${new Date(initial.management.last_inform * 1000).toLocaleString()}${
+								initial.management.age_seconds != null ? ` (${initial.management.age_seconds} s)` : ""
+							}`
+						: null,
+				],
+				[
+					_("Identity source"),
+					initial.identity
+						? initial.identity_current === false
+							? _("Cached identity")
+							: initial.identity_current === true
+								? _("Current registration")
+								: _("Registration freshness unavailable")
+						: _("Not collected"),
+				],
+				[_("Identity age"), initial.identity_age_seconds == null ? null : `${initial.identity_age_seconds} s`],
+				[_("Identity read errors"), initial.identity?.errors?.join("; ")],
+			],
+		},
+	];
+
 	const basic = (
-		<table class="table">
-			<tbody>
-				{[
-					[_("Vendor"), initial.vendor],
-					[_("Model"), initial.identity?.equipment_id ?? initial.model],
-					[_("Optical serial"), initial.serial_number],
-					[_("ONU ID"), initial.onu_id],
-					[_("Registration"), initial.state],
-					[_("Business"), businessText(initial.business_status)],
-					[_("Data interface"), initial.data_path?.interface],
-					[
-						_("Receive optical power"),
-						initial.optical_rx_power_dbm == null ? null : `${initial.optical_rx_power_dbm.toFixed(3)} dBm`,
-					],
-					[
-						_("Transmit optical power"),
-						initial.optical_tx_power_dbm == null ? null : `${initial.optical_tx_power_dbm.toFixed(3)} dBm`,
-					],
-					[_("Uptime"), initial.uptime_seconds == null ? null : `${Math.floor(initial.uptime_seconds)} s`],
-					[_("Equalization delay (EQD)"), eqdText(initial.equalization_delay_bits)],
-					[_("Hardware version"), initial.identity?.hardware_version ?? initial.hardware_version],
-					[_("Software images"), initial.identity?.software_images?.join(", ") ?? initial.firmware_version],
-					[
-						_("OMCC version"),
-						initial.identity?.omcc_version == null
-							? null
-							: `0x${initial.identity.omcc_version.toString(16)}`,
-					],
-					[
-						_("Identity source"),
-						initial.identity
-							? initial.identity_current === false
-								? _("Cached identity")
-								: initial.identity_current === true
-									? _("Current registration")
-									: _("Registration freshness unavailable")
-							: _("Not collected"),
-					],
-					[
-						_("Identity age"),
-						initial.identity_age_seconds == null ? null : `${initial.identity_age_seconds} s`,
-					],
-					[_("Identity read errors"), initial.identity?.errors?.join("; ")],
-					[_("CWMP"), initial.management?.state],
-					[
-						_("Last Inform"),
-						initial.management?.last_inform
-							? `${new Date(initial.management.last_inform * 1000).toLocaleString()}${
-									initial.management.age_seconds != null
-										? ` (${initial.management.age_seconds} s)`
-										: ""
-								}`
-							: null,
-					],
-				].map(([name, value]) => (
-					<tr>
-						<th>{name}</th>
-						<td>{text(value)}</td>
-					</tr>
-				))}
-			</tbody>
-		</table>
+		<div class="onu-basic-container">
+			{basicGroups.map((group) => (
+				<div class="cbi-section onu-basic-section">
+					<h3 class="onu-basic-title">{group.title}</h3>
+					<table class="table onu-basic-table">
+						<tbody>
+							{group.rows.map(([name, value]) => (
+								<tr>
+									<th style="width:35%">{name}</th>
+									<td>{text(value)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			))}
+		</div>
 	);
-	const message = <p role="status">{_("Read MIB on demand. Results are a snapshot, not live polling.")}</p>;
-	const results = <div />;
-	const raw = (
-		<pre style="max-height:20em;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere" />
+
+	const statusContainer = (
+		<div class="mib-status-bar" role="status">
+			<span class="mib-hint-text">{_("Read MIB on demand. Results are a snapshot, not live polling.")}</span>
+		</div>
 	) as HTMLElement;
-	const downloadMessage = <span role="status" />;
+
+	const progressBar = (
+		<div class="cbi-progressbar" style="display:none;width:100%" title="0%">
+			<div style="width:0%" />
+		</div>
+	) as HTMLElement;
+
+	const results = <div />;
+	const raw = (<pre class="onu-raw-pre" />) as HTMLElement;
+	const downloadMessage = <span class="download-status" role="status" />;
+	let downloadUrl: string | null = null;
+
 	const download = (
 		<button
 			type="button"
-			class="cbi-button"
+			class="cbi-button cbi-button-action"
 			disabled
 			onclick={async () => {
 				if (!report || closed) return;
@@ -338,66 +444,471 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 			{_("Download JSON")}
 		</button>
 	) as HTMLButtonElement;
-	let downloadUrl: string | null = null;
+
 	const rawPanel = (
-		<div>
-			<p>{_("This is a lightweight preview. Download JSON to save the complete MIB snapshot.")}</p>
+		<div class="onu-raw-panel">
+			<div class="onu-raw-toolbar">
+				<span class="onu-raw-hint">
+					{_("This is a lightweight preview. Download JSON to save the complete MIB snapshot.")}
+				</span>
+				<div class="onu-raw-actions">
+					{download}
+					{downloadMessage}
+				</div>
+			</div>
 			{raw}
 		</div>
 	);
+
 	const read = (
-		<button type="button" class="cbi-button cbi-button-action" onclick={() => run(false)}>
+		<button type="button" class="cbi-button cbi-button-apply" onclick={() => run(false)}>
 			{_("Read MIB")}
 		</button>
 	) as HTMLButtonElement;
+
 	const tables = (
 		<button type="button" class="cbi-button cbi-button-action" onclick={() => run(true)}>
 			{_("Read MIB and VLAN tables")}
 		</button>
 	) as HTMLButtonElement;
+
 	const mib = (
-		<div>
-			<p>
-				{read} {tables}
-			</p>
-			{message}
+		<div class="onu-mib-panel">
+			<div class="mib-controls">
+				<div class="mib-action-group">
+					{read}
+					{tables}
+					<small class="mib-action-hint">
+						{_("Collecting VLAN tables queries extended filter tables and takes longer.")}
+					</small>
+				</div>
+				{statusContainer}
+				{progressBar}
+			</div>
 			{results}
 		</div>
 	);
+
 	const panels: Record<string, HTMLElement> = { basic, mib, raw: rawPanel };
-	const buttons = new Map<string, HTMLButtonElement>();
+	const tabItems = new Map<string, HTMLElement>();
+
 	function tab(name: string): void {
 		for (const [key, panel] of Object.entries(panels)) {
 			if (key === name) panel.style.removeProperty("display");
 			else panel.style.setProperty("display", "none", "important");
 		}
-		for (const [key, button] of buttons) button.disabled = key === name;
+		for (const [key, li] of tabItems) {
+			li.className = key === name ? "cbi-tab" : "cbi-tab-disabled";
+		}
 	}
-	const navigation = (
-		<p>
-			{[
-				["basic", _("Basic information")],
-				["mib", "OMCI / MIB"],
-				["raw", _("Raw JSON")],
-			].map(([key, label]) => {
-				const button = (
-					<button type="button" class="cbi-button" onclick={() => tab(key)}>
-						{label}
-					</button>
-				) as HTMLButtonElement;
-				buttons.set(key, button);
-				return button;
+
+	const tabsList = [
+		{ id: "basic", label: _("Basic information") },
+		{ id: "mib", label: "OMCI / MIB" },
+		{ id: "raw", label: _("Raw JSON") },
+	];
+
+	const tabMenu = (
+		<ul class="cbi-tabmenu" style="margin:0;padding-left:0;display:flex;flex-wrap:wrap">
+			{tabsList.map((t) => {
+				const li = (
+					<li class={t.id === initialTab ? "cbi-tab" : "cbi-tab-disabled"} data-tab={t.id}>
+						<a
+							href={`#tab-${t.id}`}
+							onclick={(e: MouseEvent) => {
+								e.preventDefault();
+								tab(t.id);
+							}}
+						>
+							{t.label}
+						</a>
+					</li>
+				) as HTMLElement;
+				tabItems.set(t.id, li);
+				return li;
 			})}
-			{download} {downloadMessage}
-		</p>
+		</ul>
 	);
-	const body = (
-		<>
-			{navigation}
+
+	const header = <div class="onu-details-header">{tabMenu}</div>;
+
+	const dialogRoot = (
+		<div class="onu-details-dialog">
+			<style>
+				{`
+				.onu-details-dialog {
+					--fttr-border: rgba(127, 127, 127, 0.22);
+					--fttr-card-bg: rgba(127, 127, 127, 0.04);
+					--fttr-hover-bg: rgba(127, 127, 127, 0.1);
+					--fttr-active-bg: rgba(52, 152, 219, 0.16);
+					--fttr-active-color: #3498db;
+					display: flex;
+					flex-direction: column;
+				}
+				@media (prefers-color-scheme: dark) {
+					.onu-details-dialog {
+						--fttr-border: rgba(255, 255, 255, 0.14);
+						--fttr-card-bg: rgba(255, 255, 255, 0.03);
+						--fttr-hover-bg: rgba(255, 255, 255, 0.08);
+						--fttr-active-bg: rgba(52, 152, 219, 0.25);
+						--fttr-active-color: #5dade2;
+					}
+				}
+				.onu-details-header {
+					margin-bottom: 12px;
+					border-bottom: 1px solid var(--fttr-border);
+					padding-bottom: 4px;
+				}
+				.onu-details-header .cbi-tabmenu {
+					border-bottom: none;
+					margin: 0;
+				}
+				.onu-raw-toolbar {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					flex-wrap: wrap;
+					gap: 12px;
+					margin-bottom: 10px;
+				}
+				.onu-raw-hint {
+					font-size: 0.9em;
+					opacity: 0.8;
+				}
+				.onu-raw-actions {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+				}
+				.onu-raw-actions .download-status {
+					font-size: 0.85em;
+					opacity: 0.8;
+				}
+				.mib-controls {
+					margin-bottom: 12px;
+					display: flex;
+					flex-direction: column;
+					gap: 8px;
+				}
+				.mib-action-group {
+					display: flex;
+					align-items: center;
+					flex-wrap: wrap;
+					gap: 8px;
+				}
+				.mib-action-hint {
+					opacity: 0.7;
+					font-size: 0.85em;
+				}
+				.mib-status-bar {
+					min-height: 26px;
+					display: flex;
+					align-items: center;
+					font-size: 0.9em;
+				}
+				.mib-hint-text {
+					opacity: 0.75;
+					font-style: italic;
+				}
+				.mib-error-text {
+					color: #e74c3c;
+				}
+				.mib-chips {
+					display: flex;
+					flex-wrap: wrap;
+					gap: 6px;
+					align-items: center;
+				}
+				.mib-chip {
+					display: inline-flex;
+					align-items: center;
+					font-size: 0.82em;
+					padding: 2px 8px;
+					border-radius: 4px;
+					background: var(--fttr-hover-bg);
+					border: 1px solid var(--fttr-border);
+				}
+				.mib-chip-primary {
+					background: rgba(52, 152, 219, 0.15);
+					border-color: rgba(52, 152, 219, 0.35);
+					color: var(--fttr-active-color);
+					font-weight: 600;
+				}
+				.mib-chip-success {
+					background: rgba(46, 204, 113, 0.15);
+					border-color: rgba(46, 204, 113, 0.35);
+					color: #27ae60;
+				}
+				.mib-chip-warning {
+					background: rgba(243, 156, 18, 0.15);
+					border-color: rgba(243, 156, 18, 0.35);
+					color: #d35400;
+				}
+				.mib-chip-info {
+					background: rgba(155, 89, 182, 0.15);
+					border-color: rgba(155, 89, 182, 0.35);
+					color: #8e44ad;
+				}
+				.mib-chip-neutral {
+					opacity: 0.85;
+				}
+				.mib-chip-subtle {
+					opacity: 0.65;
+					font-size: 0.8em;
+				}
+				.mib-browser {
+					display: flex;
+					height: 520px;
+					border: 1px solid var(--fttr-border);
+					border-radius: 6px;
+					overflow: hidden;
+					background: var(--fttr-card-bg);
+				}
+				.mib-sidebar {
+					width: 270px;
+					min-width: 240px;
+					display: flex;
+					flex-direction: column;
+					border-right: 1px solid var(--fttr-border);
+					background: var(--fttr-card-bg);
+				}
+				.mib-search-box {
+					padding: 8px;
+					border-bottom: 1px solid var(--fttr-border);
+				}
+				.mib-search-input {
+					width: 100% !important;
+					box-sizing: border-box;
+					height: 32px;
+					font-size: 0.9em;
+				}
+				.mib-class-list {
+					flex: 1;
+					overflow-y: auto;
+					padding: 4px;
+				}
+				.mib-class-btn {
+					display: flex;
+					align-items: center;
+					width: 100%;
+					padding: 6px 8px;
+					margin-bottom: 2px;
+					border: none;
+					border-left: 3px solid transparent;
+					border-radius: 3px;
+					background: transparent;
+					color: inherit;
+					font-size: 0.88em;
+					text-align: left;
+					cursor: pointer;
+					box-sizing: border-box;
+				}
+				.mib-class-btn:hover {
+					background: var(--fttr-hover-bg);
+				}
+				.mib-class-btn.active {
+					background: var(--fttr-active-bg);
+					color: var(--fttr-active-color);
+					font-weight: 600;
+					border-left-color: var(--fttr-active-color);
+				}
+				.mib-class-id {
+					font-family: monospace;
+					margin-right: 6px;
+					opacity: 0.7;
+					min-width: 24px;
+					text-align: right;
+				}
+				.mib-class-name {
+					flex: 1;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					padding: 0 4px;
+				}
+				.mib-class-count {
+					font-size: 0.78em;
+					padding: 1px 6px;
+					border-radius: 10px;
+					background: var(--fttr-hover-bg);
+					opacity: 0.8;
+				}
+				.mib-content {
+					flex: 1;
+					min-width: 0;
+					overflow-y: auto;
+					padding: 12px 16px;
+				}
+				.mib-empty-list, .mib-empty-content {
+					padding: 20px;
+					text-align: center;
+					opacity: 0.7;
+					font-style: italic;
+				}
+				.mib-entity-details {
+					margin-bottom: 12px;
+					border: 1px solid var(--fttr-border);
+					border-radius: 5px;
+					overflow: hidden;
+				}
+				.mib-entity-details > summary {
+					padding: 8px 12px;
+					background: var(--fttr-hover-bg);
+					cursor: pointer;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					user-select: none;
+					font-size: 0.95em;
+				}
+				.mib-entity-title {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+				}
+				.mib-entity-id-tag {
+					font-size: 0.85em;
+					opacity: 0.75;
+					font-family: monospace;
+				}
+				.mib-entity-support {
+					font-size: 0.8em;
+					padding: 2px 6px;
+					border-radius: 3px;
+					background: var(--fttr-card-bg);
+					border: 1px solid var(--fttr-border);
+					opacity: 0.85;
+				}
+				.mib-entity-body {
+					padding: 10px 12px;
+				}
+				.mib-attributes-table {
+					width: 100%;
+					margin-bottom: 10px;
+					font-size: 0.9em;
+				}
+				.mib-attr-name {
+					font-weight: 500;
+					word-break: break-word;
+				}
+				.mib-attr-kind code {
+					font-size: 0.85em;
+				}
+				.mib-attr-value {
+					word-break: break-all;
+				}
+				.mib-val-display {
+					font-family: monospace;
+				}
+				.mib-obs-details {
+					margin-top: 4px;
+					font-size: 0.85em;
+				}
+				.mib-obs-details summary {
+					cursor: pointer;
+					color: var(--fttr-active-color);
+				}
+				.mib-pre {
+					white-space: pre-wrap;
+					overflow-wrap: anywhere;
+					max-height: 180px;
+					overflow-y: auto;
+					padding: 6px 8px;
+					background: var(--fttr-card-bg);
+					border-radius: 4px;
+					font-size: 0.85em;
+				}
+				.mib-table-overflow {
+					overflow-x: auto;
+					max-width: 100%;
+					margin-top: 8px;
+					margin-bottom: 8px;
+				}
+				.mib-table-details {
+					margin-top: 10px;
+					border: 1px solid var(--fttr-border);
+					border-radius: 4px;
+					padding: 6px 10px;
+				}
+				.mib-table-details summary {
+					cursor: pointer;
+					font-weight: 500;
+				}
+				.mib-diag-details {
+					margin-top: 10px;
+					font-size: 0.9em;
+				}
+				.mib-diag-details summary {
+					cursor: pointer;
+					opacity: 0.75;
+				}
+				.mib-upload-diagnostics {
+					margin-top: 12px;
+					border: 1px solid var(--fttr-border);
+					border-radius: 4px;
+					padding: 6px 10px;
+				}
+				.mib-upload-diagnostics summary {
+					cursor: pointer;
+					font-weight: 500;
+				}
+				.onu-basic-container {
+					display: flex;
+					flex-direction: column;
+					gap: 14px;
+					max-height: 60vh;
+					overflow-y: auto;
+					padding-right: 4px;
+				}
+				.onu-basic-section {
+					margin-bottom: 0 !important;
+					padding: 10px 14px;
+					border: 1px solid var(--fttr-border);
+					border-radius: 6px;
+					background: var(--fttr-card-bg);
+				}
+				.onu-basic-title {
+					margin-top: 0.2em;
+					margin-bottom: 0.6em;
+					font-size: 1.05em;
+				}
+				.onu-basic-table {
+					width: 100%;
+					margin-bottom: 0;
+				}
+				.onu-basic-table th {
+					opacity: 0.75;
+					font-weight: normal;
+				}
+				.onu-raw-panel {
+					max-height: 60vh;
+					display: flex;
+					flex-direction: column;
+					gap: 8px;
+				}
+				.onu-raw-pre {
+					flex: 1;
+					max-height: 50vh;
+					overflow: auto;
+					white-space: pre-wrap;
+					overflow-wrap: anywhere;
+					padding: 10px;
+					background: var(--fttr-card-bg);
+					border: 1px solid var(--fttr-border);
+					border-radius: 4px;
+				}
+				.onu-details-footer {
+					margin-top: 14px;
+					display: flex;
+					justify-content: flex-end;
+				}
+				`}
+			</style>
+			{header}
 			{basic}
 			{mib}
 			{rawPanel}
-			<div class="right">
+			<div class="right onu-details-footer">
 				<button
 					type="button"
 					class="cbi-button"
@@ -414,15 +925,19 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					{_("Close")}
 				</button>
 			</div>
-		</>
-	);
-	// The body is a Fragment; track a persistent element after its children are mounted.
-	const active = (): boolean => !closed && navigation.isConnected && navigation.getClientRects().length > 0;
+		</div>
+	) as HTMLElement;
+
+	const active = (): boolean => !closed && dialogRoot.isConnected && dialogRoot.getClientRects().length > 0;
+
 	async function run(withTables: boolean): Promise<void> {
 		if (busy) return;
 		busy = true;
 		read.disabled = tables.disabled = true;
-		message.textContent = _("Reading MIB…");
+		progressBar.style.display = "";
+		progressBar.title = "0%";
+		(progressBar.firstElementChild as HTMLElement).style.width = "0%";
+		statusContainer.textContent = _("Reading MIB…");
 		try {
 			const status = await getStatus();
 			const current = status.sub_gateways?.find((o) => o.serial_number === initial.serial_number);
@@ -463,7 +978,10 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 							throw new Error(_("Invalid MIB snapshot size"));
 						for (let index = 0; index < decoded.length; index++)
 							buffer[offset++] = decoded.charCodeAt(index);
-						message.textContent = `${_("Downloading MIB snapshot")}: ${chunk + 1}/${result.chunks}`;
+						const pct = Math.min(100, Math.round(((chunk + 1) / result.chunks) * 100));
+						progressBar.title = `${pct}%`;
+						(progressBar.firstElementChild as HTMLElement).style.width = `${pct}%`;
+						statusContainer.textContent = `${_("Downloading MIB snapshot")}: ${chunk + 1}/${result.chunks}`;
 					}
 					if (offset !== buffer.length) throw new Error(_("Incomplete MIB snapshot"));
 					await releaseJob();
@@ -473,12 +991,14 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					report = snapshot.report;
 					if (report.schema_version !== 1 || report.onu_id !== current.onu_id)
 						throw new Error(_("Unexpected MIB response"));
-					message.textContent = `${new Date().toLocaleString()} · ONU ${report.onu_id} · ${_("Upload complete")}: ${report.uploaded_complete} · ${report.received_records}/${report.expected_records} · ${_("Decoded / partial / basic")}: ${report.decoded_records}/${report.partial_records}/${report.basic_records} · ${_("Tables requested / collected")}: ${report.tables_requested}/${report.tables_collected}`;
+
+					progressBar.style.display = "none";
+					statusContainer.replaceChildren(renderStatusChips(report));
 					results.replaceChildren(
 						browser(report),
-						<details>
+						<details class="mib-upload-diagnostics">
 							<summary>{_("Upload diagnostics")}</summary>
-							<pre>{json(report.diagnostics)}</pre>
+							<pre class="mib-pre">{json(report.diagnostics)}</pre>
 						</details>,
 					);
 					raw.textContent = jsonPreview(report);
@@ -487,7 +1007,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 				}
 				if (result.progress) {
 					const { phase, received, expected } = result.progress;
-					message.textContent =
+					statusContainer.textContent =
 						phase === "starting"
 							? _("Starting OMCI MIB read…")
 							: phase === "tables"
@@ -495,19 +1015,32 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 								: expected == null
 									? _("Reading OMCI MIB records…")
 									: `${_("Reading OMCI MIB records")}: ${received}/${expected}`;
+					if (expected && expected > 0) {
+						const pct = Math.min(100, Math.round((received / expected) * 100));
+						progressBar.title = `${pct}%`;
+						(progressBar.firstElementChild as HTMLElement).style.width = `${pct}%`;
+					}
 				}
 				if (Date.now() >= deadline) throw new Error(_("MIB query timed out; retry."));
 				await new Promise((resolve) => setTimeout(resolve, 1000));
 			}
 		} catch (error) {
-			if (active())
-				message.textContent = `${String(error)}${report ? ` · ${_("Previous snapshot retained")}` : ""}`;
+			if (active()) {
+				progressBar.style.display = "none";
+				statusContainer.replaceChildren(
+					<span class="mib-error-text">
+						{String(error)}
+						{report ? ` · ${_("Previous snapshot retained")}` : ""}
+					</span>,
+				);
+			}
 		} finally {
 			await releaseJob();
 			busy = false;
 			read.disabled = tables.disabled = false;
 		}
 	}
+
 	async function releaseJob(): Promise<void> {
 		if (!job) return;
 		const completedJob = job;
@@ -518,6 +1051,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 			console.warn("Failed to release MIB snapshot", error);
 		}
 	}
+
 	tab(initialTab);
-	L.ui.showModal(`${initial.model} — ${initial.serial_number}`, body, "modal-wide");
+	L.ui.showModal(`${initial.model} — ${initial.serial_number}`, dialogRoot, "modal-wide");
 }

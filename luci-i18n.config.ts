@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: Apache-2.0
-
 import { defineConfig } from "@lazulikao/luci-types/i18n";
 
 export default defineConfig({
@@ -16,13 +14,16 @@ export default defineConfig({
 	},
 
 	headers: {
-		languageTeam: "LuCI FTTR Team",
+		languageTeam: "ai",
 	},
 
 	locales: [
 		{
 			locale: "zh_Hans",
 			po: "package/luci-app-fttr/po/zh_Hans/fttr.po",
+			headers: {
+				languageTeam: "LazuliKao",
+			}
 		},
 	],
 });

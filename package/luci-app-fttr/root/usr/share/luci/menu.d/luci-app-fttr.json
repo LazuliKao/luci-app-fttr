@@ -50,5 +50,13 @@
 			"type": "view",
 			"path": "fttr/calibration"
 		}
+	},
+	"admin/network/fttr/about": {
+		"title": "About",
+		"order": 90,
+		"action": {
+			"type": "view",
+			"path": "fttr/about"
+		}
 	}
 }

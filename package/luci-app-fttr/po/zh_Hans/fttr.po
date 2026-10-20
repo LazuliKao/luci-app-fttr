@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-20 09:47+0800\n"
+"POT-Creation-Date: 2026-10-20 16:31+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LuCI FTTR Team\n"
@@ -10,6 +10,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "About"
+msgstr "关于"
+
+msgid "About FTTR"
+msgstr "关于 FTTR"
 
 msgid "ACS state file"
 msgstr "ACS 状态文件"
@@ -41,6 +47,9 @@ msgid ""
 "Automatically provision standard G.988 transparent Layer 2 bridge for "
 "unrecognized or third-party GPON ONUs in O5 state."
 msgstr "为处于 O5 状态的未识别或第三方 GPON ONU 自动配置标准的 G.988 透明二层桥接"
+
+msgid "Backend"
+msgstr "后端"
 
 msgid "Band"
 msgstr "频段"
@@ -80,6 +89,9 @@ msgstr "关闭"
 msgid "Collecting VLAN tables"
 msgstr "收集 VLAN 表"
 
+msgid "Collecting VLAN tables queries extended filter tables and takes longer."
+msgstr "收集 VLAN 表会查询扩展过滤表，需要更长时间。"
+
 msgid ""
 "Committed configuration has not been loaded. Check Configuration "
 "diagnostics; an active operation may have prevented reload."
@@ -109,6 +121,9 @@ msgstr "已连接"
 msgid "Connected device"
 msgstr "已连接设备"
 
+msgid "Core components and open-source repositories powering the FTTR system."
+msgstr "为 FTTR 系统提供支持的核心组件与开源代码仓库。"
+
 msgid "Current registration"
 msgstr "当前注册状态"
 
@@ -133,8 +148,8 @@ msgstr "CWMP 路径"
 msgid "Data interface"
 msgstr "数据接口"
 
-msgid "Decoded / partial / basic"
-msgstr "已解析 / 部分 / 基础"
+msgid "Decoded"
+msgstr "已解析"
 
 msgid "Definition"
 msgstr "定义"
@@ -153,6 +168,9 @@ msgstr "设备适配器"
 
 msgid "Device already configured."
 msgstr "设备已配置。"
+
+msgid "Device identification"
+msgstr "设备标识"
 
 msgid "Device is offline; reopen details after registration."
 msgstr "设备处于离线状态；请在重新注册后打开详情。"
@@ -244,10 +262,16 @@ msgstr "以太网类型码 (EtherType)"
 msgid "Failed"
 msgstr "失败"
 
+msgid "Firmware"
+msgstr "固件"
+
 msgid ""
 "For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
 "TR069 is reserved for OMCI."
 msgstr "对于自定义 VLAN，可选择 INTERNET、OTHER、IPTV 和 VOIP 的任意组合。TR069 保留给 OMCI 使用。"
+
+msgid "Frontend"
+msgstr "前端"
 
 msgid "FTTR"
 msgstr "FTTR"
@@ -257,6 +281,11 @@ msgstr "FTTR 配置"
 
 msgid "FTTR configuration check failed"
 msgstr "FTTR 配置检查失败"
+
+msgid ""
+"FTTR controller daemon, OMCI & CWMP TR-069 provisioning backend service, and "
+"fttrctl CLI utility."
+msgstr "FTTR 控制器守护进程、OMCI 与 CWMP TR-069 配置管理后端服务，以及 fttrctl 命令行工具。"
 
 msgid "G.988 encoded field values"
 msgstr "G.988 编码字段值"
@@ -269,6 +298,12 @@ msgstr "生成的 ACS URL"
 
 msgid "Generic G.988 Bridge"
 msgstr "通用 G.988 桥接"
+
+msgid "GitHub"
+msgstr "GitHub"
+
+msgid "GitHub Repositories"
+msgstr "GitHub 代码仓库"
 
 msgid "Group"
 msgstr "分组"
@@ -284,6 +319,9 @@ msgstr "硬件版本"
 
 msgid "HL202 management"
 msgstr "HL202 管理"
+
+msgid "How to Add Sub-Gateways"
+msgstr "如何添加从网关"
 
 msgid "HTTP Basic password"
 msgstr "HTTP Basic 密码"
@@ -368,6 +406,17 @@ msgid ""
 "when adding a new device."
 msgstr "列出在光纤链路上注册的受支持设备，包括尚未发送 ACS Inform 的设备。添加新设备时会自动忽略已配置的设备。"
 
+msgid "LuCI FTTR App"
+msgstr "LuCI FTTR 管理界面"
+
+msgid ""
+"LuCI modern web management application for FTTR network monitoring, device "
+"configuration, and optical calibration."
+msgstr "适用于 FTTR 网络监控、设备配置和光路校准的现代化 LuCI Web 管理应用。"
+
+msgid "Management & cache"
+msgstr "管理与缓存"
+
 msgid "Management application mode"
 msgstr "管理应用模式"
 
@@ -415,6 +464,12 @@ msgstr "新建网络"
 
 msgid "New template"
 msgstr "新建模板"
+
+msgid "No entities recorded for this ME class."
+msgstr "该 ME 类无实体记录。"
+
+msgid "No matching ME classes"
+msgstr "无匹配的 ME 类"
 
 msgid "None"
 msgstr "无"
@@ -470,6 +525,21 @@ msgstr "ONU ID"
 msgid "Open Synchronization"
 msgstr "打开同步页面"
 
+msgid ""
+"Open-source Fiber-To-The-Room (FTTR) solution for OpenWrt, providing unified "
+"management, OMCI provisioning, CWMP synchronization, and optical diagnostics "
+"for primary gateways and downstream optical sub-gateways."
+msgstr "基于 OpenWrt 的全光纤家庭组网 (FTTR) 开源解决方案，为主网关及下联光从网关提供统一管理、OMCI 配置发放、CWMP 配置同步以及光路状态诊断。"
+
+msgid "OpenWrt firmware distribution tailored for PON / FTTR gateway devices."
+msgstr "专为 PON / FTTR 网关设备定制的 OpenWrt 固件发行版。"
+
+msgid "OpenWrt FTTR Daemon"
+msgstr "OpenWrt FTTR 后端服务"
+
+msgid "Optical & link status"
+msgstr "光路与链路状态"
+
 msgid "Optical calibration"
 msgstr "光路校准"
 
@@ -481,6 +551,9 @@ msgstr "外层过滤（优先级 / VID / TPID-DEI）"
 
 msgid "Outer treatment (priority / VID / TPID-DEI)"
 msgstr "外层处理（优先级 / VID / TPID-DEI）"
+
+msgid "Partial"
+msgstr "部分解析"
 
 msgid "Password"
 msgstr "密码"
@@ -496,6 +569,9 @@ msgstr "周期性触发"
 
 msgid "Periodic synchronization interval (minutes)"
 msgstr "周期性同步间隔（分钟）"
+
+msgid "PONWrt Firmware"
+msgstr "PONWrt 固件"
 
 msgid "Port bindings"
 msgstr "端口绑定"
@@ -548,6 +624,9 @@ msgstr "读取 OMCI MIB 记录…"
 msgid "Receive optical power"
 msgstr "接收光功率"
 
+msgid "Records"
+msgstr "记录"
+
 msgid "Records / diagnostics"
 msgstr "记录 / 诊断信息"
 
@@ -583,8 +662,8 @@ msgid ""
 "differences is read-only."
 msgstr "在手动模式下保存配置不会同步至设备。在“保存并应用”后，请打开“同步”页面并选择“应用差异变更”。“预览差异变更”为只读操作。"
 
-msgid "Search ME name or Class ID"
-msgstr "搜索 ME 名称或 Class ID"
+msgid "Search ME name or Class ID…"
+msgstr "搜索 ME 名称或 Class ID…"
 
 msgid "Security"
 msgstr "安全加密"
@@ -628,9 +707,6 @@ msgstr "配置同步"
 msgid "Synchronization mode"
 msgstr "同步模式"
 
-msgid "Tables requested / collected"
-msgstr "已请求表 / 已采集表"
-
 msgid "Template"
 msgstr "模板"
 
@@ -651,6 +727,9 @@ msgstr "路径必须以 '/' 开头。"
 msgid "The state file path must be absolute."
 msgstr "状态文件路径必须为绝对路径。"
 
+msgid "The tutorial for adding and configuring sub-gateways will be provided here."
+msgstr "添加与配置从网关的操作指南将在此展示。"
+
 msgid ""
 "This is a lightweight preview. Download JSON to save the complete MIB "
 "snapshot."
@@ -664,6 +743,14 @@ msgstr "TR069 VLAN 列表"
 
 msgid "Transmit optical power"
 msgstr "发送光功率"
+
+msgid ""
+"Tutorial and instructions for pairing and configuring downstream FTTR "
+"sub-gateways."
+msgstr "配对并配置下联 FTTR 从网关的操作指南与说明。"
+
+msgid "Tutorial Coming Soon"
+msgstr "教程编写中"
 
 msgid "Type"
 msgstr "类型"
@@ -692,6 +779,9 @@ msgstr "上传完成"
 msgid "Upload diagnostics"
 msgstr "上传诊断信息"
 
+msgid "Upload incomplete"
+msgstr "上传未完成"
+
 msgid "Uptime"
 msgstr "运行时间"
 
@@ -712,6 +802,12 @@ msgstr "校验中"
 
 msgid "VLAN"
 msgstr "VLAN"
+
+msgid "VLAN tables collected"
+msgstr "已收集 VLAN 表"
+
+msgid "VLAN tables not collected"
+msgstr "未收集 VLAN 表"
 
 msgid "Waiting"
 msgstr "等待中"

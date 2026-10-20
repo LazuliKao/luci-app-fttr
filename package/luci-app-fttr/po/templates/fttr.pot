@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-20 09:47+0800\n"
+"POT-Creation-Date: 2026-10-20 16:31+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -10,6 +10,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "About"
+msgstr ""
+
+msgid "About FTTR"
+msgstr ""
 
 msgid "ACS state file"
 msgstr ""
@@ -40,6 +46,9 @@ msgstr ""
 msgid ""
 "Automatically provision standard G.988 transparent Layer 2 bridge for "
 "unrecognized or third-party GPON ONUs in O5 state."
+msgstr ""
+
+msgid "Backend"
 msgstr ""
 
 msgid "Band"
@@ -80,6 +89,9 @@ msgstr ""
 msgid "Collecting VLAN tables"
 msgstr ""
 
+msgid "Collecting VLAN tables queries extended filter tables and takes longer."
+msgstr ""
+
 msgid ""
 "Committed configuration has not been loaded. Check Configuration "
 "diagnostics; an active operation may have prevented reload."
@@ -109,6 +121,9 @@ msgstr ""
 msgid "Connected device"
 msgstr ""
 
+msgid "Core components and open-source repositories powering the FTTR system."
+msgstr ""
+
 msgid "Current registration"
 msgstr ""
 
@@ -133,7 +148,7 @@ msgstr ""
 msgid "Data interface"
 msgstr ""
 
-msgid "Decoded / partial / basic"
+msgid "Decoded"
 msgstr ""
 
 msgid "Definition"
@@ -152,6 +167,9 @@ msgid "Device adapter"
 msgstr ""
 
 msgid "Device already configured."
+msgstr ""
+
+msgid "Device identification"
 msgstr ""
 
 msgid "Device is offline; reopen details after registration."
@@ -242,9 +260,15 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
+msgid "Firmware"
+msgstr ""
+
 msgid ""
 "For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
 "TR069 is reserved for OMCI."
+msgstr ""
+
+msgid "Frontend"
 msgstr ""
 
 msgid "FTTR"
@@ -254,6 +278,11 @@ msgid "FTTR configuration"
 msgstr ""
 
 msgid "FTTR configuration check failed"
+msgstr ""
+
+msgid ""
+"FTTR controller daemon, OMCI & CWMP TR-069 provisioning backend service, and "
+"fttrctl CLI utility."
 msgstr ""
 
 msgid "G.988 encoded field values"
@@ -266,6 +295,12 @@ msgid "Generated ACS URL"
 msgstr ""
 
 msgid "Generic G.988 Bridge"
+msgstr ""
+
+msgid "GitHub"
+msgstr ""
+
+msgid "GitHub Repositories"
 msgstr ""
 
 msgid "Group"
@@ -281,6 +316,9 @@ msgid "Hardware version"
 msgstr ""
 
 msgid "HL202 management"
+msgstr ""
+
+msgid "How to Add Sub-Gateways"
 msgstr ""
 
 msgid "HTTP Basic password"
@@ -366,6 +404,17 @@ msgid ""
 "when adding a new device."
 msgstr ""
 
+msgid "LuCI FTTR App"
+msgstr ""
+
+msgid ""
+"LuCI modern web management application for FTTR network monitoring, device "
+"configuration, and optical calibration."
+msgstr ""
+
+msgid "Management & cache"
+msgstr ""
+
 msgid "Management application mode"
 msgstr ""
 
@@ -412,6 +461,12 @@ msgid "New network"
 msgstr ""
 
 msgid "New template"
+msgstr ""
+
+msgid "No entities recorded for this ME class."
+msgstr ""
+
+msgid "No matching ME classes"
 msgstr ""
 
 msgid "None"
@@ -468,6 +523,21 @@ msgstr ""
 msgid "Open Synchronization"
 msgstr ""
 
+msgid ""
+"Open-source Fiber-To-The-Room (FTTR) solution for OpenWrt, providing unified "
+"management, OMCI provisioning, CWMP synchronization, and optical diagnostics "
+"for primary gateways and downstream optical sub-gateways."
+msgstr ""
+
+msgid "OpenWrt firmware distribution tailored for PON / FTTR gateway devices."
+msgstr ""
+
+msgid "OpenWrt FTTR Daemon"
+msgstr ""
+
+msgid "Optical & link status"
+msgstr ""
+
 msgid "Optical calibration"
 msgstr ""
 
@@ -478,6 +548,9 @@ msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr ""
 
 msgid "Outer treatment (priority / VID / TPID-DEI)"
+msgstr ""
+
+msgid "Partial"
 msgstr ""
 
 msgid "Password"
@@ -493,6 +566,9 @@ msgid "Periodic"
 msgstr ""
 
 msgid "Periodic synchronization interval (minutes)"
+msgstr ""
+
+msgid "PONWrt Firmware"
 msgstr ""
 
 msgid "Port bindings"
@@ -546,6 +622,9 @@ msgstr ""
 msgid "Receive optical power"
 msgstr ""
 
+msgid "Records"
+msgstr ""
+
 msgid "Records / diagnostics"
 msgstr ""
 
@@ -581,7 +660,7 @@ msgid ""
 "differences is read-only."
 msgstr ""
 
-msgid "Search ME name or Class ID"
+msgid "Search ME name or Class ID…"
 msgstr ""
 
 msgid "Security"
@@ -626,9 +705,6 @@ msgstr ""
 msgid "Synchronization mode"
 msgstr ""
 
-msgid "Tables requested / collected"
-msgstr ""
-
 msgid "Template"
 msgstr ""
 
@@ -649,6 +725,9 @@ msgstr ""
 msgid "The state file path must be absolute."
 msgstr ""
 
+msgid "The tutorial for adding and configuring sub-gateways will be provided here."
+msgstr ""
+
 msgid ""
 "This is a lightweight preview. Download JSON to save the complete MIB "
 "snapshot."
@@ -661,6 +740,14 @@ msgid "TR069 VLANs"
 msgstr ""
 
 msgid "Transmit optical power"
+msgstr ""
+
+msgid ""
+"Tutorial and instructions for pairing and configuring downstream FTTR "
+"sub-gateways."
+msgstr ""
+
+msgid "Tutorial Coming Soon"
 msgstr ""
 
 msgid "Type"
@@ -690,6 +777,9 @@ msgstr ""
 msgid "Upload diagnostics"
 msgstr ""
 
+msgid "Upload incomplete"
+msgstr ""
+
 msgid "Uptime"
 msgstr ""
 
@@ -709,6 +799,12 @@ msgid "Verifying"
 msgstr ""
 
 msgid "VLAN"
+msgstr ""
+
+msgid "VLAN tables collected"
+msgstr ""
+
+msgid "VLAN tables not collected"
 msgstr ""
 
 msgid "Waiting"
