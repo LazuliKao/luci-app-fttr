@@ -42,7 +42,7 @@ const main = view.extend({
 	},
 	render(initialCheck: InitialCheck): Promise<Node> {
 		const map = new form.Map("fttr", _("FTTR configuration"));
-		const section = map.section(form.NamedSection, "acs", "acs", "acs");
+		const section = map.section(form.NamedSection, "acs", "acs");
 		section.addremove = false;
 		section.anonymous = false;
 

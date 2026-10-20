@@ -23,7 +23,7 @@ export default defineConfig({
 			po: "package/luci-app-fttr/po/zh_Hans/fttr.po",
 			headers: {
 				languageTeam: "LazuliKao",
-			}
+			},
 		},
 	],
 });

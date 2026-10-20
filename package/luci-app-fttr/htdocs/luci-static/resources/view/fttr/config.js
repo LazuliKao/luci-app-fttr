@@ -1678,7 +1678,7 @@ let main = tP.extend({
     },
     render (e) {
         var t, n, i;
-        let r, a, s, g, h = new tA.Map("fttr", _("FTTR configuration")), y = h.section(tA.NamedSection, "acs", "acs", "acs");
+        let r, a, s, g, h = new tA.Map("fttr", _("FTTR configuration")), y = h.section(tA.NamedSection, "acs", "acs");
         y.addremove = !1, y.anonymous = !1;
         let v = tj.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
         (function(e, t, n) {

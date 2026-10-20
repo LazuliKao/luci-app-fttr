@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-20 16:31+0800\n"
+"POT-Creation-Date: 2026-10-20 17:26+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
-"Language-Team: LuCI FTTR Team\n"
+"Language-Team: LazuliKao\n"
 "Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -259,6 +259,14 @@ msgstr "错误"
 msgid "EtherType code"
 msgstr "以太网类型码 (EtherType)"
 
+msgid ""
+"Factory partition extraction and calibration data generation tool for H3C "
+"HM2004-DU."
+msgstr "适用于新华三 H3C HM2004-DU 的原厂分区提取与校准数据生成工具。"
+
+msgid "Factory Tool"
+msgstr "原厂工具"
+
 msgid "Failed"
 msgstr "失败"
 
@@ -319,6 +327,9 @@ msgstr "硬件版本"
 
 msgid "HL202 management"
 msgstr "HL202 管理"
+
+msgid "HM2004-DU Factory Tool"
+msgstr "HM2004-DU 原厂工具"
 
 msgid "How to Add Sub-Gateways"
 msgstr "如何添加从网关"
@@ -529,7 +540,9 @@ msgid ""
 "Open-source Fiber-To-The-Room (FTTR) solution for OpenWrt, providing unified "
 "management, OMCI provisioning, CWMP synchronization, and optical diagnostics "
 "for primary gateways and downstream optical sub-gateways."
-msgstr "基于 OpenWrt 的全光纤家庭组网 (FTTR) 开源解决方案，为主网关及下联光从网关提供统一管理、OMCI 配置发放、CWMP 配置同步以及光路状态诊断。"
+msgstr ""
+"基于 OpenWrt 的全光纤家庭组网 (FTTR) 开源解决方案，为主网关及下联光从网关提供统一管理、OMCI 配置发放、CWMP "
+"配置同步以及光路状态诊断。"
 
 msgid "OpenWrt firmware distribution tailored for PON / FTTR gateway devices."
 msgstr "专为 PON / FTTR 网关设备定制的 OpenWrt 固件发行版。"
