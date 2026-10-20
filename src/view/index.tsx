@@ -1,8 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	BADGE_CSS,
+	getBusinessBadgeSpec,
+	getCwmpBadgeSpec,
+	getProvisioningBadgeSpec,
+	getRegistrationBadgeSpec,
+	getWifiSyncBadgeSpec,
+	updateBadge,
+} from "./components/badge";
+import { formatBytes, formatFirmware, formatLinkSpeed, formatPackets, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { getNetworkDevices, getStatus } from "./contracts/api";
-import { businessText, type FttrStatus, type NetworkDevices, type SubGateway } from "./contracts/status";
+import type { FttrStatus, NetworkDevices, SubGateway } from "./contracts/status";
 
 const view = L.view;
 const poll = L.Poll;
@@ -10,62 +20,6 @@ const poll = L.Poll;
 function tr(key: string): string {
 	const translated = _(key);
 	return translated || key;
-}
-
-const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
-
-function updateBadge(
-	node: HTMLElement,
-	type: "success" | "warning" | "danger" | "info" | "neutral" | "none",
-	label: string,
-	title?: string,
-): void {
-	node.textContent = label;
-	if (type === "none") {
-		node.className = "";
-	} else {
-		node.className = `fttr-badge fttr-badge-${type}`;
-	}
-	if (title) {
-		node.setAttribute("title", title);
-	} else {
-		node.removeAttribute("title");
-	}
-}
-
-/** Extract primary firmware version and preserve all software images for hover tooltip */
-function formatFirmware(raw: string | undefined): { display: string; full?: string } {
-	if (!raw) return { display: "—" };
-	const match = raw.match(/image\s*\d+:\s*([^;,\s]+)/i);
-	if (match?.[1]) {
-		return { display: match[1], full: raw.replace(/;\s*/g, "\n") };
-	}
-	return { display: raw };
-}
-
-function formatBytes(value: number | undefined): string {
-	if (value === undefined || !Number.isFinite(value) || value < 0) return "—";
-	if (value < 1024) return `${value} B`;
-	const units = ["KiB", "MiB", "GiB", "TiB"];
-	let amount = value / 1024;
-	let unit = 0;
-	while (amount >= 1024 && unit < units.length - 1) {
-		amount /= 1024;
-		unit++;
-	}
-	return `${amount.toFixed(1)} ${units[unit]}`;
-}
-
-function formatPackets(value: number | undefined): string {
-	if (value === undefined || !Number.isFinite(value) || value < 0) return "—";
-	if (value < 1000) return `${value} ${tr("Received packets").includes("包") ? "包" : "Pkts."}`;
-	return `${(value / 1000).toFixed(2)} K${tr("Received packets").includes("包") ? "包" : "Pkts."}`;
-}
-
-function formatLinkSpeed(speed: number | undefined): string {
-	if (speed === undefined || !Number.isFinite(speed) || speed <= 0) return tr("Unknown");
-	if (speed >= 1000) return `${speed / 1000} GbE`;
-	return `${speed} MbE`;
 }
 
 interface PortCard {
@@ -281,159 +235,6 @@ interface OnuRow {
 	update(onu: SubGateway): void;
 }
 
-const REGISTRATION_STATE_LABELS: Record<string, string> = {
-	o1_initial: _("O1 Initial"),
-	o2_standby: _("O2 Standby"),
-	o3_serial_number: _("O3 Serial Number"),
-	o4_ranging: _("O4 Ranging"),
-	o5_operation: _("O5 (Operation)"),
-	o6_intermittent_lods: _("O6 Intermittent LODS"),
-	o7_emergency_stop: _("O7 Emergency Stop"),
-};
-
-const CWMP_STATE_LABELS: Record<string, string> = {
-	online: _("Online"),
-	waiting_inform: _("Waiting Inform"),
-	offline_or_stale: _("Offline or stale"),
-};
-
-const PROVISIONING_STATE_LABELS: Record<string, string> = {
-	waiting: _("Waiting"),
-	wan_reconciling: _("WAN reconciling"),
-	wan_verifying: _("WAN verifying"),
-	wifi_reconciling: _("Wi-Fi reconciling"),
-	discovering: _("Discovering"),
-	reading: _("Reading"),
-	disabling: _("Disabling"),
-	disabling_read: _("Disabling read"),
-	writing: _("Writing"),
-	verifying: _("Verifying"),
-	settling: _("Settling"),
-	completed: _("Completed"),
-	interrupted: _("Interrupted"),
-	recovering: _("Recovering"),
-	waiting_management: _("Waiting management"),
-	waiting_task: _("Waiting task"),
-	failed: _("Failed"),
-	error: _("Error"),
-	blocked: _("Blocked"),
-	not_started: _("Not started"),
-};
-
-const WIFI_SYNC_STATE_LABELS: Record<string, string> = {
-	not_configured: _("Not configured"),
-	stale_revision: _("Stale revision"),
-	stale_management: _("Stale management"),
-	verified: _("Verified"),
-	attention_required: _("Attention required"),
-	accepted_unverified: _("Unverified"),
-	pending: _("Pending"),
-	recovering: _("Recovering"),
-	waiting_management: _("Waiting management"),
-};
-
-function formatAge(seconds: number | null | undefined): string | null {
-	if (seconds == null || seconds < 0) return null;
-	if (seconds < 60) {
-		return tr(seconds === 1 ? "%d second ago" : "%d seconds ago").replace("%d", String(seconds));
-	}
-	const mins = Math.floor(seconds / 60);
-	if (mins < 60) {
-		return tr(mins === 1 ? "%d minute ago" : "%d minutes ago").replace("%d", String(mins));
-	}
-	const hours = Math.floor(seconds / 3600);
-	if (hours < 24) {
-		return tr(hours === 1 ? "%d hour ago" : "%d hours ago").replace("%d", String(hours));
-	}
-	const days = Math.floor(seconds / 86400);
-	return tr(days === 1 ? "%d day ago" : "%d days ago").replace("%d", String(days));
-}
-
-function renderCwmpStatus(node: HTMLElement, mgmt: SubGateway["management"]): void {
-	const state = mgmt?.state;
-	const age =
-		mgmt?.age_seconds ?? (mgmt?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - mgmt.last_inform) : null);
-	const ageText = formatAge(age);
-	const fullTime = mgmt?.last_inform ? new Date(mgmt.last_inform * 1000).toLocaleString() : null;
-	const title = fullTime ? tr("Last Inform: %s").replace("%s", fullTime) : undefined;
-
-	let label = "—";
-	let type: "success" | "warning" | "danger" | "neutral" | "none" = "none";
-
-	if (state === "online") {
-		type = "success";
-		label = tr(CWMP_STATE_LABELS.online);
-	} else if (state === "waiting_inform") {
-		type = "warning";
-		label = tr(CWMP_STATE_LABELS.waiting_inform);
-	} else if (state === "offline_or_stale") {
-		type = "danger";
-		label = tr(CWMP_STATE_LABELS.offline_or_stale);
-	} else if (state) {
-		type = "neutral";
-		label = text(state);
-	}
-
-	const displayLabel = ageText && state ? `${label} · ${ageText}` : label;
-	updateBadge(node, type, displayLabel, title);
-}
-
-function renderProvisioningBadge(node: HTMLElement, state: string | undefined, title?: string): void {
-	if (!state || state === "not_started") {
-		updateBadge(node, "neutral", tr(PROVISIONING_STATE_LABELS.not_started), title);
-	} else if (state === "completed" || state === "verified") {
-		updateBadge(
-			node,
-			"success",
-			state === "completed" ? tr(PROVISIONING_STATE_LABELS.completed) : tr("Ready"),
-			title,
-		);
-	} else if (
-		state === "wan_reconciling" ||
-		state === "wan_verifying" ||
-		state === "wifi_reconciling" ||
-		state === "discovering" ||
-		state === "reading" ||
-		state === "disabling" ||
-		state === "disabling_read" ||
-		state === "writing" ||
-		state === "verifying" ||
-		state === "settling" ||
-		state === "recovering" ||
-		state === "waiting_task"
-	) {
-		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? state;
-		updateBadge(node, "info", tr(rawLabel), title);
-	} else if (state === "interrupted" || state === "failed" || state === "error" || state === "blocked") {
-		const rawLabel =
-			state === "blocked" ? PROVISIONING_STATE_LABELS.blocked : PROVISIONING_STATE_LABELS.interrupted;
-		updateBadge(node, "danger", tr(rawLabel), title);
-	} else if (state === "waiting" || state === "pending" || state === "waiting_management") {
-		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? PROVISIONING_STATE_LABELS.waiting;
-		updateBadge(node, "warning", tr(rawLabel), title);
-	} else {
-		updateBadge(node, "neutral", text(state), title);
-	}
-}
-
-function renderWifiSyncBadge(node: HTMLElement, state: string | undefined): void {
-	if (!state || state === "not_configured") {
-		updateBadge(node, "neutral", tr(WIFI_SYNC_STATE_LABELS.not_configured));
-	} else if (state === "verified") {
-		updateBadge(node, "success", tr(WIFI_SYNC_STATE_LABELS.verified));
-	} else if (state === "attention_required") {
-		updateBadge(node, "danger", tr(WIFI_SYNC_STATE_LABELS.attention_required));
-	} else if (state === "stale_revision" || state === "stale_management" || state === "waiting_management") {
-		updateBadge(node, "warning", tr(WIFI_SYNC_STATE_LABELS[state]));
-	} else if (state === "recovering") {
-		updateBadge(node, "info", tr(WIFI_SYNC_STATE_LABELS.recovering));
-	} else if (state === "accepted_unverified" || state === "pending") {
-		updateBadge(node, "warning", tr(WIFI_SYNC_STATE_LABELS[state]));
-	} else {
-		updateBadge(node, "neutral", text(state));
-	}
-}
-
 function createOnuRow(onu: SubGateway): OnuRow {
 	let current = onu;
 	const onuIdNode = <span />;
@@ -496,23 +297,11 @@ function createOnuRow(onu: SubGateway): OnuRow {
 			modelNode.textContent = text(value.identity?.equipment_id ?? value.model);
 			serialNode.textContent = text(value.serial_number);
 
-			if (value.state === "o5_operation") {
-				updateBadge(registrationNode, "success", tr(REGISTRATION_STATE_LABELS.o5_operation), value.state);
-			} else if (value.state) {
-				const rawLabel = REGISTRATION_STATE_LABELS[value.state] ?? value.state;
-				updateBadge(registrationNode, "warning", tr(rawLabel));
-			} else {
-				updateBadge(registrationNode, "none", "—");
-			}
+			const regSpec = getRegistrationBadgeSpec(value.state);
+			updateBadge(registrationNode, regSpec.tone, regSpec.label, regSpec.title);
 
-			const bStatus = value.business_status;
-			const tone =
-				bStatus.phase === "verified"
-					? "success"
-					: bStatus.error || bStatus.phase === "wan_bootstrap_pending"
-						? "warning"
-						: "neutral";
-			updateBadge(businessNode, tone, businessText(bStatus));
+			const busSpec = getBusinessBadgeSpec(value.business_status);
+			updateBadge(businessNode, busSpec.tone, busSpec.label, busSpec.title);
 
 			const fw = formatFirmware(value.firmware_version || value.identity?.software_images?.join("; "));
 			firmwareNode.textContent = fw.display;
@@ -524,28 +313,14 @@ function createOnuRow(onu: SubGateway): OnuRow {
 
 			dataInterfaceNode.textContent = text(value.data_path?.interface);
 
-			renderCwmpStatus(cwmpNode, value.management);
+			const cwmpSpec = getCwmpBadgeSpec(value.management);
+			updateBadge(cwmpNode, cwmpSpec.tone, cwmpSpec.label, cwmpSpec.title);
 
-			const provState = value.provisioning?.state;
-			const provData = value.provisioning;
-			const nextRetry =
-				provData?.next_retry_at && provData.next_retry_at > Math.floor(Date.now() / 1000)
-					? provData.next_retry_at - Math.floor(Date.now() / 1000)
-					: 0;
-			const provTitle =
-				provData?.current_revision === false
-					? tr("Previous configuration")
-					: provData?.management_fresh === false
-						? tr("Management stale")
-						: provData?.reconcile_reason
-							? tr(provData.reconcile_reason)
-							: nextRetry > 0
-								? tr("Next self-healing retry in %d seconds").replace("%d", String(nextRetry))
-								: (provData?.reason ?? provData?.error);
+			const provSpec = getProvisioningBadgeSpec(value.provisioning);
+			updateBadge(provisioningNode, provSpec.tone, provSpec.label, provSpec.title);
 
-			renderProvisioningBadge(provisioningNode, provState, provTitle);
-
-			renderWifiSyncBadge(wifiSyncNode, value.wifi_sync);
+			const wifiSpec = getWifiSyncBadgeSpec(value.wifi_sync);
+			updateBadge(wifiSyncNode, wifiSpec.tone, wifiSpec.label, wifiSpec.title);
 		},
 	};
 	row.update(onu);
@@ -711,46 +486,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 					--fttr-neutral-color: #bdc3c7;
 				}
 
-				.fttr-overview .fttr-badge {
-					display: inline-block;
-					padding: 0.18em 0.55em;
-					font-size: 85%;
-					font-weight: 600;
-					line-height: 1.25;
-					border-radius: 3px;
-					white-space: nowrap;
-					text-align: center;
-				}
-
-				.fttr-overview .fttr-badge-success {
-					background: var(--fttr-success-bg);
-					color: var(--fttr-success-color);
-					border: 1px solid var(--fttr-success-border);
-				}
-
-				.fttr-overview .fttr-badge-warning {
-					background: var(--fttr-warning-bg);
-					color: var(--fttr-warning-color);
-					border: 1px solid var(--fttr-warning-border);
-				}
-
-				.fttr-overview .fttr-badge-danger {
-					background: var(--fttr-danger-bg);
-					color: var(--fttr-danger-color);
-					border: 1px solid var(--fttr-danger-border);
-				}
-
-				.fttr-overview .fttr-badge-info {
-					background: var(--fttr-info-bg);
-					color: var(--fttr-info-color);
-					border: 1px solid var(--fttr-info-border);
-				}
-
-				.fttr-overview .fttr-badge-neutral {
-					background: var(--fttr-neutral-bg);
-					color: var(--fttr-neutral-color);
-					border: 1px solid var(--fttr-neutral-border);
-				}
+				${BADGE_CSS}
 
 				.fttr-overview .fttr-ports-grid {
 					display: grid;

@@ -11,9 +11,10 @@ import {
 	startMib,
 	type Value,
 } from "../contracts/mib";
-import { businessText, eqdText, type SubGateway as OnuDetails } from "../contracts/status";
+import type { SubGateway as OnuDetails } from "../contracts/status";
+import { BADGE_CSS, BusinessBadge, CwmpBadge, ProvisioningBadge, RegistrationBadge, WifiSyncBadge } from "./badge";
+import { formatPower, formatUptime, text } from "./formatters";
 
-const text = (v: unknown): string => (v == null || v === "" ? "—" : String(v));
 const json = (v: unknown): string => JSON.stringify(v, null, 2);
 async function reportBlob(report: MibReport): Promise<Blob> {
 	const parts: BlobPart[] = ["{"];
@@ -312,44 +313,63 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 	let report: MibReport | null = null;
 	let job: string | null = null;
 
-	const basicGroups = [
+	type DetailRowValue = Node | string | number | null | undefined;
+	interface DetailGroup {
+		title: string;
+		rows: [string, DetailRowValue][];
+	}
+
+	const basicGroups: DetailGroup[] = [
 		{
 			title: _("Device identification"),
 			rows: [
 				[_("Vendor"), initial.vendor],
 				[_("Model"), initial.identity?.equipment_id ?? initial.model],
-				[_("Optical serial"), initial.serial_number],
+				[_("Optical serial"), <code style="font-size:90%">{initial.serial_number}</code>],
 				[_("ONU ID"), initial.onu_id],
 				[_("Hardware version"), initial.identity?.hardware_version ?? initial.hardware_version],
 				[_("Software images"), initial.identity?.software_images?.join(", ") ?? initial.firmware_version],
 				[
 					_("OMCC version"),
-					initial.identity?.omcc_version == null ? null : `0x${initial.identity.omcc_version.toString(16)}`,
+					initial.identity?.omcc_version == null ? null : (
+						<code style="font-size:90%">0x{initial.identity.omcc_version.toString(16)}</code>
+					),
 				],
 			],
 		},
 		{
 			title: _("Optical & link status"),
 			rows: [
-				[_("Registration"), initial.state],
-				[_("Business"), businessText(initial.business_status)],
+				[_("Registration"), <RegistrationBadge state={initial.state} />],
+				[_("Business"), <BusinessBadge status={initial.business_status} />],
+				[_("Receive optical power"), formatPower(initial.optical_rx_power_dbm)],
+				[_("Transmit optical power"), formatPower(initial.optical_tx_power_dbm)],
 				[
-					_("Receive optical power"),
-					initial.optical_rx_power_dbm == null ? null : `${initial.optical_rx_power_dbm.toFixed(3)} dBm`,
+					_("Equalization delay (EQD)"),
+					initial.equalization_delay_bits == null ? (
+						"—"
+					) : (
+						<code style="font-size:90%">{initial.equalization_delay_bits} bits</code>
+					),
 				],
 				[
-					_("Transmit optical power"),
-					initial.optical_tx_power_dbm == null ? null : `${initial.optical_tx_power_dbm.toFixed(3)} dBm`,
+					_("Data interface"),
+					initial.data_path?.interface ? (
+						<code style="font-size:90%">{initial.data_path.interface}</code>
+					) : null,
 				],
-				[_("Equalization delay (EQD)"), eqdText(initial.equalization_delay_bits)],
-				[_("Data interface"), initial.data_path?.interface],
-				[_("Uptime"), initial.uptime_seconds == null ? null : `${Math.floor(initial.uptime_seconds)} s`],
+				[
+					_("Uptime"),
+					initial.uptime_seconds == null
+						? null
+						: `${formatUptime(initial.uptime_seconds)} (${Math.floor(initial.uptime_seconds)} s)`,
+				],
 			],
 		},
 		{
 			title: _("Management & cache"),
 			rows: [
-				[_("CWMP"), initial.management?.state],
+				[_("CWMP"), <CwmpBadge management={initial.management} />],
 				[
 					_("Last Inform"),
 					initial.management?.last_inform
@@ -358,6 +378,8 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 							}`
 						: null,
 				],
+				[_("Provisioning"), <ProvisioningBadge provisioning={initial.provisioning} />],
+				[_("Wi-Fi sync"), <WifiSyncBadge state={initial.wifi_sync} />],
 				[
 					_("Identity source"),
 					initial.identity
@@ -384,7 +406,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 							{group.rows.map(([name, value]) => (
 								<tr>
 									<th style="width:35%">{name}</th>
-									<td>{text(value)}</td>
+									<td>{value instanceof Node ? value : text(value)}</td>
 								</tr>
 							))}
 						</tbody>
@@ -542,6 +564,27 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					--fttr-hover-bg: rgba(127, 127, 127, 0.1);
 					--fttr-active-bg: rgba(52, 152, 219, 0.16);
 					--fttr-active-color: #3498db;
+
+					--fttr-success-bg: rgba(46, 204, 113, 0.15);
+					--fttr-success-color: #27ae60;
+					--fttr-success-border: rgba(46, 204, 113, 0.35);
+
+					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
+					--fttr-warning-color: #d35400;
+					--fttr-warning-border: rgba(243, 156, 18, 0.35);
+
+					--fttr-danger-bg: rgba(231, 76, 60, 0.15);
+					--fttr-danger-color: #c0392b;
+					--fttr-danger-border: rgba(231, 76, 60, 0.35);
+
+					--fttr-info-bg: rgba(52, 152, 219, 0.15);
+					--fttr-info-color: #2980b9;
+					--fttr-info-border: rgba(52, 152, 219, 0.35);
+
+					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
+					--fttr-neutral-color: #7f8c8d;
+					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
+
 					display: flex;
 					flex-direction: column;
 				}
@@ -552,8 +595,15 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 						--fttr-hover-bg: rgba(255, 255, 255, 0.08);
 						--fttr-active-bg: rgba(52, 152, 219, 0.25);
 						--fttr-active-color: #5dade2;
+
+						--fttr-success-color: #2ecc71;
+						--fttr-warning-color: #f39c12;
+						--fttr-danger-color: #e74c3c;
+						--fttr-info-color: #3498db;
+						--fttr-neutral-color: #bdc3c7;
 					}
 				}
+				${BADGE_CSS}
 				.onu-details-header {
 					margin-bottom: 12px;
 					border-bottom: 1px solid var(--fttr-border);
