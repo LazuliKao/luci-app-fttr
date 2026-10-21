@@ -94,6 +94,70 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 		contract.description = _(
 			"Independent of the optical adapter. Parameter paths, types and writable evidence are discovered before synchronization. Unverified candidates do not authorize writes.",
 		);
+		const connectionRequest = field(s, L.form.Flag, "connection_request", _("Supports Connection Request"));
+		connectionRequest.modalonly = true;
+		connectionRequest.default = "1";
+		connectionRequest.rmempty = false;
+		connectionRequest.description = _(
+			"Independent per device; enabled by default for all adapters. Enabled: on-demand sessions with periodic Inform enabled and an interval of at most 12 hours (backend default: 43200 seconds). Disabled: manually set PeriodicInformEnable to true and PeriodicInformInterval to at most 180 seconds; no interval is written automatically. Requires reachable CWMP, verified standard parameters, HTTP Digest support, a prior Inform with a ConnectionRequestURL and valid CPE credentials. Firmware support is not guaranteed. Acceptance is not proof of a session or completed RPCs.",
+		);
+		const requestDefaults = field(
+			s,
+			L.form.Flag,
+			"connection_request_defaults",
+			_("Use backend Connection Request defaults"),
+		);
+		requestDefaults.modalonly = true;
+		requestDefaults.default = "1";
+		requestDefaults.rmempty = false;
+		requestDefaults.retain = true;
+		requestDefaults.depends("connection_request", "1");
+		requestDefaults.cfgvalue = (id: string): string => {
+			const configured = L.uci.get("fttr", id, "connection_request_defaults");
+			if (configured != null) return String(configured);
+			return L.uci.get("fttr", id, "connection_request_username") &&
+				L.uci.get("fttr", id, "connection_request_password")
+				? "0"
+				: "1";
+		};
+		requestDefaults.description = _(
+			"Uses a backend-reserved profile; factory credentials are not yet verified. Disable to enter this CPE's existing credentials and port. Saved custom values are retained while hidden.",
+		);
+		const requestUsername = field(
+			s,
+			L.form.Value,
+			"connection_request_username",
+			_("CPE Connection Request username"),
+		);
+		requestUsername.modalonly = true;
+		requestUsername.optional = true;
+		requestUsername.rmempty = true;
+		requestUsername.retain = true;
+		requestUsername.depends({ connection_request: "1", connection_request_defaults: "0" });
+		requestUsername.description = _(
+			"Enter this CPE's existing Connection Request credentials, not the ACS inbound HTTP Basic credentials. No custom credential defaults are assumed.",
+		);
+		const requestPassword = field(
+			s,
+			L.form.Value,
+			"connection_request_password",
+			_("CPE Connection Request password"),
+		);
+		requestPassword.modalonly = true;
+		requestPassword.password = true;
+		requestPassword.optional = true;
+		requestPassword.rmempty = true;
+		requestPassword.retain = true;
+		requestPassword.depends({ connection_request: "1", connection_request_defaults: "0" });
+		requestPassword.description = _(
+			"Saved custom values are retained when Connection Requests are disabled or backend defaults are selected. Leave these fields unchanged to preserve their saved values.",
+		);
+		const requestPort = field(s, L.form.Value, "connection_request_port", _("CPE Connection Request port"), "port");
+		requestPort.modalonly = true;
+		requestPort.default = "7547";
+		requestPort.rmempty = false;
+		requestPort.retain = true;
+		requestPort.depends({ connection_request: "1", connection_request_defaults: "0" });
 		const omci = field(s, L.form.Flag, "omci_management", _("Provision management VLAN and ACS via OMCI"));
 		omci.modalonly = true;
 		omci.default = "0";
