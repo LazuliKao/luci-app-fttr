@@ -17,11 +17,6 @@ import type { FttrStatus, NetworkDevices, SubGateway } from "./contracts/status"
 const view = L.view;
 const poll = L.Poll;
 
-function tr(key: string): string {
-	const translated = _(key);
-	return translated || key;
-}
-
 interface PortCard {
 	element: HTMLElement;
 	update(status: FttrStatus, devices: NetworkDevices): void;
@@ -31,7 +26,7 @@ function createPortCard(number: number): PortCard {
 	const ifnameNode = <span />;
 	const speedNode = (
 		<span style="display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:90%">
-			{tr("Unknown")}
+			{_("Unknown")}
 		</span>
 	);
 	const iconNode = <img src="/luci-static/resources/icons/port_down.svg" alt="" aria-hidden="true" />;
@@ -67,13 +62,13 @@ function createPortCard(number: number): PortCard {
 			<div class="ifacebox-head cbi-tooltip-container" style="display:flex">
 				{linkBarNode}
 				<span class="cbi-tooltip left">
-					<strong>{tr("Port status")}: </strong>
+					<strong>{_("Port status")}: </strong>
 					{portStateNode}
 					<br />
-					<strong>{tr("ONU")}: </strong>
+					<strong>{_("ONU")}: </strong>
 					{onuNode}
 					<br />
-					<strong>{tr("MAC address")}: </strong>
+					<strong>{_("MAC address")}: </strong>
 					{macNode}
 				</span>
 			</div>
@@ -89,47 +84,47 @@ function createPortCard(number: number): PortCard {
 					<span class="cbi-tooltip">
 						<span>
 							<span class="nowrap">
-								<strong>{tr("Received bytes")}: </strong>
+								<strong>{_("Received bytes")}: </strong>
 								{rxBytesNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Received packets")}: </strong>
+								<strong>{_("Received packets")}: </strong>
 								{rxPacketsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Received multicast")}: </strong>
+								<strong>{_("Received multicast")}: </strong>
 								{rxMulticastNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Receive errors")}: </strong>
+								<strong>{_("Receive errors")}: </strong>
 								{rxErrorsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Receive dropped")}: </strong>
+								<strong>{_("Receive dropped")}: </strong>
 								{rxDroppedNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Transmitted bytes")}: </strong>
+								<strong>{_("Transmitted bytes")}: </strong>
 								{txBytesNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Transmitted packets")}: </strong>
+								<strong>{_("Transmitted packets")}: </strong>
 								{txPacketsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Transmit errors")}: </strong>
+								<strong>{_("Transmit errors")}: </strong>
 								{txErrorsNode}
 							</span>
 							<br />
 							<span class="nowrap">
-								<strong>{tr("Transmit dropped")}: </strong>
+								<strong>{_("Transmit dropped")}: </strong>
 								{txDroppedNode}
 							</span>
 						</span>
@@ -197,10 +192,10 @@ function createPortCard(number: number): PortCard {
 			speedNode.textContent = connected
 				? device?.link?.speed !== undefined
 					? formatLinkSpeed(device.link.speed)
-					: tr("Connected")
+					: _("Connected")
 				: carrier === false
-					? tr("Disconnected")
-					: tr("Unknown");
+					? _("Disconnected")
+					: _("Unknown");
 			speedNode.setAttribute(
 				"title",
 				_("速度：%s Mbit/s，双工：%s").format(text(device?.link?.speed), text(device?.link?.duplex)),
@@ -210,7 +205,7 @@ function createPortCard(number: number): PortCard {
 			portStateNode.textContent = text(
 				port?.link_state ??
 					port?.status ??
-					(device ? (carrier ? tr("Link up") : tr("Link down")) : tr("Unavailable")),
+					(device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable")),
 			);
 			onuNode.textContent = text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id);
 			macNode.textContent = text(device?.mac);
@@ -264,7 +259,7 @@ function createOnuRow(onu: SubGateway): OnuRow {
 			<td>{wifiSyncNode}</td>
 			<td style="text-align:right">
 				<button type="button" class="cbi-button cbi-button-neutral" onclick={() => showOnuDetails(current)}>
-					{tr("Details")}
+					{_("Details")}
 				</button>
 			</td>
 		</tr>
@@ -337,7 +332,7 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu));
 	const emptyRow = (
 		<tr>
-			<td colSpan={12}>{tr("No registered sub-gateways.")}</td>
+			<td colSpan={12}>{_("No registered sub-gateways.")}</td>
 		</tr>
 	);
 	let showingEmpty = onus.length === 0;
@@ -347,18 +342,18 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 			<table class="table">
 				<thead>
 					<tr>
-						<th>{tr("ONU ID")}</th>
-						<th>{tr("Vendor")}</th>
-						<th>{tr("Model")}</th>
-						<th>{tr("Optical serial")}</th>
-						<th>{tr("Registration")}</th>
-						<th>{tr("Business")}</th>
-						<th>{tr("Firmware")}</th>
-						<th>{tr("Data interface")}</th>
-						<th>{tr("CWMP")}</th>
-						<th>{tr("Synchronization")}</th>
-						<th>{tr("Wi-Fi sync")}</th>
-						<th style="text-align:right">{tr("Details")}</th>
+						<th>{_("ONU ID")}</th>
+						<th>{_("Vendor")}</th>
+						<th>{_("Model")}</th>
+						<th>{_("Optical serial")}</th>
+						<th>{_("Registration")}</th>
+						<th>{_("Business")}</th>
+						<th>{_("Firmware")}</th>
+						<th>{_("Data interface")}</th>
+						<th>{_("CWMP")}</th>
+						<th>{_("Synchronization")}</th>
+						<th>{_("Wi-Fi sync")}</th>
+						<th style="text-align:right">{_("Details")}</th>
 					</tr>
 				</thead>
 				{body}
@@ -422,15 +417,15 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			style="display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%"
 		>
 			<span>
-				<strong style="margin-right:.4em">{tr("Provisioning")}:</strong>
+				<strong style="margin-right:.4em">{_("Provisioning")}:</strong>
 				{provisioningStatusNode}
 			</span>
 			<span>
-				<span style="color:#888;margin-right:.3em">{tr("Mode")}:</span>
+				<span style="color:#888;margin-right:.3em">{_("Mode")}:</span>
 				{provisioningModeNode}
 			</span>
 			<span>
-				<span style="color:#888;margin-right:.3em">{tr("Revision")}:</span>
+				<span style="color:#888;margin-right:.3em">{_("Revision")}:</span>
 				{provisioningRevNode}
 			</span>
 			{provisioningErrorNode}
@@ -577,31 +572,31 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 				}
 				`}
 			</style>
-			<h2>{tr("FTTR overview")}</h2>
+			<h2>{_("FTTR overview")}</h2>
 			{provisioningNode}
 			<div class="cbi-section">
-				<h3>{tr("Controller")}</h3>
+				<h3>{_("Controller")}</h3>
 				<table class="table">
 					<tbody>
 						<tr>
-							<th style="width:15%">{tr("FPGA status")}</th>
+							<th style="width:15%">{_("FPGA status")}</th>
 							<td style="width:35%">{fpgaNode}</td>
-							<th style="width:15%">{tr("CDR lock")}</th>
+							<th style="width:15%">{_("CDR lock")}</th>
 							<td style="width:35%">{cdrNode}</td>
 						</tr>
 						<tr>
-							<th>{tr("Optical module")}</th>
+							<th>{_("Optical module")}</th>
 							<td colSpan={3}>{opticalNode}</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 			<div class="cbi-section">
-				<h3>{tr("Sub-gateways")}</h3>
+				<h3>{_("Sub-gateways")}</h3>
 				{onuTable.element}
 			</div>
 			<div class="cbi-section">
-				<h3>{tr("Downstream ports")}</h3>
+				<h3>{_("Downstream ports")}</h3>
 				<div class="fttr-ports-grid">{ports.map((port) => port.element)}</div>
 			</div>
 		</div>
@@ -615,7 +610,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			updateBadge(
 				provisioningStatusNode,
 				provisioning.enabled ? "success" : "neutral",
-				provisioning.enabled ? tr("Enabled") : tr("Disabled"),
+				provisioning.enabled ? _("Enabled") : _("Disabled"),
 			);
 			provisioningModeNode.textContent = text(provisioning.mode);
 			provisioningRevNode.textContent = text(provisioning.revision);
@@ -627,11 +622,11 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			}
 			provisioningNode.style.display = "";
 		} else {
-			provisioningNode.textContent = tr("Provisioning status unavailable");
+			provisioningNode.textContent = _("Provisioning status unavailable");
 		}
 
 		if (status.fpga_status === "ready") {
-			updateBadge(fpgaNode, "success", tr("Ready"));
+			updateBadge(fpgaNode, "success", _("Ready"));
 		} else if (status.fpga_status) {
 			updateBadge(fpgaNode, "neutral", text(status.fpga_status));
 		} else {
@@ -641,11 +636,11 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 		opticalNode.textContent = text(optical.model);
 
 		if (optical.cdr_locked == null) {
-			updateBadge(cdrNode, "none", tr("Unknown"));
+			updateBadge(cdrNode, "none", _("Unknown"));
 		} else if (optical.cdr_locked) {
-			updateBadge(cdrNode, "success", tr("Locked"));
+			updateBadge(cdrNode, "success", _("Locked"));
 		} else {
-			updateBadge(cdrNode, "warning", tr("Unlocked"));
+			updateBadge(cdrNode, "warning", _("Unlocked"));
 		}
 
 		onuTable.update(status.sub_gateways ?? []);

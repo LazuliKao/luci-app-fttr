@@ -144,20 +144,20 @@ export type NetworkDevices = z.infer<typeof networkDevices>;
 export type BusinessStatus = z.infer<typeof businessStatus>;
 
 export const businessLabels = {
-	not_started: "Not started",
-	collecting_identity: "Collecting identity",
-	retrying_identity: "Retrying identity",
-	unsupported: "Unsupported",
-	configuring: "Configuring",
-	verifying: "Verifying",
-	wan_bootstrap_pending: "WAN pending",
-	verified: "Verified",
-	retrying: "Retrying",
-	offline: "Offline",
+	not_started: _("Not started"),
+	collecting_identity: _("Collecting identity"),
+	retrying_identity: _("Retrying identity"),
+	unsupported: _("Unsupported"),
+	configuring: _("Configuring"),
+	verifying: _("Verifying"),
+	wan_bootstrap_pending: _("WAN pending"),
+	verified: _("Verified"),
+	retrying: _("Retrying"),
+	offline: _("Offline"),
 } satisfies Record<BusinessStatus["phase"], string>;
 
 export function businessText(value: BusinessStatus): string {
-	return `${_(businessLabels[value.phase])} · ${value.generation}${value.error ? ` · ${value.error}` : ""}`;
+	return `${businessLabels[value.phase]} · ${value.generation}${value.error ? ` · ${value.error}` : ""}`;
 }
 
 export function eqdText(value: SubGateway["equalization_delay_bits"]): string {

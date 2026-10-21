@@ -4,23 +4,19 @@ export const STATE_I18N: Record<
 	string,
 	{ label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }
 > = {
-	ready: { label: "就绪", type: "success" },
-	online: { label: "在线", type: "success" },
-	success: { label: "成功", type: "success" },
-	offline: { label: "离线", type: "danger" },
-	error: { label: "异常", type: "danger" },
-	failed: { label: "失败", type: "danger" },
-	timeout: { label: "超时", type: "warning" },
-	pending: { label: "待处理", type: "warning" },
-	running: { label: "执行中", type: "info" },
-	unavailable: { label: "不可用", type: "neutral" },
-	disabled: { label: "已禁用", type: "neutral" },
-	enabled: { label: "已启用", type: "success" },
+	ready: { label: _("Ready"), type: "success" },
+	online: { label: _("Online"), type: "success" },
+	success: { label: _("Success"), type: "success" },
+	offline: { label: _("Offline"), type: "danger" },
+	error: { label: _("Error"), type: "danger" },
+	failed: { label: _("Failed"), type: "danger" },
+	timeout: { label: _("Timeout"), type: "warning" },
+	pending: { label: _("Pending"), type: "warning" },
+	running: { label: _("Running"), type: "info" },
+	unavailable: { label: _("Unavailable"), type: "neutral" },
+	disabled: { label: _("Disabled"), type: "neutral" },
+	enabled: { label: _("Enabled"), type: "success" },
 };
-
-export function tr(key: string): string {
-	return _(key) || key;
-}
 
 export const text = (value: unknown): string =>
 	value === null || value === undefined || value === "" ? "—" : String(value);
@@ -34,10 +30,10 @@ export function formatUptime(seconds?: number): string {
 	const minutes = Math.floor((seconds % 3600) / 60);
 	const secs = seconds % 60;
 	const parts: string[] = [];
-	if (days > 0) parts.push(`${days}天`);
-	if (hours > 0 || days > 0) parts.push(`${hours}小时`);
-	if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}分钟`);
-	parts.push(`${secs}秒`);
+	if (days > 0) parts.push(_("%d days").replace("%d", String(days)));
+	if (hours > 0 || days > 0) parts.push(_("%d hours").replace("%d", String(hours)));
+	if (minutes > 0 || hours > 0 || days > 0) parts.push(_("%d minutes").replace("%d", String(minutes)));
+	parts.push(_("%d seconds").replace("%d", String(secs)));
 	return `${parts.join(" ")} (${seconds} s)`;
 }
 

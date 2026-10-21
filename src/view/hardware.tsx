@@ -6,10 +6,6 @@ import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from 
 
 const view = L.view;
 
-function tr(key: string): string {
-	return _(key) || key;
-}
-
 const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
 
 function formatFirmware(raw?: string): { display: string; full?: string } {
@@ -23,12 +19,12 @@ function formatFirmware(raw?: string): { display: string; full?: string } {
 
 function formatAge(seconds: number | null): string {
 	if (seconds === null || !Number.isFinite(seconds) || seconds < 0) return "—";
-	if (seconds < 60) return `${seconds} 秒前`;
+	if (seconds < 60) return _("%d seconds ago").replace("%d", String(seconds));
 	const minutes = Math.floor(seconds / 60);
-	if (minutes < 60) return `${minutes} 分钟前`;
+	if (minutes < 60) return _("%d minutes ago").replace("%d", String(minutes));
 	const hours = Math.floor(minutes / 60);
 	const remMin = minutes % 60;
-	return `${hours} 小时 ${remMin} 分钟前`;
+	return _("%d hours %d minutes ago").replace("%d", String(hours)).replace("%d", String(remMin));
 }
 
 function formatPower(power: number | null): string {
@@ -41,7 +37,7 @@ function renderStateBadge(stateVal?: string): HTMLElement {
 	if (stateVal === "o5_operation" || stateVal === "online" || stateVal === "ready" || stateVal === "connected") {
 		return (
 			<span class="fttr-badge fttr-badge-success" title={stateVal}>
-				{stateVal === "o5_operation" ? tr("Connected") : tr("Ready")}
+				{stateVal === "o5_operation" ? _("Connected") : _("Ready")}
 			</span>
 		);
 	}
@@ -60,11 +56,11 @@ function renderStateBadge(stateVal?: string): HTMLElement {
 }
 
 function renderCdrBadge(locked: boolean | null): HTMLElement {
-	if (locked === null) return <span class="fttr-badge fttr-badge-neutral">{tr("Unknown")}</span>;
+	if (locked === null) return <span class="fttr-badge fttr-badge-neutral">{_("Unknown")}</span>;
 	return locked ? (
-		<span class="fttr-badge fttr-badge-success">{tr("Locked")}</span>
+		<span class="fttr-badge fttr-badge-success">{_("Locked")}</span>
 	) : (
-		<span class="fttr-badge fttr-badge-warning">{tr("Unlocked")}</span>
+		<span class="fttr-badge fttr-badge-warning">{_("Unlocked")}</span>
 	);
 }
 
@@ -76,7 +72,7 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 			class={`fttr-badge ${status.fpga_status === "ready" ? "fttr-badge-success" : "fttr-badge-neutral"}`}
 			style="font-size:95%"
 		>
-			{status.fpga_status === "ready" ? tr("Ready") : text(status.fpga_status)}
+			{status.fpga_status === "ready" ? _("Ready") : text(status.fpga_status)}
 		</span>
 	);
 
@@ -84,64 +80,64 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 
 	return (
 		<div class="cbi-section fttr-panel-controller">
-			<h3 style="margin-bottom:12px">{tr("Controller hardware")}</h3>
+			<h3 style="margin-bottom:12px">{_("Controller hardware")}</h3>
 			<div class="fttr-grid-3">
 				<div class="fttr-card">
-					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{tr("FPGA status")}</h4>
+					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("FPGA status")}</h4>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("FPGA status")}</span>
+						<span class="fttr-kv-label">{_("FPGA status")}</span>
 						<span>{fpgaStatusNode}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">FPGA 标识</span>
+						<span class="fttr-kv-label">{_("FPGA identifier")}</span>
 						<code>{text(status.fpga_status)}</code>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("CDR lock")}</span>
+						<span class="fttr-kv-label">{_("CDR lock")}</span>
 						<span>{cdrNode}</span>
 					</div>
 				</div>
 
 				<div class="fttr-card">
-					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{tr("Optical transceiver")}</h4>
+					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Optical transceiver")}</h4>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">模块型号</span>
+						<span class="fttr-kv-label">{_("Module model")}</span>
 						<strong>{text(optical.model)}</strong>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("TX wavelength")}</span>
+						<span class="fttr-kv-label">{_("TX wavelength")}</span>
 						<span>{optical.wavelength_tx_nm ? `${optical.wavelength_tx_nm} nm` : "—"}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("RX wavelength")}</span>
+						<span class="fttr-kv-label">{_("RX wavelength")}</span>
 						<span>{optical.wavelength_rx_nm ? `${optical.wavelength_rx_nm} nm` : "—"}</span>
 					</div>
 				</div>
 
 				<div class="fttr-card">
-					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">物理速率与诊断</h4>
+					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Physical rates and diagnostics")}</h4>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("Downlink PHY rate")}</span>
+						<span class="fttr-kv-label">{_("Downlink PHY rate")}</span>
 						<span>{optical.phy_rate_downlink_gbps ? `${optical.phy_rate_downlink_gbps} Gbps` : "—"}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("Uplink PHY rate")}</span>
+						<span class="fttr-kv-label">{_("Uplink PHY rate")}</span>
 						<span>{optical.phy_rate_uplink_gbps ? `${optical.phy_rate_uplink_gbps} Gbps` : "—"}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("Temperature")}</span>
+						<span class="fttr-kv-label">{_("Temperature")}</span>
 						<span>{optical.temperature_celsius == null ? "—" : `${optical.temperature_celsius} °C`}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("TX power")}</span>
+						<span class="fttr-kv-label">{_("TX power")}</span>
 						<span>{formatPower(optical.tx_power_dbm)}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("Voltage")}</span>
+						<span class="fttr-kv-label">{_("Voltage")}</span>
 						<span>{optical.vcc_voltage == null ? "—" : `${optical.vcc_voltage} V`}</span>
 					</div>
 					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{tr("Bias current")}</span>
+						<span class="fttr-kv-label">{_("Bias current")}</span>
 						<span>
 							{optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma} mA`}
 						</span>
@@ -157,7 +153,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 		return (
 			<div class="cbi-section fttr-panel-subgateways">
 				<p style="text-align:center;color:#888;padding:2em 0">
-					{tr("No sub-gateways are currently registered.")}
+					{_("No sub-gateways are currently registered.")}
 				</p>
 			</div>
 		);
@@ -171,9 +167,9 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 				const fw = formatFirmware(onu.firmware_version);
 				const freshness = onu.identity
 					? onu.identity_current
-						? tr("Current registration")
-						: tr("Cached identity")
-					: tr("Not collected");
+						? _("Current registration")
+						: _("Cached identity")
+					: _("Not collected");
 
 				const freshnessBadge = (
 					<span
@@ -189,7 +185,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 						<div class="fttr-card-header">
 							<div class="fttr-card-title-group">
 								<h3 style="margin:0">
-									{tr("Sub-gateway %s — %s")
+									{_("Sub-gateway %s — %s")
 										.replace("%s", String(onu.onu_id))
 										.replace("%s", text(onu.model))}
 								</h3>
@@ -206,7 +202,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 									class="fttr-btn-subtle"
 									onclick={() => showOnuDetails(onu, "mib")}
 								>
-									{tr("View OMCI / MIB details")} →
+									{_("View OMCI / MIB details")} →
 								</button>
 							</div>
 						</div>
@@ -214,50 +210,50 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 						<div class="fttr-grid-2">
 							<div class="fttr-card">
 								<h4 style="margin-top:0;margin-bottom:6px;font-size:92%;color:#888">
-									光纤物理层与链路参数
+									{_("Optical physical layer and link parameters")}
 								</h4>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Optical RX power")}</span>
+									<span class="fttr-kv-label">{_("Optical RX power")}</span>
 									<strong>{formatPower(onu.optical_rx_power_dbm)}</strong>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Optical TX power")}</span>
+									<span class="fttr-kv-label">{_("Optical TX power")}</span>
 									<strong>{formatPower(onu.optical_tx_power_dbm)}</strong>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Equalization delay (EQD)")}</span>
+									<span class="fttr-kv-label">{_("Equalization delay (EQD)")}</span>
 									<span>{eqdText(onu.equalization_delay_bits)}</span>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Data interface")}</span>
+									<span class="fttr-kv-label">{_("Data interface")}</span>
 									<code>{text(onu.data_path?.interface)}</code>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Identity age")}</span>
+									<span class="fttr-kv-label">{_("Identity age")}</span>
 									<span>{formatAge(onu.identity_age_seconds)}</span>
 								</div>
 							</div>
 
 							<div class="fttr-card">
 								<h4 style="margin-top:0;margin-bottom:6px;font-size:92%;color:#888">
-									硬件规格与固件镜像
+									{_("Hardware specifications and firmware images")}
 								</h4>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Equipment ID")}</span>
+									<span class="fttr-kv-label">{_("Equipment ID")}</span>
 									<span>{text(identity?.equipment_id ?? onu.model)}</span>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Hardware version")}</span>
+									<span class="fttr-kv-label">{_("Hardware version")}</span>
 									<code>{text(identity?.hardware_version ?? onu.hardware_version)}</code>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("Firmware version")}</span>
+									<span class="fttr-kv-label">{_("Firmware version")}</span>
 									<span title={fw.full || fw.display}>
 										<strong>{fw.display}</strong>
 									</span>
 								</div>
 								<div class="fttr-kv-row">
-									<span class="fttr-kv-label">{tr("OMCC version")}</span>
+									<span class="fttr-kv-label">{_("OMCC version")}</span>
 									<span>
 										{identity?.omcc_version != null
 											? `0x${identity.omcc_version.toString(16).padStart(2, "0")} (${identity.omcc_version})`
@@ -266,13 +262,13 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 								</div>
 								{identity?.errors.length ? (
 									<div class="fttr-kv-row" style="color:#e74c3c">
-										<span class="fttr-kv-label">{tr("Identity read errors")}</span>
+										<span class="fttr-kv-label">{_("Identity read errors")}</span>
 										<span>{identity.errors.join("; ")}</span>
 									</div>
 								) : null}
 								{softwareImages.length > 1 ? (
 									<div class="fttr-kv-row" style="font-size:80%;color:#888">
-										<span class="fttr-kv-label">{tr("Software images")}</span>
+										<span class="fttr-kv-label">{_("Software images")}</span>
 										<span>{softwareImages.join(" · ")}</span>
 									</div>
 								) : null}
@@ -290,8 +286,8 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 	let activeTab: TabId = "controller";
 
 	const tabs: Array<{ id: TabId; label: string }> = [
-		{ id: "controller", label: tr("Controller & optical transceiver") },
-		{ id: "subgateways", label: tr("Sub-gateways & optical links") },
+		{ id: "controller", label: _("Controller & optical transceiver") },
+		{ id: "subgateways", label: _("Sub-gateways & optical links") },
 	];
 
 	const tabItems = new Map<TabId, HTMLElement>();
@@ -523,11 +519,11 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 				}
 				`}
 			</style>
-			<h2>{tr("FTTR hardware status")}</h2>
+			<h2>{_("FTTR hardware status")}</h2>
 			{tabMenu}
 			{panelsContainer}
 			<p class="cbi-footer" style="margin-top:1.5em;font-size:85%;color:#888">
-				{tr("Identity information is read-only and limited to fields provided by fttrctl status.")}
+				{_("Identity information is read-only and limited to fields provided by fttrctl status.")}
 			</p>
 		</div>
 	);

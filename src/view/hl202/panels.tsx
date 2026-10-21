@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-import { date, formatUptime, renderBadge, text, tr } from "./dom";
+import { date, formatUptime, renderBadge, text } from "./dom";
 import { execute, readAccounts, readReport, type SourceTarget, setAccount, type Target } from "./rpc";
 
 let busy = false;
@@ -32,25 +32,25 @@ export function createReportPanel(): ReportController {
 
 	const readBtn = (
 		<button type="button" class="cbi-button cbi-button-action">
-			{tr("Read MQTT report")}
+			{_("Read MQTT report")}
 		</button>
 	) as HTMLButtonElement;
 
 	const doRead = async (targetToRead?: Target | SourceTarget) => {
 		const target = targetToRead || currentTarget;
 		if (!target) {
-			statusMsg.textContent = tr(
+			statusMsg.textContent = _(
 				"This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.",
 			);
 			return;
 		}
 		if (busy) {
-			statusMsg.textContent = tr("Another operation is in progress.");
+			statusMsg.textContent = _("Another operation is in progress.");
 			return;
 		}
 		busy = true;
 		readBtn.disabled = true;
-		statusMsg.textContent = tr("Waiting for device result…");
+		statusMsg.textContent = _("Waiting for device result…");
 		try {
 			const response = await readReport(target);
 			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
@@ -58,28 +58,28 @@ export function createReportPanel(): ReportController {
 				outputSummary.replaceChildren();
 				outputTable.replaceChildren();
 				outputMembers.replaceChildren();
-				statusMsg.textContent = tr("No MQTT report has been parsed yet.");
+				statusMsg.textContent = _("No MQTT report has been parsed yet.");
 				return;
 			}
 			const state = response.report;
 			outputSummary.replaceChildren(
 				<span>
-					<span style="color:#888;margin-right:4px">{tr("Revision")}:</span>
+					<span style="color:#888;margin-right:4px">{_("Revision")}:</span>
 					{renderBadge("info", `#${String(state.revision)}`)}
 				</span>,
 				<span>
-					<span style="color:#888;margin-right:4px">{tr("Last received")}:</span>
+					<span style="color:#888;margin-right:4px">{_("Last received")}:</span>
 					<strong>{date(typeof state.last_received === "number" ? state.last_received : undefined)}</strong>
 				</span>,
 				<span>
-					<span style="color:#888;margin-right:4px">{tr("Last good report")}:</span>
+					<span style="color:#888;margin-right:4px">{_("Last good report")}:</span>
 					<strong>{date(typeof state.last_good === "number" ? state.last_good : undefined)}</strong>
 				</span>,
 			);
 			if (typeof state.error === "string") {
 				outputSummary.append(
 					<div class="alert-message warning" style="width:100%;margin-top:6px">
-						{tr("Latest report error")}: {state.error}
+						{_("Latest report error")}: {state.error}
 					</div>,
 				);
 			}
@@ -91,9 +91,9 @@ export function createReportPanel(): ReportController {
 					<table class="table" style="font-size:90%">
 						<thead>
 							<tr>
-								<th>{tr("Field")}</th>
-								<th>{tr("Value")}</th>
-								<th>{tr("Source member")}</th>
+								<th>{_("Field")}</th>
+								<th>{_("Value")}</th>
+								<th>{_("Source member")}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -135,22 +135,24 @@ export function createReportPanel(): ReportController {
 								e.stopPropagation();
 								if (typeof member.text === "string") {
 									void navigator.clipboard?.writeText(member.text);
-									copyBtn.textContent = tr("Copied to clipboard");
+									copyBtn.textContent = _("Copied to clipboard");
 									setTimeout(() => {
-										copyBtn.textContent = tr("Copy member text");
+										copyBtn.textContent = _("Copy member text");
 									}, 1500);
 								}
 							}}
 						>
-							{tr("Copy member text")}
+							{_("Copy member text")}
 						</button>
 					) as HTMLButtonElement;
 
 					membersList.push(
 						<details style="margin:6px 0;border:1px solid rgba(127,140,141,0.15);border-radius:4px;padding:4px 8px">
 							<summary style="cursor:pointer;user-select:none;font-weight:600;font-size:90%">
-								{text(
-									`${String(member.name)} (${String(member.bytes)} bytes, ${String(member.encoding)})`,
+								{_("%s (%s bytes, %s)").format(
+									String(member.name),
+									String(member.bytes),
+									String(member.encoding),
 								)}
 								{typeof member.text === "string" ? copyBtn : null}
 							</summary>
@@ -162,8 +164,8 @@ export function createReportPanel(): ReportController {
 								) : (
 									<p style="font-size:85%;color:#888;margin:4px 0">
 										{member.text_omitted
-											? tr("Text omitted at the shared byte limit.")
-											: tr("Binary member; text is unavailable.")}
+											? _("Text omitted at the shared byte limit.")
+											: _("Binary member; text is unavailable.")}
 									</p>
 								)}
 							</div>
@@ -180,7 +182,7 @@ export function createReportPanel(): ReportController {
 			}
 			statusMsg.textContent = "";
 		} catch (cause: unknown) {
-			statusMsg.textContent = cause instanceof Error ? cause.message : tr("Request failed");
+			statusMsg.textContent = cause instanceof Error ? cause.message : _("Request failed");
 		} finally {
 			busy = false;
 			readBtn.disabled = !currentTarget;
@@ -194,7 +196,7 @@ export function createReportPanel(): ReportController {
 	const element = (
 		<div class="cbi-section hl202-panel-report">
 			<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
-				<h3 style="margin:0">{tr("MQTT report")}</h3>
+				<h3 style="margin:0">{_("MQTT report")}</h3>
 				{readBtn}
 			</div>
 			{statusMsg}
@@ -229,7 +231,7 @@ export function createAccountsPanel(): AccountsController {
 
 	const readBtn = (
 		<button type="button" class="cbi-button cbi-button-action">
-			{tr("Read users")}
+			{_("Read users")}
 		</button>
 	) as HTMLButtonElement;
 
@@ -237,18 +239,18 @@ export function createAccountsPanel(): AccountsController {
 
 	const doRead = async () => {
 		if (!currentTarget) {
-			statusMsg.textContent = tr(
+			statusMsg.textContent = _(
 				"This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.",
 			);
 			return;
 		}
 		if (busy) {
-			statusMsg.textContent = tr("Another operation is in progress.");
+			statusMsg.textContent = _("Another operation is in progress.");
 			return;
 		}
 		busy = true;
 		readBtn.disabled = true;
-		statusMsg.textContent = tr("Waiting for device result…");
+		statusMsg.textContent = _("Waiting for device result…");
 		const target = currentTarget;
 		try {
 			const response = await readAccounts(target);
@@ -257,13 +259,13 @@ export function createAccountsPanel(): AccountsController {
 			const op = response.operation;
 			const res = op.result;
 			if (res.status === "timeout") {
-				statusMsg.textContent = tr(
+				statusMsg.textContent = _(
 					"Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.",
 				);
 			} else {
 				statusMsg.textContent = !op.binding_current
-					? tr("Device binding changed; this result is stale.")
-					: (res.error ?? (response.accounts === null ? tr("Account data is unavailable.") : ""));
+					? _("Device binding changed; this result is stale.")
+					: (res.error ?? (response.accounts === null ? _("Account data is unavailable.") : ""));
 			}
 
 			if (response.accounts && op.binding_current) {
@@ -277,7 +279,7 @@ export function createAccountsPanel(): AccountsController {
 							class={`hl202-badge ${active ? "hl202-badge-success" : "hl202-badge-neutral"}`}
 							style="font-size:80%"
 						>
-							{active ? tr("Enabled") : tr("Disabled")}
+							{active ? _("Enabled") : _("Disabled")}
 						</span>
 					);
 
@@ -285,7 +287,7 @@ export function createAccountsPanel(): AccountsController {
 						<input
 							type="password"
 							class="cbi-input-text"
-							placeholder={tr("New password")}
+							placeholder={_("New password")}
 							autocomplete="new-password"
 							style="width:180px"
 						/>
@@ -293,7 +295,7 @@ export function createAccountsPanel(): AccountsController {
 
 					const saveBtn = (
 						<button type="button" class="cbi-button cbi-button-action">
-							{tr("Set password")}
+							{_("Set password")}
 						</button>
 					) as HTMLButtonElement;
 
@@ -302,7 +304,7 @@ export function createAccountsPanel(): AccountsController {
 							type="button"
 							class={`cbi-button ${active ? "cbi-button-neutral" : "cbi-button-apply"}`}
 						>
-							{active ? tr("Disable") : tr("Enable")}
+							{active ? _("Disable") : _("Enable")}
 						</button>
 					) as HTMLButtonElement;
 
@@ -313,13 +315,13 @@ export function createAccountsPanel(): AccountsController {
 						if (!currentTarget || busy || JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 						const val = pwdInput.value;
 						if (!val) {
-							userActionStatus.textContent = tr("Enter a non-empty password.");
+							userActionStatus.textContent = _("Enter a non-empty password.");
 							return;
 						}
 						pwdInput.value = "";
 						busy = true;
 						saveBtn.disabled = toggleBtn.disabled = true;
-						userActionStatus.textContent = tr("Waiting for device result…");
+						userActionStatus.textContent = _("Waiting for device result…");
 						try {
 							const result = await setAccount(target, {
 								entry,
@@ -331,15 +333,15 @@ export function createAccountsPanel(): AccountsController {
 							const setOp = result.operation;
 							const setRes = setOp.result;
 							if (setOp.binding_current && result.write_status === "accepted_and_saved") {
-								userActionStatus.textContent = tr(
+								userActionStatus.textContent = _(
 									"Password accepted and saved; web login permission is not verified.",
 								);
 							} else {
 								userActionStatus.textContent =
-									setRes.error ?? tr("Execution outcome is unknown. Do not automatically retry.");
+									setRes.error ?? _("Execution outcome is unknown. Do not automatically retry.");
 							}
 						} catch (e: unknown) {
-							userActionStatus.textContent = e instanceof Error ? e.message : tr("Request failed");
+							userActionStatus.textContent = e instanceof Error ? e.message : _("Request failed");
 						} finally {
 							busy = false;
 							saveBtn.disabled = toggleBtn.disabled = !L.hasViewPermission();
@@ -350,7 +352,7 @@ export function createAccountsPanel(): AccountsController {
 						if (!currentTarget || busy || JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 						busy = true;
 						saveBtn.disabled = toggleBtn.disabled = true;
-						userActionStatus.textContent = tr("Waiting for device result…");
+						userActionStatus.textContent = _("Waiting for device result…");
 						try {
 							const nextActive = !active;
 							const result = await setAccount(target, {
@@ -368,17 +370,17 @@ export function createAccountsPanel(): AccountsController {
 							) {
 								userActionStatus.textContent =
 									result.operation.result.error ??
-									tr("Execution outcome is unknown. Refresh users before retrying.");
+									_("Execution outcome is unknown. Refresh users before retrying.");
 								return;
 							}
 							active = readback.active;
 							activeBadge.className = `hl202-badge ${active ? "hl202-badge-success" : "hl202-badge-neutral"}`;
-							activeBadge.textContent = active ? tr("Enabled") : tr("Disabled");
+							activeBadge.textContent = active ? _("Enabled") : _("Disabled");
 							toggleBtn.className = `cbi-button ${active ? "cbi-button-neutral" : "cbi-button-apply"}`;
-							toggleBtn.textContent = active ? tr("Disable") : tr("Enable");
-							userActionStatus.textContent = `${String(result.write_status)}; ${tr("Refresh users to read the current state.")}`;
+							toggleBtn.textContent = active ? _("Disable") : _("Enable");
+							userActionStatus.textContent = `${String(result.write_status)}; ${_("Refresh users to read the current state.")}`;
 						} catch (e: unknown) {
-							userActionStatus.textContent = e instanceof Error ? e.message : tr("Request failed");
+							userActionStatus.textContent = e instanceof Error ? e.message : _("Request failed");
 						} finally {
 							busy = false;
 							saveBtn.disabled = toggleBtn.disabled = !L.hasViewPermission();
@@ -393,7 +395,9 @@ export function createAccountsPanel(): AccountsController {
 							<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
 								<div style="display:flex;align-items:center;gap:8px">
 									<strong style="font-size:105%">{account.username}</strong>
-									<span style="font-size:80%;color:#888">(Entry {entry})</span>
+									<span style="font-size:80%;color:#888">
+										{_("(Entry %s)").replace("%s", String(entry))}
+									</span>
 									{activeBadge}
 								</div>
 								<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
@@ -409,7 +413,7 @@ export function createAccountsPanel(): AccountsController {
 				usersContainer.replaceChildren(...userNodes);
 			}
 		} catch (cause: unknown) {
-			statusMsg.textContent = cause instanceof Error ? cause.message : tr("Request failed");
+			statusMsg.textContent = cause instanceof Error ? cause.message : _("Request failed");
 		} finally {
 			busy = false;
 			readBtn.disabled = !currentTarget || !L.hasViewPermission();
@@ -423,11 +427,11 @@ export function createAccountsPanel(): AccountsController {
 	const element = (
 		<div class="cbi-section hl202-panel-accounts">
 			<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px">
-				<h3 style="margin:0">{tr("User management")}</h3>
+				<h3 style="margin:0">{_("User management")}</h3>
 				{readBtn}
 			</div>
 			<p style="font-size:85%;color:#888;margin:4px 0">
-				{tr(
+				{_(
 					"Password writes are accepted and saved by the device; this does not prove web login permission. Existing permission masks are preserved.",
 				)}
 			</p>
@@ -462,8 +466,10 @@ export function createConsolePanel(): ConsoleController {
 			rows={8}
 			class="hl202-terminal-textarea"
 			spellcheck={false}
-			aria-label={tr("Remote shell command")}
-			placeholder="# 输入在所选子网关上执行的 Shell 命令 (支持 Ctrl + Enter 快捷执行)..."
+			aria-label={_("Remote shell command")}
+			placeholder={_(
+				"# Enter shell commands to execute on the selected sub-gateway (Ctrl + Enter to execute)...",
+			)}
 		/>
 	) as HTMLTextAreaElement;
 
@@ -476,13 +482,13 @@ export function createConsolePanel(): ConsoleController {
 			value="20"
 			class="cbi-input-text"
 			style="width:70px;text-align:center"
-			aria-label={tr("Timeout in seconds")}
+			aria-label={_("Timeout in seconds")}
 		/>
 	) as HTMLInputElement;
 
 	const execBtn = (
 		<button type="button" class="cbi-button cbi-button-apply" style="font-weight:600">
-			{tr("Execute on selected HL202")}
+			{_("Execute on selected HL202")}
 		</button>
 	) as HTMLButtonElement;
 
@@ -491,7 +497,7 @@ export function createConsolePanel(): ConsoleController {
 	const outputStatus = <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px" />;
 	const outputBody = (
 		<pre class="hl202-terminal-output" style="min-height:4rem;display:none">
-			{"# 等待执行指令..."}
+			{_("# Waiting for commands...")}
 		</pre>
 	) as HTMLPreElement;
 
@@ -502,14 +508,14 @@ export function createConsolePanel(): ConsoleController {
 			onclick={() => {
 				if (outputBody.textContent) {
 					void navigator.clipboard?.writeText(outputBody.textContent);
-					copyBtn.textContent = tr("Copied to clipboard");
+					copyBtn.textContent = _("Copied to clipboard");
 					setTimeout(() => {
-						copyBtn.textContent = tr("Copy output");
+						copyBtn.textContent = _("Copy output");
 					}, 1500);
 				}
 			}}
 		>
-			{tr("Copy output")}
+			{_("Copy output")}
 		</button>
 	) as HTMLButtonElement;
 
@@ -523,7 +529,7 @@ export function createConsolePanel(): ConsoleController {
 				outputStatus.replaceChildren();
 			}}
 		>
-			{tr("Clear output")}
+			{_("Clear output")}
 		</button>
 	) as HTMLButtonElement;
 
@@ -531,21 +537,21 @@ export function createConsolePanel(): ConsoleController {
 		if (!currentTarget) {
 			outputStatus.replaceChildren(
 				<div class="alert-message warning">
-					{tr("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")}
+					{_("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")}
 				</div>,
 			);
 			return;
 		}
 		if (busy) {
 			outputStatus.replaceChildren(
-				<div class="alert-message warning">{tr("Another operation is in progress.")}</div>,
+				<div class="alert-message warning">{_("Another operation is in progress.")}</div>,
 			);
 			return;
 		}
 		const seconds = Number(timeout.value);
 		if (!Number.isInteger(seconds) || seconds < 1 || seconds > 300) {
 			outputStatus.replaceChildren(
-				<div class="alert-message warning">{tr("Timeout must be 1–300 seconds.")}</div>,
+				<div class="alert-message warning">{_("Timeout must be 1–300 seconds.")}</div>,
 			);
 			return;
 		}
@@ -553,7 +559,7 @@ export function createConsolePanel(): ConsoleController {
 		if (!cmd || cmd.includes("\0") || new TextEncoder().encode(cmd).length > 65536) {
 			outputStatus.replaceChildren(
 				<div class="alert-message warning">
-					{tr("Enter a non-empty UTF-8 script up to 64 KiB without NUL characters.")}
+					{_("Enter a non-empty UTF-8 script up to 64 KiB without NUL characters.")}
 				</div>,
 			);
 			return;
@@ -562,8 +568,8 @@ export function createConsolePanel(): ConsoleController {
 		busy = true;
 		execBtn.disabled = true;
 		outputBody.style.display = "block";
-		outputBody.textContent = `# [${new Date().toLocaleTimeString()}] 正在下发至 ${currentTarget.optical_sn} (超时: ${seconds}s)...\n`;
-		outputStatus.replaceChildren(renderBadge("info", tr("Waiting for device result…")));
+		outputBody.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(currentTarget.optical_sn, String(seconds))}\n`;
+		outputStatus.replaceChildren(renderBadge("info", _("Waiting for device result…")));
 
 		const startTime = Date.now();
 		const target = currentTarget;
@@ -580,22 +586,22 @@ export function createConsolePanel(): ConsoleController {
 			const statusBadge = renderBadge(
 				isSuccess ? "success" : status === "timeout" ? "warning" : "danger",
 				isSuccess
-					? tr("Success")
+					? _("Success")
 					: status === "timeout"
-						? tr("Timeout")
-						: `${tr("Exit code")} ${String(exitCode ?? status)}`,
+						? _("Timeout")
+						: `${_("Exit code")} ${String(exitCode ?? status)}`,
 			);
 
 			outputStatus.replaceChildren(
 				statusBadge,
 				<span>
-					<span style="color:#888">{tr("Exit code")}:</span> <code>{String(exitCode ?? "—")}</code>
+					<span style="color:#888">{_("Exit code")}:</span> <code>{String(exitCode ?? "—")}</code>
 				</span>,
 				<span>
-					<span style="color:#888">{tr("Duration")}:</span> <strong>{elapsed} s</strong>
+					<span style="color:#888">{_("Duration")}:</span> <strong>{elapsed} s</strong>
 				</span>,
 				<span>
-					<span style="color:#888">{tr("Request ID")}:</span> <code>{String(result.request_id ?? "—")}</code>
+					<span style="color:#888">{_("Request ID")}:</span> <code>{String(result.request_id ?? "—")}</code>
 				</span>,
 				<div style="margin-left:auto;display:flex;gap:6px">
 					{copyBtn}
@@ -604,10 +610,10 @@ export function createConsolePanel(): ConsoleController {
 			);
 
 			const outputLines: string[] = [];
-			if (!op.binding_current) outputLines.push(tr("Device binding changed; this result is stale."));
+			if (!op.binding_current) outputLines.push(_("Device binding changed; this result is stale."));
 			if (status === "timeout" || status === "dispatched")
 				outputLines.push(
-					tr(
+					_(
 						"Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.",
 					),
 				);
@@ -618,25 +624,25 @@ export function createConsolePanel(): ConsoleController {
 				outputLines.push(`[STDERR]\n${result.error}`);
 			}
 			if (result.output_truncated === true) {
-				outputLines.push(`\n[!] ${tr("Output was truncated at the byte limit.")}`);
+				outputLines.push(`\n[!] ${_("Output was truncated at the byte limit.")}`);
 			}
 			if (outputLines.length === 0) {
-				outputLines.push(tr("No output returned."));
+				outputLines.push(_("No output returned."));
 			}
 			outputBody.textContent = outputLines.join("\n");
 		} catch (cause: unknown) {
 			const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
 			outputStatus.replaceChildren(
-				renderBadge("danger", tr("Failed")),
+				renderBadge("danger", _("Failed")),
 				<span>
-					<span style="color:#888">{tr("Duration")}:</span> {elapsed} s
+					<span style="color:#888">{_("Duration")}:</span> {elapsed} s
 				</span>,
 				<div style="margin-left:auto;display:flex;gap:6px">
 					{copyBtn}
 					{clearBtn}
 				</div>,
 			);
-			outputBody.textContent = `[ERROR] ${cause instanceof Error ? cause.message : tr("Request failed")}`;
+			outputBody.textContent = `[ERROR] ${cause instanceof Error ? cause.message : _("Request failed")}`;
 		} finally {
 			busy = false;
 			execBtn.disabled = !currentTarget || !L.hasViewPermission();
@@ -656,17 +662,17 @@ export function createConsolePanel(): ConsoleController {
 
 	// Quick snippets
 	const snippets = [
-		{ label: "uptime (负载)", cmd: "uptime" },
-		{ label: "meminfo (内存)", cmd: "cat /proc/meminfo | head -n 10" },
+		{ label: `uptime (${_("Load")})`, cmd: "uptime" },
+		{ label: `meminfo (${_("Memory")})`, cmd: "cat /proc/meminfo | head -n 10" },
 		{ label: "cpuinfo (CPU)", cmd: "cat /proc/cpuinfo | grep 'model name\\|processor'" },
-		{ label: "ifconfig (网络)", cmd: "ifconfig" },
-		{ label: "ps (进程)", cmd: "ps" },
-		{ label: "dmesg (内核日志)", cmd: "dmesg | tail -n 25" },
+		{ label: `ifconfig (${_("Network")})`, cmd: "ifconfig" },
+		{ label: `ps (${_("Processes")})`, cmd: "ps" },
+		{ label: `dmesg (${_("Kernel log")})`, cmd: "dmesg | tail -n 25" },
 	];
 
 	const snippetsBar = (
 		<div class="hl202-snippets">
-			<span style="font-size:80%;color:#888;margin-right:2px">{tr("Quick diagnostic commands")}:</span>
+			<span style="font-size:80%;color:#888;margin-right:2px">{_("Quick diagnostic commands")}:</span>
 			{snippets.map((snip) => (
 				<button
 					type="button"
@@ -684,9 +690,9 @@ export function createConsolePanel(): ConsoleController {
 
 	const element = (
 		<div class="cbi-section hl202-panel-console">
-			<h3 style="margin-bottom:4px">{tr("Raw command console")}</h3>
+			<h3 style="margin-bottom:4px">{_("Raw command console")}</h3>
 			<p style="font-size:85%;color:#888;margin-top:0;margin-bottom:6px">
-				{tr(
+				{_(
 					"Shell executes on the selected ONU. Timeout does not cancel execution. Raw output can contain secrets.",
 				)}
 			</p>
@@ -697,10 +703,10 @@ export function createConsolePanel(): ConsoleController {
 			</div>
 			<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
 				<label htmlFor="hl202-timeout" style="display:flex;align-items:center;gap:6px;font-size:90%">
-					<span>{tr("Timeout in seconds")}:</span>
+					<span>{_("Timeout in seconds")}:</span>
 					{timeout}
 				</label>
-				<span style="font-size:82%;color:#888">(快捷键: Ctrl + Enter)</span>
+				<span style="font-size:82%;color:#888">{_("(Shortcut: %s)").replace("%s", "Ctrl + Enter")}</span>
 				<div style="margin-left:auto">{execBtn}</div>
 			</div>
 			<div style="margin-top:10px">
@@ -723,14 +729,14 @@ export function createConsolePanel(): ConsoleController {
 			if (target) {
 				targetLine.replaceChildren(
 					<span>
-						<span style="color:#888">{tr("Target")}:</span> <strong>{target.optical_sn}</strong> (ONU{" "}
+						<span style="color:#888">{_("Target")}:</span> <strong>{target.optical_sn}</strong> (ONU{" "}
 						{target.onu_id}) · <code>gen: {target.binding_generation}</code>
 					</span>,
 				);
 			} else {
 				targetLine.replaceChildren(
 					<span style="color:#e74c3c">
-						{tr("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")}
+						{_("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")}
 					</span>,
 				);
 			}

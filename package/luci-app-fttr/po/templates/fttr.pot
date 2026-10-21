@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-20 17:26+0800\n"
+"POT-Creation-Date: 2026-10-21 15:07+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -11,13 +11,147 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "—"
+msgstr ""
+
+msgid ""
+", and the optical transceiver hardware was reset and the register table was "
+"latched successfully (%s succeeded)"
+msgstr ""
+
+msgid ", but optical transceiver hardware initialization reported a warning: %s"
+msgstr ""
+
+msgid "(custom/self-calibrated table)"
+msgstr ""
+
+msgid "(Entry %s)"
+msgstr ""
+
+msgid "(exact match with the official factory baseline)"
+msgstr ""
+
+msgid ""
+"(highlighted in yellow) is the hardware latch register. It is skipped during "
+"sequential writes, then written with"
+msgstr ""
+
+msgid "(must be exactly %s bytes)"
+msgstr ""
+
+msgid "(Shortcut: %s)"
+msgstr ""
+
+msgid ""
+"(the first %s bytes configure registers, followed by ADC diagnostic "
+"conversion coefficients from %s)."
+msgstr ""
+
+msgid ""
+"# Enter shell commands to execute on the selected sub-gateway (Ctrl + Enter "
+"to execute)..."
+msgstr ""
+
+msgid "# Waiting for commands..."
+msgstr ""
+
+msgid "%d day ago"
+msgstr ""
+
+msgid "%d days"
+msgstr ""
+
+msgid "%d days ago"
+msgstr ""
+
+msgid "%d hour ago"
+msgstr ""
+
+msgid "%d hours"
+msgstr ""
+
+msgid "%d hours %d minutes ago"
+msgstr ""
+
+msgid "%d hours ago"
+msgstr ""
+
+msgid "%d minute ago"
+msgstr ""
+
+msgid "%d minutes"
+msgstr ""
+
+msgid "%d minutes ago"
+msgstr ""
+
+msgid "%d second ago"
+msgstr ""
+
+msgid "%d seconds"
+msgstr ""
+
+msgid "%d seconds ago"
+msgstr ""
+
+msgid "%s (%s bytes, %s)"
+msgstr ""
+
+msgid "%s bytes"
+msgstr ""
+
+msgid "1. 1MB Factory partition (highest priority)"
+msgstr ""
+
+msgid "1MB Factory partition (offset %s)"
+msgstr ""
+
+msgid "1MB Factory UBI partition (offset %s)"
+msgstr ""
+
+msgid "2. Firmware file path (second priority)"
+msgstr ""
+
+msgid "A standard Semtech UX3326 BOSA calibration file must be exactly"
+msgstr ""
+
 msgid "About"
 msgstr ""
 
 msgid "About FTTR"
 msgstr ""
 
+msgid "Account data is unavailable."
+msgstr ""
+
+msgid "ACS bootstrap"
+msgstr ""
+
 msgid "ACS state file"
+msgstr ""
+
+msgid "ACS URL"
+msgstr ""
+
+msgid "Active data size"
+msgstr ""
+
+msgid "Active data size: %s bytes"
+msgstr ""
+
+msgid "Active data source:"
+msgstr ""
+
+msgid "ADC diagnostic polynomial conversion coefficients (offsets %s)"
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "Advanced diagnostics / Raw configuration (JSON)"
+msgstr ""
+
+msgid "All devices"
 msgstr ""
 
 msgid ""
@@ -25,13 +159,51 @@ msgid ""
 "existing listed management VLAN; the first VLAN is the fallback."
 msgstr ""
 
+msgid ""
+"All parameters were parsed successfully and are previewed below. Verify "
+"them, then click the button below to upload to"
+msgstr ""
+
 msgid "Allow unsupported ONUs as bridge"
+msgstr ""
+
+msgid "Alternate temperature parameters (Alt Temp)"
+msgstr ""
+
+msgid "and the firmware file"
+msgstr ""
+
+msgid "Another operation is in progress."
+msgstr ""
+
+msgid "Applied"
+msgstr ""
+
+msgid "Applied version"
+msgstr ""
+
+msgid "Apply differences"
+msgstr ""
+
+msgid "Apply management configuration"
+msgstr ""
+
+msgid "Apply to hardware immediately"
+msgstr ""
+
+msgid "Are you sure you want to reset the synchronization state for %s?"
+msgstr ""
+
+msgid "Attempts"
 msgstr ""
 
 msgid "Attention required"
 msgstr ""
 
 msgid "Attribute"
+msgstr ""
+
+msgid "Authorize and apply management settings"
 msgstr ""
 
 msgid "Automatic"
@@ -48,6 +220,9 @@ msgid ""
 "unrecognized or third-party GPON ONUs in O5 state."
 msgstr ""
 
+msgid "Awaiting Apply"
+msgstr ""
+
 msgid "Backend"
 msgstr ""
 
@@ -57,16 +232,40 @@ msgstr ""
 msgid "Basic"
 msgstr ""
 
+msgid "Basic %s bytes (ADC coefficients missing)"
+msgstr ""
+
 msgid "Basic display only; raw records are preserved."
 msgstr ""
 
 msgid "Basic information"
 msgstr ""
 
+msgid "Bias current"
+msgstr ""
+
+msgid "Bias current (Bias Current)"
+msgstr ""
+
+msgid "Binary member; text is unavailable."
+msgstr ""
+
 msgid "Binding"
 msgstr ""
 
+msgid "Bindings"
+msgstr ""
+
 msgid "Blocked"
+msgstr ""
+
+msgid "BOSA downstream optical calibration management (UX3326)"
+msgstr ""
+
+msgid "BOSA hardware register initialization table (first %s bytes, %s)"
+msgstr ""
+
+msgid "Built-in static defaults (fallback)"
 msgstr ""
 
 msgid "Business"
@@ -77,19 +276,57 @@ msgid ""
 "destructive and should only be selected deliberately."
 msgstr ""
 
+msgid "Cache"
+msgstr ""
+
 msgid "Cached identity"
+msgstr ""
+
+msgid "Calibration data saved successfully!"
+msgstr ""
+
+msgid "Calibration data source detection overview"
+msgstr ""
+
+msgid "calibration file extracted from the factory backup to"
+msgstr ""
+
+msgid "CDR lock"
 msgstr ""
 
 msgid "Check"
 msgstr ""
 
+msgid "Check management differences (read-only)"
+msgstr ""
+
+msgid "Clear backoff delays and retry safe difference synchronization"
+msgstr ""
+
+msgid ""
+"Clear old tasks and managed-object records after a device factory reset. The "
+"next preview or apply reads the device again."
+msgstr ""
+
+msgid "Clear output"
+msgstr ""
+
+msgid "Click to select or drag a %s file here"
+msgstr ""
+
 msgid "Close"
+msgstr ""
+
+msgid "Collecting identity"
 msgstr ""
 
 msgid "Collecting VLAN tables"
 msgstr ""
 
 msgid "Collecting VLAN tables queries extended filter tables and takes longer."
+msgstr ""
+
+msgid "Command in progress"
 msgstr ""
 
 msgid ""
@@ -112,6 +349,15 @@ msgstr ""
 msgid "Configuration diagnostics"
 msgstr ""
 
+msgid "Configuration item"
+msgstr ""
+
+msgid "Configuring"
+msgstr ""
+
+msgid "Configuring BOSA optical transceiver hardware..."
+msgstr ""
+
 msgid "Conflicting values; inspect observations"
 msgstr ""
 
@@ -121,10 +367,61 @@ msgstr ""
 msgid "Connected device"
 msgstr ""
 
+msgid "Controller"
+msgstr ""
+
+msgid "Controller & optical transceiver"
+msgstr ""
+
+msgid "Controller hardware"
+msgstr ""
+
+msgid "Conversion formula"
+msgstr ""
+
+msgid "Copied to clipboard"
+msgstr ""
+
+msgid "Copy member text"
+msgstr ""
+
+msgid "Copy output"
+msgstr ""
+
 msgid "Core components and open-source repositories powering the FTTR system."
 msgstr ""
 
+msgid "CPE Connection Request password"
+msgstr ""
+
+msgid "CPE Connection Request port"
+msgstr ""
+
+msgid "CPE Connection Request username"
+msgstr ""
+
+msgid "Current configuration"
+msgstr ""
+
 msgid "Current registration"
+msgstr ""
+
+msgid "Currently active path"
+msgstr ""
+
+msgid "Currently active system calibration data"
+msgstr ""
+
+msgid "Currently active system calibration parameters (%s)"
+msgstr ""
+
+msgid "Currently in use"
+msgstr ""
+
+msgid "Currently running in fallback mode with built-in static defaults"
+msgstr ""
+
+msgid "Custom calibration data"
 msgstr ""
 
 msgid "CWMP"
@@ -148,6 +445,9 @@ msgstr ""
 msgid "Data interface"
 msgstr ""
 
+msgid "Data size"
+msgstr ""
+
 msgid "Decoded"
 msgstr ""
 
@@ -160,6 +460,18 @@ msgstr ""
 msgid "Delete the WLAN object"
 msgstr ""
 
+msgid "Deleted"
+msgstr ""
+
+msgid "Denominator D"
+msgstr ""
+
+msgid "Desired version"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
 msgid "Device"
 msgstr ""
 
@@ -169,6 +481,12 @@ msgstr ""
 msgid "Device already configured."
 msgstr ""
 
+msgid "Device and offset"
+msgstr ""
+
+msgid "Device binding changed; this result is stale."
+msgstr ""
+
 msgid "Device identification"
 msgstr ""
 
@@ -176,6 +494,12 @@ msgid "Device is offline; reopen details after registration."
 msgstr ""
 
 msgid "Device online"
+msgstr ""
+
+msgid "Device: %s, length %s bytes"
+msgstr ""
+
+msgid "Device: %s, length %s bytes (currently in use by the system)"
 msgstr ""
 
 msgid "Devices"
@@ -190,10 +514,22 @@ msgstr ""
 msgid "DHCP lease time"
 msgstr ""
 
+msgid "DHCP service"
+msgstr ""
+
 msgid "DHCP start offset"
 msgstr ""
 
+msgid "Diagnostic measurement channel"
+msgstr ""
+
+msgid "Disable"
+msgstr ""
+
 msgid "Disable (keep the WLAN object)"
+msgstr ""
+
+msgid "Disabled"
 msgstr ""
 
 msgid ""
@@ -210,7 +546,21 @@ msgstr ""
 msgid "Disabling read"
 msgstr ""
 
+msgid "Disconnected"
+msgstr ""
+
 msgid "Discovering"
+msgstr ""
+
+msgid "Dispatching to %s (timeout: %s s)..."
+msgstr ""
+
+msgid ""
+"does not exist. The optical module is currently using parameters embedded in "
+"the source at compile time."
+msgstr ""
+
+msgid "Downlink PHY rate"
 msgstr ""
 
 msgid "Download JSON"
@@ -219,7 +569,21 @@ msgstr ""
 msgid "Downloading MIB snapshot"
 msgstr ""
 
+msgid ""
+"Downstream optical calibration parameters extracted from the 1MB Factory "
+"partition (offset %s)"
+msgstr ""
+
+msgid "Downstream ports"
+msgstr ""
+
 msgid "Duplicate VLAN IDs are not allowed."
+msgstr ""
+
+msgid "Duration"
+msgstr ""
+
+msgid "Enable"
 msgstr ""
 
 msgid "Enable ACS"
@@ -234,9 +598,18 @@ msgstr ""
 msgid "Enable provisioning"
 msgstr ""
 
+msgid "Enabled"
+msgstr ""
+
 msgid ""
 "Enter a complete LANDevice.1 interface reference, without trailing dot or "
 "comma."
+msgstr ""
+
+msgid "Enter a non-empty password."
+msgstr ""
+
+msgid "Enter a non-empty UTF-8 script up to 64 KiB without NUL characters."
 msgstr ""
 
 msgid "Enter a VLAN ID in 1–4094."
@@ -245,16 +618,56 @@ msgstr ""
 msgid "Enter at least one VLAN ID in 1–4094."
 msgstr ""
 
+msgid ""
+"Enter this CPE's existing Connection Request credentials, not the ACS "
+"inbound HTTP Basic credentials. No custom credential defaults are assumed."
+msgstr ""
+
 msgid "Entity"
 msgstr ""
 
 msgid "Equalization delay (EQD)"
 msgstr ""
 
+msgid "Equipment ID"
+msgstr ""
+
 msgid "Error"
 msgstr ""
 
+msgid "Error reading file: %s"
+msgstr ""
+
 msgid "EtherType code"
+msgstr ""
+
+msgid "Evidence freshness"
+msgstr ""
+
+msgid "Exact match (%s)"
+msgstr ""
+
+msgid "Execute on selected HL202"
+msgstr ""
+
+msgid "Execution outcome is unknown. Do not automatically retry."
+msgstr ""
+
+msgid "Execution outcome is unknown. Refresh users before retrying."
+msgstr ""
+
+msgid ""
+"Execution outcome is unknown. Timeout does not cancel the remote command; do "
+"not automatically retry."
+msgstr ""
+
+msgid "Exists (%s bytes)"
+msgstr ""
+
+msgid "Exit code"
+msgstr ""
+
+msgid "Factory baseline consistency"
 msgstr ""
 
 msgid ""
@@ -268,12 +681,48 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
+msgid "Failed to parse calibration file"
+msgstr ""
+
+msgid "Failed to save calibration file"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "File does not exist"
+msgstr ""
+
+msgid "File size validation failed"
+msgstr ""
+
+msgid "File validation succeeded: %s (%s bytes)"
+msgstr ""
+
+msgid "File written to"
+msgstr ""
+
 msgid "Firmware"
+msgstr ""
+
+msgid "Firmware path"
+msgstr ""
+
+msgid "Firmware version"
 msgstr ""
 
 msgid ""
 "For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
 "TR069 is reserved for OMCI."
+msgstr ""
+
+msgid "FPGA identifier"
+msgstr ""
+
+msgid "FPGA status"
+msgstr ""
+
+msgid "Fresh discovery"
 msgstr ""
 
 msgid "Frontend"
@@ -291,6 +740,15 @@ msgstr ""
 msgid ""
 "FTTR controller daemon, OMCI & CWMP TR-069 provisioning backend service, and "
 "fttrctl CLI utility."
+msgstr ""
+
+msgid "FTTR hardware status"
+msgstr ""
+
+msgid "FTTR overview"
+msgstr ""
+
+msgid "FTTR synchronization"
 msgstr ""
 
 msgid "G.988 encoded field values"
@@ -317,13 +775,22 @@ msgstr ""
 msgid "Groups"
 msgstr ""
 
+msgid "Hardware specifications and firmware images"
+msgstr ""
+
 msgid "Hardware status"
 msgstr ""
 
 msgid "Hardware version"
 msgstr ""
 
+msgid "HL202 device"
+msgstr ""
+
 msgid "HL202 management"
+msgstr ""
+
+msgid "HL202 sub-gateway management"
 msgstr ""
 
 msgid "HM2004-DU Factory Tool"
@@ -341,10 +808,18 @@ msgstr ""
 msgid "Identity age"
 msgstr ""
 
+msgid ""
+"Identity information is read-only and limited to fields provided by fttrctl "
+"status."
+msgstr ""
+
 msgid "Identity read errors"
 msgstr ""
 
 msgid "Identity source"
+msgstr ""
+
+msgid "Inactive"
 msgstr ""
 
 msgid "Incomplete job result"
@@ -362,13 +837,35 @@ msgid ""
 "authorize writes."
 msgstr ""
 
+msgid ""
+"Independent per device; enabled by default for all adapters. Enabled: "
+"on-demand sessions with periodic Inform enabled and an interval of at most "
+"12 hours (backend default: 43200 seconds). Disabled: manually set "
+"PeriodicInformEnable to true and PeriodicInformInterval to at most 180 "
+"seconds; no interval is written automatically. Requires reachable CWMP, "
+"verified standard parameters, HTTP Digest support, a prior Inform with a "
+"ConnectionRequestURL and valid CPE credentials. Firmware support is not "
+"guaranteed. Acceptance is not proof of a session or completed RPCs."
+msgstr ""
+
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr ""
 
 msgid "Inner treatment (priority / VID / TPID-DEI)"
 msgstr ""
 
+msgid ""
+"Inspect read-only MQTT source reports and diagnostics for unbound or "
+"unselected devices."
+msgstr ""
+
+msgid "Inspect source report (read-only)"
+msgstr ""
+
 msgid "Interrupted"
+msgstr ""
+
+msgid "Interval (minutes)"
 msgstr ""
 
 msgid "Invalid job result"
@@ -381,6 +878,9 @@ msgid "Invalid MIB snapshot chunk"
 msgstr ""
 
 msgid "Invalid MIB snapshot size"
+msgstr ""
+
+msgid "Isolated TR069 management network"
 msgstr ""
 
 msgid ""
@@ -397,13 +897,40 @@ msgstr ""
 msgid "Keep current key"
 msgstr ""
 
+msgid "Kernel log"
+msgstr ""
+
 msgid "LAN / WLAN port bindings"
+msgstr ""
+
+msgid "Last good report"
 msgstr ""
 
 msgid "Last Inform"
 msgstr ""
 
+msgid "Last Inform: %s"
+msgstr ""
+
+msgid "Last received"
+msgstr ""
+
+msgid "Last telemetry"
+msgstr ""
+
+msgid "Last update / task"
+msgstr ""
+
+msgid "Latest report error"
+msgstr ""
+
 msgid "Leave unchanged"
+msgstr ""
+
+msgid "Link down"
+msgstr ""
+
+msgid "Link up"
 msgstr ""
 
 msgid "Listen port"
@@ -415,6 +942,18 @@ msgid ""
 "when adding a new device."
 msgstr ""
 
+msgid "Load"
+msgstr ""
+
+msgid "Loading devices…"
+msgstr ""
+
+msgid "Local ACS listener"
+msgstr ""
+
+msgid "Locked"
+msgstr ""
+
 msgid "LuCI FTTR App"
 msgstr ""
 
@@ -423,13 +962,43 @@ msgid ""
 "configuration, and optical calibration."
 msgstr ""
 
+msgid "MAC address"
+msgstr ""
+
+msgid ""
+"Manage calibration data for the Semtech UX3326 BOSA optical transceiver "
+"attached to the HM2004-DU Micro-OLT FPGA subsystem. Calibration data is read "
+"in priority order from"
+msgstr ""
+
+msgid "Managed objects and lifecycle intent"
+msgstr ""
+
 msgid "Management & cache"
 msgstr ""
 
 msgid "Management application mode"
 msgstr ""
 
+msgid "Management fresh"
+msgstr ""
+
+msgid "Management interface"
+msgstr ""
+
 msgid "Management IPv4 address/prefix"
+msgstr ""
+
+msgid "Management operation started; status is refreshed below."
+msgstr ""
+
+msgid "Management setup / reachability guidance"
+msgstr ""
+
+msgid "Management stale"
+msgstr ""
+
+msgid "Management VLAN"
 msgstr ""
 
 msgid "Manual"
@@ -447,13 +1016,46 @@ msgid ""
 "after Save & Apply when Configuration changed is selected."
 msgstr ""
 
+msgid "Manual synchronization"
+msgstr ""
+
+msgid "Matched"
+msgstr ""
+
+msgid "Memory"
+msgstr ""
+
+msgid "Method"
+msgstr ""
+
 msgid "MIB query timed out; retry."
 msgstr ""
 
 msgid "MIB snapshot cannot be serialized"
 msgstr ""
 
+msgid "Mode"
+msgstr ""
+
 msgid "Model"
+msgstr ""
+
+msgid "Module model"
+msgstr ""
+
+msgid "MQTT ready"
+msgstr ""
+
+msgid "MQTT report"
+msgstr ""
+
+msgid "MQTT source identity"
+msgstr ""
+
+msgid "MQTT target"
+msgstr ""
+
+msgid "MQTT unavailable"
 msgstr ""
 
 msgid "Name"
@@ -465,19 +1067,58 @@ msgstr ""
 msgid "Networks"
 msgstr ""
 
+msgid "New calibration tables are always saved to"
+msgstr ""
+
 msgid "New device"
 msgstr ""
 
 msgid "New network"
 msgstr ""
 
+msgid "New password"
+msgstr ""
+
 msgid "New template"
+msgstr ""
+
+msgid "Next retry"
+msgstr ""
+
+msgid "Next self-healing retry in %d seconds"
+msgstr ""
+
+msgid "No desired items configured."
+msgstr ""
+
+msgid "No device detected"
 msgstr ""
 
 msgid "No entities recorded for this ME class."
 msgstr ""
 
+msgid "No HL202 optical devices were found."
+msgstr ""
+
 msgid "No matching ME classes"
+msgstr ""
+
+msgid "No MQTT report has been parsed yet."
+msgstr ""
+
+msgid "No output returned."
+msgstr ""
+
+msgid "No registered sub-gateways."
+msgstr ""
+
+msgid "No sub-gateways are currently registered."
+msgstr ""
+
+msgid "No valid calibration data was found in the"
+msgstr ""
+
+msgid "No valid data"
 msgstr ""
 
 msgid "None"
@@ -492,7 +1133,22 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
+msgid "Not factory default (self-calibrated)"
+msgstr ""
+
+msgid "Not ready"
+msgstr ""
+
 msgid "Not started"
+msgstr ""
+
+msgid "Not Started"
+msgstr ""
+
+msgid "Note: Register"
+msgstr ""
+
+msgid "Numerator N"
 msgstr ""
 
 msgid "O1 Initial"
@@ -516,10 +1172,16 @@ msgstr ""
 msgid "O7 Emergency Stop"
 msgstr ""
 
+msgid "Official factory baseline match"
+msgstr ""
+
 msgid "Offline"
 msgstr ""
 
 msgid "Offline or stale"
+msgstr ""
+
+msgid "Offset O"
 msgstr ""
 
 msgid "OMCC version"
@@ -528,7 +1190,13 @@ msgstr ""
 msgid "Online"
 msgstr ""
 
+msgid "ONU"
+msgstr ""
+
 msgid "ONU ID"
+msgstr ""
+
+msgid "Open optical status and ONU/MIB details"
 msgstr ""
 
 msgid "Open Synchronization"
@@ -546,13 +1214,37 @@ msgstr ""
 msgid "OpenWrt FTTR Daemon"
 msgstr ""
 
+msgid "Operation"
+msgstr ""
+
 msgid "Optical & link status"
 msgstr ""
 
 msgid "Optical calibration"
 msgstr ""
 
+msgid "Optical module"
+msgstr ""
+
+msgid "Optical offline"
+msgstr ""
+
+msgid "Optical online"
+msgstr ""
+
+msgid "Optical physical layer and link parameters"
+msgstr ""
+
+msgid "Optical RX power"
+msgstr ""
+
 msgid "Optical serial"
+msgstr ""
+
+msgid "Optical transceiver"
+msgstr ""
+
+msgid "Optical TX power"
 msgstr ""
 
 msgid "Outer filter (priority / VID / TPID-DEI)"
@@ -561,16 +1253,36 @@ msgstr ""
 msgid "Outer treatment (priority / VID / TPID-DEI)"
 msgstr ""
 
+msgid "Output was truncated at the byte limit."
+msgstr ""
+
+msgid "Parameter preview for upload: %s"
+msgstr ""
+
 msgid "Partial"
 msgstr ""
 
 msgid "Password"
 msgstr ""
 
+msgid "Password accepted and saved; web login permission is not verified."
+msgstr ""
+
 msgid "Password must be 8–63 bytes."
 msgstr ""
 
+msgid ""
+"Password writes are accepted and saved by the device; this does not prove "
+"web login permission. Existing permission masks are preserved."
+msgstr ""
+
 msgid "Pending"
+msgstr ""
+
+msgid "Pending apply"
+msgstr ""
+
+msgid "Pending configuration changes"
 msgstr ""
 
 msgid "Periodic"
@@ -579,10 +1291,16 @@ msgstr ""
 msgid "Periodic synchronization interval (minutes)"
 msgstr ""
 
+msgid "Physical rates and diagnostics"
+msgstr ""
+
 msgid "PONWrt Firmware"
 msgstr ""
 
 msgid "Port bindings"
+msgstr ""
+
+msgid "Port status"
 msgstr ""
 
 msgid "Ports"
@@ -591,10 +1309,22 @@ msgstr ""
 msgid "Preparing JSON download…"
 msgstr ""
 
+msgid "Preview differences (read-only)"
+msgstr ""
+
+msgid "Previous configuration"
+msgstr ""
+
 msgid "Previous snapshot retained"
 msgstr ""
 
+msgid "Primary temperature parameters (Temp)"
+msgstr ""
+
 msgid "Priority"
+msgstr ""
+
+msgid "Processes"
 msgstr ""
 
 msgid "Program start"
@@ -603,10 +1333,33 @@ msgstr ""
 msgid "Provision management VLAN and ACS via OMCI"
 msgstr ""
 
+msgid "Provisioning"
+msgstr ""
+
+msgid "Provisioning status unavailable"
+msgstr ""
+
+msgid "Quick diagnostic commands"
+msgstr ""
+
+msgid "Raw"
+msgstr ""
+
+msgid "Raw command console"
+msgstr ""
+
 msgid "Raw data / observations"
 msgstr ""
 
 msgid "Raw JSON"
+msgstr ""
+
+msgid "Raw source observations (JSON)"
+msgstr ""
+
+msgid ""
+"Read current device parameters and auto-verify matching settings without "
+"writing to device"
 msgstr ""
 
 msgid "Read MIB"
@@ -616,6 +1369,15 @@ msgid "Read MIB and VLAN tables"
 msgstr ""
 
 msgid "Read MIB on demand. Results are a snapshot, not live polling."
+msgstr ""
+
+msgid "Read MQTT report"
+msgstr ""
+
+msgid "Read users"
+msgstr ""
+
+msgid "Read-only MQTT source"
 msgstr ""
 
 msgid "Reading"
@@ -630,7 +1392,37 @@ msgstr ""
 msgid "Reading OMCI MIB records…"
 msgstr ""
 
+msgid "Ready"
+msgstr ""
+
+msgid "Ready (overridden by Factory)"
+msgstr ""
+
+msgid "Reason / desired changes"
+msgstr ""
+
+msgid "Receive dropped"
+msgstr ""
+
+msgid "Receive errors"
+msgstr ""
+
 msgid "Receive optical power"
+msgstr ""
+
+msgid "Received bytes"
+msgstr ""
+
+msgid "Received multicast"
+msgstr ""
+
+msgid "Received packets"
+msgstr ""
+
+msgid "Reconcile (read-only)"
+msgstr ""
+
+msgid "Reconcile Required"
 msgstr ""
 
 msgid "Records"
@@ -642,6 +1434,18 @@ msgstr ""
 msgid "Recovering"
 msgstr ""
 
+msgid "Refresh devices"
+msgstr ""
+
+msgid "Refresh users to read the current state."
+msgstr ""
+
+msgid "Register %s: %s (%s)"
+msgstr ""
+
+msgid "Register offset"
+msgstr ""
+
 msgid "Registration"
 msgstr ""
 
@@ -651,7 +1455,27 @@ msgstr ""
 msgid "Reload"
 msgstr ""
 
+msgid "Remote shell command"
+msgstr ""
+
 msgid "Remove tags"
+msgstr ""
+
+msgid "Request failed"
+msgstr ""
+
+msgid "Request ID"
+msgstr ""
+
+msgid ""
+"Required after management drift or service restart; verifies the child ACS "
+"settings before business synchronization."
+msgstr ""
+
+msgid "Reset pending"
+msgstr ""
+
+msgid "Reset synchronization state"
 msgstr ""
 
 msgid "Restart"
@@ -662,7 +1486,28 @@ msgid ""
 "cancelled."
 msgstr ""
 
+msgid "Retrying"
+msgstr ""
+
+msgid "Retrying identity"
+msgstr ""
+
+msgid "Revision"
+msgstr ""
+
 msgid "rows"
+msgstr ""
+
+msgid "Running"
+msgstr ""
+
+msgid "RX wavelength"
+msgstr ""
+
+msgid ""
+"Saved custom values are retained when Connection Requests are disabled or "
+"backend defaults are selected. Leave these fields unchanged to preserve "
+"their saved values."
 msgstr ""
 
 msgid ""
@@ -671,19 +1516,63 @@ msgid ""
 "differences is read-only."
 msgstr ""
 
+msgid ""
+"Saving in manual mode does not create interfaces, change firewall rules or "
+"configure child devices. Apply explicitly to authorize the current "
+"management configuration."
+msgstr ""
+
+msgid "Schema"
+msgstr ""
+
 msgid "Search ME name or Class ID…"
 msgstr ""
 
 msgid "Security"
 msgstr ""
 
+msgid "Segment threshold: %s °C"
+msgstr ""
+
+msgid "Select a device to inspect reports and run operations."
+msgstr ""
+
 msgid "Select device."
+msgstr ""
+
+msgid "Selected file:"
+msgstr ""
+
+msgid "Self-heal / retry"
+msgstr ""
+
+msgid "Service IP / Netmask"
+msgstr ""
+
+msgid "Set password"
+msgstr ""
+
+msgid "Settings verified"
 msgstr ""
 
 msgid "Settling"
 msgstr ""
 
+msgid "SHA-256 checksum"
+msgstr ""
+
+msgid ""
+"Shell executes on the selected ONU. Timeout does not cancel execution. Raw "
+"output can contain secrets."
+msgstr ""
+
+msgid "Size:"
+msgstr ""
+
 msgid "Software images"
+msgstr ""
+
+msgid "Source member"
 msgstr ""
 
 msgid "SSID"
@@ -695,13 +1584,28 @@ msgstr ""
 msgid "SSIDs"
 msgstr ""
 
+msgid "Stale"
+msgstr ""
+
 msgid "Stale management"
 msgstr ""
 
 msgid "Stale revision"
 msgstr ""
 
+msgid "Standard %s bytes"
+msgstr ""
+
+msgid "Started"
+msgstr ""
+
+msgid "Started: %s"
+msgstr ""
+
 msgid "Starting OMCI MIB read…"
+msgstr ""
+
+msgid "State"
 msgstr ""
 
 msgid "Status"
@@ -710,10 +1614,54 @@ msgstr ""
 msgid "Status refresh failed: %s"
 msgstr ""
 
+msgid "Sub-gateway %s — %s"
+msgstr ""
+
+msgid "Sub-gateways"
+msgstr ""
+
+msgid "Sub-gateways & optical links"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "Supply voltage (Vcc)"
+msgstr ""
+
+msgid "Supported file:"
+msgstr ""
+
+msgid "Supports Connection Request"
+msgstr ""
+
 msgid "Synchronization"
 msgstr ""
 
 msgid "Synchronization mode"
+msgstr ""
+
+msgid ""
+"Synchronization state reset for %s. Preview differences to read the current "
+"device state."
+msgstr ""
+
+msgid "Synchronized"
+msgstr ""
+
+msgid "Syncing"
+msgstr ""
+
+msgid "Target"
+msgstr ""
+
+msgid "Target storage path"
+msgstr ""
+
+msgid "Task"
+msgstr ""
+
+msgid "Temperature"
 msgstr ""
 
 msgid "Template"
@@ -723,6 +1671,12 @@ msgid "Template is in use."
 msgstr ""
 
 msgid "Templates"
+msgstr ""
+
+msgid "Text omitted at the shared byte limit."
+msgstr ""
+
+msgid "The file must be exactly %s bytes."
 msgstr ""
 
 msgid ""
@@ -744,13 +1698,51 @@ msgid ""
 "snapshot."
 msgstr ""
 
+msgid ""
+"This optical device has no fresh, unambiguous MQTT binding. Commands are "
+"unavailable."
+msgstr ""
+
+msgid "Timeout"
+msgstr ""
+
+msgid "Timeout in seconds"
+msgstr ""
+
+msgid "Timeout must be 1–300 seconds."
+msgstr ""
+
+msgid "to commit all changes."
+msgstr ""
+
+msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
+msgstr ""
+
 msgid "Too many result chunks"
 msgstr ""
 
 msgid "TR069 VLANs"
 msgstr ""
 
+msgid "Transmit dropped"
+msgstr ""
+
+msgid "Transmit errors"
+msgstr ""
+
 msgid "Transmit optical power"
+msgstr ""
+
+msgid "Transmit optical power (Tx Power)"
+msgstr ""
+
+msgid "Transmitted bytes"
+msgstr ""
+
+msgid "Transmitted packets"
+msgstr ""
+
+msgid "Triggers"
 msgstr ""
 
 msgid ""
@@ -761,7 +1753,24 @@ msgstr ""
 msgid "Tutorial Coming Soon"
 msgstr ""
 
+msgid "TX power"
+msgstr ""
+
+msgid "TX wavelength"
+msgstr ""
+
 msgid "Type"
+msgstr ""
+
+msgid "Typical raw simulated value"
+msgstr ""
+
+msgid ""
+"Unable to parse the calibration file structure. Please check the file's "
+"integrity."
+msgstr ""
+
+msgid "Unavailable"
 msgstr ""
 
 msgid "Unconfigured WLANs"
@@ -770,16 +1779,40 @@ msgstr ""
 msgid "Unexpected MIB response"
 msgstr ""
 
+msgid "Unknown"
+msgstr ""
+
 msgid "Unknown class"
 msgstr ""
 
+msgid "Unknown error"
+msgstr ""
+
 msgid "Unknown model"
+msgstr ""
+
+msgid "Unlocked"
+msgstr ""
+
+msgid "Unsupported"
 msgstr ""
 
 msgid "Unverified"
 msgstr ""
 
 msgid "Unverified candidate"
+msgstr ""
+
+msgid "Uplink PHY rate"
+msgstr ""
+
+msgid "Upload a new UX3326 calibration file"
+msgstr ""
+
+msgid "Upload and save to %s"
+msgstr ""
+
+msgid "Upload blocked."
 msgstr ""
 
 msgid "Upload complete"
@@ -791,10 +1824,40 @@ msgstr ""
 msgid "Upload incomplete"
 msgstr ""
 
+msgid "Upload write failed"
+msgstr ""
+
+msgid "Uploading to %s..."
+msgstr ""
+
 msgid "Uptime"
 msgstr ""
 
+msgid "Usage status"
+msgstr ""
+
 msgid "Use 0 to disable, or 1–1440 minutes."
+msgstr ""
+
+msgid "Use alternate parameters when the calculated temperature is ≤ %s °C"
+msgstr ""
+
+msgid "Use backend Connection Request defaults"
+msgstr ""
+
+msgid "Use the form below to upload the %s-byte"
+msgstr ""
+
+msgid "User management"
+msgstr ""
+
+msgid ""
+"Uses a backend-reserved profile; factory credentials are not yet verified. "
+"Disable to enter this CPE's existing credentials and port. Saved custom "
+"values are retained while hidden."
+msgstr ""
+
+msgid "Valid data (%s bytes)"
 msgstr ""
 
 msgid "Value"
@@ -809,6 +1872,9 @@ msgstr ""
 msgid "Verifying"
 msgstr ""
 
+msgid "View OMCI / MIB details"
+msgstr ""
+
 msgid "VLAN"
 msgstr ""
 
@@ -818,7 +1884,13 @@ msgstr ""
 msgid "VLAN tables not collected"
 msgstr ""
 
+msgid "Voltage"
+msgstr ""
+
 msgid "Waiting"
+msgstr ""
+
+msgid "Waiting for device result…"
 msgstr ""
 
 msgid "Waiting Inform"
@@ -827,7 +1899,19 @@ msgstr ""
 msgid "Waiting management"
 msgstr ""
 
+msgid "Waiting Management"
+msgstr ""
+
 msgid "Waiting task"
+msgstr ""
+
+msgid "Waiting Task"
+msgstr ""
+
+msgid "WAN / WLAN lifecycle results"
+msgstr ""
+
+msgid "WAN pending"
 msgstr ""
 
 msgid "WAN reconciling"
@@ -842,7 +1926,29 @@ msgstr ""
 msgid "WAN verifying"
 msgstr ""
 
+msgid "Wi-Fi cleanup policy"
+msgstr ""
+
 msgid "Wi-Fi reconciling"
+msgstr ""
+
+msgid "Wi-Fi stage"
+msgstr ""
+
+msgid "Wi-Fi sync"
+msgstr ""
+
+msgid ""
+"with automatic fallback to built-in static defaults if neither source has "
+"valid data."
+msgstr ""
+
+msgid ""
+"Write %s registers to the BOSA hardware and commit the latch immediately "
+"after saving (%s)"
+msgstr ""
+
+msgid "Write settings and execution"
 msgstr ""
 
 msgid "Writing"

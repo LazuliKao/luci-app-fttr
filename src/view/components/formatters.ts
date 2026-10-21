@@ -1,10 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 
-function tr(key: string): string {
-	const translated = _(key);
-	return translated || key;
-}
-
 export const text = (value: unknown): string =>
 	value === null || value === undefined || value === "" ? "—" : String(value);
 
@@ -41,18 +36,18 @@ export function formatAge(seconds: number | null | undefined): string | null {
 	if (seconds == null || !Number.isFinite(seconds) || seconds < 0) return null;
 	const sec = Math.floor(seconds);
 	if (sec < 60) {
-		return tr(sec === 1 ? "%d second ago" : "%d seconds ago").replace("%d", String(sec));
+		return (sec === 1 ? _("%d second ago") : _("%d seconds ago")).replace("%d", String(sec));
 	}
 	const mins = Math.floor(sec / 60);
 	if (mins < 60) {
-		return tr(mins === 1 ? "%d minute ago" : "%d minutes ago").replace("%d", String(mins));
+		return (mins === 1 ? _("%d minute ago") : _("%d minutes ago")).replace("%d", String(mins));
 	}
 	const hours = Math.floor(sec / 3600);
 	if (hours < 24) {
-		return tr(hours === 1 ? "%d hour ago" : "%d hours ago").replace("%d", String(hours));
+		return (hours === 1 ? _("%d hour ago") : _("%d hours ago")).replace("%d", String(hours));
 	}
 	const days = Math.floor(sec / 86400);
-	return tr(days === 1 ? "%d day ago" : "%d days ago").replace("%d", String(days));
+	return (days === 1 ? _("%d day ago") : _("%d days ago")).replace("%d", String(days));
 }
 
 /**
@@ -88,15 +83,15 @@ export function formatBytes(value: number | undefined): string {
  */
 export function formatPackets(value: number | undefined): string {
 	if (value === undefined || !Number.isFinite(value) || value < 0) return "—";
-	if (value < 1000) return `${value} ${tr("Received packets").includes("包") ? "包" : "Pkts."}`;
-	return `${(value / 1000).toFixed(2)} K${tr("Received packets").includes("包") ? "包" : "Pkts."}`;
+	if (value < 1000) return `${value} Pkts.`;
+	return `${(value / 1000).toFixed(2)} KPkts.`;
 }
 
 /**
  * Format link speed in MbE or GbE.
  */
 export function formatLinkSpeed(speed: number | undefined): string {
-	if (speed === undefined || !Number.isFinite(speed) || speed <= 0) return tr("Unknown");
+	if (speed === undefined || !Number.isFinite(speed) || speed <= 0) return _("Unknown");
 	if (speed >= 1000) return `${speed / 1000} GbE`;
 	return `${speed} MbE`;
 }

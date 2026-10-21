@@ -4,58 +4,29 @@ import { checkConfig, getSync, type SyncAction, sync } from "./contracts/api";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
 
 const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }> = {
-	ready: { label: "就绪", type: "success" },
-	verified: { label: "已校验", type: "success" },
-	online: { label: "在线", type: "success" },
-	completed: { label: "已完成", type: "success" },
-	applied: { label: "已应用", type: "success" },
-	waiting_inform: { label: "等待 Inform", type: "warning" },
-	pending: { label: "待同步", type: "warning" },
-	awaiting_apply: { label: "待应用授权", type: "warning" },
-	syncing: { label: "同步中", type: "info" },
-	discovering: { label: "探测中", type: "info" },
-	recovering: { label: "核对恢复中", type: "info" },
-	waiting_management: { label: "等待管理连接", type: "warning" },
-	waiting_task: { label: "等待任务完成", type: "info" },
-	reconcile_required: { label: "待核对差异", type: "warning" },
-	not_started: { label: "未启动", type: "neutral" },
-	disabled: { label: "已禁用", type: "neutral" },
-	enabled: { label: "已启用", type: "success" },
-	interrupted: { label: "已中断", type: "danger" },
-	failed: { label: "已失败", type: "danger" },
-	stale: { label: "已失效", type: "warning" },
-	error: { label: "异常", type: "danger" },
-	deleted: { label: "已删除", type: "neutral" },
+	ready: { label: _("Ready"), type: "success" },
+	verified: { label: _("Verified"), type: "success" },
+	online: { label: _("Online"), type: "success" },
+	completed: { label: _("Completed"), type: "success" },
+	applied: { label: _("Applied"), type: "success" },
+	waiting_inform: { label: _("Waiting Inform"), type: "warning" },
+	pending: { label: _("Pending"), type: "warning" },
+	awaiting_apply: { label: _("Awaiting Apply"), type: "warning" },
+	syncing: { label: _("Syncing"), type: "info" },
+	discovering: { label: _("Discovering"), type: "info" },
+	recovering: { label: _("Recovering"), type: "info" },
+	waiting_management: { label: _("Waiting Management"), type: "warning" },
+	waiting_task: { label: _("Waiting Task"), type: "info" },
+	reconcile_required: { label: _("Reconcile Required"), type: "warning" },
+	not_started: { label: _("Not Started"), type: "neutral" },
+	disabled: { label: _("Disabled"), type: "neutral" },
+	enabled: { label: _("Enabled"), type: "success" },
+	interrupted: { label: _("Interrupted"), type: "danger" },
+	failed: { label: _("Failed"), type: "danger" },
+	stale: { label: _("Stale"), type: "warning" },
+	error: { label: _("Error"), type: "danger" },
+	deleted: { label: _("Deleted"), type: "neutral" },
 };
-
-const STATE_EN_LABELS: Record<string, string> = {
-	waiting_inform: "Waiting Inform",
-	waiting_management: "Waiting Management",
-	waiting_task: "Waiting Task",
-	recovering: "Recovering",
-	reconcile_required: "Reconcile Required",
-	not_started: "Not Started",
-	awaiting_apply: "Awaiting Apply",
-	ready: "Ready",
-	verified: "Verified",
-	online: "Online",
-	completed: "Completed",
-	applied: "Applied",
-	syncing: "Syncing",
-	discovering: "Discovering",
-	disabled: "Disabled",
-	enabled: "Enabled",
-	interrupted: "Interrupted",
-	failed: "Failed",
-	stale: "Stale",
-	error: "Error",
-	deleted: "Deleted",
-	pending: "Pending",
-};
-
-function tr(key: string): string {
-	return _(key) || key;
-}
 
 const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
 const date = (value?: number | null): string => (value ? new Date(value * 1000).toLocaleString() : "—");
@@ -63,30 +34,24 @@ const date = (value?: number | null): string => (value ? new Date(value * 1000).
 function formatAge(seconds: number | null | undefined): string | null {
 	if (seconds == null || seconds < 0) return null;
 	if (seconds < 60) {
-		return tr(seconds === 1 ? "%d second ago" : "%d seconds ago").replace("%d", String(seconds));
+		return (seconds === 1 ? _("%d second ago") : _("%d seconds ago")).replace("%d", String(seconds));
 	}
 	const mins = Math.floor(seconds / 60);
 	if (mins < 60) {
-		return tr(mins === 1 ? "%d minute ago" : "%d minutes ago").replace("%d", String(mins));
+		return (mins === 1 ? _("%d minute ago") : _("%d minutes ago")).replace("%d", String(mins));
 	}
 	const hours = Math.floor(seconds / 3600);
 	if (hours < 24) {
-		return tr(hours === 1 ? "%d hour ago" : "%d hours ago").replace("%d", String(hours));
+		return (hours === 1 ? _("%d hour ago") : _("%d hours ago")).replace("%d", String(hours));
 	}
 	const days = Math.floor(seconds / 86400);
-	return tr(days === 1 ? "%d day ago" : "%d days ago").replace("%d", String(days));
+	return (days === 1 ? _("%d day ago") : _("%d days ago")).replace("%d", String(days));
 }
 
 function renderStateBadge(value?: string, customTitle?: string): HTMLElement {
 	if (!value) return <span class="fttr-badge fttr-badge-neutral">—</span>;
-	const isZh = /zh/i.test(
-		document.documentElement.getAttribute("lang") ||
-			(window as unknown as { L?: { env?: { lang?: string } } }).L?.env?.lang ||
-			navigator.language ||
-			"",
-	);
 	const entry = STATE_I18N[value];
-	const label = isZh ? entry?.label || value : STATE_EN_LABELS[value] || value;
+	const label = entry?.label || text(value);
 	const badgeType = entry?.type || "neutral";
 	return (
 		<span class={`fttr-badge fttr-badge-${badgeType}`} title={customTitle || value}>
@@ -100,22 +65,22 @@ function renderFreshness(currentRev?: boolean, mgmtFresh?: boolean): HTMLElement
 		<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-start">
 			{currentRev === true ? (
 				<span class="fttr-badge fttr-badge-info" style="font-size:78%">
-					{tr("Current configuration")}
+					{_("Current configuration")}
 				</span>
 			) : currentRev === false ? (
 				<span class="fttr-badge fttr-badge-neutral" style="font-size:78%">
-					{tr("Previous configuration")}
+					{_("Previous configuration")}
 				</span>
 			) : (
 				<span>—</span>
 			)}
 			{mgmtFresh === true ? (
 				<span class="fttr-badge fttr-badge-success" style="font-size:78%">
-					{tr("Management fresh")}
+					{_("Management fresh")}
 				</span>
 			) : mgmtFresh === false ? (
 				<span class="fttr-badge fttr-badge-warning" style="font-size:78%">
-					{tr("Management stale")}
+					{_("Management stale")}
 				</span>
 			) : null}
 		</div>
@@ -136,7 +101,7 @@ function formatItemType(serviceType: string, kind: string): string {
 		case "tr069":
 			return "TR-069";
 		default:
-			return kind === "port_binding" ? tr("Binding") : text(serviceType || kind);
+			return kind === "port_binding" ? _("Binding") : text(serviceType || kind);
 	}
 }
 function itemTable(items: ItemRow[]): HTMLElement {
@@ -145,12 +110,12 @@ function itemTable(items: ItemRow[]): HTMLElement {
 			<table class="table">
 				<thead>
 					<tr>
-						<th>{tr("Configuration item")}</th>
-						<th>{tr("Type")}</th>
-						<th>{tr("State")}</th>
-						<th>{tr("Evidence freshness")}</th>
-						<th>{tr("Last update / task")}</th>
-						<th>{tr("Reason / desired changes")}</th>
+						<th>{_("Configuration item")}</th>
+						<th>{_("Type")}</th>
+						<th>{_("State")}</th>
+						<th>{_("Evidence freshness")}</th>
+						<th>{_("Last update / task")}</th>
+						<th>{_("Reason / desired changes")}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -174,7 +139,7 @@ function itemTable(items: ItemRow[]): HTMLElement {
 											class="fttr-badge fttr-badge-neutral"
 											style="font-size:75%;margin-top:2px"
 										>
-											{tr("Task")} #{item.task_id}
+											{_("Task")} #{item.task_id}
 										</span>
 									) : null}
 								</td>
@@ -201,7 +166,7 @@ function itemTable(items: ItemRow[]): HTMLElement {
 					) : (
 						<tr>
 							<td colSpan={6} style="text-align:center;color:#888;padding:1em">
-								{tr("No desired items configured.")}
+								{_("No desired items configured.")}
 							</td>
 						</tr>
 					)}
@@ -220,11 +185,11 @@ function bootstrapCard(
 	return (
 		<div style="margin-top:1.2em">
 			<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.5em">
-				<h4 style="margin:0">{tr("ACS bootstrap")}</h4>
+				<h4 style="margin:0">{_("ACS bootstrap")}</h4>
 				<div style="display:flex;align-items:center;gap:6px">
 					{renderStateBadge(bootstrap.state)}
 					{bootstrap.inflight ? (
-						<span class="fttr-badge fttr-badge-info">{tr("Command in progress")}</span>
+						<span class="fttr-badge fttr-badge-info">{_("Command in progress")}</span>
 					) : null}
 				</div>
 			</div>
@@ -233,21 +198,21 @@ function bootstrapCard(
 				<div class="fttr-grid-3">
 					<div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Method")}</span>
+							<span class="fttr-kv-label">{_("Method")}</span>
 							<code>{text(bootstrap.method)}</code>
 						</div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Attempts")}</span>
+							<span class="fttr-kv-label">{_("Attempts")}</span>
 							<span>{text(bootstrap.attempts)}</span>
 						</div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Identity source")}</span>
+							<span class="fttr-kv-label">{_("Identity source")}</span>
 							<span>{text(bootstrap.binding_source)}</span>
 						</div>
 					</div>
 					<div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Management VLAN")}</span>
+							<span class="fttr-kv-label">{_("Management VLAN")}</span>
 							<span>
 								{bootstrap.desired?.vlan !== undefined
 									? `VLAN ${bootstrap.desired.vlan} (Prio ${bootstrap.desired.priority ?? 0})`
@@ -255,11 +220,11 @@ function bootstrapCard(
 							</span>
 						</div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("ACS URL")}</span>
+							<span class="fttr-kv-label">{_("ACS URL")}</span>
 							<code style="font-size:80%">{text(bootstrap.desired?.acs_url)}</code>
 						</div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Local ACS listener")}</span>
+							<span class="fttr-kv-label">{_("Local ACS listener")}</span>
 							<code style="font-size:80%">
 								{bootstrap.listener?.listen
 									? `${bootstrap.listener.listen}${bootstrap.listener.path || ""}`
@@ -269,15 +234,15 @@ function bootstrapCard(
 					</div>
 					<div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Last telemetry")}</span>
+							<span class="fttr-kv-label">{_("Last telemetry")}</span>
 							<span style="font-size:85%">{date(bootstrap.mqtt_last_seen)}</span>
 						</div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Last Inform")}</span>
+							<span class="fttr-kv-label">{_("Last Inform")}</span>
 							<span style="font-size:85%">{date(bootstrap.last_inform)}</span>
 						</div>
 						<div class="fttr-kv-row">
-							<span class="fttr-kv-label">{tr("Settings verified")}</span>
+							<span class="fttr-kv-label">{_("Settings verified")}</span>
 							<span style="font-size:85%">{date(bootstrap.settings_verified_at)}</span>
 						</div>
 					</div>
@@ -285,7 +250,7 @@ function bootstrapCard(
 
 				{bootstrap.mqtt_target ? (
 					<div style="font-size:85%;color:#666;margin-top:6px;border-top:1px dashed rgba(127,140,141,0.15);padding-top:6px">
-						<span style="color:#888">{tr("MQTT target")}:</span> <code>{bootstrap.mqtt_target}</code>
+						<span style="color:#888">{_("MQTT target")}:</span> <code>{bootstrap.mqtt_target}</code>
 					</div>
 				) : null}
 
@@ -303,10 +268,10 @@ function bootstrapCard(
 							disabled={managementApplyDisabled}
 							onclick={applyManagement}
 						>
-							{tr("Authorize and apply management settings")}
+							{_("Authorize and apply management settings")}
 						</button>{" "}
 						<span style="font-size:85%;color:#666">
-							{tr(
+							{_(
 								"Required after management drift or service restart; verifies the child ACS settings before business synchronization.",
 							)}
 						</span>
@@ -331,7 +296,7 @@ function bootstrapCard(
 			{bootstrap.manual_steps?.length ? (
 				<details style="margin-top:8px">
 					<summary style="cursor:pointer;user-select:none;font-weight:600">
-						{tr("Management setup / reachability guidance")}
+						{_("Management setup / reachability guidance")}
 					</summary>
 					<div style="padding:6px 0">
 						{bootstrap.manual_steps.map((step, index) => (
@@ -373,7 +338,7 @@ function deviceCard(
 	const confirmReset = () => {
 		const label = device.name || device.optical_sn;
 		if (
-			window.confirm(tr("Are you sure you want to reset the synchronization state for %s?").replace("%s", label))
+			window.confirm(_("Are you sure you want to reset the synchronization state for %s?").replace("%s", label))
 		) {
 			reset(device);
 		}
@@ -389,12 +354,12 @@ function deviceCard(
 					</h3>
 					<div class="fttr-card-meta-tags">
 						{device.group_name ? (
-							<span class="fttr-badge fttr-badge-neutral" title={tr("Group")}>
+							<span class="fttr-badge fttr-badge-neutral" title={_("Group")}>
 								{device.group_name}
 							</span>
 						) : null}
 						{device.template_name ? (
-							<span class="fttr-badge fttr-badge-neutral" title={tr("Template")}>
+							<span class="fttr-badge fttr-badge-neutral" title={_("Template")}>
 								{device.template_name}
 							</span>
 						) : null}
@@ -414,12 +379,12 @@ function deviceCard(
 							type="button"
 							class="fttr-btn-subtle"
 							disabled={busy}
-							title={tr(
+							title={_(
 								"Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again.",
 							)}
 							onclick={confirmReset}
 						>
-							{tr("Reset synchronization state")}
+							{_("Reset synchronization state")}
 						</button>
 					</div>
 				) : null}
@@ -432,7 +397,7 @@ function deviceCard(
 						{renderStateBadge(
 							device.management?.state,
 							device.management?.last_inform
-								? `${tr("Last Inform: %s").replace("%s", date(device.management.last_inform))}${
+								? `${_("Last Inform: %s").replace("%s", date(device.management.last_inform))}${
 										device.management.age_seconds != null
 											? ` (${formatAge(device.management.age_seconds)})`
 											: ""
@@ -441,7 +406,7 @@ function deviceCard(
 						)}
 					</span>
 					<span>
-						<span class="fttr-pill-label">{tr("Synchronization")}:</span> {renderStateBadge(op.state)}
+						<span class="fttr-pill-label">{_("Synchronization")}:</span> {renderStateBadge(op.state)}
 					</span>
 					<span>
 						<span class="fttr-pill-label">Wi-Fi:</span> {renderStateBadge(device.wifi_sync)}
@@ -449,21 +414,21 @@ function deviceCard(
 				</div>
 				<div class="fttr-status-op-info">
 					<span>
-						{tr("Operation")}: <strong>{text(op.operation_id)}</strong> ({text(op.mode)})
+						{_("Operation")}: <strong>{text(op.operation_id)}</strong> ({text(op.mode)})
 					</span>
 					<span>·</span>
 					<span>
-						{tr("Started")}: {date(op.started_at)}
+						{_("Started")}: {date(op.started_at)}
 					</span>
 					<span>·</span>
 					<span>
-						{tr("Revision")}: <code>{text(op.revision)}</code>
+						{_("Revision")}: <code>{text(op.revision)}</code>
 					</span>
 					{op.attempts ? (
 						<>
 							<span>·</span>
 							<span style="color:#e67e22">
-								{tr("Attempts")}: <strong>{op.attempts}</strong>
+								{_("Attempts")}: <strong>{op.attempts}</strong>
 							</span>
 						</>
 					) : null}
@@ -471,7 +436,7 @@ function deviceCard(
 						<>
 							<span>·</span>
 							<span style="color:#d35400">
-								{tr("Next self-healing retry in %d seconds").replace(
+								{_("Next self-healing retry in %d seconds").replace(
 									"%d",
 									String(op.next_retry_at - Math.floor(Date.now() / 1000)),
 								)}
@@ -483,7 +448,7 @@ function deviceCard(
 
 			{op.reconcile_reason ? (
 				<div class="alert-message info" style="margin:8px 0;font-size:85%">
-					{tr(op.reconcile_reason)}
+					{op.reconcile_reason}
 				</div>
 			) : null}
 
@@ -491,7 +456,7 @@ function deviceCard(
 
 			{op.cwmp_contract ? (
 				<div style="margin-top:1.2em">
-					<h4 style="margin-bottom:0.5em">{tr("CWMP contract")}</h4>
+					<h4 style="margin-bottom:0.5em">{_("CWMP contract")}</h4>
 					<div class="fttr-card">
 						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
 							<div>
@@ -510,19 +475,19 @@ function deviceCard(
 								{renderStateBadge(op.cwmp_contract.capabilities?.wlan)}
 							</span>
 							<span>
-								<span style="color:#888">{tr("Bindings")}:</span>{" "}
+								<span style="color:#888">{_("Bindings")}:</span>{" "}
 								{renderStateBadge(op.cwmp_contract.capabilities?.binding)}
 							</span>
 							<span>
-								<span style="color:#888">{tr("Cache")}:</span>{" "}
+								<span style="color:#888">{_("Cache")}:</span>{" "}
 								<span class="fttr-badge fttr-badge-info" style="font-size:80%">
-									{op.cwmp_contract.cache_hit ? tr("Matched") : tr("Fresh discovery")}
+									{op.cwmp_contract.cache_hit ? _("Matched") : _("Fresh discovery")}
 								</span>
 							</span>
 						</div>
 						{op.cwmp_contract.schema ? (
 							<div style="font-size:85%;color:#666">
-								{tr("Schema")}: <code>{op.cwmp_contract.schema}</code>
+								{_("Schema")}: <code>{op.cwmp_contract.schema}</code>
 							</div>
 						) : null}
 						{op.cwmp_contract.reason ? (
@@ -536,22 +501,22 @@ function deviceCard(
 
 			{lifecycle.length ? (
 				<div style="margin-top:1.2em">
-					<h4 style="margin-bottom:0.5em">{tr("WAN / WLAN lifecycle results")}</h4>
+					<h4 style="margin-bottom:0.5em">{_("WAN / WLAN lifecycle results")}</h4>
 					{itemTable(lifecycle)}
 				</div>
 			) : null}
 
 			<details data-device={device.device} open={opened} style="margin-top:1em">
 				<summary style="cursor:pointer;user-select:none;font-weight:600">
-					{tr("Managed objects and lifecycle intent")}
+					{_("Managed objects and lifecycle intent")}
 				</summary>
 				<div style="padding:8px 0">
 					<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:90%;margin-bottom:6px">
 						<span>
-							<span style="color:#888">{tr("Wi-Fi cleanup policy")}:</span> {text(op.wifi_cleanup)}
+							<span style="color:#888">{_("Wi-Fi cleanup policy")}:</span> {text(op.wifi_cleanup)}
 						</span>
 						<span>
-							<span style="color:#888">{tr("Wi-Fi stage")}:</span> {text(op.wifi_stage)}
+							<span style="color:#888">{_("Wi-Fi stage")}:</span> {text(op.wifi_stage)}
 						</span>
 					</div>
 					<pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:85%;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;max-height:240px;overflow-y:auto">
@@ -577,7 +542,7 @@ const main = L.view.extend({
 		const result = <div class="fttr-sync-result" aria-live="polite" style="margin:10px 0" />;
 		const target = (
 			<select class="cbi-input-select">
-				<option value="all">{tr("All devices")}</option>
+				<option value="all">{_("All devices")}</option>
 				{(initial.devices ?? []).map((d) => (
 					<option value={d.device}>{d.name || d.device}</option>
 				))}
@@ -599,7 +564,7 @@ const main = L.view.extend({
 				await sync("reset_state", device.device);
 				result.replaceChildren(
 					<div class="alert-message info">
-						{tr(
+						{_(
 							"Synchronization state reset for %s. Preview differences to read the current device state.",
 						).replace("%s", device.name || device.optical_sn)}
 					</div>,
@@ -621,8 +586,8 @@ const main = L.view.extend({
 			try {
 				const reply = await sync(action, target.value);
 				const msg = action.startsWith("management_")
-					? tr("Management operation started; status is refreshed below.")
-					: tr("Started: %s").replace("%s", "operation_ids" in reply ? reply.operation_ids.join(", ") : "—");
+					? _("Management operation started; status is refreshed below.")
+					: _("Started: %s").replace("%s", "operation_ids" in reply ? reply.operation_ids.join(", ") : "—");
 				result.replaceChildren(<div class="alert-message info">{msg}</div>);
 				update(await getSync());
 			} catch (failure) {
@@ -635,51 +600,51 @@ const main = L.view.extend({
 
 		const plan = (
 			<button type="button" class="cbi-button cbi-button-action" onclick={() => run("plan")}>
-				{tr("Preview differences (read-only)")}
+				{_("Preview differences (read-only)")}
 			</button>
 		) as HTMLButtonElement;
 		const apply = (
 			<button type="button" class="cbi-button cbi-button-positive" onclick={() => run("apply")}>
-				{tr("Apply differences")}
+				{_("Apply differences")}
 			</button>
 		) as HTMLButtonElement;
 		const reconcile = (
 			<button
 				type="button"
 				class="cbi-button cbi-button-action"
-				title={tr("Read current device parameters and auto-verify matching settings without writing to device")}
+				title={_("Read current device parameters and auto-verify matching settings without writing to device")}
 				onclick={() => run("reconcile")}
 			>
-				{tr("Reconcile (read-only)")}
+				{_("Reconcile (read-only)")}
 			</button>
 		) as HTMLButtonElement;
 		const retry = (
 			<button
 				type="button"
 				class="cbi-button cbi-button-positive"
-				title={tr("Clear backoff delays and retry safe difference synchronization")}
+				title={_("Clear backoff delays and retry safe difference synchronization")}
 				onclick={() => run("retry")}
 			>
-				{tr("Self-heal / retry")}
+				{_("Self-heal / retry")}
 			</button>
 		) as HTMLButtonElement;
 		buttons.push(plan, apply, reconcile, retry);
 
 		const managementPlan = (
 			<button type="button" class="cbi-button cbi-button-action" onclick={() => run("management_plan")}>
-				{tr("Check management differences (read-only)")}
+				{_("Check management differences (read-only)")}
 			</button>
 		) as HTMLButtonElement;
 		const managementApply = (
 			<button type="button" class="cbi-button cbi-button-positive" onclick={() => run("management_apply")}>
-				{tr("Apply management configuration")}
+				{_("Apply management configuration")}
 			</button>
 		) as HTMLButtonElement;
 		buttons.push(managementPlan, managementApply);
 
 		const managementPanel = (
 			<div class="cbi-section">
-				<h3>{tr("Isolated TR069 management network")}</h3>
+				<h3>{_("Isolated TR069 management network")}</h3>
 				{managementContent}
 				<p style="margin-top:10px">
 					{managementPlan} {managementApply}
@@ -689,11 +654,11 @@ const main = L.view.extend({
 
 		const manual = (
 			<div class="cbi-section">
-				<h3>{tr("Manual synchronization")}</h3>
+				<h3>{_("Manual synchronization")}</h3>
 				<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px">
 					{/* biome-ignore lint/a11y/noLabelWithoutControl: The select node is inserted inside this label. */}
 					<label style="display:flex;align-items:center;gap:8px">
-						<span>{tr("Target")}:</span>
+						<span>{_("Target")}:</span>
 						{target}
 					</label>
 					<div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -919,7 +884,7 @@ const main = L.view.extend({
 					}
 					`}
 				</style>
-				<h2>{tr("FTTR synchronization")}</h2>
+				<h2>{_("FTTR synchronization")}</h2>
 				{heading}
 				{error}
 				{managementPanel}
@@ -937,28 +902,28 @@ const main = L.view.extend({
 					style="display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%"
 				>
 					<span>
-						<strong style="margin-right:.4em">{tr("Provisioning")}:</strong>
+						<strong style="margin-right:.4em">{_("Provisioning")}:</strong>
 						<span class={`fttr-badge ${status.enabled ? "fttr-badge-success" : "fttr-badge-neutral"}`}>
-							{status.enabled ? tr("Enabled") : tr("Disabled")}
+							{status.enabled ? _("Enabled") : _("Disabled")}
 						</span>
 					</span>
 					<span>
-						<span style="color:#888;margin-right:.3em">{tr("Mode")}:</span>
+						<span style="color:#888;margin-right:.3em">{_("Mode")}:</span>
 						<span class="fttr-badge fttr-badge-info">{text(status.mode)}</span>
 					</span>
 					<span>
-						<span style="color:#888;margin-right:.3em">{tr("Revision")}:</span>
+						<span style="color:#888;margin-right:.3em">{_("Revision")}:</span>
 						<code>{text(status.revision)}</code>
 					</span>
 					{(status.triggers ?? []).length ? (
 						<span>
-							<span style="color:#888;margin-right:.3em">{tr("Triggers")}:</span>
+							<span style="color:#888;margin-right:.3em">{_("Triggers")}:</span>
 							<code>{(status.triggers ?? []).join(", ")}</code>
 						</span>
 					) : null}
 					{status.interval_minutes ? (
 						<span>
-							<span style="color:#888;margin-right:.3em">{tr("Interval (minutes)")}:</span>
+							<span style="color:#888;margin-right:.3em">{_("Interval (minutes)")}:</span>
 							<span>{status.interval_minutes}</span>
 						</span>
 					) : null}
@@ -995,7 +960,7 @@ const main = L.view.extend({
 					...names.map((name) => (
 						<option value={name}>
 							{name === "all"
-								? tr("All devices")
+								? _("All devices")
 								: name.startsWith("group:")
 									? (status.devices ?? []).find((d) => `group:${d.group}` === name)?.group_name ||
 										name
@@ -1037,28 +1002,28 @@ const main = L.view.extend({
 				<div>
 					<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px">
 						<span>
-							<span class="fttr-pill-label">{tr("State")}:</span> {renderStateBadge(host?.state)}
+							<span class="fttr-pill-label">{_("State")}:</span> {renderStateBadge(host?.state)}
 						</span>
 						<span>
-							<span class="fttr-pill-label">{tr("Desired version")}:</span>{" "}
+							<span class="fttr-pill-label">{_("Desired version")}:</span>{" "}
 							<code>{text(host?.desired_version)}</code>
 						</span>
 						<span>
-							<span class="fttr-pill-label">{tr("Applied version")}:</span>{" "}
+							<span class="fttr-pill-label">{_("Applied version")}:</span>{" "}
 							<code>{text(host?.applied_version)}</code>
 						</span>
 						{host?.desired_version || host?.applied_version ? (
 							<span>
 								{isSync ? (
-									<span class="fttr-badge fttr-badge-success">{tr("Synchronized")}</span>
+									<span class="fttr-badge fttr-badge-success">{_("Synchronized")}</span>
 								) : (
-									<span class="fttr-badge fttr-badge-warning">{tr("Pending apply")}</span>
+									<span class="fttr-badge fttr-badge-warning">{_("Pending apply")}</span>
 								)}
 							</span>
 						) : null}
 						{host?.next_retry_at ? (
 							<span>
-								<span class="fttr-pill-label">{tr("Next retry")}:</span> {date(host.next_retry_at)}
+								<span class="fttr-pill-label">{_("Next retry")}:</span> {date(host.next_retry_at)}
 							</span>
 						) : null}
 					</div>
@@ -1066,11 +1031,11 @@ const main = L.view.extend({
 					<div class="fttr-grid-3">
 						<div class="fttr-card">
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">{tr("Management interface")}</span>
+								<span class="fttr-kv-label">{_("Management interface")}</span>
 								<strong>—</strong>
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">{tr("Management VLAN")}</span>
+								<span class="fttr-kv-label">{_("Management VLAN")}</span>
 								<span>
 									VLAN {text(configuration?.vlan.join(", "))} (Prio {text(configuration?.priority)})
 								</span>
@@ -1078,29 +1043,29 @@ const main = L.view.extend({
 						</div>
 						<div class="fttr-card">
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">{tr("Service IP / Netmask")}</span>
+								<span class="fttr-kv-label">{_("Service IP / Netmask")}</span>
 								<code>{text(configuration?.address)}</code>
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">{tr("DHCP service")}</span>
+								<span class="fttr-kv-label">{_("DHCP service")}</span>
 								<span>
 									{configuration === null ? (
 										"—"
 									) : configuration.dhcp_enabled ? (
-										<span class="fttr-badge fttr-badge-success">{tr("Enabled")}</span>
+										<span class="fttr-badge fttr-badge-success">{_("Enabled")}</span>
 									) : (
-										<span class="fttr-badge fttr-badge-neutral">{tr("Disabled")}</span>
+										<span class="fttr-badge fttr-badge-neutral">{_("Disabled")}</span>
 									)}
 								</span>
 							</div>
 						</div>
 						<div class="fttr-card">
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">{tr("ACS URL")}</span>
+								<span class="fttr-kv-label">{_("ACS URL")}</span>
 								<code style="font-size:80%">{text(configuration?.acs_url)}</code>
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">{tr("Mode")}</span>
+								<span class="fttr-kv-label">{_("Mode")}</span>
 								<span>{text(configuration?.mode)}</span>
 							</div>
 						</div>
@@ -1108,14 +1073,14 @@ const main = L.view.extend({
 
 					{planChanges.length ? (
 						<div style="margin-top:10px">
-							<h5 style="margin-bottom:4px;font-size:90%">{tr("Pending configuration changes")}</h5>
+							<h5 style="margin-bottom:4px;font-size:90%">{_("Pending configuration changes")}</h5>
 							<div class="table-wrapper">
 								<table class="table" style="font-size:85%">
 									<thead>
 										<tr>
-											<th>{tr("Operation")}</th>
-											<th>{tr("Configuration item")}</th>
-											<th>{tr("Reason / desired changes")}</th>
+											<th>{_("Operation")}</th>
+											<th>{_("Configuration item")}</th>
+											<th>{_("Reason / desired changes")}</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -1145,14 +1110,14 @@ const main = L.view.extend({
 					) : null}
 
 					<p style="font-size:85%;color:#888;margin-top:8px;margin-bottom:8px">
-						{tr(
+						{_(
 							"Saving in manual mode does not create interfaces, change firewall rules or configure child devices. Apply explicitly to authorize the current management configuration.",
 						)}
 					</p>
 
 					<details style="margin-top:6px;margin-bottom:10px">
 						<summary style="cursor:pointer;user-select:none;font-size:85%;color:#666">
-							{tr("Advanced diagnostics / Raw configuration (JSON)")}
+							{_("Advanced diagnostics / Raw configuration (JSON)")}
 						</summary>
 						<pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:80%;max-height:200px;overflow-y:auto;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px">
 							{JSON.stringify(

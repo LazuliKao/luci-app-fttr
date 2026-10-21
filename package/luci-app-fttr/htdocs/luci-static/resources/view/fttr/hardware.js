@@ -183,15 +183,15 @@ function j(e, t = 0) {
 function O(e, t) {
     return t.map((t)=>(t.path ?? (t.path = []), t.path.unshift(e), t));
 }
-function M(e) {
+function S(e) {
     return "string" == typeof e ? e : e?.message;
 }
-function S(e, t, r) {
+function M(e, t, r) {
     let n = {
         ...e,
         path: e.path ?? []
     };
-    return e.message || (n.message = M(e.inst?._zod.def?.error?.(e)) ?? M(t?.error?.(e)) ?? M(r.customError?.(e)) ?? M(r.localeError?.(e)) ?? "Invalid input"), delete n.inst, delete n.continue, t?.reportInput || delete n.input, n;
+    return e.message || (n.message = S(e.inst?._zod.def?.error?.(e)) ?? S(t?.error?.(e)) ?? S(r.customError?.(e)) ?? S(r.localeError?.(e)) ?? "Invalid input"), delete n.inst, delete n.continue, t?.reportInput || delete n.input, n;
 }
 const P = (e, t)=>{
     e.name = "$ZodError", Object.defineProperty(e, "_zod", {
@@ -217,7 +217,7 @@ const P = (e, t)=>{
     }, a);
     if (o instanceof Promise) throw new l();
     if (o.issues.length) {
-        let e = new (i?.Err ?? t)(o.issues.map((e)=>S(e, a, c())));
+        let e = new (i?.Err ?? t)(o.issues.map((e)=>M(e, a, c())));
         throw v(e, i?.callee), e;
     }
     return o.value;
@@ -231,7 +231,7 @@ const P = (e, t)=>{
         issues: []
     }, a);
     if (o instanceof Promise && (o = await o), o.issues.length) {
-        let e = new (i?.Err ?? r)(o.issues.map((e)=>S(e, a, c())));
+        let e = new (i?.Err ?? r)(o.issues.map((e)=>M(e, a, c())));
         throw v(e, i?.callee), e;
     }
     return o.value;
@@ -248,7 +248,7 @@ const P = (e, t)=>{
     if (a instanceof Promise) throw new l();
     return a.issues.length ? {
         success: !1,
-        error: new (n ?? I)(a.issues.map((e)=>S(e, i, c())))
+        error: new (n ?? I)(a.issues.map((e)=>M(e, i, c())))
     } : {
         success: !0,
         data: a.value
@@ -264,7 +264,7 @@ const P = (e, t)=>{
     }, n);
     return a instanceof Promise && (a = await a), a.issues.length ? {
         success: !1,
-        error: new i(a.issues.map((e)=>S(e, n, c())))
+        error: new i(a.issues.map((e)=>M(e, n, c())))
     } : {
         success: !0,
         data: a.value
@@ -535,7 +535,7 @@ function Y(e, t, r, n) {
         code: "invalid_union",
         input: t.value,
         inst: r,
-        errors: e.map((e)=>e.issues.map((e)=>S(e, n, c())))
+        errors: e.map((e)=>e.issues.map((e)=>M(e, n, c())))
     }), t);
 }
 const ee = s("$ZodUnion", (e, t)=>{
@@ -659,7 +659,7 @@ const ee = s("$ZodUnion", (e, t)=>{
                 "loose" === t.mode ? r.value[o] = i[o] : r.issues.push({
                     code: "invalid_key",
                     origin: "record",
-                    issues: s.issues.map((e)=>S(e, n, c())),
+                    issues: s.issues.map((e)=>M(e, n, c())),
                     input: o,
                     path: [
                         o
@@ -740,13 +740,13 @@ const eo = s("$ZodOptional", (e, t)=>{
         return n instanceof Promise ? n.then((n)=>(e.value = n.value, n.issues.length && (e.value = t.catchValue({
                 ...e,
                 error: {
-                    issues: n.issues.map((e)=>S(e, r, c()))
+                    issues: n.issues.map((e)=>M(e, r, c()))
                 },
                 input: e.value
             }), e.issues = []), e)) : (e.value = n.value, n.issues.length && (e.value = t.catchValue({
             ...e,
             error: {
-                issues: n.issues.map((e)=>S(e, r, c()))
+                issues: n.issues.map((e)=>M(e, r, c()))
             },
             input: e.value
         }), e.issues = []), e);
@@ -824,18 +824,18 @@ function eu(e) {
 const ef = s("ZodMiniNumber", (e, t)=>{
     F.init(e, t), ec.init(e, t);
 });
-function eb(e) {
+function e_(e) {
     return new ef({
         type: "number",
         checks: [],
         ...$(e)
     });
 }
-const eg = s("ZodMiniBoolean", (e, t)=>{
+const eb = s("ZodMiniBoolean", (e, t)=>{
     W.init(e, t), ec.init(e, t);
 });
-function e_(e) {
-    return new eg({
+function eg(e) {
+    return new eb({
         type: "boolean",
         ...$(e)
     });
@@ -892,11 +892,11 @@ function eO(e, t, r) {
         ...$(r)
     });
 }
-const eM = s("ZodMiniRecord", (e, t)=>{
+const eS = s("ZodMiniRecord", (e, t)=>{
     er.init(e, t), ec.init(e, t);
 });
-function eS(e, t, r) {
-    return new eM({
+function eM(e, t, r) {
+    return new eS({
         type: "record",
         keyType: e,
         valueType: t,
@@ -956,14 +956,14 @@ function eZ() {
         type: "lazy",
         getter: ()=>e$([
                 eu(),
-                eb(),
                 e_(),
+                eg(),
                 new eh({
                     type: "null",
                     ...$(void 0)
                 }),
                 ew(e),
-                eS(eu(), e)
+                eM(eu(), e)
             ])
     });
     return e;
@@ -1001,13 +1001,13 @@ eO("status", [
     }),
     ek({
         status: eN("ready"),
-        chunk: eb(),
-        chunks: eb(),
-        bytes: eb(),
+        chunk: e_(),
+        chunks: e_(),
+        bytes: e_(),
         data: eu()
     })
 ]);
-let eF = eu(), eW = eb(), eJ = e_(), eX = eC(eF), eG = eC(eW), eH = eC(eJ);
+let eF = eu(), eW = e_(), eJ = eg(), eX = eC(eF), eG = eC(eW), eH = eC(eJ);
 const eK = eP([
     "waiting",
     "wan_reconciling",
@@ -1211,8 +1211,8 @@ const e5 = eO("state", [
             binding: eF
         }))
     })),
-    wan_objects: eC(eS(eF, eZ())),
-    wan_lifecycle: eC(eS(eF, e0)),
+    wan_objects: eC(eM(eF, eZ())),
+    wan_lifecycle: eC(eM(eF, e0)),
     wan_stage: eC(eP([
         "waiting",
         "inventory",
@@ -1234,7 +1234,7 @@ const e5 = eO("state", [
         pending: eR(eF),
         pending_instance: eR(eW)
     })),
-    wifi_lifecycle: eC(eS(eF, e0)),
+    wifi_lifecycle: eC(eM(eF, e0)),
     wifi_stage: eC(eP([
         "waiting",
         "inventory",
@@ -1358,7 +1358,7 @@ e$([
         devices: eC(ev())
     })
 ]);
-let e9 = eu(), te = eb(), tt = eR(te), tr = eS(e9, ek({
+let e9 = eu(), te = e_(), tt = eR(te), tr = eM(e9, ek({
     source: e9,
     unit: e9,
     reason: eR(e9),
@@ -1399,7 +1399,7 @@ let ta = ek({
     laser_bias_current_ma: tt,
     temperature_celsius: tt,
     vcc_voltage: tt,
-    cdr_locked: eR(e_()),
+    cdr_locked: eR(eg()),
     measurements: tr
 }), to = ek({
     equipment_id: eR(e9),
@@ -1423,7 +1423,7 @@ const ts = ek({
     acs_bootstrap: eC(e5),
     identity: eR(to),
     identity_age_seconds: tt,
-    identity_current: e_(),
+    identity_current: eg(),
     fiber_distance_m: tt,
     ranging_delay_rtd_ns: tt,
     equalization_delay_bits: new eL({
@@ -1466,7 +1466,7 @@ const ts = ek({
 let tl = ek({
     port: te,
     interface: e9,
-    carrier: e_(),
+    carrier: eg(),
     status: e9,
     onu_id: eC(te),
     onu_sn: eC(e9),
@@ -1484,27 +1484,27 @@ const td = ek({
         last_payload_bytes: te
     }))
 });
-eS(e9, ek({
-    carrier: eC(e_()),
+eM(e9, ek({
+    carrier: eC(eg()),
     mac: eC(e9),
     link: eC(ek({
         speed: eC(te),
         duplex: eC(e9),
-        autoneg: eC(e_())
+        autoneg: eC(eg())
     })),
-    stats: eC(eS(e9, te))
+    stats: eC(eM(e9, te))
 }));
 const tc = {
-    not_started: "Not started",
-    collecting_identity: "Collecting identity",
-    retrying_identity: "Retrying identity",
-    unsupported: "Unsupported",
-    configuring: "Configuring",
-    verifying: "Verifying",
-    wan_bootstrap_pending: "WAN pending",
-    verified: "Verified",
-    retrying: "Retrying",
-    offline: "Offline"
+    not_started: _("Not started"),
+    collecting_identity: _("Collecting identity"),
+    retrying_identity: _("Retrying identity"),
+    unsupported: _("Unsupported"),
+    configuring: _("Configuring"),
+    verifying: _("Verifying"),
+    wan_bootstrap_pending: _("WAN pending"),
+    verified: _("Verified"),
+    retrying: _("Retrying"),
+    offline: _("Offline")
 };
 let tp = L.rpc.declare({
     object: "luci.fttr",
@@ -1546,7 +1546,7 @@ L.rpc.declare({
 const tu = async ()=>td.parse(eq(await tp()));
 e$([
     ek({
-        operation_ids: ew(eb()),
+        operation_ids: ew(e_()),
         revision: eu()
     }),
     ek({
@@ -1561,13 +1561,13 @@ e$([
         device: eu()
     }),
     ek({
-        operation_ids: ew(eb()),
+        operation_ids: ew(e_()),
         mode: eP([
             "apply",
             "plan"
         ]),
-        reconcile: eC(e_()),
-        retry: eC(e_())
+        reconcile: eC(eg()),
+        retry: eC(eg())
     })
 ]), L.rpc.declare({
     object: "luci.fttr",
@@ -1592,36 +1592,36 @@ e$([
         "builtin"
     ]),
     active_path: eu(),
-    size: eb(),
+    size: e_(),
     sha256: eu(),
     data: eC(eu()),
     factory: ek({
-        detected: e_(),
+        detected: eg(),
         device: eu(),
-        has_data: e_(),
+        has_data: eg(),
         sha256: eu(),
         data: eu()
     }),
     firmware: ek({
-        exists: e_(),
+        exists: eg(),
         path: eu(),
-        size: eb(),
+        size: e_(),
         sha256: eu(),
         data: eu()
     }),
     error: eC(eu())
 }), ek({
-    success: e_(),
+    success: eg(),
     path: eu(),
-    size: eb(),
+    size: e_(),
     sha256: eu(),
     error: eC(eu())
 }), ek({
-    success: e_(),
+    success: eg(),
     output: eC(eu()),
     error: eC(eu())
 });
-let tf = eu(), tb = eb(), tg = e_(), t_ = ek({
+let tf = eu(), t_ = e_(), tb = eg(), tg = ek({
     id: tf,
     url: tf
 }), th = ek({
@@ -1638,25 +1638,25 @@ let tf = eu(), tb = eb(), tg = e_(), t_ = ek({
         "enumeration",
         "counter"
     ]),
-    index: tb,
-    mask: tb,
-    size: tb,
-    read: tg,
-    write: tg,
-    set_by_create: tg,
-    avc: tg,
-    optional: tg,
-    deprecated: tg,
+    index: t_,
+    mask: t_,
+    size: t_,
+    read: tb,
+    write: tb,
+    set_by_create: tb,
+    avc: tb,
+    optional: tb,
+    deprecated: tb,
     default_hex: eR(tf),
-    reference: t_
+    reference: tg
 }), tm = eO("type", [
     ek({
         type: eN("unsigned"),
-        value: tb
+        value: t_
     }),
     ek({
         type: eN("signed"),
-        value: tb
+        value: t_
     }),
     ek({
         type: eN("decimal"),
@@ -1672,86 +1672,86 @@ let tf = eu(), tb = eb(), tg = e_(), t_ = ek({
     }),
     ek({
         type: eN("table_length"),
-        bytes: tb
+        bytes: t_
     })
 ]), tv = ek({
     code: tf,
     message: tf,
-    offset: tb,
-    mask: tb
+    offset: t_,
+    mask: t_
 }), ty = eP([
     "layout",
     "name_only",
     "unknown"
 ]), tw = ek({
     raw_hex: tf,
-    filter_outer_priority: tb,
-    filter_outer_vid: tb,
-    filter_outer_tpid_dei: tb,
-    filter_inner_priority: tb,
-    filter_inner_vid: tb,
-    filter_inner_tpid_dei: tb,
-    filter_ethertype: tb,
-    tags_to_remove: tb,
-    treatment_outer_priority: tb,
-    treatment_outer_vid: tb,
-    treatment_outer_tpid_dei: tb,
-    treatment_inner_priority: tb,
-    treatment_inner_vid: tb,
-    treatment_inner_tpid_dei: tb,
-    delete_entry: tg
+    filter_outer_priority: t_,
+    filter_outer_vid: t_,
+    filter_outer_tpid_dei: t_,
+    filter_inner_priority: t_,
+    filter_inner_vid: t_,
+    filter_inner_tpid_dei: t_,
+    filter_ethertype: t_,
+    tags_to_remove: t_,
+    treatment_outer_priority: t_,
+    treatment_outer_vid: t_,
+    treatment_outer_tpid_dei: t_,
+    treatment_inner_priority: t_,
+    treatment_inner_vid: t_,
+    treatment_inner_tpid_dei: t_,
+    delete_entry: tb
 }), tx = ek({
     schema_version: eN(1),
     reference_version: tf,
-    onu_id: eR(tb),
-    uploaded_complete: tg,
-    expected_records: tb,
-    received_records: tb,
-    decoded_records: tb,
-    partial_records: tb,
-    basic_records: tb,
-    tables_requested: tg,
-    tables_collected: tg,
+    onu_id: eR(t_),
+    uploaded_complete: tb,
+    expected_records: t_,
+    received_records: t_,
+    decoded_records: t_,
+    partial_records: t_,
+    basic_records: t_,
+    tables_requested: tb,
+    tables_collected: tb,
     classes: ew(ek({
-        class_id: tb,
+        class_id: t_,
         name: eR(tf),
-        entities: tb,
-        records: tb,
+        entities: t_,
+        records: t_,
         support: ty
     })),
     entities: ew(ek({
-        class_id: tb,
-        entity_id: tb,
+        class_id: t_,
+        entity_id: t_,
         name: eR(tf),
         support: ty,
-        reference: eR(t_),
-        sequences: ew(tb),
+        reference: eR(tg),
+        sequences: ew(t_),
         attributes: ew(ek({
             definition: th,
             value: eR(tm),
             observations: ew(ek({
                 raw_hex: tf,
                 value: tm,
-                sequences: ew(tb)
+                sequences: ew(t_)
             }))
         })),
         diagnostics: ew(tv)
     })),
     records: ew(ek({
-        class_id: tb,
-        entity_id: tb,
-        sequence: tb,
-        attribute_mask: tb,
+        class_id: t_,
+        entity_id: t_,
+        sequence: t_,
+        attribute_mask: t_,
         raw_hex: tf,
-        consumed: tb,
+        consumed: t_,
         remaining_hex: tf,
-        undecoded_mask: tb
+        undecoded_mask: t_
     })),
     tables: ew(ek({
-        class_id: tb,
-        entity_id: tb,
+        class_id: t_,
+        entity_id: t_,
         attribute: th,
-        collected: tg,
+        collected: tb,
         error: eR(tf),
         raw_hex: tf,
         rows: ew(tf),
@@ -1769,8 +1769,8 @@ let tz = ek({
         "upload",
         "tables"
     ]),
-    received: tb,
-    expected: eR(tb)
+    received: t_,
+    expected: eR(t_)
 }), t$ = eO("status", [
     ek({
         status: eN("pending"),
@@ -1778,9 +1778,9 @@ let tz = ek({
     }),
     ek({
         status: eN("ready"),
-        chunk: tb,
-        chunks: tb,
-        bytes: tb,
+        chunk: t_,
+        chunks: t_,
+        bytes: t_,
         data: tf
     })
 ]), tj = L.rpc.declare({
@@ -1800,7 +1800,7 @@ let tz = ek({
         "chunk"
     ],
     reject: !0
-}), tM = L.rpc.declare({
+}), tS = L.rpc.declare({
     object: "luci.fttr",
     method: "mib_release",
     params: [
@@ -1808,24 +1808,21 @@ let tz = ek({
     ],
     reject: !0
 });
-const tS = async (e, t, r)=>eV.parse(eq(await tj(e, t, r))), tE = async (e, t)=>t$.parse(eq(await tO(e, t))), tP = async (e)=>ek({
-        released: tg
-    }).parse(eq(await tM(e))), tI = (e)=>null == e || "" === e ? "\u2014" : String(e);
+const tM = async (e, t, r)=>eV.parse(eq(await tj(e, t, r))), tE = async (e, t)=>t$.parse(eq(await tO(e, t))), tP = async (e)=>ek({
+        released: tb
+    }).parse(eq(await tS(e))), tI = (e)=>null == e || "" === e ? "\u2014" : String(e);
 function tN(e) {
     let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 3;
     return null != e && Number.isFinite(e) ? `${e.toFixed(t)} dBm` : "\u2014";
 }
 function tT(e) {
-    return _(e) || e;
-}
-function tC(e) {
     let t = "none" === e.tone ? "" : `fttr-badge fttr-badge-${e.tone}`, r = e.class ? ` ${e.class}` : "", n = o("span", {
         class: `${t}${r}`.trim(),
         children: e.children
     });
     return e.title && n.setAttribute("title", e.title), n;
 }
-const tD = {
+const tC = {
     o1_initial: _("O1 Initial"),
     o2_standby: _("O2 Standby"),
     o3_serial_number: _("O3 Serial Number"),
@@ -1834,72 +1831,71 @@ const tD = {
     o6_intermittent_lods: _("O6 Intermittent LODS"),
     o7_emergency_stop: _("O7 Emergency Stop")
 };
-function tR(e) {
+function tD(e) {
     var t;
     let r = (t = e.state) ? "o5_operation" === t ? {
         tone: "success",
-        label: tT(tD.o5_operation),
+        label: tC.o5_operation,
         title: t
     } : {
         tone: "warning",
-        label: tT(tD[t] ?? t),
+        label: tC[t] ?? tI(t),
         title: t
     } : {
         tone: "none",
         label: "\u2014"
     };
-    return o(tC, {
+    return o(tT, {
         tone: r.tone,
         title: r.title,
         children: r.label
     });
 }
-function tL(e) {
+function tR(e) {
     var t;
     let r = (t = e.status) ? {
         tone: "verified" === t.phase ? "success" : t.error || "wan_bootstrap_pending" === t.phase ? "warning" : "neutral",
-        label: `${_(tc[t.phase])} \xb7 ${t.generation}${t.error ? ` \xb7 ${t.error}` : ""}`,
+        label: `${tc[t.phase]} \xb7 ${t.generation}${t.error ? ` \xb7 ${t.error}` : ""}`,
         title: t.error || void 0
     } : {
         tone: "neutral",
         label: "\u2014"
     };
-    return o(tC, {
+    return o(tT, {
         tone: r.tone,
         title: r.title,
         children: r.label
     });
 }
-const tA = {
+const tL = {
     online: _("Online"),
     waiting_inform: _("Waiting Inform"),
     offline_or_stale: _("Offline or stale")
 };
-function tZ(e) {
+function tA(e) {
     var t;
     let r, n, i, a, s, l, d = (t = e.management, r = t?.state, n = function(e) {
-        var t, r, n, i;
         if (null == e || !Number.isFinite(e) || e < 0) return null;
-        let a = Math.floor(e);
-        if (a < 60) return (_(t = 1 === a ? "%d second ago" : "%d seconds ago") || t).replace("%d", String(a));
-        let o = Math.floor(a / 60);
-        if (o < 60) return (_(r = 1 === o ? "%d minute ago" : "%d minutes ago") || r).replace("%d", String(o));
-        let s = Math.floor(a / 3600);
-        if (s < 24) return (_(n = 1 === s ? "%d hour ago" : "%d hours ago") || n).replace("%d", String(s));
-        let l = Math.floor(a / 86400);
-        return (_(i = 1 === l ? "%d day ago" : "%d days ago") || i).replace("%d", String(l));
-    }(t?.age_seconds ?? (t?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - t.last_inform) : null)), a = (i = t?.last_inform ? new Date(1000 * t.last_inform).toLocaleString() : null) ? tT("Last Inform: %s").replace("%s", i) : void 0, s = "\u2014", l = "none", "online" === r ? (l = "success", s = tT(tA.online)) : "waiting_inform" === r ? (l = "warning", s = tT(tA.waiting_inform)) : "offline_or_stale" === r ? (l = "danger", s = tT(tA.offline_or_stale)) : r && (l = "neutral", s = tI(r)), {
+        let t = Math.floor(e);
+        if (t < 60) return (1 === t ? _("%d second ago") : _("%d seconds ago")).replace("%d", String(t));
+        let r = Math.floor(t / 60);
+        if (r < 60) return (1 === r ? _("%d minute ago") : _("%d minutes ago")).replace("%d", String(r));
+        let n = Math.floor(t / 3600);
+        if (n < 24) return (1 === n ? _("%d hour ago") : _("%d hours ago")).replace("%d", String(n));
+        let i = Math.floor(t / 86400);
+        return (1 === i ? _("%d day ago") : _("%d days ago")).replace("%d", String(i));
+    }(t?.age_seconds ?? (t?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - t.last_inform) : null)), a = (i = t?.last_inform ? new Date(1000 * t.last_inform).toLocaleString() : null) ? _("Last Inform: %s").replace("%s", i) : void 0, s = "\u2014", l = "none", "online" === r ? (l = "success", s = tL.online) : "waiting_inform" === r ? (l = "warning", s = tL.waiting_inform) : "offline_or_stale" === r ? (l = "danger", s = tL.offline_or_stale) : r && (l = "neutral", s = tI(r)), {
         tone: l,
         label: n && r ? `${s} \xb7 ${n}` : s,
         title: a
     });
-    return o(tC, {
+    return o(tT, {
         tone: d.tone,
         title: d.title,
         children: d.label
     });
 }
-const tU = {
+const tZ = {
     waiting: _("Waiting"),
     wan_reconciling: _("WAN reconciling"),
     wan_verifying: _("WAN verifying"),
@@ -1916,28 +1912,29 @@ const tU = {
     recovering: _("Recovering"),
     waiting_management: _("Waiting management"),
     waiting_task: _("Waiting task"),
+    reset_pending: _("Reset pending"),
     failed: _("Failed"),
     error: _("Error"),
     blocked: _("Blocked"),
     not_started: _("Not started")
 };
-function tB(e) {
+function tU(e) {
     var t, r;
-    let n, i, a, s = (t = e.provisioning, r = e.title, n = t?.state, i = t?.next_retry_at && t.next_retry_at > Math.floor(Date.now() / 1000) ? t.next_retry_at - Math.floor(Date.now() / 1000) : 0, a = r ?? (t?.current_revision === !1 ? tT("Previous configuration") : t?.management_fresh === !1 ? tT("Management stale") : t?.reconcile_reason ? tT(t.reconcile_reason) : i > 0 ? tT("Next self-healing retry in %d seconds").replace("%d", String(i)) : t?.reason ?? t?.error), n && "not_started" !== n ? "completed" === n || "verified" === n ? {
+    let n, i, a, s = (t = e.provisioning, r = e.title, n = t?.state, i = t?.next_retry_at && t.next_retry_at > Math.floor(Date.now() / 1000) ? t.next_retry_at - Math.floor(Date.now() / 1000) : 0, a = r ?? (t?.current_revision === !1 ? _("Previous configuration") : t?.management_fresh === !1 ? _("Management stale") : t?.reconcile_reason ? t.reconcile_reason : i > 0 ? _("Next self-healing retry in %d seconds").replace("%d", String(i)) : t?.reason ?? t?.error), n && "not_started" !== n ? "completed" === n || "verified" === n ? {
         tone: "success",
-        label: "completed" === n ? tT(tU.completed) : tT("Ready"),
+        label: "completed" === n ? tZ.completed : _("Ready"),
         title: a
     } : "wan_reconciling" === n || "wan_verifying" === n || "wifi_reconciling" === n || "discovering" === n || "reading" === n || "disabling" === n || "disabling_read" === n || "writing" === n || "verifying" === n || "settling" === n || "recovering" === n || "waiting_task" === n ? {
         tone: "info",
-        label: tT(tU[n] ?? n),
+        label: tZ[n] ?? tI(n),
         title: a
     } : "interrupted" === n || "failed" === n || "error" === n || "blocked" === n ? {
         tone: "danger",
-        label: tT("blocked" === n ? tU.blocked : tU.interrupted),
+        label: "blocked" === n ? tZ.blocked : tZ.interrupted,
         title: a
-    } : "waiting" === n || "pending" === n || "waiting_management" === n ? {
+    } : "waiting" === n || "pending" === n || "waiting_management" === n || "reset_pending" === n ? {
         tone: "warning",
-        label: tT(tU[n] ?? tU.waiting),
+        label: tZ[n] ?? tZ.waiting,
         title: a
     } : {
         tone: "neutral",
@@ -1945,16 +1942,16 @@ function tB(e) {
         title: a
     } : {
         tone: "neutral",
-        label: tT(tU.not_started),
+        label: tZ.not_started,
         title: a
     });
-    return o(tC, {
+    return o(tT, {
         tone: s.tone,
         title: s.title,
         children: s.label
     });
 }
-const tq = {
+const tB = {
     not_configured: _("Not configured"),
     stale_revision: _("Stale revision"),
     stale_management: _("Stale management"),
@@ -1965,37 +1962,37 @@ const tq = {
     recovering: _("Recovering"),
     waiting_management: _("Waiting management")
 };
-function tV(e) {
+function tq(e) {
     var t;
     let r = (t = e.state) && "not_configured" !== t ? "verified" === t ? {
         tone: "success",
-        label: tT(tq.verified)
+        label: tB.verified
     } : "attention_required" === t ? {
         tone: "danger",
-        label: tT(tq.attention_required)
+        label: tB.attention_required
     } : "stale_revision" === t || "stale_management" === t || "waiting_management" === t ? {
         tone: "warning",
-        label: tT(tq[t])
+        label: tB[t]
     } : "recovering" === t ? {
         tone: "info",
-        label: tT(tq.recovering)
+        label: tB.recovering
     } : "accepted_unverified" === t || "pending" === t ? {
         tone: "warning",
-        label: tT(tq[t])
+        label: tB[t]
     } : {
         tone: "neutral",
         label: tI(t)
     } : {
         tone: "neutral",
-        label: tT(tq.not_configured)
+        label: tB.not_configured
     };
-    return o(tC, {
+    return o(tT, {
         tone: r.tone,
         title: r.title,
         children: r.label
     });
 }
-const tF = `
+const tV = `
 .fttr-badge {
 	display: inline-block;
 	padding: 0.18em 0.55em;
@@ -2076,8 +2073,8 @@ const tF = `
 	color: var(--fttr-neutral-color, #bdc3c7);
 }
 `;
-let tW = (e)=>JSON.stringify(e, null, 2);
-async function tJ(e) {
+let tF = (e)=>JSON.stringify(e, null, 2);
+async function tW(e) {
     let t = [
         "{"
     ], r = !0;
@@ -2099,7 +2096,7 @@ async function tJ(e) {
         type: "application/json"
     });
 }
-function tX(e) {
+function tJ(e) {
     let t = e.reference;
     return t?.url.startsWith("https://github.com/opencord/omci-lib-go/blob/v2.2.4/") ? o("a", {
         href: t.url,
@@ -2110,36 +2107,32 @@ function tX(e) {
         children: "\u2014"
     });
 }
-let tG = L.view;
+let tX = L.view, tG = (e)=>null == e || "" === e ? "\u2014" : String(e);
 function tH(e) {
-    return _(e) || e;
-}
-let tK = (e)=>null == e || "" === e ? "\u2014" : String(e);
-function tQ(e) {
     return null !== e && Number.isFinite(e) ? `${e.toFixed(2)} dBm` : "\u2014";
 }
-function tY(e) {
+function tK(e) {
     var t, r, n, i, a, s, l, d, c, p, u, f, b, g, h, m, v, y;
     let w = e.optical_transceiver, x = o("span", {
         class: `fttr-badge ${"ready" === e.fpga_status ? "fttr-badge-success" : "fttr-badge-neutral"}`,
         style: "font-size:95%",
-        children: "ready" === e.fpga_status ? tH("Ready") : tK(e.fpga_status)
+        children: "ready" === e.fpga_status ? _("Ready") : tG(e.fpga_status)
     }), k = null === (t = w.cdr_locked) ? o("span", {
         class: "fttr-badge fttr-badge-neutral",
-        children: tH("Unknown")
+        children: _("Unknown")
     }) : t ? o("span", {
         class: "fttr-badge fttr-badge-success",
-        children: tH("Locked")
+        children: _("Locked")
     }) : o("span", {
         class: "fttr-badge fttr-badge-warning",
-        children: tH("Unlocked")
+        children: _("Unlocked")
     });
     return y = {
         class: "cbi-section fttr-panel-controller",
         children: [
             o("h3", {
                 style: "margin-bottom:12px",
-                children: tH("Controller hardware")
+                children: _("Controller hardware")
             }),
             (v = {
                 class: "fttr-grid-3",
@@ -2149,14 +2142,14 @@ function tY(e) {
                         children: [
                             o("h4", {
                                 style: "margin-top:0;margin-bottom:8px;font-size:95%",
-                                children: tH("FPGA status")
+                                children: _("FPGA status")
                             }),
                             (r = {
                                 class: "fttr-kv-row",
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("FPGA status")
+                                        children: _("FPGA status")
                                     }),
                                     o("span", {
                                         children: x
@@ -2168,10 +2161,10 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: "FPGA \u6807\u8BC6"
+                                        children: _("FPGA identifier")
                                     }),
                                     o("code", {
-                                        children: tK(e.fpga_status)
+                                        children: tG(e.fpga_status)
                                     })
                                 ]
                             }, o("div", n)),
@@ -2180,7 +2173,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("CDR lock")
+                                        children: _("CDR lock")
                                     }),
                                     o("span", {
                                         children: k
@@ -2194,17 +2187,17 @@ function tY(e) {
                         children: [
                             o("h4", {
                                 style: "margin-top:0;margin-bottom:8px;font-size:95%",
-                                children: tH("Optical transceiver")
+                                children: _("Optical transceiver")
                             }),
                             (s = {
                                 class: "fttr-kv-row",
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: "\u6A21\u5757\u578B\u53F7"
+                                        children: _("Module model")
                                     }),
                                     o("strong", {
-                                        children: tK(w.model)
+                                        children: tG(w.model)
                                     })
                                 ]
                             }, o("div", s)),
@@ -2213,7 +2206,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("TX wavelength")
+                                        children: _("TX wavelength")
                                     }),
                                     o("span", {
                                         children: w.wavelength_tx_nm ? `${w.wavelength_tx_nm} nm` : "\u2014"
@@ -2225,7 +2218,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("RX wavelength")
+                                        children: _("RX wavelength")
                                     }),
                                     o("span", {
                                         children: w.wavelength_rx_nm ? `${w.wavelength_rx_nm} nm` : "\u2014"
@@ -2239,14 +2232,14 @@ function tY(e) {
                         children: [
                             o("h4", {
                                 style: "margin-top:0;margin-bottom:8px;font-size:95%",
-                                children: "\u7269\u7406\u901F\u7387\u4E0E\u8BCA\u65AD"
+                                children: _("Physical rates and diagnostics")
                             }),
                             (p = {
                                 class: "fttr-kv-row",
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("Downlink PHY rate")
+                                        children: _("Downlink PHY rate")
                                     }),
                                     o("span", {
                                         children: w.phy_rate_downlink_gbps ? `${w.phy_rate_downlink_gbps} Gbps` : "\u2014"
@@ -2258,7 +2251,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("Uplink PHY rate")
+                                        children: _("Uplink PHY rate")
                                     }),
                                     o("span", {
                                         children: w.phy_rate_uplink_gbps ? `${w.phy_rate_uplink_gbps} Gbps` : "\u2014"
@@ -2270,7 +2263,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("Temperature")
+                                        children: _("Temperature")
                                     }),
                                     o("span", {
                                         children: null == w.temperature_celsius ? "\u2014" : `${w.temperature_celsius} \xb0C`
@@ -2282,10 +2275,10 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("TX power")
+                                        children: _("TX power")
                                     }),
                                     o("span", {
-                                        children: tQ(w.tx_power_dbm)
+                                        children: tH(w.tx_power_dbm)
                                     })
                                 ]
                             }, o("div", b)),
@@ -2294,7 +2287,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("Voltage")
+                                        children: _("Voltage")
                                     }),
                                     o("span", {
                                         children: null == w.vcc_voltage ? "\u2014" : `${w.vcc_voltage} V`
@@ -2306,7 +2299,7 @@ function tY(e) {
                                 children: [
                                     o("span", {
                                         class: "fttr-kv-label",
-                                        children: tH("Bias current")
+                                        children: _("Bias current")
                                     }),
                                     o("span", {
                                         children: null == w.laser_bias_current_ma ? "\u2014" : `${w.laser_bias_current_ma} mA`
@@ -2320,13 +2313,13 @@ function tY(e) {
         ]
     }, o("div", y);
 }
-function t0(e) {
+function tQ(e) {
     var t, r;
     return e.length ? (t = {
         class: "fttr-panel-subgateways",
         children: e.map((e)=>{
             var t, r, n, i, a, s, l, d, c, p, u, f, b, g, h, m, v, y, w, x, k, z, $;
-            let j = e.identity, O = j?.software_images ?? [], M = function(e) {
+            let j = e.identity, O = j?.software_images ?? [], S = function(e) {
                 if (!e) return {
                     display: "\u2014"
                 };
@@ -2337,10 +2330,10 @@ function t0(e) {
                 } : {
                     display: e
                 };
-            }(e.firmware_version), S = e.identity ? e.identity_current ? tH("Current registration") : tH("Cached identity") : tH("Not collected"), P = o("span", {
+            }(e.firmware_version), M = e.identity ? e.identity_current ? _("Current registration") : _("Cached identity") : _("Not collected"), P = o("span", {
                 class: `fttr-badge ${e.identity_current ? "fttr-badge-info" : "fttr-badge-neutral"}`,
                 style: "font-size:80%",
-                children: S
+                children: M
             });
             return $ = {
                 class: "cbi-section fttr-onu-card",
@@ -2353,7 +2346,7 @@ function t0(e) {
                                 children: [
                                     o("h3", {
                                         style: "margin:0",
-                                        children: tH("Sub-gateway %s \u2014 %s").replace("%s", String(e.onu_id)).replace("%s", tK(e.model))
+                                        children: _("Sub-gateway %s \u2014 %s").replace("%s", String(e.onu_id)).replace("%s", tG(e.model))
                                     }),
                                     (r = {
                                         class: "fttr-card-meta-tags",
@@ -2368,7 +2361,7 @@ function t0(e) {
                                             (t = e.state) ? "o5_operation" === t || "online" === t || "ready" === t || "connected" === t ? o("span", {
                                                 class: "fttr-badge fttr-badge-success",
                                                 title: t,
-                                                children: "o5_operation" === t ? tH("Connected") : tH("Ready")
+                                                children: "o5_operation" === t ? _("Connected") : _("Ready")
                                             }) : t.includes("O4") || t.includes("ranging") || t.includes("sync") ? o("span", {
                                                 class: "fttr-badge fttr-badge-warning",
                                                 title: t,
@@ -2442,13 +2435,13 @@ function t0(e) {
                                                         rows: [
                                                             [
                                                                 _("Registration"),
-                                                                o(tR, {
+                                                                o(tD, {
                                                                     state: e.state
                                                                 })
                                                             ],
                                                             [
                                                                 _("Business"),
-                                                                o(tL, {
+                                                                o(tR, {
                                                                     status: e.business_status
                                                                 })
                                                             ],
@@ -2492,7 +2485,7 @@ function t0(e) {
                                                         rows: [
                                                             [
                                                                 _("CWMP"),
-                                                                o(tZ, {
+                                                                o(tA, {
                                                                     management: e.management
                                                                 })
                                                             ],
@@ -2502,13 +2495,13 @@ function t0(e) {
                                                             ],
                                                             [
                                                                 _("Provisioning"),
-                                                                o(tB, {
+                                                                o(tU, {
                                                                     provisioning: e.provisioning
                                                                 })
                                                             ],
                                                             [
                                                                 _("Wi-Fi sync"),
-                                                                o(tV, {
+                                                                o(tq, {
                                                                     state: e.wifi_sync
                                                                 })
                                                             ],
@@ -2585,7 +2578,7 @@ function t0(e) {
                                                     if (h && !b) {
                                                         j.disabled = !0, z.textContent = _("Preparing JSON download\u2026");
                                                         try {
-                                                            let t = await tJ(h);
+                                                            let t = await tW(h);
                                                             if (b) return;
                                                             $ && URL.revokeObjectURL($), $ = URL.createObjectURL(t);
                                                             let r = document.createElement("a");
@@ -2621,12 +2614,12 @@ function t0(e) {
                                                     }, o("div", i)),
                                                     k
                                                 ]
-                                            }, o("div", a)), M = o("button", {
+                                            }, o("div", a)), S = o("button", {
                                                 type: "button",
                                                 class: "cbi-button cbi-button-apply",
                                                 onclick: ()=>Z(!1),
                                                 children: _("Read MIB")
-                                            }), S = o("button", {
+                                            }), M = o("button", {
                                                 type: "button",
                                                 class: "cbi-button cbi-button-action",
                                                 onclick: ()=>Z(!0),
@@ -2640,8 +2633,8 @@ function t0(e) {
                                                             (s = {
                                                                 class: "mib-action-group",
                                                                 children: [
-                                                                    M,
                                                                     S,
+                                                                    M,
                                                                     o("small", {
                                                                         class: "mib-action-hint",
                                                                         children: _("Collecting VLAN tables queries extended filter tables and takes longer.")
@@ -2747,7 +2740,7 @@ function t0(e) {
 						--fttr-neutral-color: #bdc3c7;
 					}
 				}
-				${tF}
+				${tV}
 				.onu-details-header {
 					margin-bottom: 12px;
 					border-bottom: 1px solid var(--fttr-border);
@@ -3117,14 +3110,14 @@ function t0(e) {
                                             }, o("div", u)), A = ()=>!b && R.isConnected && R.getClientRects().length > 0;
                                             async function Z(t) {
                                                 if (!g) {
-                                                    g = !0, M.disabled = S.disabled = !0, w.style.display = "", w.title = "0%", w.firstElementChild.style.width = "0%", y.textContent = _("Reading MIB\u2026");
+                                                    g = !0, S.disabled = M.disabled = !0, w.style.display = "", w.title = "0%", w.firstElementChild.style.width = "0%", y.textContent = _("Reading MIB\u2026");
                                                     try {
                                                         let g = await tu(), $ = g.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
                                                         if ($?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
                                                         if (!A()) return;
-                                                        let O = await tS($.onu_id, $.serial_number, t);
+                                                        let O = await tM($.onu_id, $.serial_number, t);
                                                         m = O.job;
-                                                        let M = Date.now() + 140000;
+                                                        let S = Date.now() + 140000;
                                                         for(; A();){
                                                             let e = await tE(O.job, 0);
                                                             if (!A()) return;
@@ -3323,7 +3316,7 @@ function t0(e) {
                                                                                                                                     }, o("summary", a)),
                                                                                                                                     (s = {
                                                                                                                                         class: "mib-pre",
-                                                                                                                                        children: tW(e.observations)
+                                                                                                                                        children: tF(e.observations)
                                                                                                                                     }, o("pre", s))
                                                                                                                                 ]
                                                                                                                             }, o("details", l)) : null
@@ -3331,7 +3324,7 @@ function t0(e) {
                                                                                                                     }, o("td", d)),
                                                                                                                     (c = {
                                                                                                                         class: "mib-attr-ref",
-                                                                                                                        children: tX(e.definition)
+                                                                                                                        children: tJ(e.definition)
                                                                                                                     }, o("td", c))
                                                                                                                 ]
                                                                                                             }, o("tr", p);
@@ -3424,12 +3417,12 @@ function t0(e) {
                                                                                                             children: [
                                                                                                                 _("G.988 encoded field values"),
                                                                                                                 ": ",
-                                                                                                                tX(e.attribute)
+                                                                                                                tJ(e.attribute)
                                                                                                             ]
                                                                                                         }, o("p", g)),
                                                                                                         (h = {
                                                                                                             class: "mib-pre",
-                                                                                                            children: tW(e.vlan_rules.length ? e.vlan_rules : e.rows)
+                                                                                                            children: tF(e.vlan_rules.length ? e.vlan_rules : e.rows)
                                                                                                         }, o("pre", h))
                                                                                                     ]
                                                                                                 }, o("details", m);
@@ -3442,7 +3435,7 @@ function t0(e) {
                                                                                                     }, o("summary", y)),
                                                                                                     (w = {
                                                                                                         class: "mib-pre",
-                                                                                                        children: tW({
+                                                                                                        children: tF({
                                                                                                             diagnostics: r.diagnostics,
                                                                                                             records: e.records.filter((e)=>e.class_id === t && e.entity_id === r.entity_id)
                                                                                                         })
@@ -3517,10 +3510,10 @@ function t0(e) {
                                                                         }, o("summary", b)),
                                                                         (v = {
                                                                             class: "mib-pre",
-                                                                            children: tW(h.diagnostics)
+                                                                            children: tF(h.diagnostics)
                                                                         }, o("pre", v))
                                                                     ]
-                                                                }, o("details", z))), n = h, k.textContent = tW({
+                                                                }, o("details", z))), n = h, k.textContent = tF({
                                                                     schema_version: n.schema_version,
                                                                     reference_version: n.reference_version,
                                                                     onu_id: n.onu_id,
@@ -3549,7 +3542,7 @@ function t0(e) {
                                                                     w.title = `${e}%`, w.firstElementChild.style.width = `${e}%`;
                                                                 }
                                                             }
-                                                            if (Date.now() >= M) throw Error(_("MIB query timed out; retry."));
+                                                            if (Date.now() >= S) throw Error(_("MIB query timed out; retry."));
                                                             await new Promise((e)=>setTimeout(e, 1000));
                                                         }
                                                     } catch (e) {
@@ -3561,7 +3554,7 @@ function t0(e) {
                                                             ]
                                                         })));
                                                     } finally{
-                                                        await U(), g = !1, M.disabled = S.disabled = !1;
+                                                        await U(), g = !1, S.disabled = M.disabled = !1;
                                                     }
                                                 }
                                             }
@@ -3578,7 +3571,7 @@ function t0(e) {
                                             T(f), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, R, "modal-wide");
                                         })(e, "mib"),
                                     children: [
-                                        tH("View OMCI / MIB details"),
+                                        _("View OMCI / MIB details"),
                                         " \u2192"
                                     ]
                                 }, o("button", i))
@@ -3593,17 +3586,17 @@ function t0(e) {
                                 children: [
                                     o("h4", {
                                         style: "margin-top:0;margin-bottom:6px;font-size:92%;color:#888",
-                                        children: "\u5149\u7EA4\u7269\u7406\u5C42\u4E0E\u94FE\u8DEF\u53C2\u6570"
+                                        children: _("Optical physical layer and link parameters")
                                     }),
                                     (l = {
                                         class: "fttr-kv-row",
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Optical RX power")
+                                                children: _("Optical RX power")
                                             }),
                                             o("strong", {
-                                                children: tQ(e.optical_rx_power_dbm)
+                                                children: tH(e.optical_rx_power_dbm)
                                             })
                                         ]
                                     }, o("div", l)),
@@ -3612,10 +3605,10 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Optical TX power")
+                                                children: _("Optical TX power")
                                             }),
                                             o("strong", {
-                                                children: tQ(e.optical_tx_power_dbm)
+                                                children: tH(e.optical_tx_power_dbm)
                                             })
                                         ]
                                     }, o("div", d)),
@@ -3624,7 +3617,7 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Equalization delay (EQD)")
+                                                children: _("Equalization delay (EQD)")
                                             }),
                                             o("span", {
                                                 children: null === (c = e.equalization_delay_bits) ? "\u2014" : `${c} bits`
@@ -3636,10 +3629,10 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Data interface")
+                                                children: _("Data interface")
                                             }),
                                             o("code", {
-                                                children: tK(e.data_path?.interface)
+                                                children: tG(e.data_path?.interface)
                                             })
                                         ]
                                     }, o("div", u)),
@@ -3648,16 +3641,16 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Identity age")
+                                                children: _("Identity age")
                                             }),
                                             o("span", {
                                                 children: function(e) {
                                                     if (null === e || !Number.isFinite(e) || e < 0) return "\u2014";
-                                                    if (e < 60) return `${e} \u{79D2}\u{524D}`;
+                                                    if (e < 60) return _("%d seconds ago").replace("%d", String(e));
                                                     let t = Math.floor(e / 60);
-                                                    if (t < 60) return `${t} \u{5206}\u{949F}\u{524D}`;
+                                                    if (t < 60) return _("%d minutes ago").replace("%d", String(t));
                                                     let r = Math.floor(t / 60);
-                                                    return `${r} \u{5C0F}\u{65F6} ${t % 60} \u{5206}\u{949F}\u{524D}`;
+                                                    return _("%d hours %d minutes ago").replace("%d", String(r)).replace("%d", String(t % 60));
                                                 }(e.identity_age_seconds)
                                             })
                                         ]
@@ -3669,17 +3662,17 @@ function t0(e) {
                                 children: [
                                     o("h4", {
                                         style: "margin-top:0;margin-bottom:6px;font-size:92%;color:#888",
-                                        children: "\u786C\u4EF6\u89C4\u683C\u4E0E\u56FA\u4EF6\u955C\u50CF"
+                                        children: _("Hardware specifications and firmware images")
                                     }),
                                     (g = {
                                         class: "fttr-kv-row",
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Equipment ID")
+                                                children: _("Equipment ID")
                                             }),
                                             o("span", {
-                                                children: tK(j?.equipment_id ?? e.model)
+                                                children: tG(j?.equipment_id ?? e.model)
                                             })
                                         ]
                                     }, o("div", g)),
@@ -3688,10 +3681,10 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Hardware version")
+                                                children: _("Hardware version")
                                             }),
                                             o("code", {
-                                                children: tK(j?.hardware_version ?? e.hardware_version)
+                                                children: tG(j?.hardware_version ?? e.hardware_version)
                                             })
                                         ]
                                     }, o("div", h)),
@@ -3700,12 +3693,12 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Firmware version")
+                                                children: _("Firmware version")
                                             }),
                                             (m = {
-                                                title: M.full || M.display,
+                                                title: S.full || S.display,
                                                 children: o("strong", {
-                                                    children: M.display
+                                                    children: S.display
                                                 })
                                             }, o("span", m))
                                         ]
@@ -3715,7 +3708,7 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("OMCC version")
+                                                children: _("OMCC version")
                                             }),
                                             o("span", {
                                                 children: j?.omcc_version != null ? `0x${j.omcc_version.toString(16).padStart(2, "0")} (${j.omcc_version})` : "\u2014"
@@ -3728,7 +3721,7 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Identity read errors")
+                                                children: _("Identity read errors")
                                             }),
                                             o("span", {
                                                 children: j.errors.join("; ")
@@ -3741,7 +3734,7 @@ function t0(e) {
                                         children: [
                                             o("span", {
                                                 class: "fttr-kv-label",
-                                                children: tH("Software images")
+                                                children: _("Software images")
                                             }),
                                             o("span", {
                                                 children: O.join(" \xb7 ")
@@ -3759,11 +3752,11 @@ function t0(e) {
         class: "cbi-section fttr-panel-subgateways",
         children: o("p", {
             style: "text-align:center;color:#888;padding:2em 0",
-            children: tH("No sub-gateways are currently registered.")
+            children: _("No sub-gateways are currently registered.")
         })
     }, o("div", r));
 }
-let main = tG.extend({
+let main = tX.extend({
     load: ()=>tu(),
     render: (e)=>{
         var t, r;
@@ -3771,13 +3764,13 @@ let main = tG.extend({
         return n = "controller", i = [
             {
                 id: "controller",
-                label: tH("Controller & optical transceiver")
+                label: _("Controller & optical transceiver")
             },
             {
                 id: "subgateways",
-                label: tH("Sub-gateways & optical links")
+                label: _("Sub-gateways & optical links")
             }
-        ], a = new Map(), s = tY(e), l = t0(e.sub_gateways ?? []), t = {
+        ], a = new Map(), s = tK(e), l = tQ(e.sub_gateways ?? []), t = {
             class: "cbi-tabmenu",
             style: "margin-top:14px;margin-bottom:0",
             children: i.map((e)=>{
@@ -3988,21 +3981,21 @@ let main = tG.extend({
 				`
                 }),
                 o("h2", {
-                    children: tH("FTTR hardware status")
+                    children: _("FTTR hardware status")
                 }),
                 d,
                 c,
                 o("p", {
                     class: "cbi-footer",
                     style: "margin-top:1.5em;font-size:85%;color:#888",
-                    children: tH("Identity information is read-only and limited to fields provided by fttrctl status.")
+                    children: _("Identity information is read-only and limited to fields provided by fttrctl status.")
                 })
             ]
         }, p = o("div", r), u = !1, L.Poll.add(async ()=>{
             if (p.isConnected && !u) {
                 u = !0;
                 try {
-                    let e = await tu(), t = tY(e), r = t0(e.sub_gateways ?? []);
+                    let e = await tu(), t = tK(e), r = tQ(e.sub_gateways ?? []);
                     t.hidden = "controller" !== n, r.hidden = "subgateways" !== n, s.replaceWith(t), l.replaceWith(r), s = t, l = r;
                 } catch  {} finally{
                     u = !1;

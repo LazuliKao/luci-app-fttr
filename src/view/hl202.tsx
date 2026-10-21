@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { DeviceMeta } from "./contracts/hl202";
-import { text, tr } from "./hl202/dom";
+import { text } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
 import { list, type Target } from "./hl202/rpc";
 
 function renderPage(): HTMLElement {
 	const select = (
-		<select id="hl202-device" class="cbi-input-select" aria-label={tr("HL202 device")} style="min-width:320px" />
+		<select id="hl202-device" class="cbi-input-select" aria-label={_("HL202 device")} style="min-width:320px" />
 	) as HTMLSelectElement;
 
 	const refresh = (
 		<button type="button" class="cbi-button cbi-button-action">
-			{tr("Refresh devices")}
+			{_("Refresh devices")}
 		</button>
 	) as HTMLButtonElement;
 
@@ -34,7 +34,7 @@ function renderPage(): HTMLElement {
 	);
 	const deviceWarning = (
 		<div class="alert-message warning" style="margin-top:8px" hidden>
-			{tr("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")}
+			{_("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")}
 		</div>
 	);
 
@@ -52,7 +52,7 @@ function renderPage(): HTMLElement {
 				</div>
 				<div class="hl202-device-links">
 					<a href={L.url("admin", "network", "fttr", "hardware")} class="fttr-btn-subtle">
-						{tr("Open optical status and ONU/MIB details")} →
+						{_("Open optical status and ONU/MIB details")} →
 					</a>
 				</div>
 			</div>
@@ -70,13 +70,13 @@ function renderPage(): HTMLElement {
 		<select
 			id="hl202-source"
 			class="cbi-input-select"
-			aria-label={tr("Read-only MQTT source")}
+			aria-label={_("Read-only MQTT source")}
 			style="min-width:240px"
 		/>
 	) as HTMLSelectElement;
 	const sourceRead = (
 		<button type="button" class="cbi-button cbi-button-action" style="margin-left:8px">
-			{tr("Inspect source report (read-only)")}
+			{_("Inspect source report (read-only)")}
 		</button>
 	) as HTMLButtonElement;
 	const sourceDetails = <div style="margin-top:10px" />;
@@ -87,20 +87,20 @@ function renderPage(): HTMLElement {
 
 	const sourcesPanel = (
 		<div class="cbi-section hl202-panel-sources">
-			<h3 style="margin-bottom:4px">{tr("MQTT source identity")}</h3>
+			<h3 style="margin-bottom:4px">{_("MQTT source identity")}</h3>
 			<p style="font-size:85%;color:#888;margin-top:0;margin-bottom:8px">
-				{tr("Inspect read-only MQTT source reports and diagnostics for unbound or unselected devices.")}
+				{_("Inspect read-only MQTT source reports and diagnostics for unbound or unselected devices.")}
 			</p>
 			<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
 				<label htmlFor="hl202-source">
-					{tr("Read-only MQTT source")}: {sourceSelect}
+					{_("Read-only MQTT source")}: {sourceSelect}
 				</label>
 				{sourceRead}
 			</div>
 			{sourceDetails}
 			<details style="margin-top:10px">
 				<summary style="cursor:pointer;font-size:85%;color:#888;font-weight:600">
-					{tr("Raw source observations (JSON)")}
+					{_("Raw source observations (JSON)")}
 				</summary>
 				<div style="margin-top:6px">{sourcesPre}</div>
 			</details>
@@ -111,10 +111,10 @@ function renderPage(): HTMLElement {
 	let activeTab: TabId = "report";
 
 	const tabs: Array<{ id: TabId; label: string }> = [
-		{ id: "report", label: tr("MQTT report") },
-		{ id: "accounts", label: tr("User management") },
-		{ id: "console", label: tr("Raw command console") },
-		{ id: "sources", label: tr("MQTT source identity") },
+		{ id: "report", label: _("MQTT report") },
+		{ id: "accounts", label: _("User management") },
+		{ id: "console", label: _("Raw command console") },
+		{ id: "sources", label: _("MQTT source identity") },
 	];
 
 	const tabItems = new Map<TabId, HTMLElement>();
@@ -177,7 +177,7 @@ function renderPage(): HTMLElement {
 		const device = currentDevices.find((d) => d.optical_sn === selectedSn);
 
 		if (!device) {
-			summaryNameNode.textContent = tr("No HL202 optical devices were found.");
+			summaryNameNode.textContent = _("No HL202 optical devices were found.");
 			summaryModelNode.textContent = "—";
 			summaryOpticalNode.textContent = "—";
 			summaryMqttNode.textContent = "—";
@@ -194,15 +194,15 @@ function renderPage(): HTMLElement {
 
 		if (device.optical_online) {
 			summaryOpticalNode.className = "hl202-badge hl202-badge-success";
-			summaryOpticalNode.textContent = tr("Optical online");
+			summaryOpticalNode.textContent = _("Optical online");
 		} else {
 			summaryOpticalNode.className = "hl202-badge hl202-badge-danger";
-			summaryOpticalNode.textContent = tr("Optical offline");
+			summaryOpticalNode.textContent = _("Optical offline");
 		}
 
 		if (device.can_execute && device.mqtt) {
 			summaryMqttNode.className = "hl202-badge hl202-badge-success";
-			summaryMqttNode.textContent = tr("MQTT ready");
+			summaryMqttNode.textContent = _("MQTT ready");
 			summaryGenNode.textContent = `gen: ${device.mqtt.binding_generation}`;
 			summaryGenNode.hidden = false;
 			deviceWarning.hidden = true;
@@ -218,7 +218,7 @@ function renderPage(): HTMLElement {
 			consoleCtrl.setTarget(target);
 		} else {
 			summaryMqttNode.className = "hl202-badge hl202-badge-warning";
-			summaryMqttNode.textContent = tr("MQTT unavailable");
+			summaryMqttNode.textContent = _("MQTT unavailable");
 			summaryGenNode.hidden = true;
 			deviceWarning.hidden = false;
 
@@ -230,7 +230,7 @@ function renderPage(): HTMLElement {
 
 	const reload = async (): Promise<void> => {
 		refresh.disabled = true;
-		status.textContent = tr("Loading devices…");
+		status.textContent = _("Loading devices…");
 		try {
 			const response = await list();
 			const parsedDevices = response.devices;
@@ -252,7 +252,7 @@ function renderPage(): HTMLElement {
 					...parsedDevices.map((d) => (
 						<option value={d.optical_sn}>
 							{text(
-								`${d.model} / ${d.optical_sn} / ONU ${d.onu_id} — ${d.can_execute ? tr("MQTT ready") : tr("MQTT unavailable")}; ${d.optical_online ? tr("Optical online") : tr("Optical offline")}`,
+								`${d.model} / ${d.optical_sn} / ONU ${d.onu_id} — ${d.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${d.optical_online ? _("Optical online") : _("Optical offline")}`,
 							)}
 						</option>
 					)),
@@ -263,8 +263,8 @@ function renderPage(): HTMLElement {
 			}
 
 			status.textContent = parsedDevices.length
-				? tr("Select a device to inspect reports and run operations.")
-				: tr("No HL202 optical devices were found.");
+				? _("Select a device to inspect reports and run operations.")
+				: _("No HL202 optical devices were found.");
 
 			// Update diagnostics sources
 			sourcesPre.textContent = JSON.stringify(response.sources, null, 2);
@@ -300,7 +300,7 @@ function renderPage(): HTMLElement {
 		} catch (cause: unknown) {
 			currentDevices = [];
 			show();
-			status.textContent = cause instanceof Error ? cause.message : tr("Request failed");
+			status.textContent = cause instanceof Error ? cause.message : _("Request failed");
 		} finally {
 			refresh.disabled = false;
 		}
@@ -545,11 +545,11 @@ function renderPage(): HTMLElement {
 				}
 				`}
 			</style>
-			<h2>{tr("HL202 sub-gateway management")}</h2>
+			<h2>{_("HL202 sub-gateway management")}</h2>
 			<div class="cbi-section">
 				<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">
 					<label htmlFor="hl202-device" style="display:flex;align-items:center;gap:8px">
-						<strong>{tr("HL202 device")}:</strong>
+						<strong>{_("HL202 device")}:</strong>
 						{select}
 					</label>
 					{refresh}

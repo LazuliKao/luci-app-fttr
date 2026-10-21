@@ -221,7 +221,7 @@ const $ = (e, t)=>{
         throw v(e, i?.callee), e;
     }
     return s.value;
-}), Z = (n = M, async (e, t, r, i)=>{
+}), C = (n = M, async (e, t, r, i)=>{
     let a = r ? Object.assign(r, {
         async: !0
     }) : {
@@ -235,7 +235,7 @@ const $ = (e, t)=>{
         throw v(e, i?.callee), e;
     }
     return s.value;
-}), C = (r = M, (e, t, n)=>{
+}), Z = (r = M, (e, t, n)=>{
     let i = n ? {
         ...n,
         async: !1
@@ -269,13 +269,13 @@ const $ = (e, t)=>{
         success: !0,
         data: a.value
     };
-}), W = /^-?\d+(?:\.\d+)?$/, I = /^(?:true|false)$/i, D = /^null$/i, V = {
+}), W = /^-?\d+(?:\.\d+)?$/, I = /^(?:true|false)$/i, V = /^null$/i, D = {
     major: 4,
     minor: 3,
     patch: 6
 }, q = o("$ZodType", (e, t)=>{
     var n;
-    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = V;
+    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = D;
     let r = [
         ...e._zod.def.checks ?? []
     ];
@@ -333,7 +333,7 @@ const $ = (e, t)=>{
     g(e, "~standard", ()=>({
             validate: (t)=>{
                 try {
-                    let n = C(e, t);
+                    let n = Z(e, t);
                     return n.success ? {
                         value: n.data
                     } : {
@@ -398,7 +398,7 @@ const $ = (e, t)=>{
         }), n;
     };
 }), J = o("$ZodNull", (e, t)=>{
-    q.init(e, t), e._zod.pattern = D, e._zod.values = new Set([
+    q.init(e, t), e._zod.pattern = V, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, n)=>{
         let r = t.value;
@@ -793,7 +793,7 @@ const ec = o("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
     q.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>N(e, t, n, {
             callee: e.parse
-        }), e.safeParse = (t, n)=>C(e, t, n), e.parseAsync = async (t, n)=>Z(e, t, n, {
+        }), e.safeParse = (t, n)=>Z(e, t, n), e.parseAsync = async (t, n)=>C(e, t, n, {
             callee: e.parseAsync
         }), e.safeParseAsync = async (t, n)=>R(e, t, n), e.check = (...n)=>e.clone({
             ...t,
@@ -834,19 +834,19 @@ function eh(e) {
 const eg = o("ZodMiniBoolean", (e, t)=>{
     B.init(e, t), ec.init(e, t);
 });
-function em(e) {
+function e_(e) {
     return new eg({
         type: "boolean",
         ...j(e)
     });
 }
-const ey = o("ZodMiniNull", (e, t)=>{
+const em = o("ZodMiniNull", (e, t)=>{
     J.init(e, t), ec.init(e, t);
-}), e_ = o("ZodMiniNever", (e, t)=>{
+}), ey = o("ZodMiniNever", (e, t)=>{
     K.init(e, t), ec.init(e, t);
 });
 function ev(e) {
-    return new e_({
+    return new ey({
         type: "never",
         ...j(e)
     });
@@ -931,17 +931,17 @@ function eM(e, t) {
 const eN = o("ZodMiniOptional", (e, t)=>{
     es.init(e, t), ec.init(e, t);
 });
-function eZ(e) {
+function eC(e) {
     return new eN({
         type: "optional",
         innerType: e
     });
 }
-const eC = o("ZodMiniNullable", (e, t)=>{
+const eZ = o("ZodMiniNullable", (e, t)=>{
     eo.init(e, t), ec.init(e, t);
 });
 function eL(e) {
-    return new eC({
+    return new eZ({
         type: "nullable",
         innerType: e
     });
@@ -957,8 +957,8 @@ function eI() {
         getter: ()=>ej([
                 eu(),
                 eh(),
-                em(),
-                new ey({
+                e_(),
+                new em({
                     type: "null",
                     ...j(void 0)
                 }),
@@ -968,7 +968,7 @@ function eI() {
     });
     return e;
 }
-let eD = ex({
+let eV = ex({
     error: ej([
         eu(),
         ex({
@@ -977,17 +977,17 @@ let eD = ex({
         })
     ])
 });
-class eV extends Error {
+class eD extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
 function eq(e) {
-    let t = eD.safeParse(e);
+    let t = eV.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new eV("rpc", e) : new eV(e.code, e.message);
+        throw "string" == typeof e ? new eD("rpc", e) : new eD(e.code, e.message);
     }
     return e;
 }
@@ -1006,7 +1006,7 @@ ex({
         data: eu()
     })
 ]);
-let eF = eu(), eU = eh(), eB = em(), eJ = eZ(eF), eK = eZ(eU), eX = eZ(eB);
+let eF = eu(), eU = eh(), eB = e_(), eJ = eC(eF), eK = eC(eU), eX = eC(eB);
 const eG = eT([
     "waiting",
     "wan_reconciling",
@@ -1038,7 +1038,7 @@ const eG = eT([
     "waiting_management"
 ]), eQ = ex({
     id: eF,
-    name: eZ(eL(eF)),
+    name: eC(eL(eF)),
     kind: eT([
         "device_service",
         "ssid",
@@ -1052,9 +1052,9 @@ const eG = eT([
     current_revision: eX,
     management_fresh: eX,
     operation_id: eK,
-    task_id: eZ(eL(eU)),
+    task_id: eC(eL(eU)),
     updated_at: eK,
-    changes: eZ(ew(ex({
+    changes: eC(ew(ex({
         name: eF,
         desired: eF
     })))
@@ -1062,7 +1062,7 @@ const eG = eT([
 let eY = ex({
     state: eF,
     reason: eJ,
-    task_id: eZ(eL(eU)),
+    task_id: eC(eL(eU)),
     instance: eK
 });
 const e0 = ex({
@@ -1109,22 +1109,22 @@ let e1 = ex({
     updated_at: eK,
     settings_verified_at: eL(eU),
     last_inform: eL(eU),
-    last_error: eZ(eL(eF)),
-    persistence_error: eZ(eL(eF)),
-    desired: eZ(eL(ex({
+    last_error: eC(eL(eF)),
+    persistence_error: eC(eL(eF)),
+    desired: eC(eL(ex({
         vlan: eU,
         vlans: ew(eU),
         priority: eU,
         acs_url: eF
     }))),
-    listener: eZ(ex({
+    listener: eC(ex({
         enabled: eB,
         listen: eF,
         path: eF,
         error: eL(eF)
     })),
     endpoint_notice: eJ,
-    manual_steps: eZ(ew(eF))
+    manual_steps: eC(ew(eF))
 });
 const e8 = eP("state", [
     e1,
@@ -1184,7 +1184,7 @@ const e8 = eP("state", [
     optical_sn: eJ,
     cwmp_id: eJ,
     revision: eJ,
-    mode: eZ(eT([
+    mode: eC(eT([
         "apply",
         "plan"
     ])),
@@ -1197,7 +1197,7 @@ const e8 = eP("state", [
     next_retry_at: eK,
     reconcile_reason: eJ,
     items: ew(eQ),
-    cwmp_contract: eZ(ex({
+    cwmp_contract: eC(ex({
         state: eF,
         requested: eF,
         contract: eL(eF),
@@ -1210,9 +1210,9 @@ const e8 = eP("state", [
             binding: eF
         }))
     })),
-    wan_objects: eZ(eA(eF, eI())),
-    wan_lifecycle: eZ(eA(eF, eY)),
-    wan_stage: eZ(eT([
+    wan_objects: eC(eA(eF, eI())),
+    wan_lifecycle: eC(eA(eF, eY)),
+    wan_stage: eC(eT([
         "waiting",
         "inventory",
         "classifying",
@@ -1228,13 +1228,13 @@ const e8 = eP("state", [
         "next",
         "done"
     ])),
-    wifi_objects: eZ(ex({
+    wifi_objects: eC(ex({
         owned: ew(eU),
         pending: eL(eF),
         pending_instance: eL(eU)
     })),
-    wifi_lifecycle: eZ(eA(eF, eY)),
-    wifi_stage: eZ(eT([
+    wifi_lifecycle: eC(eA(eF, eY)),
+    wifi_stage: eC(eT([
         "waiting",
         "inventory",
         "adding",
@@ -1247,7 +1247,7 @@ const e8 = eP("state", [
         "next",
         "done"
     ])),
-    wifi_cleanup: eZ(eT([
+    wifi_cleanup: eC(eT([
         "disable",
         "preserve",
         "delete"
@@ -1347,13 +1347,13 @@ const e4 = ex({
         valid: eM(!0),
         revision: eF,
         devices: eU,
-        error: eZ(ev())
+        error: eC(ev())
     }),
     ex({
         error: eF,
-        valid: eZ(ev()),
-        revision: eZ(ev()),
-        devices: eZ(ev())
+        valid: eC(ev()),
+        revision: eC(ev()),
+        devices: eC(ev())
     })
 ]);
 let e9 = eu(), te = eh(), tt = eL(te), tn = eA(e9, ex({
@@ -1397,7 +1397,7 @@ let ta = ex({
     laser_bias_current_ma: tt,
     temperature_celsius: tt,
     vcc_voltage: tt,
-    cdr_locked: eL(em()),
+    cdr_locked: eL(e_()),
     measurements: tn
 }), ts = ex({
     equipment_id: eL(e9),
@@ -1418,10 +1418,10 @@ const to = ex({
     services: ew(eQ),
     ssids: ew(eQ),
     wifi_sync: eH,
-    acs_bootstrap: eZ(e8),
+    acs_bootstrap: eC(e8),
     identity: eL(ts),
     identity_age_seconds: tt,
-    identity_current: em(),
+    identity_current: e_(),
     fiber_distance_m: tt,
     ranging_delay_rtd_ns: tt,
     equalization_delay_bits: new eR({
@@ -1464,10 +1464,10 @@ const to = ex({
 let tl = ex({
     port: te,
     interface: e9,
-    carrier: em(),
+    carrier: e_(),
     status: e9,
-    onu_id: eZ(te),
-    onu_sn: eZ(e9),
+    onu_id: eC(te),
+    onu_sn: eC(e9),
     link_state: e9
 });
 ex({
@@ -1482,15 +1482,15 @@ ex({
         last_payload_bytes: te
     }))
 }), eA(e9, ex({
-    carrier: eZ(em()),
-    mac: eZ(e9),
-    link: eZ(ex({
-        speed: eZ(te),
-        duplex: eZ(e9),
-        autoneg: eZ(em())
+    carrier: eC(e_()),
+    mac: eC(e9),
+    link: eC(ex({
+        speed: eC(te),
+        duplex: eC(e9),
+        autoneg: eC(e_())
     })),
-    stats: eZ(eA(e9, te))
-})), L.rpc.declare({
+    stats: eC(eA(e9, te))
+})), _("Not started"), _("Collecting identity"), _("Retrying identity"), _("Unsupported"), _("Configuring"), _("Verifying"), _("WAN pending"), _("Verified"), _("Retrying"), _("Offline"), L.rpc.declare({
     object: "luci.fttr",
     method: "get_status",
     reject: !0
@@ -1550,8 +1550,8 @@ let th = ej([
             "apply",
             "plan"
         ]),
-        reconcile: eZ(em()),
-        retry: eZ(em())
+        reconcile: eC(e_()),
+        retry: eC(e_())
     })
 ]);
 const tg = async (e, t)=>th.parse(eq(await tp(e, t)));
@@ -1580,163 +1580,136 @@ L.rpc.declare({
     active_path: eu(),
     size: eh(),
     sha256: eu(),
-    data: eZ(eu()),
+    data: eC(eu()),
     factory: ex({
-        detected: em(),
+        detected: e_(),
         device: eu(),
-        has_data: em(),
+        has_data: e_(),
         sha256: eu(),
         data: eu()
     }),
     firmware: ex({
-        exists: em(),
+        exists: e_(),
         path: eu(),
         size: eh(),
         sha256: eu(),
         data: eu()
     }),
-    error: eZ(eu())
+    error: eC(eu())
 }), ex({
-    success: em(),
+    success: e_(),
     path: eu(),
     size: eh(),
     sha256: eu(),
-    error: eZ(eu())
+    error: eC(eu())
 }), ex({
-    success: em(),
-    output: eZ(eu()),
-    error: eZ(eu())
+    success: e_(),
+    output: eC(eu()),
+    error: eC(eu())
 });
-let tm = {
+let t_ = {
     ready: {
-        label: "\u5C31\u7EEA",
+        label: _("Ready"),
         type: "success"
     },
     verified: {
-        label: "\u5DF2\u6821\u9A8C",
+        label: _("Verified"),
         type: "success"
     },
     online: {
-        label: "\u5728\u7EBF",
+        label: _("Online"),
         type: "success"
     },
     completed: {
-        label: "\u5DF2\u5B8C\u6210",
+        label: _("Completed"),
         type: "success"
     },
     applied: {
-        label: "\u5DF2\u5E94\u7528",
+        label: _("Applied"),
         type: "success"
     },
     waiting_inform: {
-        label: "\u7B49\u5F85 Inform",
+        label: _("Waiting Inform"),
         type: "warning"
     },
     pending: {
-        label: "\u5F85\u540C\u6B65",
+        label: _("Pending"),
         type: "warning"
     },
     awaiting_apply: {
-        label: "\u5F85\u5E94\u7528\u6388\u6743",
+        label: _("Awaiting Apply"),
         type: "warning"
     },
     syncing: {
-        label: "\u540C\u6B65\u4E2D",
+        label: _("Syncing"),
         type: "info"
     },
     discovering: {
-        label: "\u63A2\u6D4B\u4E2D",
+        label: _("Discovering"),
         type: "info"
     },
     recovering: {
-        label: "\u6838\u5BF9\u6062\u590D\u4E2D",
+        label: _("Recovering"),
         type: "info"
     },
     waiting_management: {
-        label: "\u7B49\u5F85\u7BA1\u7406\u8FDE\u63A5",
+        label: _("Waiting Management"),
         type: "warning"
     },
     waiting_task: {
-        label: "\u7B49\u5F85\u4EFB\u52A1\u5B8C\u6210",
+        label: _("Waiting Task"),
         type: "info"
     },
     reconcile_required: {
-        label: "\u5F85\u6838\u5BF9\u5DEE\u5F02",
+        label: _("Reconcile Required"),
         type: "warning"
     },
     not_started: {
-        label: "\u672A\u542F\u52A8",
+        label: _("Not Started"),
         type: "neutral"
     },
     disabled: {
-        label: "\u5DF2\u7981\u7528",
+        label: _("Disabled"),
         type: "neutral"
     },
     enabled: {
-        label: "\u5DF2\u542F\u7528",
+        label: _("Enabled"),
         type: "success"
     },
     interrupted: {
-        label: "\u5DF2\u4E2D\u65AD",
+        label: _("Interrupted"),
         type: "danger"
     },
     failed: {
-        label: "\u5DF2\u5931\u8D25",
+        label: _("Failed"),
         type: "danger"
     },
     stale: {
-        label: "\u5DF2\u5931\u6548",
+        label: _("Stale"),
         type: "warning"
     },
     error: {
-        label: "\u5F02\u5E38",
+        label: _("Error"),
         type: "danger"
     },
     deleted: {
-        label: "\u5DF2\u5220\u9664",
+        label: _("Deleted"),
         type: "neutral"
     }
-}, ty = {
-    waiting_inform: "Waiting Inform",
-    waiting_management: "Waiting Management",
-    waiting_task: "Waiting Task",
-    recovering: "Recovering",
-    reconcile_required: "Reconcile Required",
-    not_started: "Not Started",
-    awaiting_apply: "Awaiting Apply",
-    ready: "Ready",
-    verified: "Verified",
-    online: "Online",
-    completed: "Completed",
-    applied: "Applied",
-    syncing: "Syncing",
-    discovering: "Discovering",
-    disabled: "Disabled",
-    enabled: "Enabled",
-    interrupted: "Interrupted",
-    failed: "Failed",
-    stale: "Stale",
-    error: "Error",
-    deleted: "Deleted",
-    pending: "Pending"
-};
-function t_(e) {
-    return _(e) || e;
-}
-let tv = (e)=>null == e || "" === e ? "\u2014" : String(e), tb = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
-function tw(e, t) {
+}, tm = (e)=>null == e || "" === e ? "\u2014" : String(e), ty = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
+function tv(e, t) {
     if (!e) return s("span", {
         class: "fttr-badge fttr-badge-neutral",
         children: "\u2014"
     });
-    let n = /zh/i.test(document.documentElement.getAttribute("lang") || window.L?.env?.lang || navigator.language || ""), r = tm[e], i = n ? r?.label || e : ty[e] || e, a = r?.type || "neutral";
+    let n = t_[e], r = n?.label || tm(e), i = n?.type || "neutral";
     return s("span", {
-        class: `fttr-badge fttr-badge-${a}`,
+        class: `fttr-badge fttr-badge-${i}`,
         title: t || e,
-        children: i
+        children: r
     });
 }
-function tz(e) {
+function tb(e) {
     var t, n, r, i, a, o;
     return o = {
         class: "table-wrapper",
@@ -1747,22 +1720,22 @@ function tz(e) {
                     children: (t = {
                         children: [
                             s("th", {
-                                children: t_("Configuration item")
+                                children: _("Configuration item")
                             }),
                             s("th", {
-                                children: t_("Type")
+                                children: _("Type")
                             }),
                             s("th", {
-                                children: t_("State")
+                                children: _("State")
                             }),
                             s("th", {
-                                children: t_("Evidence freshness")
+                                children: _("Evidence freshness")
                             }),
                             s("th", {
-                                children: t_("Last update / task")
+                                children: _("Last update / task")
                             }),
                             s("th", {
-                                children: t_("Reason / desired changes")
+                                children: _("Reason / desired changes")
                             })
                         ]
                     }, s("tr", t))
@@ -1774,7 +1747,7 @@ function tz(e) {
                             children: [
                                 (r = {
                                     children: s("strong", {
-                                        children: tv(e.name || e.id)
+                                        children: tm(e.name || e.id)
                                     })
                                 }, s("td", r)),
                                 (i = {
@@ -1794,13 +1767,13 @@ function tz(e) {
                                                 case "tr069":
                                                     return "TR-069";
                                                 default:
-                                                    return "port_binding" === t ? t_("Binding") : tv(e || t);
+                                                    return "port_binding" === t ? _("Binding") : tm(e || t);
                                             }
                                         }(e.service_type ?? "", e.kind)
                                     })
                                 }, s("td", i)),
                                 s("td", {
-                                    children: tw(e.state)
+                                    children: tv(e.state)
                                 }),
                                 (o = {
                                     children: (t = e.current_revision, n = e.management_fresh, a = {
@@ -1809,22 +1782,22 @@ function tz(e) {
                                             !0 === t ? s("span", {
                                                 class: "fttr-badge fttr-badge-info",
                                                 style: "font-size:78%",
-                                                children: t_("Current configuration")
+                                                children: _("Current configuration")
                                             }) : !1 === t ? s("span", {
                                                 class: "fttr-badge fttr-badge-neutral",
                                                 style: "font-size:78%",
-                                                children: t_("Previous configuration")
+                                                children: _("Previous configuration")
                                             }) : s("span", {
                                                 children: "\u2014"
                                             }),
                                             !0 === n ? s("span", {
                                                 class: "fttr-badge fttr-badge-success",
                                                 style: "font-size:78%",
-                                                children: t_("Management fresh")
+                                                children: _("Management fresh")
                                             }) : !1 === n ? s("span", {
                                                 class: "fttr-badge fttr-badge-warning",
                                                 style: "font-size:78%",
-                                                children: t_("Management stale")
+                                                children: _("Management stale")
                                             }) : null
                                         ]
                                     }, s("div", a))
@@ -1832,13 +1805,13 @@ function tz(e) {
                                 (l = {
                                     children: [
                                         s("div", {
-                                            children: tb(e.updated_at)
+                                            children: ty(e.updated_at)
                                         }),
                                         void 0 !== e.task_id && null !== e.task_id ? s("span", {
                                             class: "fttr-badge fttr-badge-neutral",
                                             style: "font-size:75%;margin-top:2px",
                                             children: [
-                                                t_("Task"),
+                                                _("Task"),
                                                 " #",
                                                 e.task_id
                                             ]
@@ -1877,7 +1850,7 @@ function tz(e) {
                         children: s("td", {
                             colSpan: 6,
                             style: "text-align:center;color:#888;padding:1em",
-                            children: t_("No desired items configured.")
+                            children: _("No desired items configured.")
                         })
                     }, s("tr", r))
                 }, s("tbody", i))
@@ -1905,7 +1878,7 @@ let main = L.view.extend({
             children: [
                 s("option", {
                     value: "all",
-                    children: t_("All devices")
+                    children: _("All devices")
                 }),
                 (d.devices ?? []).map((e)=>s("option", {
                         value: e.device,
@@ -1914,83 +1887,83 @@ let main = L.view.extend({
             ]
         }, s("select", t)), g = s("div", {}), m = s("div", {}), y = d, v = c, b = !1, w = !1, z = [], x = async (e)=>{
             if (!b) {
-                b = !0, Z(y);
+                b = !0, C(y);
                 try {
                     var t;
                     await tg("reset_state", e.device), f.replaceChildren((t = {
                         class: "alert-message info",
-                        children: t_("Synchronization state reset for %s. Preview differences to read the current device state.").replace("%s", e.name || e.optical_sn)
-                    }, s("div", t))), Z(await tu());
+                        children: _("Synchronization state reset for %s. Preview differences to read the current device state.").replace("%s", e.name || e.optical_sn)
+                    }, s("div", t))), C(await tu());
                 } catch (e) {
                     f.replaceChildren(s("div", {
                         class: "alert-message danger",
                         children: String(e)
                     }));
                 } finally{
-                    b = !1, Z(y);
+                    b = !1, C(y);
                 }
             }
         }, k = async (e)=>{
             if (!b) {
                 for (let e of (b = !0, z))e.disabled = !0;
-                Z(y);
+                C(y);
                 try {
                     var t;
-                    let n = await tg(e, h.value), r = e.startsWith("management_") ? t_("Management operation started; status is refreshed below.") : t_("Started: %s").replace("%s", "operation_ids" in n ? n.operation_ids.join(", ") : "\u2014");
+                    let n = await tg(e, h.value), r = e.startsWith("management_") ? _("Management operation started; status is refreshed below.") : _("Started: %s").replace("%s", "operation_ids" in n ? n.operation_ids.join(", ") : "\u2014");
                     f.replaceChildren((t = {
                         class: "alert-message info",
                         children: r
-                    }, s("div", t))), Z(await tu());
+                    }, s("div", t))), C(await tu());
                 } catch (e) {
                     f.replaceChildren(s("div", {
                         class: "alert-message danger",
                         children: String(e)
                     }));
                 } finally{
-                    b = !1, Z(y);
+                    b = !1, C(y);
                 }
             }
         }, j = s("button", {
             type: "button",
             class: "cbi-button cbi-button-action",
             onclick: ()=>k("plan"),
-            children: t_("Preview differences (read-only)")
+            children: _("Preview differences (read-only)")
         }), S = s("button", {
             type: "button",
             class: "cbi-button cbi-button-positive",
             onclick: ()=>k("apply"),
-            children: t_("Apply differences")
+            children: _("Apply differences")
         }), P = s("button", {
             type: "button",
             class: "cbi-button cbi-button-action",
-            title: t_("Read current device parameters and auto-verify matching settings without writing to device"),
+            title: _("Read current device parameters and auto-verify matching settings without writing to device"),
             onclick: ()=>k("reconcile"),
-            children: t_("Reconcile (read-only)")
+            children: _("Reconcile (read-only)")
         }), O = s("button", {
             type: "button",
             class: "cbi-button cbi-button-positive",
-            title: t_("Clear backoff delays and retry safe difference synchronization"),
+            title: _("Clear backoff delays and retry safe difference synchronization"),
             onclick: ()=>k("retry"),
-            children: t_("Self-heal / retry")
+            children: _("Self-heal / retry")
         });
         z.push(j, S, P, O);
         let A = s("button", {
             type: "button",
             class: "cbi-button cbi-button-action",
             onclick: ()=>k("management_plan"),
-            children: t_("Check management differences (read-only)")
+            children: _("Check management differences (read-only)")
         }), $ = s("button", {
             type: "button",
             class: "cbi-button cbi-button-positive",
             onclick: ()=>k("management_apply"),
-            children: t_("Apply management configuration")
+            children: _("Apply management configuration")
         });
         z.push(A, $);
         let T = (n = {
             class: "cbi-section",
             children: [
                 s("h3", {
-                    children: t_("Isolated TR069 management network")
+                    children: _("Isolated TR069 management network")
                 }),
                 m,
                 s("p", {
@@ -2006,7 +1979,7 @@ let main = L.view.extend({
             class: "cbi-section",
             children: [
                 s("h3", {
-                    children: t_("Manual synchronization")
+                    children: _("Manual synchronization")
                 }),
                 (i = {
                     style: "display:flex;align-items:center;flex-wrap:wrap;gap:12px",
@@ -2016,7 +1989,7 @@ let main = L.view.extend({
                             children: [
                                 s("span", {
                                     children: [
-                                        t_("Target"),
+                                        _("Target"),
                                         ":"
                                     ]
                                 }),
@@ -2250,7 +2223,7 @@ let main = L.view.extend({
 					`
                 }),
                 s("h2", {
-                    children: t_("FTTR synchronization")
+                    children: _("FTTR synchronization")
                 }),
                 p,
                 u,
@@ -2260,8 +2233,8 @@ let main = L.view.extend({
                 g
             ]
         }, s("div", l));
-        function Z(e) {
-            var t, n, r, i, o, l, d, c, f, w, z, P, O, T, N, Z, C, R, W, I, D, V, q, F, U, B, J, K, X, G, H;
+        function C(e) {
+            var t, n, r, i, o, l, d, c, f, w, z, P, O, T, N, C, Z, R, W, I, V, D, q, F, U, B, J, K, X, G, H;
             y = e, p.replaceChildren((l = {
                 "data-provisioning-summary": "true",
                 style: "display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%",
@@ -2271,13 +2244,13 @@ let main = L.view.extend({
                             s("strong", {
                                 style: "margin-right:.4em",
                                 children: [
-                                    t_("Provisioning"),
+                                    _("Provisioning"),
                                     ":"
                                 ]
                             }),
                             s("span", {
                                 class: `fttr-badge ${e.enabled ? "fttr-badge-success" : "fttr-badge-neutral"}`,
-                                children: e.enabled ? t_("Enabled") : t_("Disabled")
+                                children: e.enabled ? _("Enabled") : _("Disabled")
                             })
                         ]
                     }, s("span", t)),
@@ -2286,13 +2259,13 @@ let main = L.view.extend({
                             s("span", {
                                 style: "color:#888;margin-right:.3em",
                                 children: [
-                                    t_("Mode"),
+                                    _("Mode"),
                                     ":"
                                 ]
                             }),
                             s("span", {
                                 class: "fttr-badge fttr-badge-info",
-                                children: tv(e.mode)
+                                children: tm(e.mode)
                             })
                         ]
                     }, s("span", n)),
@@ -2301,12 +2274,12 @@ let main = L.view.extend({
                             s("span", {
                                 style: "color:#888;margin-right:.3em",
                                 children: [
-                                    t_("Revision"),
+                                    _("Revision"),
                                     ":"
                                 ]
                             }),
                             s("code", {
-                                children: tv(e.revision)
+                                children: tm(e.revision)
                             })
                         ]
                     }, s("span", r)),
@@ -2315,7 +2288,7 @@ let main = L.view.extend({
                             s("span", {
                                 style: "color:#888;margin-right:.3em",
                                 children: [
-                                    t_("Triggers"),
+                                    _("Triggers"),
                                     ":"
                                 ]
                             }),
@@ -2329,7 +2302,7 @@ let main = L.view.extend({
                             s("span", {
                                 style: "color:#888;margin-right:.3em",
                                 children: [
-                                    t_("Interval (minutes)"),
+                                    _("Interval (minutes)"),
                                     ":"
                                 ]
                             }),
@@ -2354,7 +2327,7 @@ let main = L.view.extend({
                 let t = h.value;
                 h.replaceChildren(...Y.map((t)=>s("option", {
                         value: t,
-                        children: "all" === t ? t_("All devices") : t.startsWith("group:") ? (e.devices ?? []).find((e)=>`group:${e.group}` === t)?.group_name || t : (e.devices ?? []).find((e)=>e.device === t)?.name || t
+                        children: "all" === t ? _("All devices") : t.startsWith("group:") ? (e.devices ?? []).find((e)=>`group:${e.group}` === t)?.group_name || t : (e.devices ?? []).find((e)=>e.device === t)?.name || t
                     }))), h.value = Y.includes(t) ? t : "all";
             }
             M.hidden = "manual" !== e.mode || !L.hasViewPermission();
@@ -2377,12 +2350,12 @@ let main = L.view.extend({
                                     s("span", {
                                         class: "fttr-pill-label",
                                         children: [
-                                            t_("State"),
+                                            _("State"),
                                             ":"
                                         ]
                                     }),
                                     " ",
-                                    tw(et?.state)
+                                    tv(et?.state)
                                 ]
                             }, s("span", d)),
                             (c = {
@@ -2390,13 +2363,13 @@ let main = L.view.extend({
                                     s("span", {
                                         class: "fttr-pill-label",
                                         children: [
-                                            t_("Desired version"),
+                                            _("Desired version"),
                                             ":"
                                         ]
                                     }),
                                     " ",
                                     s("code", {
-                                        children: tv(et?.desired_version)
+                                        children: tm(et?.desired_version)
                                     })
                                 ]
                             }, s("span", c)),
@@ -2405,23 +2378,23 @@ let main = L.view.extend({
                                     s("span", {
                                         class: "fttr-pill-label",
                                         children: [
-                                            t_("Applied version"),
+                                            _("Applied version"),
                                             ":"
                                         ]
                                     }),
                                     " ",
                                     s("code", {
-                                        children: tv(et?.applied_version)
+                                        children: tm(et?.applied_version)
                                     })
                                 ]
                             }, s("span", f)),
                             et?.desired_version || et?.applied_version ? (w = {
                                 children: ei ? s("span", {
                                     class: "fttr-badge fttr-badge-success",
-                                    children: t_("Synchronized")
+                                    children: _("Synchronized")
                                 }) : s("span", {
                                     class: "fttr-badge fttr-badge-warning",
-                                    children: t_("Pending apply")
+                                    children: _("Pending apply")
                                 })
                             }, s("span", w)) : null,
                             et?.next_retry_at ? (z = {
@@ -2429,12 +2402,12 @@ let main = L.view.extend({
                                     s("span", {
                                         class: "fttr-pill-label",
                                         children: [
-                                            t_("Next retry"),
+                                            _("Next retry"),
                                             ":"
                                         ]
                                     }),
                                     " ",
-                                    tb(et.next_retry_at)
+                                    ty(et.next_retry_at)
                                 ]
                             }, s("span", z)) : null
                         ]
@@ -2450,7 +2423,7 @@ let main = L.view.extend({
                                         children: [
                                             s("span", {
                                                 class: "fttr-kv-label",
-                                                children: t_("Management interface")
+                                                children: _("Management interface")
                                             }),
                                             s("strong", {
                                                 children: "\u2014"
@@ -2462,14 +2435,14 @@ let main = L.view.extend({
                                         children: [
                                             s("span", {
                                                 class: "fttr-kv-label",
-                                                children: t_("Management VLAN")
+                                                children: _("Management VLAN")
                                             }),
                                             s("span", {
                                                 children: [
                                                     "VLAN ",
-                                                    tv(en?.vlan.join(", ")),
+                                                    tm(en?.vlan.join(", ")),
                                                     " (Prio ",
-                                                    tv(en?.priority),
+                                                    tm(en?.priority),
                                                     ")"
                                                 ]
                                             })
@@ -2480,39 +2453,39 @@ let main = L.view.extend({
                             (W = {
                                 class: "fttr-card",
                                 children: [
-                                    (Z = {
+                                    (C = {
                                         class: "fttr-kv-row",
                                         children: [
                                             s("span", {
                                                 class: "fttr-kv-label",
-                                                children: t_("Service IP / Netmask")
+                                                children: _("Service IP / Netmask")
                                             }),
                                             s("code", {
-                                                children: tv(en?.address)
+                                                children: tm(en?.address)
                                             })
                                         ]
-                                    }, s("div", Z)),
+                                    }, s("div", C)),
                                     (R = {
                                         class: "fttr-kv-row",
                                         children: [
                                             s("span", {
                                                 class: "fttr-kv-label",
-                                                children: t_("DHCP service")
+                                                children: _("DHCP service")
                                             }),
-                                            (C = {
+                                            (Z = {
                                                 children: null === en ? "\u2014" : en.dhcp_enabled ? s("span", {
                                                     class: "fttr-badge fttr-badge-success",
-                                                    children: t_("Enabled")
+                                                    children: _("Enabled")
                                                 }) : s("span", {
                                                     class: "fttr-badge fttr-badge-neutral",
-                                                    children: t_("Disabled")
+                                                    children: _("Disabled")
                                                 })
-                                            }, s("span", C))
+                                            }, s("span", Z))
                                         ]
                                     }, s("div", R))
                                 ]
                             }, s("div", W)),
-                            (V = {
+                            (D = {
                                 class: "fttr-card",
                                 children: [
                                     (I = {
@@ -2520,28 +2493,28 @@ let main = L.view.extend({
                                         children: [
                                             s("span", {
                                                 class: "fttr-kv-label",
-                                                children: t_("ACS URL")
+                                                children: _("ACS URL")
                                             }),
                                             s("code", {
                                                 style: "font-size:80%",
-                                                children: tv(en?.acs_url)
+                                                children: tm(en?.acs_url)
                                             })
                                         ]
                                     }, s("div", I)),
-                                    (D = {
+                                    (V = {
                                         class: "fttr-kv-row",
                                         children: [
                                             s("span", {
                                                 class: "fttr-kv-label",
-                                                children: t_("Mode")
+                                                children: _("Mode")
                                             }),
                                             s("span", {
-                                                children: tv(en?.mode)
+                                                children: tm(en?.mode)
                                             })
                                         ]
-                                    }, s("div", D))
+                                    }, s("div", V))
                                 ]
-                            }, s("div", V))
+                            }, s("div", D))
                         ]
                     }, s("div", q)),
                     er.length ? (X = {
@@ -2549,7 +2522,7 @@ let main = L.view.extend({
                         children: [
                             s("h5", {
                                 style: "margin-bottom:4px;font-size:90%",
-                                children: t_("Pending configuration changes")
+                                children: _("Pending configuration changes")
                             }),
                             (K = {
                                 class: "table-wrapper",
@@ -2561,13 +2534,13 @@ let main = L.view.extend({
                                             children: (F = {
                                                 children: [
                                                     s("th", {
-                                                        children: t_("Operation")
+                                                        children: _("Operation")
                                                     }),
                                                     s("th", {
-                                                        children: t_("Configuration item")
+                                                        children: _("Configuration item")
                                                     }),
                                                     s("th", {
-                                                        children: t_("Reason / desired changes")
+                                                        children: _("Reason / desired changes")
                                                     })
                                                 ]
                                             }, s("tr", F))
@@ -2609,14 +2582,14 @@ let main = L.view.extend({
                     }) : null,
                     s("p", {
                         style: "font-size:85%;color:#888;margin-top:8px;margin-bottom:8px",
-                        children: t_("Saving in manual mode does not create interfaces, change firewall rules or configure child devices. Apply explicitly to authorize the current management configuration.")
+                        children: _("Saving in manual mode does not create interfaces, change firewall rules or configure child devices. Apply explicitly to authorize the current management configuration.")
                     }),
                     (G = {
                         style: "margin-top:6px;margin-bottom:10px",
                         children: [
                             s("summary", {
                                 style: "cursor:pointer;user-select:none;font-size:85%;color:#666",
-                                children: t_("Advanced diagnostics / Raw configuration (JSON)")
+                                children: _("Advanced diagnostics / Raw configuration (JSON)")
                             }),
                             s("pre", {
                                 style: "white-space:pre-wrap;overflow-wrap:anywhere;font-size:80%;max-height:200px;overflow-y:auto;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px",
@@ -2632,10 +2605,10 @@ let main = L.view.extend({
             }, s("div", H)));
             let ea = new Set(Array.from(g.querySelectorAll("details[open]")).map((e)=>e.getAttribute("data-device")));
             g.replaceChildren(...(e.devices ?? []).map((e)=>{
-                var t, n, r, i, o, l, d, c, p, u, f, h, g, m, y, v, w, z, j, S, P, O, A, T, M, N, Z, C, R, W, I, D, V, q, F, U, B, J, K, X, G, H, Q, Y, ee, et, en, er, ei, es, eo, el, ed, ec, ep, eu, ef, eh, eg, em;
-                let ey, e_;
-                return t = ea.has(e.device), n = ()=>k("management_apply"), r = $.disabled, i = b, e_ = [
-                    ...Object.entries((ey = e.provisioning).wan_lifecycle ?? {}).map((e)=>{
+                var t, n, r, i, o, l, d, c, p, u, f, h, g, m, y, v, w, z, j, S, P, O, A, T, M, N, C, Z, R, W, I, V, D, q, F, U, B, J, K, X, G, H, Q, Y, ee, et, en, er, ei, es, eo, el, ed, ec, ep, eu, ef, eh, eg, e_;
+                let em, ey;
+                return t = ea.has(e.device), n = ()=>k("management_apply"), r = $.disabled, i = b, ey = [
+                    ...Object.entries((em = e.provisioning).wan_lifecycle ?? {}).map((e)=>{
                         let [t, n] = e;
                         return {
                             ...n,
@@ -2644,7 +2617,7 @@ let main = L.view.extend({
                             service_type: "wan"
                         };
                     }),
-                    ...Object.entries(ey.wifi_lifecycle ?? {}).map((e)=>{
+                    ...Object.entries(em.wifi_lifecycle ?? {}).map((e)=>{
                         let [t, n] = e;
                         return {
                             ...n,
@@ -2653,7 +2626,7 @@ let main = L.view.extend({
                             service_type: "wifi"
                         };
                     })
-                ], em = {
+                ], e_ = {
                     class: "cbi-section fttr-device-card",
                     children: [
                         (f = {
@@ -2682,19 +2655,19 @@ let main = L.view.extend({
                                             children: [
                                                 e.group_name ? s("span", {
                                                     class: "fttr-badge fttr-badge-neutral",
-                                                    title: t_("Group"),
+                                                    title: _("Group"),
                                                     children: e.group_name
                                                 }) : null,
                                                 e.template_name ? s("span", {
                                                     class: "fttr-badge fttr-badge-neutral",
-                                                    title: t_("Template"),
+                                                    title: _("Template"),
                                                     children: e.template_name
                                                 }) : null,
                                                 (d = {
                                                     style: "font-size:85%;color:#666",
                                                     children: [
                                                         "OMCI: ",
-                                                        tw(e.omci_management?.state),
+                                                        tv(e.omci_management?.state),
                                                         e.omci_management?.reason ? s("span", {
                                                             style: "margin-left:4px;color:#888",
                                                             title: e.omci_management.reason,
@@ -2716,12 +2689,12 @@ let main = L.view.extend({
                                         type: "button",
                                         class: "fttr-btn-subtle",
                                         disabled: i,
-                                        title: t_("Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again."),
+                                        title: _("Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again."),
                                         onclick: ()=>{
                                             let t = e.name || e.optical_sn;
-                                            window.confirm(t_("Are you sure you want to reset the synchronization state for %s?").replace("%s", t)) && x(e);
+                                            window.confirm(_("Are you sure you want to reset the synchronization state for %s?").replace("%s", t)) && x(e);
                                         },
-                                        children: t_("Reset synchronization state")
+                                        children: _("Reset synchronization state")
                                     })
                                 }, s("div", u)) : null
                             ]
@@ -2739,15 +2712,15 @@ let main = L.view.extend({
                                                     children: "CWMP:"
                                                 }),
                                                 " ",
-                                                tw(e.management?.state, e.management?.last_inform ? `${t_("Last Inform: %s").replace("%s", tb(e.management.last_inform))}${null != e.management.age_seconds ? ` (${function(e) {
+                                                tv(e.management?.state, e.management?.last_inform ? `${_("Last Inform: %s").replace("%s", ty(e.management.last_inform))}${null != e.management.age_seconds ? ` (${function(e) {
                                                     if (null == e || e < 0) return null;
-                                                    if (e < 60) return t_(1 === e ? "%d second ago" : "%d seconds ago").replace("%d", String(e));
+                                                    if (e < 60) return (1 === e ? _("%d second ago") : _("%d seconds ago")).replace("%d", String(e));
                                                     let t = Math.floor(e / 60);
-                                                    if (t < 60) return t_(1 === t ? "%d minute ago" : "%d minutes ago").replace("%d", String(t));
+                                                    if (t < 60) return (1 === t ? _("%d minute ago") : _("%d minutes ago")).replace("%d", String(t));
                                                     let n = Math.floor(e / 3600);
-                                                    if (n < 24) return t_(1 === n ? "%d hour ago" : "%d hours ago").replace("%d", String(n));
+                                                    if (n < 24) return (1 === n ? _("%d hour ago") : _("%d hours ago")).replace("%d", String(n));
                                                     let r = Math.floor(e / 86400);
-                                                    return t_(1 === r ? "%d day ago" : "%d days ago").replace("%d", String(r));
+                                                    return (1 === r ? _("%d day ago") : _("%d days ago")).replace("%d", String(r));
                                                 }(e.management.age_seconds)})` : ""}` : void 0)
                                             ]
                                         }, s("span", h)),
@@ -2756,12 +2729,12 @@ let main = L.view.extend({
                                                 s("span", {
                                                     class: "fttr-pill-label",
                                                     children: [
-                                                        t_("Synchronization"),
+                                                        _("Synchronization"),
                                                         ":"
                                                     ]
                                                 }),
                                                 " ",
-                                                tw(ey.state)
+                                                tv(em.state)
                                             ]
                                         }, s("span", g)),
                                         (m = {
@@ -2771,7 +2744,7 @@ let main = L.view.extend({
                                                     children: "Wi-Fi:"
                                                 }),
                                                 " ",
-                                                tw(e.wifi_sync)
+                                                tv(e.wifi_sync)
                                             ]
                                         }, s("span", m))
                                     ]
@@ -2781,13 +2754,13 @@ let main = L.view.extend({
                                     children: [
                                         (v = {
                                             children: [
-                                                t_("Operation"),
+                                                _("Operation"),
                                                 ": ",
                                                 s("strong", {
-                                                    children: tv(ey.operation_id)
+                                                    children: tm(em.operation_id)
                                                 }),
                                                 " (",
-                                                tv(ey.mode),
+                                                tm(em.mode),
                                                 ")"
                                             ]
                                         }, s("span", v)),
@@ -2796,9 +2769,9 @@ let main = L.view.extend({
                                         }),
                                         s("span", {
                                             children: [
-                                                t_("Started"),
+                                                _("Started"),
                                                 ": ",
-                                                tb(ey.started_at)
+                                                ty(em.started_at)
                                             ]
                                         }),
                                         s("span", {
@@ -2806,14 +2779,14 @@ let main = L.view.extend({
                                         }),
                                         (w = {
                                             children: [
-                                                t_("Revision"),
+                                                _("Revision"),
                                                 ": ",
                                                 s("code", {
-                                                    children: tv(ey.revision)
+                                                    children: tm(em.revision)
                                                 })
                                             ]
                                         }, s("span", w)),
-                                        ey.attempts ? (j = {
+                                        em.attempts ? (j = {
                                             children: [
                                                 s("span", {
                                                     children: "\xb7"
@@ -2821,23 +2794,23 @@ let main = L.view.extend({
                                                 (z = {
                                                     style: "color:#e67e22",
                                                     children: [
-                                                        t_("Attempts"),
+                                                        _("Attempts"),
                                                         ": ",
                                                         s("strong", {
-                                                            children: ey.attempts
+                                                            children: em.attempts
                                                         })
                                                     ]
                                                 }, s("span", z))
                                             ]
                                         }, s(a, j)) : null,
-                                        ey.next_retry_at && ey.next_retry_at > Math.floor(Date.now() / 1000) ? (S = {
+                                        em.next_retry_at && em.next_retry_at > Math.floor(Date.now() / 1000) ? (S = {
                                             children: [
                                                 s("span", {
                                                     children: "\xb7"
                                                 }),
                                                 s("span", {
                                                     style: "color:#d35400",
-                                                    children: t_("Next self-healing retry in %d seconds").replace("%d", String(ey.next_retry_at - Math.floor(Date.now() / 1000)))
+                                                    children: _("Next self-healing retry in %d seconds").replace("%d", String(em.next_retry_at - Math.floor(Date.now() / 1000)))
                                                 })
                                             ]
                                         }, s(a, S)) : null
@@ -2845,18 +2818,18 @@ let main = L.view.extend({
                                 }, s("div", P))
                             ]
                         }, s("div", O)),
-                        ey.reconcile_reason ? s("div", {
+                        em.reconcile_reason ? s("div", {
                             class: "alert-message info",
                             style: "margin:8px 0;font-size:85%",
-                            children: t_(ey.reconcile_reason)
+                            children: em.reconcile_reason
                         }) : null,
-                        tz(ey.items ?? []),
-                        ey.cwmp_contract ? (D = {
+                        tb(em.items ?? []),
+                        em.cwmp_contract ? (V = {
                             style: "margin-top:1.2em",
                             children: [
                                 s("h4", {
                                     style: "margin-bottom:0.5em",
-                                    children: t_("CWMP contract")
+                                    children: _("CWMP contract")
                                 }),
                                 (I = {
                                     class: "fttr-card",
@@ -2867,17 +2840,17 @@ let main = L.view.extend({
                                                 (A = {
                                                     children: [
                                                         s("span", {
-                                                            children: tv(ey.cwmp_contract.requested)
+                                                            children: tm(em.cwmp_contract.requested)
                                                         }),
                                                         " \u2192",
                                                         " ",
                                                         s("code", {
-                                                            children: tv(ey.cwmp_contract.contract)
+                                                            children: tm(em.cwmp_contract.contract)
                                                         })
                                                     ]
                                                 }, s("div", A)),
                                                 s("div", {
-                                                    children: tw(ey.cwmp_contract.state)
+                                                    children: tv(em.cwmp_contract.state)
                                                 })
                                             ]
                                         }, s("div", T)),
@@ -2891,7 +2864,7 @@ let main = L.view.extend({
                                                             children: "WAN:"
                                                         }),
                                                         " ",
-                                                        tw(ey.cwmp_contract.capabilities?.wan)
+                                                        tv(em.cwmp_contract.capabilities?.wan)
                                                     ]
                                                 }, s("span", M)),
                                                 (N = {
@@ -2901,28 +2874,28 @@ let main = L.view.extend({
                                                             children: "WLAN:"
                                                         }),
                                                         " ",
-                                                        tw(ey.cwmp_contract.capabilities?.wlan)
+                                                        tv(em.cwmp_contract.capabilities?.wlan)
                                                     ]
                                                 }, s("span", N)),
-                                                (Z = {
-                                                    children: [
-                                                        s("span", {
-                                                            style: "color:#888",
-                                                            children: [
-                                                                t_("Bindings"),
-                                                                ":"
-                                                            ]
-                                                        }),
-                                                        " ",
-                                                        tw(ey.cwmp_contract.capabilities?.binding)
-                                                    ]
-                                                }, s("span", Z)),
                                                 (C = {
                                                     children: [
                                                         s("span", {
                                                             style: "color:#888",
                                                             children: [
-                                                                t_("Cache"),
+                                                                _("Bindings"),
+                                                                ":"
+                                                            ]
+                                                        }),
+                                                        " ",
+                                                        tv(em.cwmp_contract.capabilities?.binding)
+                                                    ]
+                                                }, s("span", C)),
+                                                (Z = {
+                                                    children: [
+                                                        s("span", {
+                                                            style: "color:#888",
+                                                            children: [
+                                                                _("Cache"),
                                                                 ":"
                                                             ]
                                                         }),
@@ -2930,30 +2903,30 @@ let main = L.view.extend({
                                                         s("span", {
                                                             class: "fttr-badge fttr-badge-info",
                                                             style: "font-size:80%",
-                                                            children: ey.cwmp_contract.cache_hit ? t_("Matched") : t_("Fresh discovery")
+                                                            children: em.cwmp_contract.cache_hit ? _("Matched") : _("Fresh discovery")
                                                         })
                                                     ]
-                                                }, s("span", C))
+                                                }, s("span", Z))
                                             ]
                                         }, s("div", R)),
-                                        ey.cwmp_contract.schema ? (W = {
+                                        em.cwmp_contract.schema ? (W = {
                                             style: "font-size:85%;color:#666",
                                             children: [
-                                                t_("Schema"),
+                                                _("Schema"),
                                                 ": ",
                                                 s("code", {
-                                                    children: ey.cwmp_contract.schema
+                                                    children: em.cwmp_contract.schema
                                                 })
                                             ]
                                         }, s("div", W)) : null,
-                                        ey.cwmp_contract.reason ? s("div", {
+                                        em.cwmp_contract.reason ? s("div", {
                                             style: "font-size:85%;margin-top:4px;color:#e67e22",
-                                            children: ey.cwmp_contract.reason
+                                            children: em.cwmp_contract.reason
                                         }) : null
                                     ]
                                 }, s("div", I))
                             ]
-                        }, s("div", D)) : null,
+                        }, s("div", V)) : null,
                         (o = e.acs_bootstrap) ? (ed = {
                             style: "margin-top:1.2em",
                             children: [
@@ -2962,18 +2935,18 @@ let main = L.view.extend({
                                     children: [
                                         s("h4", {
                                             style: "margin:0",
-                                            children: t_("ACS bootstrap")
+                                            children: _("ACS bootstrap")
                                         }),
-                                        (V = {
+                                        (D = {
                                             style: "display:flex;align-items:center;gap:6px",
                                             children: [
-                                                tw(o.state),
+                                                tv(o.state),
                                                 o.inflight ? s("span", {
                                                     class: "fttr-badge fttr-badge-info",
-                                                    children: t_("Command in progress")
+                                                    children: _("Command in progress")
                                                 }) : null
                                             ]
-                                        }, s("div", V))
+                                        }, s("div", D))
                                     ]
                                 }, s("div", q)),
                                 (es = {
@@ -2989,10 +2962,10 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Method")
+                                                                    children: _("Method")
                                                                 }),
                                                                 s("code", {
-                                                                    children: tv(o.method)
+                                                                    children: tm(o.method)
                                                                 })
                                                             ]
                                                         }, s("div", F)),
@@ -3001,10 +2974,10 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Attempts")
+                                                                    children: _("Attempts")
                                                                 }),
                                                                 s("span", {
-                                                                    children: tv(o.attempts)
+                                                                    children: tm(o.attempts)
                                                                 })
                                                             ]
                                                         }, s("div", U)),
@@ -3013,10 +2986,10 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Identity source")
+                                                                    children: _("Identity source")
                                                                 }),
                                                                 s("span", {
-                                                                    children: tv(o.binding_source)
+                                                                    children: tm(o.binding_source)
                                                                 })
                                                             ]
                                                         }, s("div", B))
@@ -3029,7 +3002,7 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Management VLAN")
+                                                                    children: _("Management VLAN")
                                                                 }),
                                                                 s("span", {
                                                                     children: o.desired?.vlan !== void 0 ? `VLAN ${o.desired.vlan} (Prio ${o.desired.priority ?? 0})` : "\u2014"
@@ -3041,11 +3014,11 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("ACS URL")
+                                                                    children: _("ACS URL")
                                                                 }),
                                                                 s("code", {
                                                                     style: "font-size:80%",
-                                                                    children: tv(o.desired?.acs_url)
+                                                                    children: tm(o.desired?.acs_url)
                                                                 })
                                                             ]
                                                         }, s("div", X)),
@@ -3054,7 +3027,7 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Local ACS listener")
+                                                                    children: _("Local ACS listener")
                                                                 }),
                                                                 s("code", {
                                                                     style: "font-size:80%",
@@ -3071,11 +3044,11 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Last telemetry")
+                                                                    children: _("Last telemetry")
                                                                 }),
                                                                 s("span", {
                                                                     style: "font-size:85%",
-                                                                    children: tb(o.mqtt_last_seen)
+                                                                    children: ty(o.mqtt_last_seen)
                                                                 })
                                                             ]
                                                         }, s("div", Q)),
@@ -3084,11 +3057,11 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Last Inform")
+                                                                    children: _("Last Inform")
                                                                 }),
                                                                 s("span", {
                                                                     style: "font-size:85%",
-                                                                    children: tb(o.last_inform)
+                                                                    children: ty(o.last_inform)
                                                                 })
                                                             ]
                                                         }, s("div", Y)),
@@ -3097,11 +3070,11 @@ let main = L.view.extend({
                                                             children: [
                                                                 s("span", {
                                                                     class: "fttr-kv-label",
-                                                                    children: t_("Settings verified")
+                                                                    children: _("Settings verified")
                                                                 }),
                                                                 s("span", {
                                                                     style: "font-size:85%",
-                                                                    children: tb(o.settings_verified_at)
+                                                                    children: ty(o.settings_verified_at)
                                                                 })
                                                             ]
                                                         }, s("div", ee))
@@ -3115,7 +3088,7 @@ let main = L.view.extend({
                                                 s("span", {
                                                     style: "color:#888",
                                                     children: [
-                                                        t_("MQTT target"),
+                                                        _("MQTT target"),
                                                         ":"
                                                     ]
                                                 }),
@@ -3137,12 +3110,12 @@ let main = L.view.extend({
                                                     class: "cbi-button cbi-button-positive",
                                                     disabled: r,
                                                     onclick: n,
-                                                    children: t_("Authorize and apply management settings")
+                                                    children: _("Authorize and apply management settings")
                                                 }),
                                                 " ",
                                                 s("span", {
                                                     style: "font-size:85%;color:#666",
-                                                    children: t_("Required after management drift or service restart; verifies the child ACS settings before business synchronization.")
+                                                    children: _("Required after management drift or service restart; verifies the child ACS settings before business synchronization.")
                                                 })
                                             ]
                                         }, s("div", ei)) : null
@@ -3164,7 +3137,7 @@ let main = L.view.extend({
                                     children: [
                                         s("summary", {
                                             style: "cursor:pointer;user-select:none;font-weight:600",
-                                            children: t_("Management setup / reachability guidance")
+                                            children: _("Management setup / reachability guidance")
                                         }),
                                         (eo = {
                                             style: "padding:6px 0",
@@ -3181,14 +3154,14 @@ let main = L.view.extend({
                                 }, s("details", el)) : null
                             ]
                         }, s("div", ed)) : null,
-                        e_.length ? (ec = {
+                        ey.length ? (ec = {
                             style: "margin-top:1.2em",
                             children: [
                                 s("h4", {
                                     style: "margin-bottom:0.5em",
-                                    children: t_("WAN / WLAN lifecycle results")
+                                    children: _("WAN / WLAN lifecycle results")
                                 }),
-                                tz(e_)
+                                tb(ey)
                             ]
                         }, s("div", ec)) : null,
                         (eg = {
@@ -3198,7 +3171,7 @@ let main = L.view.extend({
                             children: [
                                 s("summary", {
                                     style: "cursor:pointer;user-select:none;font-weight:600",
-                                    children: t_("Managed objects and lifecycle intent")
+                                    children: _("Managed objects and lifecycle intent")
                                 }),
                                 (eh = {
                                     style: "padding:8px 0",
@@ -3211,12 +3184,12 @@ let main = L.view.extend({
                                                         s("span", {
                                                             style: "color:#888",
                                                             children: [
-                                                                t_("Wi-Fi cleanup policy"),
+                                                                _("Wi-Fi cleanup policy"),
                                                                 ":"
                                                             ]
                                                         }),
                                                         " ",
-                                                        tv(ey.wifi_cleanup)
+                                                        tm(em.wifi_cleanup)
                                                     ]
                                                 }, s("span", ep)),
                                                 (eu = {
@@ -3224,12 +3197,12 @@ let main = L.view.extend({
                                                         s("span", {
                                                             style: "color:#888",
                                                             children: [
-                                                                t_("Wi-Fi stage"),
+                                                                _("Wi-Fi stage"),
                                                                 ":"
                                                             ]
                                                         }),
                                                         " ",
-                                                        tv(ey.wifi_stage)
+                                                        tm(em.wifi_stage)
                                                     ]
                                                 }, s("span", eu))
                                             ]
@@ -3237,8 +3210,8 @@ let main = L.view.extend({
                                         s("pre", {
                                             style: "white-space:pre-wrap;overflow-wrap:anywhere;font-size:85%;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;max-height:240px;overflow-y:auto",
                                             children: JSON.stringify({
-                                                wan_objects: ey.wan_objects ?? {},
-                                                wifi_objects: ey.wifi_objects ?? {}
+                                                wan_objects: em.wan_objects ?? {},
+                                                wifi_objects: em.wifi_objects ?? {}
                                             }, null, 2)
                                         })
                                     ]
@@ -3246,10 +3219,10 @@ let main = L.view.extend({
                             ]
                         }, s("details", eg))
                     ]
-                }, s("div", em);
+                }, s("div", e_);
             }));
         }
-        return h.addEventListener("change", ()=>Z(y)), Z(d), L.Poll.add(async ()=>{
+        return h.addEventListener("change", ()=>C(y)), C(d), L.Poll.add(async ()=>{
             if (N.isConnected && !w) {
                 w = !0;
                 try {
@@ -3257,7 +3230,7 @@ let main = L.view.extend({
                         tu(),
                         tf()
                     ]);
-                    v = t, Z(e);
+                    v = t, C(e);
                 } catch (e) {
                     u.hidden = !1, u.textContent = _("Status refresh failed: %s").format(String(e));
                 } finally{

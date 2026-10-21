@@ -4,10 +4,6 @@ import { applyCalibration, type CalibrationInfo, getCalibration, saveCalibration
 
 const view = L.view;
 
-function tr(key: string): string {
-	return _(key) || key;
-}
-
 const STOCK_SHA256 = "a9447a85073b61016d8ef1e736e944c9942e1b138ba9a35663b48abcf47c1bd4";
 
 interface ParsedCalibration {
@@ -35,7 +31,7 @@ async function computeSha256(buffer: ArrayBuffer): Promise<string> {
 		const hashArray = Array.from(new Uint8Array(hashBuffer));
 		return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 	}
-	return "unavailable";
+	return _("Unavailable");
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -176,10 +172,11 @@ function renderRegisterGrid(registers: number[]): HTMLElement {
 					return (
 						<td
 							style="font-family:monospace;text-align:center"
-							title={`Reg 0x${regAddr.toString(16).padStart(2, "0").toUpperCase()}: 0x${val
-								.toString(16)
-								.padStart(2, "0")
-								.toUpperCase()} (${val})`}
+							title={_("Register %s: %s (%s)").format(
+								`0x${regAddr.toString(16).padStart(2, "0").toUpperCase()}`,
+								`0x${val.toString(16).padStart(2, "0").toUpperCase()}`,
+								String(val),
+							)}
 						>
 							{isLatch ? (
 								<span class="fttr-badge fttr-badge-warning">
@@ -192,7 +189,7 @@ function renderRegisterGrid(registers: number[]): HTMLElement {
 					);
 				})}
 				{Array.from({ length: 8 - chunk.length }).map(() => (
-					<td style="text-align:center;opacity:0.35">—</td>
+					<td style="text-align:center;opacity:0.35">{_("—")}</td>
 				))}
 			</tr>,
 		);
@@ -203,7 +200,7 @@ function renderRegisterGrid(registers: number[]): HTMLElement {
 			<table class="table cbi-section-table" style="font-size:90%;margin-top:8px">
 				<thead>
 					<tr>
-						<th style="width:64px;opacity:0.8">Addr</th>
+						<th style="width:64px;opacity:0.8">{_("Address")}</th>
 						<th style="opacity:0.8">+0</th>
 						<th style="opacity:0.8">+1</th>
 						<th style="opacity:0.8">+2</th>
@@ -217,8 +214,11 @@ function renderRegisterGrid(registers: number[]): HTMLElement {
 				<tbody>{rows}</tbody>
 			</table>
 			<p style="font-size:85%;opacity:0.75;margin:4px 0 0">
-				注：寄存器 <code>0x27</code>（黄色高亮）为硬件生效锁存寄存器，顺序写入时自动跳过，写入完成后统一送入{" "}
-				<code>0x55</code> 提交生效。
+				{_("Note: Register")} <code>0x27</code>{" "}
+				{_(
+					"(highlighted in yellow) is the hardware latch register. It is skipped during sequential writes, then written with",
+				)}{" "}
+				<code>0x55</code> {_("to commit all changes.")}
 			</p>
 		</div>
 	);
@@ -226,16 +226,18 @@ function renderRegisterGrid(registers: number[]): HTMLElement {
 
 function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: string): HTMLElement {
 	const hashBadge = cal.isStockHash ? (
-		<span class="fttr-badge fttr-badge-success">官方出厂基线匹配</span>
+		<span class="fttr-badge fttr-badge-success">{_("Official factory baseline match")}</span>
 	) : (
-		<span class="fttr-badge fttr-badge-info">自定义校准数据</span>
+		<span class="fttr-badge fttr-badge-info">{_("Custom calibration data")}</span>
 	);
 
 	const sizeBadge =
 		cal.size === 288 ? (
-			<span class="fttr-badge fttr-badge-success">标准 288 字节</span>
+			<span class="fttr-badge fttr-badge-success">{_("Standard %s bytes").format("288")}</span>
 		) : (
-			<span class="fttr-badge fttr-badge-warning">基础 56 字节（缺 ADC 系数）</span>
+			<span class="fttr-badge fttr-badge-warning">
+				{_("Basic %s bytes (ADC coefficients missing)").format("56")}
+			</span>
 		);
 
 	return (
@@ -254,44 +256,50 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 			<div class="fttr-grid-3" style="margin-bottom:12px">
 				<div class="fttr-card">
 					<div class="fttr-kv-label" style="font-size:85%">
-						数据大小
+						{_("Data size")}
 					</div>
-					<div style="font-size:110%;font-weight:600;margin-top:2px">{cal.size} 字节</div>
+					<div style="font-size:110%;font-weight:600;margin-top:2px">
+						{_("%s bytes").format(String(cal.size))}
+					</div>
 				</div>
 				<div class="fttr-card">
 					<div class="fttr-kv-label" style="font-size:85%">
-						SHA-256 校验和
+						{_("SHA-256 checksum")}
 					</div>
 					<code style="font-size:80%;word-break:break-all">{cal.sha256}</code>
 				</div>
 				<div class="fttr-card">
 					<div class="fttr-kv-label" style="font-size:85%">
-						出厂基线一致性
+						{_("Factory baseline consistency")}
 					</div>
 					<div style="margin-top:2px">
-						{cal.isStockHash ? "完全吻合 (a9447a8...)" : "非原厂默认 (自标定)"}
+						{cal.isStockHash
+							? _("Exact match (%s)").format("a9447a8...")
+							: _("Not factory default (self-calibrated)")}
 					</div>
 				</div>
 			</div>
 
-			<h5 style="margin:16px 0 6px;font-size:95%">ADC 诊断多项式换算系数 (偏移 0x40 ~ 0x5F)</h5>
+			<h5 style="margin:16px 0 6px;font-size:95%">
+				{_("ADC diagnostic polynomial conversion coefficients (offsets %s)").format("0x40 ~ 0x5F")}
+			</h5>
 			<div style="overflow-x:auto">
 				<table class="table cbi-section-table" style="font-size:90%">
 					<thead>
 						<tr>
-							<th>诊断测量通道</th>
-							<th>寄存器偏移</th>
-							<th>分子 N</th>
-							<th>分母 D</th>
-							<th>偏移 O</th>
-							<th>换算公式</th>
-							<th>典型 Raw 模拟值</th>
+							<th>{_("Diagnostic measurement channel")}</th>
+							<th>{_("Register offset")}</th>
+							<th>{_("Numerator N")}</th>
+							<th>{_("Denominator D")}</th>
+							<th>{_("Offset O")}</th>
+							<th>{_("Conversion formula")}</th>
+							<th>{_("Typical raw simulated value")}</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<td>
-								<strong>温度主参数 (Temp)</strong>
+								<strong>{_("Primary temperature parameters (Temp)")}</strong>
 							</td>
 							<td>
 								<code>0x40 / 0x42 / 0x44</code>
@@ -303,12 +311,12 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 								<code>(raw * N / D + O) / 256 °C</code>
 							</td>
 							<td>
-								Raw <code>0x5980</code> → <strong>{cal.simulated.temp} °C</strong>
+								{_("Raw")} <code>0x5980</code> → <strong>{cal.simulated.temp} °C</strong>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<strong>温度备用参数 (Alt Temp)</strong>
+								<strong>{_("Alternate temperature parameters (Alt Temp)")}</strong>
 							</td>
 							<td>
 								<code>0x58 / 0x5A / 0x5C</code>
@@ -316,12 +324,16 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 							<td>{cal.tempAlt.n}</td>
 							<td>{cal.tempAlt.d}</td>
 							<td>{cal.tempAlt.o}</td>
-							<td>当计算温度 ≤ {cal.tempThreshold} °C 时采用备用参数</td>
-							<td>分段阈值：{cal.tempThreshold} °C</td>
+							<td>
+								{_("Use alternate parameters when the calculated temperature is ≤ %s °C").format(
+									String(cal.tempThreshold),
+								)}
+							</td>
+							<td>{_("Segment threshold: %s °C").format(String(cal.tempThreshold))}</td>
 						</tr>
 						<tr>
 							<td>
-								<strong>供电电压 (Vcc)</strong>
+								<strong>{_("Supply voltage (Vcc)")}</strong>
 							</td>
 							<td>
 								<code>0x46 / 0x48 / 0x4A</code>
@@ -333,12 +345,12 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 								<code>(raw * N / D + O) / 10000 V</code>
 							</td>
 							<td>
-								Raw <code>0x8880</code> → <strong>{cal.simulated.voltage} V</strong>
+								{_("Raw")} <code>0x8880</code> → <strong>{cal.simulated.voltage} V</strong>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<strong>偏置电流 (Bias Current)</strong>
+								<strong>{_("Bias current (Bias Current)")}</strong>
 							</td>
 							<td>
 								<code>0x4C / 0x4E / 0x50</code>
@@ -350,12 +362,12 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 								<code>(raw * N / D + O) / 500 mA</code>
 							</td>
 							<td>
-								Raw <code>0x1F40</code> → <strong>{cal.simulated.bias} mA</strong>
+								{_("Raw")} <code>0x1F40</code> → <strong>{cal.simulated.bias} mA</strong>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<strong>发射光功率 (Tx Power)</strong>
+								<strong>{_("Transmit optical power (Tx Power)")}</strong>
 							</td>
 							<td>
 								<code>0x52 / 0x54 / 0x56</code>
@@ -367,14 +379,16 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 								<code>p_mw = (raw*N/D+O)/10000; 10*log10(p_mw) dBm</code>
 							</td>
 							<td>
-								Raw <code>0x2440</code> → <strong>{cal.simulated.txPower ?? "—"} dBm</strong>
+								{_("Raw")} <code>0x2440</code> → <strong>{cal.simulated.txPower ?? _("—")} dBm</strong>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 
-			<h5 style="margin:16px 0 6px;font-size:95%">BOSA 硬件寄存器初始化表 (前 56 字节，0x00 ~ 0x37)</h5>
+			<h5 style="margin:16px 0 6px;font-size:95%">
+				{_("BOSA hardware register initialization table (first %s bytes, %s)").format("56", "0x00 ~ 0x37")}
+			</h5>
 			{renderRegisterGrid(cal.registers)}
 		</div>
 	);
@@ -395,11 +409,15 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	function renderActiveSourceBadge(source: "factory" | "firmware" | "builtin"): HTMLElement {
 		switch (source) {
 			case "factory":
-				return <span class="fttr-badge fttr-badge-success">1MB Factory 分区 (偏移 0x2200)</span>;
+				return (
+					<span class="fttr-badge fttr-badge-success">
+						{_("1MB Factory partition (offset %s)").format("0x2200")}
+					</span>
+				);
 			case "firmware":
 				return <span class="fttr-badge fttr-badge-info">/lib/firmware/modified_UX3326.bin</span>;
 			case "builtin":
-				return <span class="fttr-badge fttr-badge-danger">内置静态默认版本 (Fallback)</span>;
+				return <span class="fttr-badge fttr-badge-danger">{_("Built-in static defaults (fallback)")}</span>;
 		}
 	}
 
@@ -411,14 +429,22 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 		if (info.source === "builtin") {
 			warningMount.appendChild(
 				<div class="alert-message warning" style="margin-bottom:16px">
-					<h4 style="margin:0 0 6px">当前正处于【内置静态默认版本】回退运行模式</h4>
+					<h4 style="margin:0 0 6px">
+						{_("Currently running in fallback mode with built-in static defaults")}
+					</h4>
 					<p style="margin:0 0 4px">
-						系统未在 <strong>1MB Factory UBI 分区 (偏移 0x2200)</strong> 读取到有效校准数据，且目标固件目录{" "}
-						<code>/lib/firmware/modified_UX3326.bin</code> 不存在。当前光模块正使用编译期源码内嵌参数运行。
+						{_("No valid calibration data was found in the")}{" "}
+						<strong>{_("1MB Factory UBI partition (offset %s)").format("0x2200")}</strong>{" "}
+						{_("and the firmware file")} <code>/lib/firmware/modified_UX3326.bin</code>{" "}
+						{_(
+							"does not exist. The optical module is currently using parameters embedded in the source at compile time.",
+						)}
 					</p>
 					<p style="margin:0;font-size:90%;opacity:0.85">
-						建议将从原厂备份提取的 288 字节 <code>modified_UX3326.bin</code> 校准文件通过下方表单上传至{" "}
-						<code>/lib/firmware/modified_UX3326.bin</code>，以确保激光器发射功率及 ADC 诊断读数精确。
+						{_("Use the form below to upload the %s-byte").format("288")} <code>modified_UX3326.bin</code>{" "}
+						{_("calibration file extracted from the factory backup to")}{" "}
+						<code>/lib/firmware/modified_UX3326.bin</code>{" "}
+						{_("to ensure accurate laser transmit power and ADC diagnostic readings.")}
 					</p>
 				</div>,
 			);
@@ -451,9 +477,9 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			<div class="cbi-section" style="margin-bottom:16px">
 				<div class="fttr-card">
 					<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-						<h3 style="margin:0;font-size:110%">当前系统生效校准数据</h3>
+						<h3 style="margin:0;font-size:110%">{_("Currently active system calibration data")}</h3>
 						<div style="display:flex;align-items:center;gap:8px">
-							<span class="fttr-kv-label">生效数据源：</span>
+							<span class="fttr-kv-label">{_("Active data source:")}</span>
 							{renderActiveSourceBadge(info.source)}
 						</div>
 					</div>
@@ -461,48 +487,52 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<div class="fttr-grid-3" style="margin-bottom:12px">
 						<div class="fttr-card">
 							<div class="fttr-kv-label" style="font-size:85%">
-								当前生效路径
+								{_("Currently active path")}
 							</div>
 							<strong style="word-break:break-all;font-size:95%">{info.active_path}</strong>
 						</div>
 						<div class="fttr-card">
 							<div class="fttr-kv-label" style="font-size:85%">
-								生效数据大小
+								{_("Active data size")}
 							</div>
-							<div style="font-size:110%;font-weight:600;margin-top:2px">{info.size} 字节</div>
+							<div style="font-size:110%;font-weight:600;margin-top:2px">
+								{_("%s bytes").format(String(info.size))}
+							</div>
 						</div>
 						<div class="fttr-card">
 							<div class="fttr-kv-label" style="font-size:85%">
-								SHA-256 校验和
+								{_("SHA-256 checksum")}
 							</div>
 							<code style="font-size:80%;word-break:break-all">{info.sha256}</code>
 						</div>
 					</div>
 
 					<h4 style="margin:16px 0 8px;font-size:95%;border-top:1px dashed rgba(127,140,141,0.2);padding-top:12px">
-						校准数据源探测概况
+						{_("Calibration data source detection overview")}
 					</h4>
 					<div class="fttr-grid-2">
 						<div class="fttr-card">
 							<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-								<strong>1. 1MB Factory 分区 (最高优先级)</strong>
+								<strong>{_("1. 1MB Factory partition (highest priority)")}</strong>
 								{info.factory.has_data ? (
-									<span class="fttr-badge fttr-badge-success">数据有效 (288 字节)</span>
+									<span class="fttr-badge fttr-badge-success">
+										{_("Valid data (%s bytes)").format("288")}
+									</span>
 								) : (
-									<span class="fttr-badge fttr-badge-neutral">无有效数据</span>
+									<span class="fttr-badge fttr-badge-neutral">{_("No valid data")}</span>
 								)}
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">设备与偏移</span>
-								<code>{info.factory.device || "未探测到设备"} @ 0x2200</code>
+								<span class="fttr-kv-label">{_("Device and offset")}</span>
+								<code>{info.factory.device || _("No device detected")} @ 0x2200</code>
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">使用状态</span>
+								<span class="fttr-kv-label">{_("Usage status")}</span>
 								<span>
 									{info.source === "factory" ? (
-										<span class="fttr-badge fttr-badge-success">当前正在使用</span>
+										<span class="fttr-badge fttr-badge-success">{_("Currently in use")}</span>
 									) : (
-										<span style="opacity:0.7">未生效</span>
+										<span style="opacity:0.7">{_("Inactive")}</span>
 									)}
 								</span>
 							</div>
@@ -510,26 +540,30 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 
 						<div class="fttr-card">
 							<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-								<strong>2. 固件文件路径 (次优先级)</strong>
+								<strong>{_("2. Firmware file path (second priority)")}</strong>
 								{info.firmware.exists ? (
-									<span class="fttr-badge fttr-badge-info">已存在 ({info.firmware.size} 字节)</span>
+									<span class="fttr-badge fttr-badge-info">
+										{_("Exists (%s bytes)").format(String(info.firmware.size))}
+									</span>
 								) : (
-									<span class="fttr-badge fttr-badge-neutral">文件不存在</span>
+									<span class="fttr-badge fttr-badge-neutral">{_("File does not exist")}</span>
 								)}
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">固件路径</span>
+								<span class="fttr-kv-label">{_("Firmware path")}</span>
 								<code>{info.firmware.path}</code>
 							</div>
 							<div class="fttr-kv-row">
-								<span class="fttr-kv-label">使用状态</span>
+								<span class="fttr-kv-label">{_("Usage status")}</span>
 								<span>
 									{info.source === "firmware" ? (
-										<span class="fttr-badge fttr-badge-info">当前正在使用</span>
+										<span class="fttr-badge fttr-badge-info">{_("Currently in use")}</span>
 									) : info.firmware.exists ? (
-										<span class="fttr-badge fttr-badge-neutral">已就绪 (被 Factory 覆盖)</span>
+										<span class="fttr-badge fttr-badge-neutral">
+											{_("Ready (overridden by Factory)")}
+										</span>
 									) : (
-										<span style="opacity:0.7">未就绪</span>
+										<span style="opacity:0.7">{_("Not ready")}</span>
 									)}
 								</span>
 							</div>
@@ -542,10 +576,15 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<div style="margin-top:16px">
 						{renderParametersCard(
 							factoryParsed,
-							"1MB Factory 分区提取的下行光校准参数 (偏移 0x2200)",
-							`设备: ${info.factory.device}，长度 288 字节${
-								info.source === "factory" ? " (当前系统正在使用该数据)" : ""
-							}`,
+							_(
+								"Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)",
+							).format("0x2200"),
+							info.source === "factory"
+								? _("Device: %s, length %s bytes (currently in use by the system)").format(
+										info.factory.device,
+										"288",
+									)
+								: _("Device: %s, length %s bytes").format(info.factory.device, "288"),
 						)}
 					</div>
 				)}
@@ -555,8 +594,8 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<div style="margin-top:16px">
 						{renderParametersCard(
 							activeParsed,
-							`当前系统生效校准参数 (${info.active_path})`,
-							`生效数据大小: ${info.size} 字节`,
+							_("Currently active system calibration parameters (%s)").format(info.active_path),
+							_("Active data size: %s bytes").format(String(info.size)),
 						)}
 					</div>
 				)}
@@ -573,7 +612,7 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 
 	const uploadButton = (
 		<button type="button" class="cbi-button cbi-button-action" disabled style="margin-right:8px">
-			{tr("上传并保存至 /lib/firmware/modified_UX3326.bin")}
+			{_("Upload and save to %s").format("/lib/firmware/modified_UX3326.bin")}
 		</button>
 	) as HTMLButtonElement;
 
@@ -584,9 +623,11 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			<div style="font-size:22px;margin-bottom:6px" aria-hidden="true">
 				<span style="display:inline-block;width:1em;height:1em;background-color:currentColor;mask:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E&quot;) center/contain no-repeat" />
 			</div>
-			<div style="font-weight:600;margin-bottom:4px">点击选择或拖拽 UX3326.bin 文件至此处</div>
+			<div style="font-weight:600;margin-bottom:4px">
+				{_("Click to select or drag a %s file here").format("UX3326.bin")}
+			</div>
 			<div style="font-size:85%;opacity:0.75">
-				支持 <code>modified_UX3326.bin</code> 文件；必须严格为 288 字节
+				{_("Supported file:")} <code>modified_UX3326.bin</code> {_("(must be exactly %s bytes)").format("288")}
 			</div>
 		</div>
 	) as HTMLElement;
@@ -624,12 +665,16 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 		if (size !== 288 && size !== 56) {
 			alertMount.appendChild(
 				<div class="alert-message danger">
-					<h4 style="margin:0 0 6px">文件大小校验失败</h4>
+					<h4 style="margin:0 0 6px">{_("File size validation failed")}</h4>
 					<p style="margin:0">
-						标准 Semtech UX3326 BOSA 校准文件必须严格为 <strong>288 字节</strong>
-						（前 56 字节寄存器配置 + 0x40 后的 ADC 诊断换算系数）。
+						{_("A standard Semtech UX3326 BOSA calibration file must be exactly")}{" "}
+						<strong>{_("%s bytes").format("288")}</strong>{" "}
+						{_(
+							"(the first %s bytes configure registers, followed by ADC diagnostic conversion coefficients from %s).",
+						).format("56", "0x40")}
 						<br />
-						当前选中的文件 <strong>{file.name}</strong> 大小为 <strong>{size} 字节</strong>，已阻止上传。
+						{_("Selected file:")} <strong>{file.name}</strong> {_("Size:")}{" "}
+						<strong>{_("%s bytes").format(String(size))}</strong> {_("Upload blocked.")}
 					</p>
 				</div>,
 			);
@@ -645,8 +690,10 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			if (!parsed) {
 				alertMount.appendChild(
 					<div class="alert-message danger">
-						<h4 style="margin:0 0 6px">解析校准文件失败</h4>
-						<p style="margin:0">无法解析该校准文件的数据结构，请确认文件完整性。</p>
+						<h4 style="margin:0 0 6px">{_("Failed to parse calibration file")}</h4>
+						<p style="margin:0">
+							{_("Unable to parse the calibration file structure. Please check the file's integrity.")}
+						</p>
 					</div>,
 				);
 				return;
@@ -659,24 +706,30 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			alertMount.appendChild(
 				<div class="alert-message success">
 					<h4 style="margin:0 0 6px">
-						文件校验成功：{file.name} ({size} 字节)
+						{_("File validation succeeded: %s (%s bytes)").format(file.name, String(size))}
 					</h4>
 					<p style="margin:0">
-						SHA-256: <code>{hash}</code>
-						{parsed.isStockHash ? " (与原厂官方出厂基线完全吻合)" : " (自定义/自标定校准表)"}
+						SHA-256: <code>{hash}</code>{" "}
+						{parsed.isStockHash
+							? _("(exact match with the official factory baseline)")
+							: _("(custom/self-calibrated table)")}
 						<br />
-						各项参数已成功解析并在下方预览，核对无误后点击下方按钮上传至{" "}
-						<code>/lib/firmware/modified_UX3326.bin</code>。
+						{_(
+							"All parameters were parsed successfully and are previewed below. Verify them, then click the button below to upload to",
+						)}{" "}
+						<code>/lib/firmware/modified_UX3326.bin</code>.
 					</p>
 				</div>,
 			);
 
 			// Render preview card
-			previewMount.appendChild(renderParametersCard(parsed, `待上传文件参数预览：${file.name}`));
+			previewMount.appendChild(
+				renderParametersCard(parsed, _("Parameter preview for upload: %s").format(file.name)),
+			);
 		} catch (err) {
 			alertMount.appendChild(
 				<div class="alert-message danger">
-					<p style="margin:0">读取文件异常：{String(err)}</p>
+					<p style="margin:0">{_("Error reading file: %s").format(String(err))}</p>
 				</div>,
 			);
 		}
@@ -686,7 +739,7 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 		if (!uploadedBuffer || !parsedUpload) return;
 
 		uploadButton.disabled = true;
-		uploadButton.textContent = "正在上传至 /lib/firmware/modified_UX3326.bin...";
+		uploadButton.textContent = _("Uploading to %s...").format("/lib/firmware/modified_UX3326.bin");
 		alertMount.innerHTML = "";
 
 		try {
@@ -696,27 +749,31 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			// Step 1: Save strictly to /lib/firmware/modified_UX3326.bin
 			const saveRes = await saveCalibration(base64Data);
 			if (!saveRes.success) {
-				throw new Error(saveRes.error || "保存校准文件失败");
+				throw new Error(saveRes.error || _("Failed to save calibration file"));
 			}
 
 			let applyMsg = "";
 			// Step 2: Apply to transceiver if checked
 			if (shouldApply) {
-				uploadButton.textContent = "正在配置 BOSA 光收发器硬件...";
+				uploadButton.textContent = _("Configuring BOSA optical transceiver hardware...");
 				const applyRes = await applyCalibration();
 				if (!applyRes.success) {
-					applyMsg = `，但光收发器硬件初始化警告：${applyRes.error || "未知异常"}`;
+					applyMsg = _(", but optical transceiver hardware initialization reported a warning: %s").format(
+						applyRes.error || _("Unknown error"),
+					);
 				} else {
-					applyMsg = "，且光收发器硬件重置与寄存器表已成功锁存写入（bosa-init 成功）";
+					applyMsg = _(
+						", and the optical transceiver hardware was reset and the register table was latched successfully (%s succeeded)",
+					).format("bosa-init");
 				}
 			}
 
 			alertMount.appendChild(
 				<div class="alert-message success">
-					<h4 style="margin:0 0 6px">校准数据保存成功！</h4>
+					<h4 style="margin:0 0 6px">{_("Calibration data saved successfully!")}</h4>
 					<p style="margin:0">
-						文件已写入至 <code>{saveRes.path}</code>（{saveRes.size} 字节，SHA-256:{" "}
-						<code>{saveRes.sha256}</code>）{applyMsg}。
+						{_("File written to")} <code>{saveRes.path}</code> ({_("%s bytes").format(String(saveRes.size))}
+						, SHA-256: <code>{saveRes.sha256}</code>){applyMsg}.
 					</p>
 				</div>,
 			);
@@ -727,13 +784,13 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 		} catch (err) {
 			alertMount.appendChild(
 				<div class="alert-message danger">
-					<h4 style="margin:0 0 6px">上传写入失败</h4>
+					<h4 style="margin:0 0 6px">{_("Upload write failed")}</h4>
 					<p style="margin:0">{String(err)}</p>
 				</div>,
 			);
 		} finally {
 			uploadButton.disabled = false;
-			uploadButton.textContent = tr("上传并保存至 /lib/firmware/modified_UX3326.bin");
+			uploadButton.textContent = _("Upload and save to %s").format("/lib/firmware/modified_UX3326.bin");
 		}
 	});
 
@@ -876,21 +933,24 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 				}
 			`}</style>
 
-			<h2 style="margin-bottom:6px">BOSA 下行光路校准管理 (UX3326)</h2>
+			<h2 style="margin-bottom:6px">{_("BOSA downstream optical calibration management (UX3326)")}</h2>
 			<p class="cbi-section-descr" style="margin-bottom:16px">
-				管理 HM2004-DU Micro-OLT FPGA 子系统挂载的 Semtech UX3326 BOSA 光收发器校准数据。系统按优先级依次从{" "}
-				<strong>1MB Factory UBI 分区 (偏移 0x2200)</strong>、<strong>/lib/firmware/modified_UX3326.bin</strong>{" "}
-				读取校准数据；若均无有效数据则自动回退至内置静态默认版本。
+				{_(
+					"Manage calibration data for the Semtech UX3326 BOSA optical transceiver attached to the HM2004-DU Micro-OLT FPGA subsystem. Calibration data is read in priority order from",
+				)}{" "}
+				<strong>{_("1MB Factory UBI partition (offset %s)").format("0x2200")}</strong>,{" "}
+				<strong>/lib/firmware/modified_UX3326.bin</strong>{" "}
+				{_("with automatic fallback to built-in static defaults if neither source has valid data.")}
 			</p>
 
 			{warningMount}
 			{statusMount}
 
 			<div class="cbi-section">
-				<h3>上传新的 UX3326 校准文件</h3>
+				<h3>{_("Upload a new UX3326 calibration file")}</h3>
 				<p style="font-size:90%;opacity:0.75;margin-top:0;margin-bottom:12px">
-					上传新的校准表将固定保存至固件目录 <code>/lib/firmware/modified_UX3326.bin</code>
-					。文件大小必须严格为 288 字节。
+					{_("New calibration tables are always saved to")} <code>/lib/firmware/modified_UX3326.bin</code>.{" "}
+					{_("The file must be exactly %s bytes.").format("288")}
 				</p>
 				{dropZone}
 				{fileInput}
@@ -898,20 +958,24 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 				<div style="margin-top:12px">{previewMount}</div>
 
 				<div class="fttr-card" style="margin-top:16px">
-					<h4 style="margin-top:0;margin-bottom:12px">写入设置与执行</h4>
+					<h4 style="margin-top:0;margin-bottom:12px">{_("Write settings and execution")}</h4>
 					<div class="fttr-kv-row" style="margin-bottom:12px">
 						<span class="fttr-kv-label" style="min-width:160px">
-							目标存储路径
+							{_("Target storage path")}
 						</span>
 						<code>/lib/firmware/modified_UX3326.bin</code>
 					</div>
 					<div class="fttr-kv-row" style="margin-bottom:16px">
 						<span class="fttr-kv-label" style="min-width:160px">
-							硬件立即生效
+							{_("Apply to hardware immediately")}
 						</span>
 						<label htmlFor="fttr-cal-apply-hw" style="display:flex;align-items:center;cursor:pointer">
 							{applyHardwareCheckbox}
-							<span>保存后立即向 BOSA 硬件写入 56 寄存器并执行锁存提交 (bosa-init)</span>
+							<span>
+								{_(
+									"Write %s registers to the BOSA hardware and commit the latch immediately after saving (%s)",
+								).format("56", "bosa-init")}
+							</span>
 						</label>
 					</div>
 					<div>{uploadButton}</div>

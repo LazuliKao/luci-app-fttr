@@ -3,11 +3,6 @@
 import { type BusinessStatus, businessText, type SubGateway } from "../contracts/status";
 import { formatAge, text } from "./formatters";
 
-function tr(key: string): string {
-	const translated = _(key);
-	return translated || key;
-}
-
 export type BadgeTone = "success" | "warning" | "danger" | "info" | "neutral" | "none";
 
 export interface BadgeProps {
@@ -72,14 +67,14 @@ export function getRegistrationBadgeSpec(state?: string): {
 	if (state === "o5_operation") {
 		return {
 			tone: "success",
-			label: tr(REGISTRATION_STATE_LABELS.o5_operation),
+			label: REGISTRATION_STATE_LABELS.o5_operation,
 			title: state,
 		};
 	}
-	const rawLabel = REGISTRATION_STATE_LABELS[state] ?? state;
+	const label = REGISTRATION_STATE_LABELS[state] ?? text(state);
 	return {
 		tone: "warning",
-		label: tr(rawLabel),
+		label,
 		title: state,
 	};
 }
@@ -145,20 +140,20 @@ export function getCwmpBadgeSpec(mgmt?: SubGateway["management"]): {
 		mgmt?.age_seconds ?? (mgmt?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - mgmt.last_inform) : null);
 	const ageText = formatAge(age);
 	const fullTime = mgmt?.last_inform ? new Date(mgmt.last_inform * 1000).toLocaleString() : null;
-	const title = fullTime ? tr("Last Inform: %s").replace("%s", fullTime) : undefined;
+	const title = fullTime ? _("Last Inform: %s").replace("%s", fullTime) : undefined;
 
 	let label = "—";
 	let tone: BadgeTone = "none";
 
 	if (state === "online") {
 		tone = "success";
-		label = tr(CWMP_STATE_LABELS.online);
+		label = CWMP_STATE_LABELS.online;
 	} else if (state === "waiting_inform") {
 		tone = "warning";
-		label = tr(CWMP_STATE_LABELS.waiting_inform);
+		label = CWMP_STATE_LABELS.waiting_inform;
 	} else if (state === "offline_or_stale") {
 		tone = "danger";
-		label = tr(CWMP_STATE_LABELS.offline_or_stale);
+		label = CWMP_STATE_LABELS.offline_or_stale;
 	} else if (state) {
 		tone = "neutral";
 		label = text(state);
@@ -198,6 +193,7 @@ export const PROVISIONING_STATE_LABELS: Record<string, string> = {
 	recovering: _("Recovering"),
 	waiting_management: _("Waiting management"),
 	waiting_task: _("Waiting task"),
+	reset_pending: _("Reset pending"),
 	failed: _("Failed"),
 	error: _("Error"),
 	blocked: _("Blocked"),
@@ -220,22 +216,22 @@ export function getProvisioningBadgeSpec(
 	const title =
 		customTitle ??
 		(provData?.current_revision === false
-			? tr("Previous configuration")
+			? _("Previous configuration")
 			: provData?.management_fresh === false
-				? tr("Management stale")
+				? _("Management stale")
 				: provData?.reconcile_reason
-					? tr(provData.reconcile_reason)
+					? provData.reconcile_reason
 					: nextRetry > 0
-						? tr("Next self-healing retry in %d seconds").replace("%d", String(nextRetry))
+						? _("Next self-healing retry in %d seconds").replace("%d", String(nextRetry))
 						: (provData?.reason ?? provData?.error));
 
 	if (!state || state === "not_started") {
-		return { tone: "neutral", label: tr(PROVISIONING_STATE_LABELS.not_started), title };
+		return { tone: "neutral", label: PROVISIONING_STATE_LABELS.not_started, title };
 	}
 	if (state === "completed" || state === "verified") {
 		return {
 			tone: "success",
-			label: state === "completed" ? tr(PROVISIONING_STATE_LABELS.completed) : tr("Ready"),
+			label: state === "completed" ? PROVISIONING_STATE_LABELS.completed : _("Ready"),
 			title,
 		};
 	}
@@ -253,17 +249,16 @@ export function getProvisioningBadgeSpec(
 		state === "recovering" ||
 		state === "waiting_task"
 	) {
-		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? state;
-		return { tone: "info", label: tr(rawLabel), title };
+		const label = PROVISIONING_STATE_LABELS[state] ?? text(state);
+		return { tone: "info", label, title };
 	}
 	if (state === "interrupted" || state === "failed" || state === "error" || state === "blocked") {
-		const rawLabel =
-			state === "blocked" ? PROVISIONING_STATE_LABELS.blocked : PROVISIONING_STATE_LABELS.interrupted;
-		return { tone: "danger", label: tr(rawLabel), title };
+		const label = state === "blocked" ? PROVISIONING_STATE_LABELS.blocked : PROVISIONING_STATE_LABELS.interrupted;
+		return { tone: "danger", label, title };
 	}
-	if (state === "waiting" || state === "pending" || state === "waiting_management") {
-		const rawLabel = PROVISIONING_STATE_LABELS[state] ?? PROVISIONING_STATE_LABELS.waiting;
-		return { tone: "warning", label: tr(rawLabel), title };
+	if (state === "waiting" || state === "pending" || state === "waiting_management" || state === "reset_pending") {
+		const label = PROVISIONING_STATE_LABELS[state] ?? PROVISIONING_STATE_LABELS.waiting;
+		return { tone: "warning", label, title };
 	}
 	return { tone: "neutral", label: text(state), title };
 }
@@ -302,22 +297,22 @@ export function getWifiSyncBadgeSpec(state?: string): {
 	title?: string;
 } {
 	if (!state || state === "not_configured") {
-		return { tone: "neutral", label: tr(WIFI_SYNC_STATE_LABELS.not_configured) };
+		return { tone: "neutral", label: WIFI_SYNC_STATE_LABELS.not_configured };
 	}
 	if (state === "verified") {
-		return { tone: "success", label: tr(WIFI_SYNC_STATE_LABELS.verified) };
+		return { tone: "success", label: WIFI_SYNC_STATE_LABELS.verified };
 	}
 	if (state === "attention_required") {
-		return { tone: "danger", label: tr(WIFI_SYNC_STATE_LABELS.attention_required) };
+		return { tone: "danger", label: WIFI_SYNC_STATE_LABELS.attention_required };
 	}
 	if (state === "stale_revision" || state === "stale_management" || state === "waiting_management") {
-		return { tone: "warning", label: tr(WIFI_SYNC_STATE_LABELS[state]) };
+		return { tone: "warning", label: WIFI_SYNC_STATE_LABELS[state] };
 	}
 	if (state === "recovering") {
-		return { tone: "info", label: tr(WIFI_SYNC_STATE_LABELS.recovering) };
+		return { tone: "info", label: WIFI_SYNC_STATE_LABELS.recovering };
 	}
 	if (state === "accepted_unverified" || state === "pending") {
-		return { tone: "warning", label: tr(WIFI_SYNC_STATE_LABELS[state]) };
+		return { tone: "warning", label: WIFI_SYNC_STATE_LABELS[state] };
 	}
 	return { tone: "neutral", label: text(state) };
 }
