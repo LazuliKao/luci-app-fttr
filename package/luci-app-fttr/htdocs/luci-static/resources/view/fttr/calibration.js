@@ -1399,7 +1399,7 @@ let tn = ez({
     temperature_celsius: te,
     vcc_voltage: te,
     cdr_locked: eZ(e_()),
-    tx_enabled: eN(eZ(e_())),
+    tx_enabled: eZ(e_()),
     measurements: tt
 }), ta = ez({
     equipment_id: eZ(e7),
@@ -1528,7 +1528,7 @@ ez({
     ],
     reject: !0
 }), ez({
-    schema_version: eh(),
+    schema_version: eE(1),
     status: eU([
         "success",
         "error"
@@ -1536,12 +1536,20 @@ ez({
     action: eU([
         "optical_on",
         "optical_off",
-        "optical_status"
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
     ]),
+    desired_enabled: eZ(e_()),
     tx_enabled: eZ(e_()),
-    actor_state: eu(),
+    actor_state: eU([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
     hardware_ready: e_(),
-    discovery_active: eZ(e_()),
+    discovery_active: e_(),
     cleanup_pending: e_(),
     error: eZ(ez({
         code: eu(),

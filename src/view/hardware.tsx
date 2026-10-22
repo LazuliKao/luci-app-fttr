@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { showOnuDetails } from "./components/onu-details";
-import { getOpticalStatus, getStatus, setOptical } from "./contracts/api";
+import { getOpticalStatus, getStatus, type OpticalReply, setOptical } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -64,24 +64,24 @@ function renderCdrBadge(locked: boolean | null): HTMLElement {
 	);
 }
 
-// Laser output (UX3326 I2C TX_DIS) row state.
-// Primary source: optical_transceiver.tx_enabled from the polled fttrd status.
-// The override keeps the row authoritative between a toggle click and the next poll.
-let laserOverride: boolean | null | undefined;
+// Optical IPC reports committed intent separately from FPGA reset readback.
+let laserOverride: boolean | null = null;
+let laserReply: OpticalReply | null = null;
 // Panel currently hosting the laser row, plus an in-flight guard. Both are
 // module-level so a poll that swaps panels mid-request cannot re-enable the
 // button or leave the reply handler refreshing a detached node.
 let laserPanel: HTMLElement | null = null;
 let laserBusy = false;
+let laserRevision = 0;
 
-function applyLaserRow(txEnabled: boolean | null | undefined): void {
+function applyLaserRow(txEnabled: boolean | null): void {
 	const panel = laserPanel;
 	if (!panel) return;
 	const stateNode = panel.querySelector('[data-fttr="laser-state"]');
 	const toggle = panel.querySelector('[data-fttr="laser-toggle"]');
 	if (!(stateNode instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return;
 	if (txEnabled === true) {
-		stateNode.textContent = _("Emitting");
+		stateNode.textContent = _("TX enabled (reset readback)");
 		stateNode.className = "fttr-badge fttr-badge-success";
 	} else if (txEnabled === false) {
 		stateNode.textContent = _("Off (TX disabled)");
@@ -105,23 +105,45 @@ function applyLaserRow(txEnabled: boolean | null | undefined): void {
 				);
 		if (!window.confirm(warning)) return;
 		laserBusy = true;
+		laserRevision++;
 		applyLaserRow(laserOverride);
 		try {
 			const reply = await setOptical(enabling);
+			laserReply = reply;
+			laserOverride = reply.tx_enabled;
 			if (reply.status === "error") {
 				window.alert(`${_("Failed to change laser output")}: ${reply.error?.message ?? _("unknown error")}`);
 				return;
 			}
-			// The daemon echoes the readback value; fall back to the requested
-			// state if an older daemon omits the field.
-			laserOverride = reply.tx_enabled ?? enabling;
 		} catch (error) {
+			laserOverride = null;
+			laserReply = null;
 			window.alert(`${_("Failed to change laser output")}: ${String(error)}`);
 		} finally {
 			laserBusy = false;
 			applyLaserRow(laserOverride);
 		}
 	};
+	const detail = panel.querySelector('[data-fttr="laser-detail"]');
+	if (detail instanceof HTMLElement) {
+		const desired = laserReply?.desired_enabled;
+		detail.textContent = [
+			desired === true
+				? _("Saved setting: on")
+				: desired === false
+					? _("Saved setting: off")
+					: _("Saved setting: unknown"),
+			laserReply
+				? laserReply.discovery_active
+					? _("Discovery active")
+					: _("Discovery paused")
+				: _("Discovery state: unknown"),
+			laserReply?.cleanup_pending ? _("ONU cleanup pending") : "",
+			laserReply?.error?.message ?? "",
+		]
+			.filter(Boolean)
+			.join(" · ");
+	}
 }
 
 function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
@@ -178,6 +200,7 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 							{_("Loading…")}
 						</span>
 					</div>
+					<div data-fttr="laser-detail" style="font-size:85%;margin-top:8px" />
 				</div>
 
 				<div class="fttr-card">
@@ -407,18 +430,21 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;
-	// Seed the laser row from the status payload; fall back to the optical IPC
-	// when the daemon did not report the TX_DIS bit.
-	if (initialStatus.optical_transceiver.tx_enabled !== undefined) {
-		laserOverride = initialStatus.optical_transceiver.tx_enabled;
-	} else {
-		getOpticalStatus()
-			.then((reply) => {
-				laserOverride = reply.tx_enabled;
-				applyLaserRow(laserOverride);
-			})
-			.catch(() => {});
-	}
+	laserOverride = initialStatus.optical_transceiver.tx_enabled;
+	laserReply = null;
+	const initialRevision = laserRevision;
+	getOpticalStatus()
+		.then((reply) => {
+			if (laserBusy || initialRevision !== laserRevision) return;
+			laserReply = reply;
+			laserOverride = reply.tx_enabled;
+			applyLaserRow(laserOverride);
+		})
+		.catch(() => {
+			if (laserBusy || initialRevision !== laserRevision) return;
+			laserOverride = null;
+			applyLaserRow(laserOverride);
+		});
 	laserPanel = controllerPanel;
 	applyLaserRow(laserOverride);
 
@@ -624,8 +650,11 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 	L.Poll.add(async () => {
 		if (!root.isConnected || updating) return;
 		updating = true;
+		const revision = laserRevision;
 		try {
-			const latest = await getStatus();
+			if (laserBusy) return;
+			const [latest, optical] = await Promise.all([getStatus(), getOpticalStatus()]);
+			if (laserBusy || revision !== laserRevision) return;
 			const newController = createControllerPanel(latest);
 			const newSubgateways = createSubgatewaysPanel(latest.sub_gateways ?? []);
 			newController.hidden = activeTab !== "controller";
@@ -635,12 +664,14 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 			controllerPanel = newController;
 			subgatewaysPanel = newSubgateways;
 			laserPanel = newController;
-			if (latest.optical_transceiver.tx_enabled !== undefined) {
-				laserOverride = latest.optical_transceiver.tx_enabled;
-			}
+			laserReply = optical;
+			laserOverride = optical.tx_enabled;
 			applyLaserRow(laserOverride);
 		} catch {
-			// Ignore periodic poll failures
+			if (laserBusy || revision !== laserRevision) return;
+			laserReply = null;
+			laserOverride = null;
+			applyLaserRow(laserOverride);
 		} finally {
 			updating = false;
 		}

@@ -7,25 +7,25 @@
 'require poll as __fttr_poll';
 'require dom as __fttr_dom';
 var e;
-let t, n, r, i;
+let t, n, i, r;
 const a = Symbol.for("jsx.fragment");
 function o(e, t) {
-    let { children: n, ...r } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, i = function e(t) {
+    let { children: n, ...i } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, r = function e(t) {
         let n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
-        for (let r of t)null != r && "boolean" != typeof r && (Array.isArray(r) ? e(r, n) : n.push(r instanceof Node ? r : String(r)));
+        for (let i of t)null != i && "boolean" != typeof i && (Array.isArray(i) ? e(i, n) : n.push(i instanceof Node ? i : String(i)));
         return n;
     }(null == n ? [] : Array.isArray(n) ? n : [
         n
     ]);
     if (e === a) {
         let e = document.createDocumentFragment();
-        return e.append(...i), e;
+        return e.append(...r), e;
     }
     if ("function" == typeof e) {
         let t = Reflect.apply(e, void 0, [
             {
-                ...r,
-                children: i
+                ...i,
+                children: r
             }
         ]);
         if (!(t instanceof Node)) throw TypeError("JSX components must return a DOM Node");
@@ -33,10 +33,10 @@ function o(e, t) {
     }
     if ("string" != typeof e) throw TypeError("JSX element types must be tag names or component functions");
     let o = {}, s = {
-        ...r
+        ...i
     };
     for (let [e, t] of Object.entries(s))e.startsWith("on") && "function" == typeof t ? (o[e] = t, delete s[e]) : "boolean" == typeof t && (t ? s[e] = e : delete s[e]);
-    let l = Object.keys(s).length > 0 ? i.length > 1 ? E(e, s, i) : E(e, s, i[0]) : i.length > 1 ? E(e, {}, i) : E(e, {}, i[0]);
+    let l = Object.keys(s).length > 0 ? r.length > 1 ? E(e, s, r) : E(e, s, r[0]) : r.length > 1 ? E(e, {}, r) : E(e, {}, r[0]);
     for (let [e, t] of Object.entries(o)){
         let n = e.slice(2).toLowerCase();
         l.addEventListener(n, t);
@@ -44,38 +44,38 @@ function o(e, t) {
     return l;
 }
 let s = L.form;
-function l(e, t, n, r, i) {
-    let a = e.option(t, n, r);
-    return i && (a.datatype = i.startsWith("range(") ? `and(uinteger,${i})` : i), a;
+function l(e, t, n, i, r) {
+    let a = e.option(t, n, i);
+    return r && (a.datatype = r.startsWith("range(") ? `and(uinteger,${r})` : r), a;
 }
-function d(e, t, n, r) {
-    let i = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], a = l(e, s.ListValue, t, n);
-    for (let [e, t] of r)a.value(e, t);
-    return a.rmempty = i, a;
+function d(e, t, n, i) {
+    let r = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], a = l(e, s.ListValue, t, n);
+    for (let [e, t] of i)a.value(e, t);
+    return a.rmempty = r, a;
 }
-function c(e, t, n, r) {
-    let i = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], a = l(e, s.ListValue, t, n);
-    for (let e of (i && a.value("", _("None")), L.uci.sections("fttr", r)))a.value(e[".name"], String(e.name || e.ssid || e.optical_sn || e[".name"]));
-    a.rmempty = i;
+function c(e, t, n, i) {
+    let r = arguments.length > 4 && void 0 !== arguments[4] && arguments[4], a = l(e, s.ListValue, t, n);
+    for (let e of (r && a.value("", _("None")), L.uci.sections("fttr", i)))a.value(e[".name"], String(e.name || e.ssid || e.optical_sn || e[".name"]));
+    a.rmempty = r;
     let o = a.renderWidget;
     return a.renderWidget = function() {
         for(var e = arguments.length, t = Array(e), n = 0; n < e; n++)t[n] = arguments[n];
-        for (let e of (this.keylist = [], this.vallist = [], i && this.value("", _("None")), L.uci.sections("fttr", r)))this.value(e[".name"], String(e.name || e.ssid || e.optical_sn || e[".name"]));
+        for (let e of (this.keylist = [], this.vallist = [], r && this.value("", _("None")), L.uci.sections("fttr", i)))this.value(e[".name"], String(e.name || e.ssid || e.optical_sn || e[".name"]));
         return o.apply(this, t);
     }, a;
 }
-function u(e, t, n, r, i, a) {
-    let o = e.taboption(t, s.SectionValue, n, s.GridSection, r, i).subsection;
-    return o.anonymous = !0, o.addremove = !0, o.modaltitle = (e)=>String(L.uci.get("fttr", e, "name") || L.uci.get("fttr", e, "ssid") || i), a(o), o;
+function u(e, t, n, i, r, a) {
+    let o = e.taboption(t, s.SectionValue, n, s.GridSection, i, r).subsection;
+    return o.anonymous = !0, o.addremove = !0, o.modaltitle = (e)=>String(L.uci.get("fttr", e, "name") || L.uci.get("fttr", e, "ssid") || r), a(o), o;
 }
-function p(e, t, n, r) {
-    let i = e.option(L.form.DummyValue, t, n);
-    i.modalonly = !1, i.textvalue = r;
+function p(e, t, n, i) {
+    let r = e.option(L.form.DummyValue, t, n);
+    r.modalonly = !1, r.textvalue = i;
 }
-function f(e, t, n, r, i, a, o) {
-    let s = u(e, t, n, r, i, o);
+function f(e, t, n, i, r, a, o) {
+    let s = u(e, t, n, i, r, o);
     return s.filter = (e)=>L.uci.get("fttr", e, "template") === a, s.handleAdd = function() {
-        let e = L.uci.add("fttr", r);
+        let e = L.uci.add("fttr", i);
         return L.uci.set("fttr", e, "template", a), this.renderMoreOptionsModal(e);
     }, s;
 }
@@ -83,35 +83,35 @@ function m(e) {
     return "HWTC" === (e?.vendor || e?.serial_number.slice(0, 4)) ? "hwtc" : e?.model?.startsWith("HL202") ? "hl202" : "generic";
 }
 function g(e, t, n) {
-    function r(n, r) {
+    function i(n, i) {
         if (n._zod || Object.defineProperty(n, "_zod", {
             value: {
-                def: r,
+                def: i,
                 constr: o,
                 traits: new Set()
             },
             enumerable: !1
         }), n._zod.traits.has(e)) return;
-        n._zod.traits.add(e), t(n, r);
-        let i = o.prototype, a = Object.keys(i);
+        n._zod.traits.add(e), t(n, i);
+        let r = o.prototype, a = Object.keys(r);
         for(let e = 0; e < a.length; e++){
             let t = a[e];
-            t in n || (n[t] = i[t].bind(n));
+            t in n || (n[t] = r[t].bind(n));
         }
     }
-    let i = n?.Parent ?? Object;
-    class a extends i {
+    let r = n?.Parent ?? Object;
+    class a extends r {
     }
     function o(e) {
         var t;
-        let i = n?.Parent ? new a() : this;
-        for (let n of (r(i, e), (t = i._zod).deferred ?? (t.deferred = []), i._zod.deferred))n();
-        return i;
+        let r = n?.Parent ? new a() : this;
+        for (let n of (i(r, e), (t = r._zod).deferred ?? (t.deferred = []), r._zod.deferred))n();
+        return r;
     }
     return Object.defineProperty(a, "name", {
         value: e
     }), Object.defineProperty(o, "init", {
-        value: r
+        value: i
     }), Object.defineProperty(o, Symbol.hasInstance, {
         value: (t)=>!!n?.Parent && t instanceof n.Parent || t?._zod?.traits?.has(e)
     }), Object.defineProperty(o, "name", {
@@ -151,10 +151,10 @@ function z(e) {
 }
 const S = Symbol("evaluating");
 function P(e, t, n) {
-    let r;
+    let i;
     Object.defineProperty(e, t, {
         get () {
-            if (r !== S) return void 0 === r && (r = S, r = n()), r;
+            if (i !== S) return void 0 === i && (i = S, i = n()), i;
         },
         set (n) {
             Object.defineProperty(e, t, {
@@ -197,8 +197,8 @@ function x(e) {
     return e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function C(e, t, n) {
-    let r = new e._zod.constr(t ?? e._zod.def);
-    return (!t || n?.parent) && (r._zod.parent = e), r;
+    let i = new e._zod.constr(t ?? e._zod.def);
+    return (!t || n?.parent) && (i._zod.parent = e), i;
 }
 function $(e) {
     if (!e) return {};
@@ -226,11 +226,11 @@ function R(e) {
     return "string" == typeof e ? e : e?.message;
 }
 function D(e, t, n) {
-    let r = {
+    let i = {
         ...e,
         path: e.path ?? []
     };
-    return e.message || (r.message = R(e.inst?._zod.def?.error?.(e)) ?? R(t?.error?.(e)) ?? R(n.customError?.(e)) ?? R(n.localeError?.(e)) ?? "Invalid input"), delete r.inst, delete r.continue, t?.reportInput || delete r.input, r;
+    return e.message || (i.message = R(e.inst?._zod.def?.error?.(e)) ?? R(t?.error?.(e)) ?? R(n.customError?.(e)) ?? R(n.localeError?.(e)) ?? "Invalid input"), delete i.inst, delete i.continue, t?.reportInput || delete i.input, i;
 }
 const Z = (e, t)=>{
     e.name = "$ZodError", Object.defineProperty(e, "_zod", {
@@ -245,8 +245,8 @@ const Z = (e, t)=>{
     });
 }, I = g("$ZodError", Z), W = g("$ZodError", Z, {
     Parent: Error
-}), q = (t = W, (e, n, r, i)=>{
-    let a = r ? Object.assign(r, {
+}), q = (t = W, (e, n, i, r)=>{
+    let a = i ? Object.assign(i, {
         async: !1
     }) : {
         async: !1
@@ -256,12 +256,12 @@ const Z = (e, t)=>{
     }, a);
     if (o instanceof Promise) throw new h();
     if (o.issues.length) {
-        let e = new (i?.Err ?? t)(o.issues.map((e)=>D(e, a, v())));
-        throw T(e, i?.callee), e;
+        let e = new (r?.Err ?? t)(o.issues.map((e)=>D(e, a, v())));
+        throw T(e, r?.callee), e;
     }
     return o.value;
-}), U = (n = W, async (e, t, r, i)=>{
-    let a = r ? Object.assign(r, {
+}), U = (n = W, async (e, t, i, r)=>{
+    let a = i ? Object.assign(i, {
         async: !0
     }) : {
         async: !0
@@ -270,12 +270,12 @@ const Z = (e, t)=>{
         issues: []
     }, a);
     if (o instanceof Promise && (o = await o), o.issues.length) {
-        let e = new (i?.Err ?? n)(o.issues.map((e)=>D(e, a, v())));
-        throw T(e, i?.callee), e;
+        let e = new (r?.Err ?? n)(o.issues.map((e)=>D(e, a, v())));
+        throw T(e, r?.callee), e;
     }
     return o.value;
-}), H = (r = W, (e, t, n)=>{
-    let i = n ? {
+}), H = (i = W, (e, t, n)=>{
+    let r = n ? {
         ...n,
         async: !1
     } : {
@@ -283,27 +283,27 @@ const Z = (e, t)=>{
     }, a = e._zod.run({
         value: t,
         issues: []
-    }, i);
+    }, r);
     if (a instanceof Promise) throw new h();
     return a.issues.length ? {
         success: !1,
-        error: new (r ?? I)(a.issues.map((e)=>D(e, i, v())))
+        error: new (i ?? I)(a.issues.map((e)=>D(e, r, v())))
     } : {
         success: !0,
         data: a.value
     };
-}), F = (i = W, async (e, t, n)=>{
-    let r = n ? Object.assign(n, {
+}), F = (r = W, async (e, t, n)=>{
+    let i = n ? Object.assign(n, {
         async: !0
     }) : {
         async: !0
     }, a = e._zod.run({
         value: t,
         issues: []
-    }, r);
+    }, i);
     return a instanceof Promise && (a = await a), a.issues.length ? {
         success: !1,
-        error: new i(a.issues.map((e)=>D(e, r, v())))
+        error: new r(a.issues.map((e)=>D(e, i, v())))
     } : {
         success: !0,
         data: a.value
@@ -315,58 +315,58 @@ const Z = (e, t)=>{
 }, X = g("$ZodType", (e, t)=>{
     var n;
     e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = J;
-    let r = [
+    let i = [
         ...e._zod.def.checks ?? []
     ];
-    for (let t of (e._zod.traits.has("$ZodCheck") && r.unshift(e), r))for (let n of t._zod.onattach)n(e);
-    if (0 === r.length) (n = e._zod).deferred ?? (n.deferred = []), e._zod.deferred?.push(()=>{
+    for (let t of (e._zod.traits.has("$ZodCheck") && i.unshift(e), i))for (let n of t._zod.onattach)n(e);
+    if (0 === i.length) (n = e._zod).deferred ?? (n.deferred = []), e._zod.deferred?.push(()=>{
         e._zod.run = e._zod.parse;
     });
     else {
         let t = (e, t, n)=>{
-            let r, i = V(e);
+            let i, r = V(e);
             for (let a of t){
                 if (a._zod.def.when) {
                     if (!a._zod.def.when(e)) continue;
-                } else if (i) continue;
+                } else if (r) continue;
                 let t = e.issues.length, o = a._zod.check(e);
                 if (o instanceof Promise && n?.async === !1) throw new h();
-                if (r || o instanceof Promise) r = (r ?? Promise.resolve()).then(async ()=>{
-                    await o, e.issues.length !== t && (i || (i = V(e, t)));
+                if (i || o instanceof Promise) i = (i ?? Promise.resolve()).then(async ()=>{
+                    await o, e.issues.length !== t && (r || (r = V(e, t)));
                 });
                 else {
                     if (e.issues.length === t) continue;
-                    i || (i = V(e, t));
+                    r || (r = V(e, t));
                 }
             }
-            return r ? r.then(()=>e) : e;
-        }, n = (n, i, a)=>{
+            return i ? i.then(()=>e) : e;
+        }, n = (n, r, a)=>{
             if (V(n)) return n.aborted = !0, n;
-            let o = t(i, r, a);
+            let o = t(r, i, a);
             if (o instanceof Promise) {
                 if (!1 === a.async) throw new h();
                 return o.then((t)=>e._zod.parse(t, a));
             }
             return e._zod.parse(o, a);
         };
-        e._zod.run = (i, a)=>{
-            if (a.skipChecks) return e._zod.parse(i, a);
+        e._zod.run = (r, a)=>{
+            if (a.skipChecks) return e._zod.parse(r, a);
             if ("backward" === a.direction) {
                 let t = e._zod.parse({
-                    value: i.value,
+                    value: r.value,
                     issues: []
                 }, {
                     ...a,
                     skipChecks: !0
                 });
-                return t instanceof Promise ? t.then((e)=>n(e, i, a)) : n(t, i, a);
+                return t instanceof Promise ? t.then((e)=>n(e, r, a)) : n(t, r, a);
             }
-            let o = e._zod.parse(i, a);
+            let o = e._zod.parse(r, a);
             if (o instanceof Promise) {
                 if (!1 === a.async) throw new h();
-                return o.then((e)=>t(e, r, a));
+                return o.then((e)=>t(e, i, a));
             }
-            return t(o, r, a);
+            return t(o, i, a);
         };
     }
     P(e, "~standard", ()=>({
@@ -391,10 +391,10 @@ const Z = (e, t)=>{
         }));
 }), Q = g("$ZodString", (e, t)=>{
     var n;
-    let r;
+    let i;
     X.init(e, t), e._zod.pattern = [
         ...e?._zod.bag?.patterns ?? []
-    ].pop() ?? (r = (n = e._zod.bag) ? `[\\s\\S]{${n?.minimum ?? 0},${n?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${r}$`)), e._zod.parse = (n, r)=>{
+    ].pop() ?? (i = (n = e._zod.bag) ? `[\\s\\S]{${n?.minimum ?? 0},${n?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${i}$`)), e._zod.parse = (n, i)=>{
         if (t.coerce) try {
             n.value = String(n.value);
         } catch (e) {}
@@ -406,17 +406,17 @@ const Z = (e, t)=>{
         }), n;
     };
 }), Y = g("$ZodNumber", (e, t)=>{
-    X.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? G, e._zod.parse = (n, r)=>{
+    X.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? G, e._zod.parse = (n, i)=>{
         if (t.coerce) try {
             n.value = Number(n.value);
         } catch (e) {}
-        let i = n.value;
-        if ("number" == typeof i && !Number.isNaN(i) && Number.isFinite(i)) return n;
-        let a = "number" == typeof i ? Number.isNaN(i) ? "NaN" : Number.isFinite(i) ? void 0 : "Infinity" : void 0;
+        let r = n.value;
+        if ("number" == typeof r && !Number.isNaN(r) && Number.isFinite(r)) return n;
+        let a = "number" == typeof r ? Number.isNaN(r) ? "NaN" : Number.isFinite(r) ? void 0 : "Infinity" : void 0;
         return n.issues.push({
             expected: "number",
             code: "invalid_type",
-            input: i,
+            input: r,
             inst: e,
             ...a ? {
                 received: a
@@ -424,15 +424,15 @@ const Z = (e, t)=>{
         }), n;
     };
 }), ee = g("$ZodBoolean", (e, t)=>{
-    X.init(e, t), e._zod.pattern = B, e._zod.parse = (n, r)=>{
+    X.init(e, t), e._zod.pattern = B, e._zod.parse = (n, i)=>{
         if (t.coerce) try {
             n.value = !!n.value;
         } catch (e) {}
-        let i = n.value;
-        return "boolean" == typeof i || n.issues.push({
+        let r = n.value;
+        return "boolean" == typeof r || n.issues.push({
             expected: "boolean",
             code: "invalid_type",
-            input: i,
+            input: r,
             inst: e
         }), n;
     };
@@ -440,11 +440,11 @@ const Z = (e, t)=>{
     X.init(e, t), e._zod.pattern = K, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, n)=>{
-        let r = t.value;
-        return null === r || t.issues.push({
+        let i = t.value;
+        return null === i || t.issues.push({
             expected: "null",
             code: "invalid_type",
-            input: r,
+            input: i,
             inst: e
         }), t;
     };
@@ -456,42 +456,42 @@ const Z = (e, t)=>{
             inst: e
         }), t);
 });
-function er(e, t, n) {
+function ei(e, t, n) {
     e.issues.length && t.issues.push(...M(n, e.issues)), t.value[n] = e.value;
 }
-const ei = g("$ZodArray", (e, t)=>{
-    X.init(e, t), e._zod.parse = (n, r)=>{
-        let i = n.value;
-        if (!Array.isArray(i)) return n.issues.push({
+const er = g("$ZodArray", (e, t)=>{
+    X.init(e, t), e._zod.parse = (n, i)=>{
+        let r = n.value;
+        if (!Array.isArray(r)) return n.issues.push({
             expected: "array",
             code: "invalid_type",
-            input: i,
+            input: r,
             inst: e
         }), n;
-        n.value = Array(i.length);
+        n.value = Array(r.length);
         let a = [];
-        for(let e = 0; e < i.length; e++){
-            let o = i[e], s = t.element._zod.run({
+        for(let e = 0; e < r.length; e++){
+            let o = r[e], s = t.element._zod.run({
                 value: o,
                 issues: []
-            }, r);
-            s instanceof Promise ? a.push(s.then((t)=>er(t, n, e))) : er(s, n, e);
+            }, i);
+            s instanceof Promise ? a.push(s.then((t)=>ei(t, n, e))) : ei(s, n, e);
         }
         return a.length ? Promise.all(a).then(()=>n) : n;
     };
 });
-function ea(e, t, n, r, i) {
+function ea(e, t, n, i, r) {
     if (e.issues.length) {
-        if (i && !(n in r)) return;
+        if (r && !(n in i)) return;
         t.issues.push(...M(n, e.issues));
     }
-    void 0 === e.value ? n in r && (t.value[n] = void 0) : t.value[n] = e.value;
+    void 0 === e.value ? n in i && (t.value[n] = void 0) : t.value[n] = e.value;
 }
 const eo = g("$ZodObject", (e, t)=>{
     let n;
     X.init(e, t);
-    let r = Object.getOwnPropertyDescriptor(t, "shape");
-    if (!r?.get) {
+    let i = Object.getOwnPropertyDescriptor(t, "shape");
+    if (!i?.get) {
         let e = t.shape;
         Object.defineProperty(t, "shape", {
             get: ()=>{
@@ -504,30 +504,30 @@ const eo = g("$ZodObject", (e, t)=>{
             }
         });
     }
-    let i = w(()=>(function(e) {
+    let r = w(()=>(function(e) {
             var t;
             let n = Object.keys(e.shape);
             for (let t of n)if (!e.shape?.[t]?._zod?.traits?.has("$ZodType")) throw Error(`Invalid element at key "${t}": expected a Zod schema`);
-            let r = Object.keys(t = e.shape).filter((e)=>"optional" === t[e]._zod.optin && "optional" === t[e]._zod.optout);
+            let i = Object.keys(t = e.shape).filter((e)=>"optional" === t[e]._zod.optin && "optional" === t[e]._zod.optout);
             return {
                 ...e,
                 keys: n,
                 keySet: new Set(n),
                 numKeys: n.length,
-                optionalKeys: new Set(r)
+                optionalKeys: new Set(i)
             };
         })(t));
     P(e._zod, "propValues", ()=>{
         let e = t.shape, n = {};
         for(let t in e){
-            let r = e[t]._zod;
-            if (r.values) for (let e of (n[t] ?? (n[t] = new Set()), r.values))n[t].add(e);
+            let i = e[t]._zod;
+            if (i.values) for (let e of (n[t] ?? (n[t] = new Set()), i.values))n[t].add(e);
         }
         return n;
     });
     let a = t.catchall;
-    e._zod.parse = (t, r)=>{
-        n ?? (n = i.value);
+    e._zod.parse = (t, i)=>{
+        n ?? (n = r.value);
         let o = t.value;
         if (!A(o)) return t.issues.push({
             expected: "object",
@@ -538,25 +538,25 @@ const eo = g("$ZodObject", (e, t)=>{
         t.value = {};
         let s = [], l = n.shape;
         for (let e of n.keys){
-            let n = l[e], i = "optional" === n._zod.optout, a = n._zod.run({
+            let n = l[e], r = "optional" === n._zod.optout, a = n._zod.run({
                 value: o[e],
                 issues: []
-            }, r);
-            a instanceof Promise ? s.push(a.then((n)=>ea(n, t, e, o, i))) : ea(a, t, e, o, i);
+            }, i);
+            a instanceof Promise ? s.push(a.then((n)=>ea(n, t, e, o, r))) : ea(a, t, e, o, r);
         }
-        return a ? function(e, t, n, r, i, a) {
-            let o = [], s = i.keySet, l = i.catchall._zod, d = l.def.type, c = "optional" === l.optout;
-            for(let i in t){
-                if (s.has(i)) continue;
+        return a ? function(e, t, n, i, r, a) {
+            let o = [], s = r.keySet, l = r.catchall._zod, d = l.def.type, c = "optional" === l.optout;
+            for(let r in t){
+                if (s.has(r)) continue;
                 if ("never" === d) {
-                    o.push(i);
+                    o.push(r);
                     continue;
                 }
                 let a = l.run({
-                    value: t[i],
+                    value: t[r],
                     issues: []
-                }, r);
-                a instanceof Promise ? e.push(a.then((e)=>ea(e, n, i, t, c))) : ea(a, n, i, t, c);
+                }, i);
+                a instanceof Promise ? e.push(a.then((e)=>ea(e, n, r, t, c))) : ea(a, n, r, t, c);
             }
             return (o.length && n.issues.push({
                 code: "unrecognized_keys",
@@ -564,17 +564,17 @@ const eo = g("$ZodObject", (e, t)=>{
                 input: t,
                 inst: a
             }), e.length) ? Promise.all(e).then(()=>n) : n;
-        }(s, o, t, r, i.value, e) : s.length ? Promise.all(s).then(()=>t) : t;
+        }(s, o, t, i, r.value, e) : s.length ? Promise.all(s).then(()=>t) : t;
     };
 });
-function es(e, t, n, r) {
+function es(e, t, n, i) {
     for (let n of e)if (0 === n.issues.length) return t.value = n.value, t;
-    let i = e.filter((e)=>!V(e));
-    return 1 === i.length ? (t.value = i[0].value, i[0]) : (t.issues.push({
+    let r = e.filter((e)=>!V(e));
+    return 1 === r.length ? (t.value = r[0].value, r[0]) : (t.issues.push({
         code: "invalid_union",
         input: t.value,
         inst: n,
-        errors: e.map((e)=>e.issues.map((e)=>D(e, r, v())))
+        errors: e.map((e)=>e.issues.map((e)=>D(e, i, v())))
     }), t);
 }
 const el = g("$ZodUnion", (e, t)=>{
@@ -586,13 +586,13 @@ const el = g("$ZodUnion", (e, t)=>{
             return RegExp(`^(${e.map((e)=>z(e.source)).join("|")})$`);
         }
     });
-    let n = 1 === t.options.length, r = t.options[0]._zod.run;
-    e._zod.parse = (i, a)=>{
-        if (n) return r(i, a);
+    let n = 1 === t.options.length, i = t.options[0]._zod.run;
+    e._zod.parse = (r, a)=>{
+        if (n) return i(r, a);
         let o = !1, s = [];
         for (let e of t.options){
             let t = e._zod.run({
-                value: i.value,
+                value: r.value,
                 issues: []
             }, a);
             if (t instanceof Promise) s.push(t), o = !0;
@@ -601,7 +601,7 @@ const el = g("$ZodUnion", (e, t)=>{
                 s.push(t);
             }
         }
-        return o ? Promise.all(s).then((t)=>es(t, i, e, a)) : es(s, i, e, a);
+        return o ? Promise.all(s).then((t)=>es(t, r, e, a)) : es(s, r, e, a);
     };
 }), ed = g("$ZodDiscriminatedUnion", (e, t)=>{
     t.inclusive = !1, el.init(e, t);
@@ -609,34 +609,34 @@ const el = g("$ZodUnion", (e, t)=>{
     P(e._zod, "propValues", ()=>{
         let e = {};
         for (let n of t.options){
-            let r = n._zod.propValues;
-            if (!r || 0 === Object.keys(r).length) throw Error(`Invalid discriminated union option at index "${t.options.indexOf(n)}"`);
-            for (let [t, n] of Object.entries(r))for (let r of (e[t] || (e[t] = new Set()), n))e[t].add(r);
+            let i = n._zod.propValues;
+            if (!i || 0 === Object.keys(i).length) throw Error(`Invalid discriminated union option at index "${t.options.indexOf(n)}"`);
+            for (let [t, n] of Object.entries(i))for (let i of (e[t] || (e[t] = new Set()), n))e[t].add(i);
         }
         return e;
     });
-    let r = w(()=>{
+    let i = w(()=>{
         let e = t.options, n = new Map();
-        for (let r of e){
-            let e = r._zod.propValues?.[t.discriminator];
-            if (!e || 0 === e.size) throw Error(`Invalid discriminated union option at index "${t.options.indexOf(r)}"`);
+        for (let i of e){
+            let e = i._zod.propValues?.[t.discriminator];
+            if (!e || 0 === e.size) throw Error(`Invalid discriminated union option at index "${t.options.indexOf(i)}"`);
             for (let t of e){
                 if (n.has(t)) throw Error(`Duplicate discriminator value "${String(t)}"`);
-                n.set(t, r);
+                n.set(t, i);
             }
         }
         return n;
     });
-    e._zod.parse = (i, a)=>{
-        let o = i.value;
-        if (!A(o)) return i.issues.push({
+    e._zod.parse = (r, a)=>{
+        let o = r.value;
+        if (!A(o)) return r.issues.push({
             code: "invalid_type",
             expected: "object",
             input: o,
             inst: e
-        }), i;
-        let s = r.value.get(o?.[t.discriminator]);
-        return s ? s._zod.run(i, a) : t.unionFallback ? n(i, a) : (i.issues.push({
+        }), r;
+        let s = i.value.get(o?.[t.discriminator]);
+        return s ? s._zod.run(r, a) : t.unionFallback ? n(r, a) : (r.issues.push({
             code: "invalid_union",
             errors: [],
             note: "No matching discriminator",
@@ -646,15 +646,15 @@ const el = g("$ZodUnion", (e, t)=>{
                 t.discriminator
             ],
             inst: e
-        }), i);
+        }), r);
     };
 }), ec = g("$ZodRecord", (e, t)=>{
-    X.init(e, t), e._zod.parse = (n, r)=>{
-        let i = n.value;
-        if (!N(i)) return n.issues.push({
+    X.init(e, t), e._zod.parse = (n, i)=>{
+        let r = n.value;
+        if (!N(r)) return n.issues.push({
             expected: "record",
             code: "invalid_type",
-            input: i,
+            input: r,
             inst: e
         }), n;
         let a = [], o = t.keyType._zod.values;
@@ -665,40 +665,40 @@ const el = g("$ZodUnion", (e, t)=>{
             for (let e of o)if ("string" == typeof e || "number" == typeof e || "symbol" == typeof e) {
                 l.add("number" == typeof e ? e.toString() : e);
                 let o = t.valueType._zod.run({
-                    value: i[e],
+                    value: r[e],
                     issues: []
-                }, r);
+                }, i);
                 o instanceof Promise ? a.push(o.then((t)=>{
                     t.issues.length && n.issues.push(...M(e, t.issues)), n.value[e] = t.value;
                 })) : (o.issues.length && n.issues.push(...M(e, o.issues)), n.value[e] = o.value);
             }
-            for(let e in i)l.has(e) || (s = s ?? []).push(e);
+            for(let e in r)l.has(e) || (s = s ?? []).push(e);
             s && s.length > 0 && n.issues.push({
                 code: "unrecognized_keys",
-                input: i,
+                input: r,
                 inst: e,
                 keys: s
             });
-        } else for (let o of (n.value = {}, Reflect.ownKeys(i))){
+        } else for (let o of (n.value = {}, Reflect.ownKeys(r))){
             if ("__proto__" === o) continue;
             let s = t.keyType._zod.run({
                 value: o,
                 issues: []
-            }, r);
+            }, i);
             if (s instanceof Promise) throw Error("Async schemas not supported in object keys currently");
             if ("string" == typeof o && G.test(o) && s.issues.length) {
                 let e = t.keyType._zod.run({
                     value: Number(o),
                     issues: []
-                }, r);
+                }, i);
                 if (e instanceof Promise) throw Error("Async schemas not supported in object keys currently");
                 0 === e.issues.length && (s = e);
             }
             if (s.issues.length) {
-                "loose" === t.mode ? n.value[o] = i[o] : n.issues.push({
+                "loose" === t.mode ? n.value[o] = r[o] : n.issues.push({
                     code: "invalid_key",
                     origin: "record",
-                    issues: s.issues.map((e)=>D(e, r, v())),
+                    issues: s.issues.map((e)=>D(e, i, v())),
                     input: o,
                     path: [
                         o
@@ -708,9 +708,9 @@ const el = g("$ZodUnion", (e, t)=>{
                 continue;
             }
             let l = t.valueType._zod.run({
-                value: i[o],
+                value: r[o],
                 issues: []
-            }, r);
+            }, i);
             l instanceof Promise ? a.push(l.then((e)=>{
                 e.issues.length && n.issues.push(...M(o, e.issues)), n.value[s.value] = e.value;
             })) : (l.issues.length && n.issues.push(...M(o, l.issues)), n.value[s.value] = l.value);
@@ -719,29 +719,29 @@ const el = g("$ZodUnion", (e, t)=>{
     };
 }), eu = g("$ZodEnum", (e, t)=>{
     var n;
-    let r;
+    let i;
     X.init(e, t);
-    let i = (r = Object.values(n = t.entries).filter((e)=>"number" == typeof e), Object.entries(n).filter(([e, t])=>-1 === r.indexOf(+e)).map(([e, t])=>t)), a = new Set(i);
-    e._zod.values = a, e._zod.pattern = RegExp(`^(${i.filter((e)=>O.has(typeof e)).map((e)=>"string" == typeof e ? x(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
-        let r = t.value;
-        return a.has(r) || t.issues.push({
+    let r = (i = Object.values(n = t.entries).filter((e)=>"number" == typeof e), Object.entries(n).filter(([e, t])=>-1 === i.indexOf(+e)).map(([e, t])=>t)), a = new Set(r);
+    e._zod.values = a, e._zod.pattern = RegExp(`^(${r.filter((e)=>O.has(typeof e)).map((e)=>"string" == typeof e ? x(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
+        let i = t.value;
+        return a.has(i) || t.issues.push({
             code: "invalid_value",
-            values: i,
-            input: r,
+            values: r,
+            input: i,
             inst: e
         }), t;
     };
 }), ep = g("$ZodLiteral", (e, t)=>{
     if (X.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let n = new Set(t.values);
-    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? x(e) : e ? x(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (r, i)=>{
-        let a = r.value;
-        return n.has(a) || r.issues.push({
+    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? x(e) : e ? x(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (i, r)=>{
+        let a = i.value;
+        return n.has(a) || i.issues.push({
             code: "invalid_value",
             values: t.values,
             input: a,
             inst: e
-        }), r;
+        }), i;
     };
 });
 function e_(e, t) {
@@ -759,8 +759,8 @@ const ef = g("$ZodOptional", (e, t)=>{
         return e ? RegExp(`^(${z(e.source)})?$`) : void 0;
     }), e._zod.parse = (e, n)=>{
         if ("optional" === t.innerType._zod.optin) {
-            let r = t.innerType._zod.run(e, n);
-            return r instanceof Promise ? r.then((t)=>e_(t, e.value)) : e_(r, e.value);
+            let i = t.innerType._zod.run(e, n);
+            return i instanceof Promise ? i.then((t)=>e_(t, e.value)) : e_(i, e.value);
         }
         return void 0 === e.value ? e : t.innerType._zod.run(e, n);
     };
@@ -775,17 +775,17 @@ const ef = g("$ZodOptional", (e, t)=>{
 }), eg = g("$ZodCatch", (e, t)=>{
     X.init(e, t), P(e._zod, "optin", ()=>t.innerType._zod.optin), P(e._zod, "optout", ()=>t.innerType._zod.optout), P(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, n)=>{
         if ("backward" === n.direction) return t.innerType._zod.run(e, n);
-        let r = t.innerType._zod.run(e, n);
-        return r instanceof Promise ? r.then((r)=>(e.value = r.value, r.issues.length && (e.value = t.catchValue({
+        let i = t.innerType._zod.run(e, n);
+        return i instanceof Promise ? i.then((i)=>(e.value = i.value, i.issues.length && (e.value = t.catchValue({
                 ...e,
                 error: {
-                    issues: r.issues.map((e)=>D(e, n, v()))
+                    issues: i.issues.map((e)=>D(e, n, v()))
                 },
                 input: e.value
-            }), e.issues = []), e)) : (e.value = r.value, r.issues.length && (e.value = t.catchValue({
+            }), e.issues = []), e)) : (e.value = i.value, i.issues.length && (e.value = t.catchValue({
             ...e,
             error: {
-                issues: r.issues.map((e)=>D(e, n, v()))
+                issues: i.issues.map((e)=>D(e, n, v()))
             },
             input: e.value
         }), e.issues = []), e);
@@ -816,11 +816,11 @@ Symbol("ZodOutput"), Symbol("ZodInput");
                 ...this.get(t) ?? {}
             };
             delete n.id;
-            let r = {
+            let i = {
                 ...n,
                 ...this._map.get(e)
             };
-            return Object.keys(r).length ? r : void 0;
+            return Object.keys(i).length ? i : void 0;
         }
         return this._map.get(e);
     }
@@ -891,7 +891,7 @@ function ej(e) {
     });
 }
 const eT = g("ZodMiniArray", (e, t)=>{
-    ei.init(e, t), ey.init(e, t);
+    er.init(e, t), ey.init(e, t);
 });
 function eA(e, t) {
     return new eT({
@@ -1174,7 +1174,7 @@ const te = e$("state", [
             let n = e._zod.def.shape;
             for(let e in t)if (void 0 !== Object.getOwnPropertyDescriptor(n, e)) throw Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
         }
-        let r = j(e._zod.def, {
+        let i = j(e._zod.def, {
             get shape () {
                 let n = {
                     ...e._zod.def.shape,
@@ -1183,32 +1183,32 @@ const te = e$("state", [
                 return k(this, "shape", n), n;
             }
         });
-        return C(e, r);
+        return C(e, i);
     }(function(e) {
         var t = void 0;
         let n = e._zod.def.checks;
         if (n && n.length > 0) throw Error(".partial() cannot be used on object schemas containing refinements");
-        let r = j(e._zod.def, {
+        let i = j(e._zod.def, {
             get shape () {
-                let n = e._zod.def.shape, r = {
+                let n = e._zod.def.shape, i = {
                     ...n
                 };
                 if (t) for(let e in t){
                     if (!(e in n)) throw Error(`Unrecognized key: "${e}"`);
-                    t[e] && (r[e] = eW ? new eW({
+                    t[e] && (i[e] = eW ? new eW({
                         type: "optional",
                         innerType: n[e]
                     }) : n[e]);
                 }
-                else for(let e in n)r[e] = eW ? new eW({
+                else for(let e in n)i[e] = eW ? new eW({
                     type: "optional",
                     innerType: n[e]
                 }) : n[e];
-                return k(this, "shape", r), r;
+                return k(this, "shape", i), i;
             },
             checks: []
         });
-        return C(e, r);
+        return C(e, i);
     }(e8), {
         state: eD([
             "pending",
@@ -1305,7 +1305,7 @@ let tn = eO({
     port: eY,
     path: eQ,
     dhcp_enabled: e0
-}), tr = eO({
+}), ti = eO({
     state: eD([
         "discovering",
         "comparing",
@@ -1337,7 +1337,7 @@ let tn = eO({
         value: eA(eQ)
     }))
 });
-const ti = eO({
+const tr = eO({
     device: eQ,
     name: eH(eQ),
     group: eH(eQ),
@@ -1372,8 +1372,8 @@ const ti = eO({
         ...$(void 0)
     }),
     error: eH(eQ),
-    devices: eA(ti),
-    management_network: tr,
+    devices: eA(tr),
+    management_network: ti,
     omci_management: eB(),
     groups: eA(eO({
         id: eQ,
@@ -1437,7 +1437,7 @@ let t_ = eO({
     temperature_celsius: td,
     vcc_voltage: td,
     cdr_locked: eH(eS()),
-    tx_enabled: eq(eH(eS())),
+    tx_enabled: eH(eS()),
     measurements: tc
 }), tf = eO({
     equipment_id: eH(ts),
@@ -1573,7 +1573,7 @@ const tz = async ()=>th.parse(eX(await ty())), tL = async ()=>to.parse(await tv(
         restarting: eI(!0)
     }).parse(eX(await tw()));
 eO({
-    schema_version: ez(),
+    schema_version: eI(1),
     status: eD([
         "success",
         "error"
@@ -1581,12 +1581,20 @@ eO({
     action: eD([
         "optical_on",
         "optical_off",
-        "optical_status"
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
     ]),
+    desired_enabled: eH(eS()),
     tx_enabled: eH(eS()),
-    actor_state: eb(),
+    actor_state: eD([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
     hardware_ready: eS(),
-    discovery_active: eH(eS()),
+    discovery_active: eS(),
     cleanup_pending: eS(),
     error: eH(eO({
         code: eb(),
@@ -1717,8 +1725,8 @@ async function tA(e) {
 let tN = L.view, tO = L.uci, tE = L.form;
 async function tx(e, t, n) {
     try {
-        let r = await e();
-        t.textContent = JSON.stringify(r, null, 2), n?.(r);
+        let i = await e();
+        t.textContent = JSON.stringify(i, null, 2), n?.(i);
     } catch (e) {
         t.textContent = String(e), n?.({
             error: String(e)
@@ -1743,18 +1751,18 @@ let main = tN.extend({
         };
     },
     render (e) {
-        var t, n, r;
-        let i, a, s, g, h = new tE.Map("fttr", _("FTTR configuration")), y = h.section(tE.NamedSection, "acs", "acs");
+        var t, n, i;
+        let r, a, s, g, h = new tE.Map("fttr", _("FTTR configuration")), y = h.section(tE.NamedSection, "acs", "acs");
         y.addremove = !1, y.anonymous = !1;
         let v = tO.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
         (function(e, t, n) {
             e.tab("basic", t);
-            let r = e.taboption("basic", L.form.SectionValue, "_acs", L.form.NamedSection, "acs", "acs").subsection;
-            r.addremove = !1, r.anonymous = !1;
-            let i = l(r, L.form.Flag, "enabled", _("Enable ACS"));
-            i.default = "1", i.rmempty = !1, (i = l(r, L.form.Value, "port", _("Listen port"), "port")).default = "7547", i.rmempty = !1, (i = l(r, L.form.Value, "path", _("CWMP path"))).default = "/cwmp", i.rmempty = !1, i.validate = (e, t)=>!!t.startsWith("/") || _("The path must start with '/'."), (i = l(r, L.form.Value, "state_file", _("ACS state file"))).default = "/var/lib/fttr/acs-state.json", i.rmempty = !1, i.validate = (e, t)=>!!t.startsWith("/") || _("The state file path must be absolute."), (i = l(r, L.form.Value, "username", _("HTTP Basic username"))).optional = !0, i.rmempty = !0, (i = l(r, L.form.Value, "password", _("HTTP Basic password"))).password = !0, i.optional = !0, i.rmempty = !0;
+            let i = e.taboption("basic", L.form.SectionValue, "_acs", L.form.NamedSection, "acs", "acs").subsection;
+            i.addremove = !1, i.anonymous = !1;
+            let r = l(i, L.form.Flag, "enabled", _("Enable ACS"));
+            r.default = "1", r.rmempty = !1, (r = l(i, L.form.Value, "port", _("Listen port"), "port")).default = "7547", r.rmempty = !1, (r = l(i, L.form.Value, "path", _("CWMP path"))).default = "/cwmp", r.rmempty = !1, r.validate = (e, t)=>!!t.startsWith("/") || _("The path must start with '/'."), (r = l(i, L.form.Value, "state_file", _("ACS state file"))).default = "/var/lib/fttr/acs-state.json", r.rmempty = !1, r.validate = (e, t)=>!!t.startsWith("/") || _("The state file path must be absolute."), (r = l(i, L.form.Value, "username", _("HTTP Basic username"))).optional = !0, r.rmempty = !0, (r = l(i, L.form.Value, "password", _("HTTP Basic password"))).password = !0, r.optional = !0, r.rmempty = !0;
             let a = e.taboption("basic", L.form.SectionValue, "_management", L.form.NamedSection, "management", "management").subsection;
-            a.addremove = !1, (i = l(a, L.form.Flag, "enabled", _("Enable management network"))).default = "1", i.rmempty = !1, (i = d(a, "mode", _("Management application mode"), [
+            a.addremove = !1, (r = l(a, L.form.Flag, "enabled", _("Enable management network"))).default = "1", r.rmempty = !1, (r = d(a, "mode", _("Management application mode"), [
                 [
                     "manual",
                     _("Manual")
@@ -1763,17 +1771,17 @@ let main = tN.extend({
                     "auto",
                     _("Automatic")
                 ]
-            ])).default = "manual", i.rmempty = !1, i.description = _("Manual mode only discovers and plans. Use Apply management configuration on the Synchronization page to create or update the isolated network, ACS listener and child TR069 settings."), (i = l(a, L.form.Value, "address", _("Management IPv4 address/prefix"), "cidr4")).default = "192.168.46.1/24", i.rmempty = !1, i.description = _("The local ACS binds to this address. The child ACS URL is generated from this address, the ACS port and CWMP path."), (i = l(a, L.form.DummyValue, "_generated_acs_url", _("Generated ACS URL"))).cfgvalue = ()=>{
+            ])).default = "manual", r.rmempty = !1, r.description = _("Manual mode only discovers and plans. Use Apply management configuration on the Synchronization page to create or update the isolated network, ACS listener and child TR069 settings."), (r = l(a, L.form.Value, "address", _("Management IPv4 address/prefix"), "cidr4")).default = "192.168.46.1/24", r.rmempty = !1, r.description = _("The local ACS binds to this address. The child ACS URL is generated from this address, the ACS port and CWMP path."), (r = l(a, L.form.DummyValue, "_generated_acs_url", _("Generated ACS URL"))).cfgvalue = ()=>{
                 let t = e.map.data, n = String(t.get("fttr", "management", "address") || "192.168.46.1/24").split("/")[0];
                 return `http://${n}:${t.get("fttr", "acs", "port") || "7547"}${t.get("fttr", "acs", "path") || "/cwmp"}`;
-            }, (i = l(a, L.form.DynamicList, "vlan", _("TR069 VLANs"), "range(1,4094)")).default = [
+            }, (r = l(a, L.form.DynamicList, "vlan", _("TR069 VLANs"), "range(1,4094)")).default = [
                 "46"
-            ], i.rmempty = !1, i.description = _("All listed VLANs share one management bridge and DHCP pool. Retain an existing listed management VLAN; the first VLAN is the fallback."), i.validate = (e, t)=>!!("" === t || /^\d+$/.test(t) && Number(t) >= 1 && 4094 >= Number(t)) || _("Enter a VLAN ID in 1\u20134094.");
-            let o = i.parse;
-            for (let [e, t, n] of (i.parse = function(e) {
+            ], r.rmempty = !1, r.description = _("All listed VLANs share one management bridge and DHCP pool. Retain an existing listed management VLAN; the first VLAN is the fallback."), r.validate = (e, t)=>!!("" === t || /^\d+$/.test(t) && Number(t) >= 1 && 4094 >= Number(t)) || _("Enter a VLAN ID in 1\u20134094.");
+            let o = r.parse;
+            for (let [e, t, n] of (r.parse = function(e) {
                 let t = this.formvalue(e) || [];
                 return t.length ? new Set(t.map(Number)).size !== t.length ? Promise.reject(Error(_("Duplicate VLAN IDs are not allowed."))) : o.call(this, e) : Promise.reject(Error(_("Enter at least one VLAN ID in 1\u20134094.")));
-            }, (i = l(a, L.form.Value, "priority", _("Priority"), "range(0,7)")).default = "0", i.rmempty = !1, (i = l(a, L.form.Flag, "dhcp_enabled", _("Enable management DHCP"))).default = "1", i.rmempty = !1, [
+            }, (r = l(a, L.form.Value, "priority", _("Priority"), "range(0,7)")).default = "0", r.rmempty = !1, (r = l(a, L.form.Flag, "dhcp_enabled", _("Enable management DHCP"))).default = "1", r.rmempty = !1, [
                 [
                     "dhcp_start",
                     _("DHCP start offset"),
@@ -1789,9 +1797,9 @@ let main = tN.extend({
                     _("DHCP lease time"),
                     "12h"
                 ]
-            ]))(i = l(a, L.form.Value, e, t)).default = n, i.rmempty = !1, i.depends("dhcp_enabled", "1");
+            ]))(r = l(a, L.form.Value, e, t)).default = n, r.rmempty = !1, r.depends("dhcp_enabled", "1");
             let s = e.taboption("basic", L.form.SectionValue, "_policy", L.form.NamedSection, n, "provisioning").subsection;
-            for (let [e, t] of (s.addremove = !1, s.anonymous = !1, (i = l(s, L.form.Flag, "enabled", _("Enable provisioning"))).default = "1", i.rmempty = !1, (i = l(s, L.form.Flag, "allow_unsupported_as_bridge", _("Allow unsupported ONUs as bridge"))).default = "0", i.rmempty = !1, i.description = _("Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state."), (i = d(s, "mode", _("Synchronization mode"), [
+            for (let [e, t] of (s.addremove = !1, s.anonymous = !1, (r = l(s, L.form.Flag, "enabled", _("Enable provisioning"))).default = "1", r.rmempty = !1, (r = l(s, L.form.Flag, "allow_unsupported_as_bridge", _("Allow unsupported ONUs as bridge"))).default = "0", r.rmempty = !1, r.description = _("Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state."), (r = d(s, "mode", _("Synchronization mode"), [
                 [
                     "auto",
                     _("Automatic")
@@ -1800,7 +1808,7 @@ let main = tN.extend({
                     "manual",
                     _("Manual")
                 ]
-            ])).default = "manual", i.description = _("Manual mode only saves configuration; use Apply differences on the Synchronization page to send it to devices. Automatic mode synchronizes after Save & Apply when Configuration changed is selected."), i = l(s, L.form.MultiValue, "trigger", _("Automatic triggers")), [
+            ])).default = "manual", r.description = _("Manual mode only saves configuration; use Apply differences on the Synchronization page to send it to devices. Automatic mode synchronizes after Save & Apply when Configuration changed is selected."), r = l(s, L.form.MultiValue, "trigger", _("Automatic triggers")), [
                 [
                     "config_change",
                     _("Configuration changed")
@@ -1821,18 +1829,18 @@ let main = tN.extend({
                     "periodic",
                     _("Periodic")
                 ]
-            ]))i.value(e, t);
-            i.default = [
+            ]))r.value(e, t);
+            r.default = [
                 "config_change",
                 "device_online",
                 "cwmp_boot"
-            ], i.retain = !0, i.depends("mode", "auto"), (i = l(s, L.form.Value, "interval_minutes", _("Periodic synchronization interval (minutes)"))).default = "30", i.retain = !0, i.depends("mode", "auto"), i.validate = (e, t)=>!!(/^(0|[1-9][0-9]*)$/.test(t) && (0 === Number(t) || Number(t) >= 1 && 1440 >= Number(t))) || _("Use 0 to disable, or 1\u20131440 minutes."), (i = l(s, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)")).default = "180";
-        })(y, _("Basic"), v), i = new Map((t = e.connectedDevices ?? []).map((e)=>[
+            ], r.retain = !0, r.depends("mode", "auto"), (r = l(s, L.form.Value, "interval_minutes", _("Periodic synchronization interval (minutes)"))).default = "30", r.retain = !0, r.depends("mode", "auto"), r.validate = (e, t)=>!!(/^(0|[1-9][0-9]*)$/.test(t) && (0 === Number(t) || Number(t) >= 1 && 1440 >= Number(t))) || _("Use 0 to disable, or 1\u20131440 minutes."), (r = l(s, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)")).default = "180";
+        })(y, _("Basic"), v), r = new Map((t = e.connectedDevices ?? []).map((e)=>[
                 e.serial_number,
                 e
             ])), a = (e)=>{
-            let t = i.get(e), n = L.uci.sections("fttr", "device").find((t)=>t.optical_sn === e), r = t?.model || String(n?.adapter || _("Unknown model"));
-            return `${r} \xb7 ${e} \xb7 ${t?.state === "o5_operation" ? _("Connected") : _("Offline")}${t?.onu_id != null ? ` \xb7 ONU ${t.onu_id}` : ""}`;
+            let t = r.get(e), n = L.uci.sections("fttr", "device").find((t)=>t.optical_sn === e), i = t?.model || String(n?.adapter || _("Unknown model"));
+            return `${i} \xb7 ${e} \xb7 ${t?.state === "o5_operation" ? _("Connected") : _("Offline")}${t?.onu_id != null ? ` \xb7 ONU ${t.onu_id}` : ""}`;
         }, y.tab("devices", _("Devices & groups")), u(y, "devices", "_groups", "group", _("Groups"), (e)=>{
             p(e, "_name", _("Group"), (e)=>String(L.uci.get("fttr", e, "name") || e)), l(e, L.form.Value, "name", _("Name")).modalonly = !0, c(e, "template", _("Template"), "template").modalonly = !0;
         }), u(y, "devices", "_devices", "device", _("Devices"), (e)=>{
@@ -1842,17 +1850,17 @@ let main = tN.extend({
             });
             let n = l(e, L.form.ListValue, "optical_sn", _("Connected device"));
             n.modalonly = !0, n.rmempty = !1, n.description = _("Lists supported devices registered on the optical link, including devices that have not sent an ACS Inform. Devices already configured are omitted when adding a new device.");
-            let r = n.renderWidget;
-            n.renderWidget = function(e, n, i) {
+            let i = n.renderWidget;
+            n.renderWidget = function(e, n, r) {
                 this.keylist = [], this.vallist = [];
                 let o = String(L.uci.get("fttr", e, "optical_sn") || ""), s = new Set(L.uci.sections("fttr", "device").filter((t)=>t[".name"] !== e).map((e)=>e.optical_sn));
                 for (let e of t)"o5_operation" === e.state && m(e) && !s.has(e.serial_number) && this.value(e.serial_number, a(e.serial_number));
                 o && !this.keylist.includes(o) && this.value(o, a(o));
-                let l = i || o || this.keylist[0] || "";
-                return r.call(this, e, n, l);
+                let l = r || o || this.keylist[0] || "";
+                return i.call(this, e, n, l);
             }, n.validate = (e, t)=>t ? !L.uci.sections("fttr", "device").some((n)=>n[".name"] !== e && n.optical_sn === t) || _("Device already configured.") : _("Select device."), n.write = (e, t)=>{
                 L.uci.set("fttr", e, "optical_sn", t);
-                let n = m(i.get(t));
+                let n = m(r.get(t));
                 n && !L.uci.get("fttr", e, "adapter") && L.uci.set("fttr", e, "adapter", n);
             };
             let o = d(e, "adapter", _("Device adapter"), [
@@ -1954,8 +1962,8 @@ let main = tN.extend({
             ])for (let n of L.uci.sections("fttr", t))n.template === e && L.uci.remove("fttr", n[".name"]);
             return g.call(this, e, t);
         }, s.addModalOptions = (e, t)=>{
-            let n, r;
-            e.tab("general", _("General")), e.getOption("name").tab = "general", e.tab("wifi", _("SSIDs")), e.tab("networks", _("Networks")), r = (n = f(e, "wifi", "_wifi", "wifi", _("SSIDs"), t, (e)=>{
+            let n, i;
+            e.tab("general", _("General")), e.getOption("name").tab = "general", e.tab("wifi", _("SSIDs")), e.tab("networks", _("Networks")), i = (n = f(e, "wifi", "_wifi", "wifi", _("SSIDs"), t, (e)=>{
                 p(e, "_ssid", _("SSID"), (e)=>String(L.uci.get("fttr", e, "ssid") || e));
                 let t = l(e, L.form.Value, "ssid", _("SSID"));
                 t.modalonly = !0, t.rmempty = !1, t.validate = (e, t)=>new TextEncoder().encode(t).length >= 1 && new TextEncoder().encode(t).length <= 32 || _("SSID must be 1\u201332 bytes."), d(e, "radio", _("Band"), [
@@ -2005,19 +2013,19 @@ let main = tN.extend({
                     ];
                     n.includes(e) && L.uci.set("fttr", t[".name"], "ssid", n.filter((t)=>t !== e).map(String));
                 }
-                return r.call(this, e, t);
+                return i.call(this, e, t);
             }, f(e, "networks", "_networks", "network", _("Networks"), t, (e)=>{
                 p(e, "_name", _("Network"), (e)=>`${String(L.uci.get("fttr", e, "name") || _("New network"))} \xb7 VLAN ${String(L.uci.get("fttr", e, "vlan") || "0")}`);
                 let n = l(e, L.form.Value, "name", _("Name"));
                 n.modalonly = !0, n.rmempty = !1;
-                let r = l(e, L.form.MultiValue, "service_list", _("WAN Service List (multi-select)"));
-                for (let e of (r.modalonly = !0, r.description = _("For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. TR069 is reserved for OMCI."), [
+                let i = l(e, L.form.MultiValue, "service_list", _("WAN Service List (multi-select)"));
+                for (let e of (i.modalonly = !0, i.description = _("For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. TR069 is reserved for OMCI."), [
                     "INTERNET",
                     "OTHER",
                     "IPTV",
                     "VOIP"
-                ]))r.value(e, e);
-                for (let [t, n, r] of [
+                ]))i.value(e, e);
+                for (let [t, n, i] of [
                     [
                         "vlan",
                         _("VLAN"),
@@ -2029,11 +2037,11 @@ let main = tN.extend({
                         "range(0,7)"
                     ]
                 ]){
-                    let i = l(e, L.form.Value, t, n, r);
-                    i.default = "0", i.rmempty = !1, i.modalonly = !0;
+                    let r = l(e, L.form.Value, t, n, i);
+                    r.default = "0", r.rmempty = !1, r.modalonly = !0;
                 }
-                let i = l(e, L.form.MultiValue, "ssid", _("SSIDs"));
-                for (let e of (i.modalonly = !0, L.uci.sections("fttr", "wifi")))e.template === t && i.value(e[".name"], String(e.ssid || _("SSID")));
+                let r = l(e, L.form.MultiValue, "ssid", _("SSIDs"));
+                for (let e of (r.modalonly = !0, L.uci.sections("fttr", "wifi")))e.template === t && r.value(e[".name"], String(e.ssid || _("SSID")));
                 let a = l(e, L.form.MultiValue, "port", _("Ports"));
                 a.modalonly = !0;
                 for(let e = 1; e <= 4; e++)a.value(`lan${e}`, `LAN${e}`);
@@ -2052,7 +2060,7 @@ let main = tN.extend({
             }), "error"));
         };
         S(e);
-        let P = (r = {
+        let P = (i = {
             class: "cbi-section",
             children: [
                 (n = {
@@ -2092,7 +2100,7 @@ let main = tN.extend({
                 }),
                 w
             ]
-        }, o("div", r));
+        }, o("div", i));
         return h.render().then((e)=>o("div", {
                 children: [
                     e,

@@ -1361,7 +1361,7 @@ let tt = ez({
     temperature_celsius: e6,
     vcc_voltage: e6,
     cdr_locked: eR(eg()),
-    tx_enabled: eT(eR(eg())),
+    tx_enabled: eR(eg()),
     measurements: e7
 }), tr = ez({
     equipment_id: eR(e4),
@@ -1836,7 +1836,7 @@ L.rpc.declare({
 });
 const tT = async ()=>ta.parse(tE(await tL())), tI = async ()=>to.parse(tE(await tN()));
 ez({
-    schema_version: e_(),
+    schema_version: eL(1),
     status: eE([
         "success",
         "error"
@@ -1844,12 +1844,20 @@ ez({
     action: eE([
         "optical_on",
         "optical_off",
-        "optical_status"
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
     ]),
+    desired_enabled: eR(eg()),
     tx_enabled: eR(eg()),
-    actor_state: eu(),
+    actor_state: eE([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
     hardware_ready: eg(),
-    discovery_active: eR(eg()),
+    discovery_active: eg(),
     cleanup_pending: eg(),
     error: eR(ez({
         code: eu(),

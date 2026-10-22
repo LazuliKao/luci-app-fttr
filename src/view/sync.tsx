@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-import { checkConfig, getSync, type SyncAction, sync } from "./contracts/api";
+import { showOnuDetails } from "./components/onu-details";
+import { checkConfig, getStatus, getSync, type SyncAction, sync } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
 
@@ -317,6 +318,7 @@ function deviceCard(
 	opened: boolean,
 	reset: (device: DeviceSync) => Promise<void>,
 	applyDevice: (device: DeviceSync) => Promise<void>,
+	showMib: (device: DeviceSync) => Promise<void>,
 	applyManagement: () => Promise<void>,
 	managementApplyDisabled: boolean,
 	provisioningEnabled: boolean,
@@ -379,6 +381,9 @@ function deviceCard(
 				</div>
 				{L.hasViewPermission() ? (
 					<div class="fttr-card-actions">
+						<button type="button" class="cbi-button cbi-button-action" onclick={() => showMib(device)}>
+							{_("View OMCI / MIB details")}
+						</button>
 						<button
 							type="button"
 							class="cbi-button cbi-button-positive"
@@ -618,6 +623,17 @@ const main = L.view.extend({
 			} finally {
 				busy = false;
 				update(current);
+			}
+		};
+
+		const showMib = async (device: DeviceSync) => {
+			try {
+				const status = await getStatus();
+				const onu = status.sub_gateways.find((item) => item.serial_number === device.optical_sn);
+				if (!onu) throw new Error(_("Device is offline or no longer registered; refresh status and retry."));
+				showOnuDetails(onu, "mib");
+			} catch (failure) {
+				result.replaceChildren(<div class="alert-message danger">{String(failure)}</div>);
 			}
 		};
 
@@ -1183,6 +1199,7 @@ const main = L.view.extend({
 						opened.has(d.device),
 						reset,
 						applyDevice,
+						showMib,
 						() => run("management_apply"),
 						managementApply.disabled,
 						status.enabled,
