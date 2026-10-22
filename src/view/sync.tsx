@@ -377,7 +377,7 @@ function deviceCard(
 					<div class="fttr-card-actions">
 						<button
 							type="button"
-							class="fttr-btn-subtle"
+							class="cbi-button cbi-button-positive"
 							disabled={busy}
 							title={_(
 								"Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again.",

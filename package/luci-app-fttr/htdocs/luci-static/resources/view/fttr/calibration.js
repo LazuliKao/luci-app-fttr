@@ -161,7 +161,7 @@ function k(e, t, r) {
     let i = new e._zod.constr(t ?? e._zod.def);
     return (!t || r?.parent) && (i._zod.parent = e), i;
 }
-function S(e) {
+function j(e) {
     if (!e) return {};
     if ("string" == typeof e) return {
         error: ()=>e
@@ -175,7 +175,7 @@ function S(e) {
         error: ()=>e.error
     } : e;
 }
-function j(e, t = 0) {
+function S(e, t = 0) {
     if (!0 === e.aborted) return !0;
     for(let r = t; r < e.issues.length; r++)if (e.issues[r]?.continue !== !0) return !0;
     return !1;
@@ -285,7 +285,7 @@ const T = (e, t)=>{
     });
     else {
         let t = (e, t, r)=>{
-            let i, n = j(e);
+            let i, n = S(e);
             for (let a of t){
                 if (a._zod.def.when) {
                     if (!a._zod.def.when(e)) continue;
@@ -293,16 +293,16 @@ const T = (e, t)=>{
                 let t = e.issues.length, s = a._zod.check(e);
                 if (s instanceof Promise && r?.async === !1) throw new l();
                 if (i || s instanceof Promise) i = (i ?? Promise.resolve()).then(async ()=>{
-                    await s, e.issues.length !== t && (n || (n = j(e, t)));
+                    await s, e.issues.length !== t && (n || (n = S(e, t)));
                 });
                 else {
                     if (e.issues.length === t) continue;
-                    n || (n = j(e, t));
+                    n || (n = S(e, t));
                 }
             }
             return i ? i.then(()=>e) : e;
         }, r = (r, n, a)=>{
-            if (j(r)) return r.aborted = !0, r;
+            if (S(r)) return r.aborted = !0, r;
             let s = t(n, i, a);
             if (s instanceof Promise) {
                 if (!1 === a.async) throw new l();
@@ -530,7 +530,7 @@ const Q = o("$ZodObject", (e, t)=>{
 });
 function Y(e, t, r, i) {
     for (let r of e)if (0 === r.issues.length) return t.value = r.value, t;
-    let n = e.filter((e)=>!j(e));
+    let n = e.filter((e)=>!S(e));
     return 1 === n.length ? (t.value = n[0].value, n[0]) : (t.issues.push({
         code: "invalid_union",
         input: t.value,
@@ -818,7 +818,7 @@ const ec = o("ZodMiniType", (e, t)=>{
 function eu(e) {
     return new ep({
         type: "string",
-        ...S(e)
+        ...j(e)
     });
 }
 const ef = o("ZodMiniNumber", (e, t)=>{
@@ -828,19 +828,19 @@ function eh(e) {
     return new ef({
         type: "number",
         checks: [],
-        ...S(e)
+        ...j(e)
     });
 }
 const eg = o("ZodMiniBoolean", (e, t)=>{
     H.init(e, t), ec.init(e, t);
 });
-function em(e) {
+function e_(e) {
     return new eg({
         type: "boolean",
-        ...S(e)
+        ...j(e)
     });
 }
-const e_ = o("ZodMiniNull", (e, t)=>{
+const em = o("ZodMiniNull", (e, t)=>{
     q.init(e, t), ec.init(e, t);
 }), ey = o("ZodMiniNever", (e, t)=>{
     W.init(e, t), ec.init(e, t);
@@ -848,7 +848,7 @@ const e_ = o("ZodMiniNull", (e, t)=>{
 function eb(e) {
     return new ey({
         type: "never",
-        ...S(e)
+        ...j(e)
     });
 }
 const ev = o("ZodMiniArray", (e, t)=>{
@@ -858,7 +858,7 @@ function ew(e, t) {
     return new ev({
         type: "array",
         element: e,
-        ...S(t)
+        ...j(t)
     });
 }
 const ex = o("ZodMiniObject", (e, t)=>{
@@ -868,28 +868,28 @@ function ez(e, t) {
     return new ex({
         type: "object",
         shape: e ?? {},
-        ...S(t)
+        ...j(t)
     });
 }
 const ek = o("ZodMiniUnion", (e, t)=>{
     ee.init(e, t), ec.init(e, t);
 });
-function eS(e, t) {
+function ej(e, t) {
     return new ek({
         type: "union",
         options: e,
-        ...S(t)
+        ...j(t)
     });
 }
-const ej = o("ZodMiniDiscriminatedUnion", (e, t)=>{
+const eS = o("ZodMiniDiscriminatedUnion", (e, t)=>{
     et.init(e, t), ec.init(e, t);
 });
 function eP(e, t, r) {
-    return new ej({
+    return new eS({
         type: "union",
         options: t,
         discriminator: e,
-        ...S(r)
+        ...j(r)
     });
 }
 const eO = o("ZodMiniRecord", (e, t)=>{
@@ -900,7 +900,7 @@ function eA(e, t, r) {
         type: "record",
         keyType: e,
         valueType: t,
-        ...S(r)
+        ...j(r)
     });
 }
 const eT = o("ZodMiniEnum", (e, t)=>{
@@ -913,7 +913,7 @@ function eU(e, t) {
                 e,
                 e
             ])) : e,
-        ...S(t)
+        ...j(t)
     });
 }
 const eC = o("ZodMiniLiteral", (e, t)=>{
@@ -925,7 +925,7 @@ function eE(e, t) {
         values: Array.isArray(e) ? e : [
             e
         ],
-        ...S(t)
+        ...j(t)
     });
 }
 const e$ = o("ZodMiniOptional", (e, t)=>{
@@ -954,13 +954,13 @@ const eL = o("ZodMiniCatch", (e, t)=>{
 function eF() {
     let e = new eD({
         type: "lazy",
-        getter: ()=>eS([
+        getter: ()=>ej([
                 eu(),
                 eh(),
-                em(),
-                new e_({
+                e_(),
+                new em({
                     type: "null",
-                    ...S(void 0)
+                    ...j(void 0)
                 }),
                 ew(e),
                 eA(eu(), e)
@@ -969,7 +969,7 @@ function eF() {
     return e;
 }
 let eR = ez({
-    error: eS([
+    error: ej([
         eu(),
         ez({
             code: eu(),
@@ -1006,7 +1006,7 @@ ez({
         data: eu()
     })
 ]);
-let eI = eu(), eV = eh(), eH = em(), eq = eN(eI), eW = eN(eV), eJ = eN(eH);
+let eI = eu(), eV = eh(), eH = e_(), eq = eN(eI), eW = eN(eV), eJ = eN(eH);
 const eK = eU([
     "waiting",
     "wan_reconciling",
@@ -1330,7 +1330,7 @@ const e8 = ez({
         type: "number",
         coerce: !0,
         checks: [],
-        ...S(void 0)
+        ...j(void 0)
     }),
     error: eZ(eI),
     devices: ew(e8),
@@ -1343,7 +1343,7 @@ const e8 = ez({
     })),
     pending_devices: ew(eI)
 });
-eS([
+ej([
     ez({
         valid: eE(!0),
         revision: eI,
@@ -1398,7 +1398,8 @@ let tn = ez({
     laser_bias_current_ma: te,
     temperature_celsius: te,
     vcc_voltage: te,
-    cdr_locked: eZ(em()),
+    cdr_locked: eZ(e_()),
+    tx_enabled: eN(eZ(e_())),
     measurements: tt
 }), ta = ez({
     equipment_id: eZ(e7),
@@ -1422,7 +1423,7 @@ const ts = ez({
     acs_bootstrap: eN(e2),
     identity: eZ(ta),
     identity_age_seconds: te,
-    identity_current: em(),
+    identity_current: e_(),
     fiber_distance_m: te,
     ranging_delay_rtd_ns: te,
     equalization_delay_bits: new eL({
@@ -1465,7 +1466,7 @@ const ts = ez({
 let to = ez({
     port: e9,
     interface: e7,
-    carrier: em(),
+    carrier: e_(),
     status: e7,
     onu_id: eN(e9),
     onu_sn: eN(e7),
@@ -1483,12 +1484,12 @@ ez({
         last_payload_bytes: e9
     }))
 }), eA(e7, ez({
-    carrier: eN(em()),
+    carrier: eN(e_()),
     mac: eN(e7),
     link: eN(ez({
         speed: eN(e9),
         duplex: eN(e7),
-        autoneg: eN(em())
+        autoneg: eN(e_())
     })),
     stats: eN(eA(e7, e9))
 })), _("Not started"), _("Collecting identity"), _("Retrying identity"), _("Unsupported"), _("Configuring"), _("Verifying"), _("WAN pending"), _("Verified"), _("Retrying"), _("Offline"), L.rpc.declare({
@@ -1526,7 +1527,38 @@ ez({
         "target"
     ],
     reject: !0
-}), eS([
+}), ez({
+    schema_version: eh(),
+    status: eU([
+        "success",
+        "error"
+    ]),
+    action: eU([
+        "optical_on",
+        "optical_off",
+        "optical_status"
+    ]),
+    tx_enabled: eZ(e_()),
+    actor_state: eu(),
+    hardware_ready: e_(),
+    discovery_active: eZ(e_()),
+    cleanup_pending: e_(),
+    error: eZ(ez({
+        code: eu(),
+        message: eu()
+    }))
+}), L.rpc.declare({
+    object: "luci.fttr",
+    method: "optical_status",
+    reject: !0
+}), L.rpc.declare({
+    object: "luci.fttr",
+    method: "optical_set",
+    params: [
+        "enabled"
+    ],
+    reject: !0
+}), ej([
     ez({
         operation_ids: ew(eh()),
         revision: eu()
@@ -1548,8 +1580,8 @@ ez({
             "apply",
             "plan"
         ]),
-        reconcile: eN(em()),
-        retry: eN(em())
+        reconcile: eN(e_()),
+        retry: eN(e_())
     })
 ]);
 let tl = L.rpc.declare({
@@ -1580,14 +1612,14 @@ const tp = ez({
     sha256: eu(),
     data: eN(eu()),
     factory: ez({
-        detected: em(),
+        detected: e_(),
         device: eu(),
-        has_data: em(),
+        has_data: e_(),
         sha256: eu(),
         data: eu()
     }),
     firmware: ez({
-        exists: em(),
+        exists: e_(),
         path: eu(),
         size: eh(),
         sha256: eu(),
@@ -1595,17 +1627,17 @@ const tp = ez({
     }),
     error: eN(eu())
 }), tu = ez({
-    success: em(),
+    success: e_(),
     path: eu(),
     size: eh(),
     sha256: eu(),
     error: eN(eu())
 }), tf = ez({
-    success: em(),
+    success: e_(),
     output: eN(eu()),
     error: eN(eu())
-}), th = async ()=>tp.parse(eX(await tl())), tg = async (e)=>tu.parse(eX(await td("/lib/firmware/modified_UX3326.bin", e))), tm = async ()=>tf.parse(eX(await tc()));
-async function t_(e) {
+}), th = async ()=>tp.parse(eX(await tl())), tg = async (e)=>tu.parse(eX(await td("/lib/firmware/modified_UX3326.bin", e))), t_ = async ()=>tf.parse(eX(await tc()));
+async function tm(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : _("Unavailable");
 }
 function ty(e) {
@@ -1700,7 +1732,7 @@ function tb(e, t) {
     }, u;
 }
 function tv(e, t, r) {
-    var i, n, a, o, l, d, c, p, u, f, h, g, m, y, b, v, w, x, z, k, S, j, P, O, A, T, U, C, $, N, M, Z, D, F, R;
+    var i, n, a, o, l, d, c, p, u, f, h, g, m, y, b, v, w, x, z, k, j, S, P, O, A, T, U, C, $, N, M, Z, D, F, R;
     let B = e.isStockHash ? s("span", {
         class: "fttr-badge fttr-badge-success",
         children: _("Official factory baseline match")
@@ -1902,7 +1934,7 @@ function tv(e, t, r) {
                                         })
                                     ]
                                 }, s("tr", v)),
-                                (S = {
+                                (j = {
                                     children: [
                                         (w = {
                                             children: s("strong", {
@@ -1945,14 +1977,14 @@ function tv(e, t, r) {
                                             ]
                                         }, s("td", k))
                                     ]
-                                }, s("tr", S)),
+                                }, s("tr", j)),
                                 (T = {
                                     children: [
-                                        (j = {
+                                        (S = {
                                             children: s("strong", {
                                                 children: _("Bias current (Bias Current)")
                                             })
-                                        }, s("td", j)),
+                                        }, s("td", S)),
                                         (P = {
                                             children: s("code", {
                                                 children: "0x4C / 0x4E / 0x50"
@@ -2172,7 +2204,7 @@ let main = L.view.extend({
             f.className = "fttr-calibration";
             let h = null, g = null, m = s("div", {}), y = s("div", {}), b = s("div", {}), v = s("div", {});
             function w(e) {
-                var t, r, i, n, a, o, l, d, c, p, u, f, h, g, b, v, w, x, z, k, S, j;
+                var t, r, i, n, a, o, l, d, c, p, u, f, h, g, b, v, w, x, z, k, j, S;
                 m.innerHTML = "", y.innerHTML = "", "builtin" === e.source && m.appendChild((i = {
                     class: "alert-message warning",
                     style: "margin-bottom:16px",
@@ -2229,11 +2261,11 @@ let main = L.view.extend({
                     let t = ty(e.factory.data);
                     O = tb(t, e.factory.sha256);
                 } catch  {}
-                y.appendChild((j = {
+                y.appendChild((S = {
                     class: "cbi-section",
                     style: "margin-bottom:16px",
                     children: [
-                        (S = {
+                        (j = {
                             class: "fttr-card",
                             children: [
                                 (a = {
@@ -2437,7 +2469,7 @@ let main = L.view.extend({
                                     ]
                                 }, s("div", k))
                             ]
-                        }, s("div", S)),
+                        }, s("div", j)),
                         e.factory.has_data && O && s("div", {
                             style: "margin-top:16px",
                             children: tv(O, _("Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)").format("0x2200"), "factory" === e.source ? _("Device: %s, length %s bytes (currently in use by the system)").format(e.factory.device, "288") : _("Device: %s, length %s bytes").format(e.factory.device, "288"))
@@ -2447,7 +2479,7 @@ let main = L.view.extend({
                             children: tv(P, _("Currently active system calibration parameters (%s)").format(e.active_path), _("Active data size: %s bytes").format(String(e.size)))
                         })
                     ]
-                }, s("div", j)));
+                }, s("div", S)));
             }
             w(e);
             let x = s("input", {
@@ -2465,7 +2497,7 @@ let main = L.view.extend({
                 type: "file",
                 accept: ".bin",
                 style: "display:none"
-            }), S = (i = {
+            }), j = (i = {
                 class: "fttr-dropzone",
                 children: [
                     (t = {
@@ -2493,7 +2525,7 @@ let main = L.view.extend({
                     }, s("div", r))
                 ]
             }, s("div", i));
-            async function j(e) {
+            async function S(e) {
                 var t, r, i, n, a, o, l, d, c, p, u, f;
                 v.innerHTML = "", b.innerHTML = "", z.disabled = !0;
                 let m = e.size;
@@ -2535,7 +2567,7 @@ let main = L.view.extend({
                 try {
                     let t = await e.arrayBuffer();
                     h = t;
-                    let r = await t_(t), f = tb(t, r);
+                    let r = await tm(t), f = tb(t, r);
                     if (!f) return void v.appendChild((a = {
                         class: "alert-message danger",
                         children: [
@@ -2586,14 +2618,14 @@ let main = L.view.extend({
                     }, s("div", f)));
                 }
             }
-            return S.addEventListener("click", ()=>k.click()), S.addEventListener("dragover", (e)=>{
-                e.preventDefault(), S.style.opacity = "0.75";
-            }), S.addEventListener("dragleave", ()=>{
-                S.style.opacity = "1";
-            }), S.addEventListener("drop", (e)=>{
-                e.preventDefault(), S.style.opacity = "1", e.dataTransfer?.files.length && j(e.dataTransfer.files[0]);
+            return j.addEventListener("click", ()=>k.click()), j.addEventListener("dragover", (e)=>{
+                e.preventDefault(), j.style.opacity = "0.75";
+            }), j.addEventListener("dragleave", ()=>{
+                j.style.opacity = "1";
+            }), j.addEventListener("drop", (e)=>{
+                e.preventDefault(), j.style.opacity = "1", e.dataTransfer?.files.length && S(e.dataTransfer.files[0]);
             }), k.addEventListener("change", ()=>{
-                k.files?.length && j(k.files[0]);
+                k.files?.length && S(k.files[0]);
             }), z.addEventListener("click", async ()=>{
                 if (h && g) {
                     var e, t, r, i, n, a;
@@ -2608,7 +2640,7 @@ let main = L.view.extend({
                         let d = "";
                         if (o) {
                             z.textContent = _("Configuring BOSA optical transceiver hardware...");
-                            let e = await tm();
+                            let e = await t_();
                             d = e.success ? _(", and the optical transceiver hardware was reset and the register table was latched successfully (%s succeeded)").format("bosa-init") : _(", but optical transceiver hardware initialization reported a warning: %s").format(e.error || _("Unknown error"));
                         }
                         v.appendChild((n = {
@@ -2842,7 +2874,7 @@ let main = L.view.extend({
                                     _("The file must be exactly %s bytes.").format("288")
                                 ]
                             }, s("p", a)),
-                            S,
+                            j,
                             k,
                             s("div", {
                                 style: "margin-top:12px",

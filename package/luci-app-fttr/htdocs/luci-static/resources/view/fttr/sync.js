@@ -1398,6 +1398,7 @@ let ta = ex({
     temperature_celsius: tt,
     vcc_voltage: tt,
     cdr_locked: eL(e_()),
+    tx_enabled: eC(eL(e_())),
     measurements: tn
 }), ts = ex({
     equipment_id: eL(e9),
@@ -1528,6 +1529,38 @@ let td = L.rpc.declare({
     reject: !0
 }));
 const tu = async ()=>e3.parse(eq(await td())), tf = async ()=>e7.parse(await tc());
+ex({
+    schema_version: eh(),
+    status: eT([
+        "success",
+        "error"
+    ]),
+    action: eT([
+        "optical_on",
+        "optical_off",
+        "optical_status"
+    ]),
+    tx_enabled: eL(e_()),
+    actor_state: eu(),
+    hardware_ready: e_(),
+    discovery_active: eL(e_()),
+    cleanup_pending: e_(),
+    error: eL(ex({
+        code: eu(),
+        message: eu()
+    }))
+}), L.rpc.declare({
+    object: "luci.fttr",
+    method: "optical_status",
+    reject: !0
+}), L.rpc.declare({
+    object: "luci.fttr",
+    method: "optical_set",
+    params: [
+        "enabled"
+    ],
+    reject: !0
+});
 let th = ej([
     ex({
         operation_ids: ew(eh()),
@@ -2687,7 +2720,7 @@ let main = L.view.extend({
                                     class: "fttr-card-actions",
                                     children: s("button", {
                                         type: "button",
-                                        class: "fttr-btn-subtle",
+                                        class: "cbi-button cbi-button-positive",
                                         disabled: i,
                                         title: _("Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again."),
                                         onclick: ()=>{
