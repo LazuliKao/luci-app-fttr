@@ -27,6 +27,40 @@ export const reloadConfig = async () => syncStatus.parse(checked(await rawReload
 export const restartService = async () => z.object({ restarting: z.literal(true) }).parse(checked(await rawRestart()));
 export const getNetworkDevices = async () => networkDevices.parse(checked(await rawNetwork()));
 
+// Optical TX (laser) control. `fttrctl optical on|off|status` forwards the
+// OPTICAL IPC to fttrd; the daemon owns quiesce + UX3326 I2C TX_DIS + readback.
+export const opticalReply = z.object({
+	schema_version: z.number(),
+	status: z.enum(["success", "error"]),
+	action: z.enum(["optical_on", "optical_off", "optical_status"]),
+	tx_enabled: z.nullable(z.boolean()),
+	actor_state: z.string(),
+	hardware_ready: z.boolean(),
+	discovery_active: z.nullable(z.boolean()),
+	cleanup_pending: z.boolean(),
+	error: z.nullable(z.object({ code: z.string(), message: z.string() })),
+});
+export type OpticalReply = z.infer<typeof opticalReply>;
+
+const rawOpticalStatus = L.rpc.declare<unknown>({
+	object: "luci.fttr",
+	method: "optical_status",
+	reject: true,
+});
+
+const rawOpticalSet = L.rpc.declare<unknown, [boolean]>({
+	object: "luci.fttr",
+	method: "optical_set",
+	params: ["enabled"],
+	reject: true,
+});
+
+export const getOpticalStatus = async (): Promise<OpticalReply> =>
+	opticalReply.parse(checked(await rawOpticalStatus()));
+
+export const setOptical = async (enabled: boolean): Promise<OpticalReply> =>
+	opticalReply.parse(checked(await rawOpticalSet(enabled)));
+
 export type SyncAction =
 	| "plan"
 	| "apply"

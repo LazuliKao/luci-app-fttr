@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-21 15:07+0800\n"
+"POT-Creation-Date: 2026-10-22 10:02+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -583,6 +583,9 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
+msgid "Emitting"
+msgstr ""
+
 msgid "Enable"
 msgstr ""
 
@@ -679,6 +682,9 @@ msgid "Factory Tool"
 msgstr ""
 
 msgid "Failed"
+msgstr ""
+
+msgid "Failed to change laser output"
 msgstr ""
 
 msgid "Failed to parse calibration file"
@@ -903,6 +909,12 @@ msgstr ""
 msgid "LAN / WLAN port bindings"
 msgstr ""
 
+msgid "Laser control"
+msgstr ""
+
+msgid "Laser output"
+msgstr ""
+
 msgid "Last good report"
 msgstr ""
 
@@ -946,6 +958,9 @@ msgid "Load"
 msgstr ""
 
 msgid "Loading devices…"
+msgstr ""
+
+msgid "Loading…"
 msgstr ""
 
 msgid "Local ACS listener"
@@ -1172,6 +1187,9 @@ msgstr ""
 msgid "O7 Emergency Stop"
 msgstr ""
 
+msgid "Off (TX disabled)"
+msgstr ""
+
 msgid "Official factory baseline match"
 msgstr ""
 
@@ -1355,6 +1373,11 @@ msgid "Raw JSON"
 msgstr ""
 
 msgid "Raw source observations (JSON)"
+msgstr ""
+
+msgid ""
+"Re-enable the 1490nm downlink laser? Discovery resumes and sub-gateways can "
+"register again."
 msgstr ""
 
 msgid ""
@@ -1745,6 +1768,18 @@ msgstr ""
 msgid "Triggers"
 msgstr ""
 
+msgid "Turn laser off"
+msgstr ""
+
+msgid "Turn laser on"
+msgstr ""
+
+msgid ""
+"Turn off the 1490nm downlink laser? All sub-gateways are gracefully "
+"disconnected and cannot register until the laser is re-enabled. This setting "
+"is saved and reapplied after a reboot."
+msgstr ""
+
 msgid ""
 "Tutorial and instructions for pairing and configuring downstream FTTR "
 "sub-gateways."
@@ -1783,6 +1818,9 @@ msgid "Unknown"
 msgstr ""
 
 msgid "Unknown class"
+msgstr ""
+
+msgid "unknown error"
 msgstr ""
 
 msgid "Unknown error"
