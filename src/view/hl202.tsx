@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { requirePage } from "./contracts/capabilities";
 import type { DeviceMeta } from "./contracts/hl202";
 import { text } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
@@ -575,7 +576,13 @@ function renderPage(): HTMLElement {
 const view = L.view;
 if (!("extend" in view) || typeof view.extend !== "function") throw new Error("LuCI view extension is unavailable");
 const main: unknown = Reflect.apply(view.extend, view, [
-	{ render: renderPage, handleSave: null, handleSaveApply: null, handleReset: null },
+	{
+		load: () => requirePage("hl202"),
+		render: renderPage,
+		handleSave: null,
+		handleSaveApply: null,
+		handleReset: null,
+	},
 ]);
 
 export { main };

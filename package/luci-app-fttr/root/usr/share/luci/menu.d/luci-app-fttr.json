@@ -18,6 +18,7 @@
 		}
 	},
 	"admin/network/fttr/config": {
+		"depends": { "fs": { "/var/run/fttr-capabilities/config": "file" } },
 		"title": "Configuration",
 		"order": 20,
 		"action": {
@@ -26,11 +27,13 @@
 		}
 	},
 	"admin/network/fttr/sync": {
+		"depends": { "fs": { "/var/run/fttr-capabilities/sync": "file" } },
 		"title": "Synchronization",
 		"order": 25,
 		"action": { "type": "view", "path": "fttr/sync" }
 	},
 	"admin/network/fttr/hl202": {
+		"depends": { "fs": { "/var/run/fttr-capabilities/hl202": "file" } },
 		"title": "HL202 management",
 		"order": 35,
 		"action": { "type": "view", "path": "fttr/hl202" }

@@ -4,6 +4,7 @@ import { addBasic } from "./config/basic";
 import { addDevices } from "./config/devices";
 import { addServices } from "./config/services";
 import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
+import { requirePage } from "./contracts/capabilities";
 import type { SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -28,6 +29,7 @@ async function command<T>(
 type InitialCheck = { error?: string; connectedDevices: SubGateway[] };
 const main = view.extend({
 	async load(): Promise<InitialCheck> {
+		await requirePage("config");
 		await uci.load("fttr");
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");

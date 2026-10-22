@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { checkConfig, getSync, type SyncAction, sync } from "./contracts/api";
+import { requirePage } from "./contracts/capabilities";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
 
 const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }> = {
@@ -551,7 +552,8 @@ function deviceCard(
 }
 
 const main = L.view.extend({
-	load(): Promise<[SyncStatus, ConfigCheck]> {
+	async load(): Promise<[SyncStatus, ConfigCheck]> {
+		await requirePage("sync");
 		return Promise.all([getSync(), checkConfig()]);
 	},
 	render([initial, initialCheck]: [SyncStatus, ConfigCheck]): HTMLElement {
