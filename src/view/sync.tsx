@@ -315,11 +315,14 @@ function deviceCard(
 	device: DeviceSync,
 	opened: boolean,
 	reset: (device: DeviceSync) => Promise<void>,
+	applyDevice: (device: DeviceSync) => Promise<void>,
 	applyManagement: () => Promise<void>,
 	managementApplyDisabled: boolean,
+	provisioningEnabled: boolean,
 	busy: boolean,
 ): HTMLElement {
 	const op = device.provisioning;
+	const operationActive = !["completed", "not_started", "interrupted"].includes(op.state);
 	const lifecycle = [
 		...Object.entries(op.wan_lifecycle ?? {}).map(([id, item]) => ({
 			...item,
@@ -375,6 +378,21 @@ function deviceCard(
 				</div>
 				{L.hasViewPermission() ? (
 					<div class="fttr-card-actions">
+						<button
+							type="button"
+							class="cbi-button cbi-button-positive"
+							disabled={busy || operationActive || !provisioningEnabled}
+							title={
+								!provisioningEnabled
+									? _("Provisioning is disabled")
+									: operationActive
+										? _("This device already has an active synchronization operation")
+										: _("Start configuration delivery for this device")
+							}
+							onclick={() => applyDevice(device)}
+						>
+							{_("Sync now")}
+						</button>
 						<button
 							type="button"
 							class="cbi-button cbi-button-positive"
@@ -567,6 +585,29 @@ const main = L.view.extend({
 						{_(
 							"Synchronization state reset for %s. Preview differences to read the current device state.",
 						).replace("%s", device.name || device.optical_sn)}
+					</div>,
+				);
+				update(await getSync());
+			} catch (failure) {
+				result.replaceChildren(<div class="alert-message danger">{String(failure)}</div>);
+			} finally {
+				busy = false;
+				update(current);
+			}
+		};
+
+		const applyDevice = async (device: DeviceSync) => {
+			if (busy) return;
+			busy = true;
+			update(current);
+			try {
+				const reply = await sync("apply", device.device);
+				const operationIds = "operation_ids" in reply ? reply.operation_ids.join(", ") : "—";
+				result.replaceChildren(
+					<div class="alert-message info">
+						{_("Configuration delivery started for %s. Operation IDs: %s")
+							.replace("%s", device.name || device.optical_sn)
+							.replace("%s", operationIds || "—")}
 					</div>,
 				);
 				update(await getSync());
@@ -1139,8 +1180,10 @@ const main = L.view.extend({
 						d,
 						opened.has(d.device),
 						reset,
+						applyDevice,
 						() => run("management_apply"),
 						managementApply.disabled,
+						status.enabled,
 						busy,
 					),
 				),
