@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-21 15:07+0800\n"
+"POT-Creation-Date: 2026-10-22 10:02+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -585,6 +585,9 @@ msgstr "不允许存在重复的 VLAN ID。"
 msgid "Duration"
 msgstr "耗时"
 
+msgid "Emitting"
+msgstr "发射中"
+
 msgid "Enable"
 msgstr "启用"
 
@@ -682,6 +685,9 @@ msgstr "原厂工具"
 
 msgid "Failed"
 msgstr "失败"
+
+msgid "Failed to change laser output"
+msgstr "激光输出切换失败"
 
 msgid "Failed to parse calibration file"
 msgstr "校准文件解析失败"
@@ -909,6 +915,12 @@ msgstr "内核日志"
 msgid "LAN / WLAN port bindings"
 msgstr "LAN / WLAN 端口绑定"
 
+msgid "Laser control"
+msgstr "激光控制"
+
+msgid "Laser output"
+msgstr "激光输出"
+
 msgid "Last good report"
 msgstr "最后成功解析的报告"
 
@@ -953,6 +965,9 @@ msgstr "负载"
 
 msgid "Loading devices…"
 msgstr "正在加载设备…"
+
+msgid "Loading…"
+msgstr "正在载入…"
 
 msgid "Local ACS listener"
 msgstr "本地 ACS 监听服务"
@@ -1180,6 +1195,9 @@ msgstr "O6 间歇性 LODS"
 msgid "O7 Emergency Stop"
 msgstr "O7 紧急停止"
 
+msgid "Off (TX disabled)"
+msgstr "已关闭（TX_DIS）"
+
 msgid "Official factory baseline match"
 msgstr "与官方原厂基准一致"
 
@@ -1366,6 +1384,11 @@ msgstr "原始 JSON"
 
 msgid "Raw source observations (JSON)"
 msgstr "原始来源观测记录（JSON）"
+
+msgid ""
+"Re-enable the 1490nm downlink laser? Discovery resumes and sub-gateways can "
+"register again."
+msgstr "重新启用 1490nm 下行激光？发现流程将恢复，子网关可以重新注册。"
 
 msgid ""
 "Read current device parameters and auto-verify matching settings without "
@@ -1755,6 +1778,18 @@ msgstr "发送数据包数"
 msgid "Triggers"
 msgstr "触发机制"
 
+msgid "Turn laser off"
+msgstr "关闭激光"
+
+msgid "Turn laser on"
+msgstr "开启激光"
+
+msgid ""
+"Turn off the 1490nm downlink laser? All sub-gateways are gracefully "
+"disconnected and cannot register until the laser is re-enabled. This setting "
+"is saved and reapplied after a reboot."
+msgstr "关闭 1490nm 下行激光？所有子网关将被平滑断开，在激光重新启用前无法注册。该设置会被保存，并在重启后自动重新应用。"
+
 msgid ""
 "Tutorial and instructions for pairing and configuring downstream FTTR "
 "sub-gateways."
@@ -1794,6 +1829,9 @@ msgstr "未知"
 
 msgid "Unknown class"
 msgstr "未知类型 (Class)"
+
+msgid "unknown error"
+msgstr "未知错误"
 
 msgid "Unknown error"
 msgstr "未知错误"

@@ -44,6 +44,8 @@ const optical = z.object({
 	temperature_celsius: nullableNumber,
 	vcc_voltage: nullableNumber,
 	cdr_locked: z.nullable(z.boolean()),
+	// fttrd >= I2C TX_DIS build: present when the daemon could read the UX3326 TX_DIS bit.
+	tx_enabled: z.optional(z.nullable(z.boolean())),
 	measurements,
 });
 const identity = z.object({

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { showOnuDetails } from "./components/onu-details";
-import { getStatus } from "./contracts/api";
+import { getOpticalStatus, getStatus, setOptical } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -64,6 +64,66 @@ function renderCdrBadge(locked: boolean | null): HTMLElement {
 	);
 }
 
+// Laser output (UX3326 I2C TX_DIS) row state.
+// Primary source: optical_transceiver.tx_enabled from the polled fttrd status.
+// The override keeps the row authoritative between a toggle click and the next poll.
+let laserOverride: boolean | null | undefined;
+// Panel currently hosting the laser row, plus an in-flight guard. Both are
+// module-level so a poll that swaps panels mid-request cannot re-enable the
+// button or leave the reply handler refreshing a detached node.
+let laserPanel: HTMLElement | null = null;
+let laserBusy = false;
+
+function applyLaserRow(txEnabled: boolean | null | undefined): void {
+	const panel = laserPanel;
+	if (!panel) return;
+	const stateNode = panel.querySelector('[data-fttr="laser-state"]');
+	const toggle = panel.querySelector('[data-fttr="laser-toggle"]');
+	if (!(stateNode instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return;
+	if (txEnabled === true) {
+		stateNode.textContent = _("Emitting");
+		stateNode.className = "fttr-badge fttr-badge-success";
+	} else if (txEnabled === false) {
+		stateNode.textContent = _("Off (TX disabled)");
+		stateNode.className = "fttr-badge fttr-badge-warning";
+	} else {
+		stateNode.textContent = _("Unknown");
+		stateNode.className = "fttr-badge fttr-badge-neutral";
+	}
+	// Label and action must agree: offer "on" only when the laser is known to
+	// be off; an unknown state defaults to the conservative "off" action.
+	toggle.textContent = txEnabled === false ? _("Turn laser on") : _("Turn laser off");
+	toggle.disabled = laserBusy;
+	toggle.onclick = async () => {
+		if (laserBusy) return;
+		// Read the latest known state instead of a value captured at render time.
+		const enabling = laserOverride === false;
+		const warning = enabling
+			? _("Re-enable the 1490nm downlink laser? Discovery resumes and sub-gateways can register again.")
+			: _(
+					"Turn off the 1490nm downlink laser? All sub-gateways are gracefully disconnected and cannot register until the laser is re-enabled. This setting is saved and reapplied after a reboot.",
+				);
+		if (!window.confirm(warning)) return;
+		laserBusy = true;
+		applyLaserRow(laserOverride);
+		try {
+			const reply = await setOptical(enabling);
+			if (reply.status === "error") {
+				window.alert(`${_("Failed to change laser output")}: ${reply.error?.message ?? _("unknown error")}`);
+				return;
+			}
+			// The daemon echoes the readback value; fall back to the requested
+			// state if an older daemon omits the field.
+			laserOverride = reply.tx_enabled ?? enabling;
+		} catch (error) {
+			window.alert(`${_("Failed to change laser output")}: ${String(error)}`);
+		} finally {
+			laserBusy = false;
+			applyLaserRow(laserOverride);
+		}
+	};
+}
+
 function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 	const optical = status.optical_transceiver;
 
@@ -112,6 +172,12 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 						<span class="fttr-kv-label">{_("RX wavelength")}</span>
 						<span>{optical.wavelength_rx_nm ? `${optical.wavelength_rx_nm} nm` : "—"}</span>
 					</div>
+					<div class="fttr-kv-row" data-fttr="laser-row">
+						<span class="fttr-kv-label">{_("Laser output")}</span>
+						<span class="fttr-badge fttr-badge-neutral" data-fttr="laser-state">
+							{_("Loading…")}
+						</span>
+					</div>
 				</div>
 
 				<div class="fttr-card">
@@ -143,6 +209,14 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 						</span>
 					</div>
 				</div>
+			</div>
+			<div class="fttr-kv-row" style="margin-top:10px">
+				<span class="fttr-kv-label">{_("Laser control")}</span>
+				<span>
+					<button class="fttr-btn-subtle" data-fttr="laser-toggle" type="button" disabled>
+						{_("Loading…")}
+					</button>
+				</span>
 			</div>
 		</div>
 	);
@@ -285,6 +359,10 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 	type TabId = "controller" | "subgateways";
 	let activeTab: TabId = "controller";
 
+	// Module state survives LuCI view remounts; clear a stuck in-flight flag
+	// from a previous mount whose rpcd reply may never settle after unload.
+	laserBusy = false;
+
 	const tabs: Array<{ id: TabId; label: string }> = [
 		{ id: "controller", label: _("Controller & optical transceiver") },
 		{ id: "subgateways", label: _("Sub-gateways & optical links") },
@@ -329,6 +407,20 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;
+	// Seed the laser row from the status payload; fall back to the optical IPC
+	// when the daemon did not report the TX_DIS bit.
+	if (initialStatus.optical_transceiver.tx_enabled !== undefined) {
+		laserOverride = initialStatus.optical_transceiver.tx_enabled;
+	} else {
+		getOpticalStatus()
+			.then((reply) => {
+				laserOverride = reply.tx_enabled;
+				applyLaserRow(laserOverride);
+			})
+			.catch(() => {});
+	}
+	laserPanel = controllerPanel;
+	applyLaserRow(laserOverride);
 
 	const panelsContainer = (
 		<div id="fttr-panels-container">
@@ -542,6 +634,11 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 			subgatewaysPanel.replaceWith(newSubgateways);
 			controllerPanel = newController;
 			subgatewaysPanel = newSubgateways;
+			laserPanel = newController;
+			if (latest.optical_transceiver.tx_enabled !== undefined) {
+				laserOverride = latest.optical_transceiver.tx_enabled;
+			}
+			applyLaserRow(laserOverride);
 		} catch {
 			// Ignore periodic poll failures
 		} finally {

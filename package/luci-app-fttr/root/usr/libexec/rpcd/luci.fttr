@@ -72,7 +72,7 @@ fi
 
 case "$1" in
 	list)
-		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{}}\n'
+		printf '{"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{},"optical_status":{},"optical_set":{"enabled":false}}\n'
 		exit 0
 		;;
 	call)
@@ -168,6 +168,44 @@ case "$1" in
 				printf '{"restarting":true}\n'
 				exit 0
 				;;
+		optical_status)
+			# Laser/TX state via fttrd: OPTICAL STATUS IPC -> daemon JSON.
+			# The daemon reply is passed through verbatim (it carries its own
+			# status/error); only a missing or non-JSON reply is a transport
+			# failure. fttrctl exits 1 on daemon-side errors, so the exit code
+			# alone must not be treated as failure here.
+			status="$(/usr/sbin/fttrctl optical status --json 2>/dev/null)"
+			case "$status" in {*) ;; *) status="";; esac
+			if [ -z "$status" ]; then
+				printf '{"error":"Optical status is unavailable"}\n'
+				exit 1
+			fi
+			printf '%s\n' "$status"
+			exit 0
+			;;
+		optical_set)
+			read -r request
+			json_load "$request" || error 'Invalid JSON request'
+			json_get_var enabled enabled
+			case "$enabled" in 0|1) ;; *) error 'Invalid laser option';; esac
+			if [ "$enabled" = 1 ]; then
+				reply="$(/usr/sbin/fttrctl optical on --json 2>/dev/null)"
+			else
+				reply="$(/usr/sbin/fttrctl optical off --json 2>/dev/null)"
+			fi
+			# Pass the daemon JSON through untouched: a handled daemon error
+			# ("status":"error" plus a structured message) exits 1 but is a
+			# meaningful reply, and verbatim passthrough avoids quoting issues.
+			# Only an empty or non-JSON stdout means the call never reached the
+			# daemon.
+			case "$reply" in {*) ;; *) reply="";; esac
+			if [ -z "$reply" ]; then
+				printf '{"error":"Failed to change laser output"}\n'
+				exit 1
+			fi
+			printf '%s\n' "$reply"
+			exit 0
+			;;
 			get_status)
 				status="$(/usr/sbin/fttrctl status --json 2>/dev/null)"
 				rc=$?
