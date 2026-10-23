@@ -880,6 +880,12 @@ const main = L.view.extend({
 						gap: 4px;
 					}
 
+					.fttr-sync .fttr-card-actions {
+						display: flex;
+						gap: 8px;
+						flex-wrap: wrap;
+					}
+
 					.fttr-sync .fttr-card-meta-tags {
 						display: flex;
 						align-items: center;
