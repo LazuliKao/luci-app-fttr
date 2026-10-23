@@ -47,7 +47,7 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 		["manual", _("Manual")],
 		["auto", _("Automatic")],
 	]);
-	option.default = "manual";
+	option.default = "auto";
 	option.rmempty = false;
 	option.description = _(
 		"Manual mode only discovers and plans. Use Apply management configuration on the Synchronization page to create or update the isolated network, ACS listener and child TR069 settings.",
@@ -123,7 +123,7 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 		["auto", _("Automatic")],
 		["manual", _("Manual")],
 	]);
-	option.default = "manual";
+	option.default = "auto";
 	option.description = _(
 		"Manual mode only saves configuration; use Apply differences on the Synchronization page to send it to devices. Automatic mode synchronizes after Save & Apply when Configuration changed is selected.",
 	);
@@ -136,7 +136,7 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 		["periodic", _("Periodic")],
 	])
 		option.value(value, label);
-	option.default = ["config_change", "device_online", "cwmp_boot"];
+	option.default = ["config_change", "device_online", "cwmp_boot", "program_start", "periodic"];
 	option.retain = true;
 	option.depends("mode", "auto");
 	option = field(p, L.form.Value, "interval_minutes", _("Periodic synchronization interval (minutes)"));
