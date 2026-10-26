@@ -226,7 +226,7 @@ export const deviceSync = z.object({
 	template_name: z.nullable(str),
 	optical_sn: str,
 	adapter: str,
-	omci_management: z.object({ state: str, reason: optString }),
+	omci_management: z.object({ state: str, reason: z.optional(z.nullable(str)) }),
 	management: z.nullable(management),
 	acs_bootstrap: acsBootstrap,
 	provisioning,

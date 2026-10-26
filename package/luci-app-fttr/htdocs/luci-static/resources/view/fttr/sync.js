@@ -1310,7 +1310,7 @@ const e3 = ez({
     adapter: eU,
     omci_management: ez({
         state: eU,
-        reason: eK
+        reason: eI(eL(eU))
     }),
     management: eL(e1),
     acs_bootstrap: e8,

@@ -1348,7 +1348,7 @@ const tr = eO({
     adapter: eQ,
     omci_management: eO({
         state: eQ,
-        reason: e1
+        reason: eq(eH(eQ))
     }),
     management: eH(e9),
     acs_bootstrap: te,

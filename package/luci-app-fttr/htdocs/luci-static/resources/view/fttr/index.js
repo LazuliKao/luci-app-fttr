@@ -1271,7 +1271,7 @@ const e5 = ez({
     adapter: eU,
     omci_management: ez({
         state: eU,
-        reason: eV
+        reason: eT(eR(eU))
     }),
     management: eR(eH),
     acs_bootstrap: eY,

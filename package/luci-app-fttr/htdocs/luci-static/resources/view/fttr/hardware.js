@@ -1310,7 +1310,7 @@ const e6 = ek({
     adapter: eF,
     omci_management: ek({
         state: eF,
-        reason: eX
+        reason: eC(eL(eF))
     }),
     management: eL(e1),
     acs_bootstrap: e5,
