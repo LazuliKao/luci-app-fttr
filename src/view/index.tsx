@@ -11,6 +11,7 @@ import {
 } from "./components/badge";
 import { formatBytes, formatFirmware, formatLinkSpeed, formatPackets, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
+import { confirmOnuPin } from "./components/onu-pin";
 import { getNetworkDevices, getStatus } from "./contracts/api";
 import type { FttrStatus, NetworkDevices, SubGateway } from "./contracts/status";
 
@@ -230,11 +231,20 @@ function createPortCard(number: number): PortCard {
 
 interface OnuRow {
 	element: HTMLElement;
-	update(onu: SubGateway): void;
+	update(onu: SubGateway, pinning?: FttrStatus["onu_pinning"]): void;
 }
 
-function createOnuRow(onu: SubGateway): OnuRow {
+function createOnuRow(onu: SubGateway, onSaved: (status: FttrStatus) => void): OnuRow {
 	let current = onu;
+	let currentPinning: FttrStatus["onu_pinning"];
+	const pinButton = (
+		<button
+			type="button"
+			class="cbi-button cbi-button-neutral"
+			style="padding:0 .4em;min-height:1.5em;font-size:85%;margin-left:.5em"
+			onclick={() => confirmOnuPin(current, currentPinning, onSaved)}
+		/>
+	) as HTMLButtonElement;
 	const onuIdNode = <span />;
 	const vendorNode = <span />;
 	const modelNode = <span />;
@@ -249,7 +259,10 @@ function createOnuRow(onu: SubGateway): OnuRow {
 
 	const element = (
 		<tr data-fttr-onu-id={String(onu.onu_id)}>
-			<td>{onuIdNode}</td>
+			<td>
+				{onuIdNode}
+				{pinButton}
+			</td>
 			<td>{vendorNode}</td>
 			<td>{modelNode}</td>
 			<td>{serialNode}</td>
@@ -287,8 +300,20 @@ function createOnuRow(onu: SubGateway): OnuRow {
 
 	const row: OnuRow = {
 		element,
-		update(value) {
+		update(value, pinning) {
 			current = value;
+			currentPinning = pinning;
+			const serial = value.serial_number.toUpperCase();
+			const desired = pinning?.desired[serial];
+			pinButton.textContent = desired !== undefined ? _("Unpin") : _("Pin");
+			pinButton.hidden = !pinning;
+			pinButton.disabled = !L.hasViewPermission();
+			pinButton.title =
+				desired !== pinning?.active[serial]
+					? _("Pending restart")
+					: desired !== undefined
+						? _("Fixed interface")
+						: _("Pin interface");
 			element.setAttribute("data-fttr-onu-id", String(value.onu_id));
 			onuIdNode.textContent = String(value.onu_id);
 			vendorNode.textContent = text(value.vendor);
@@ -327,12 +352,12 @@ function createOnuRow(onu: SubGateway): OnuRow {
 
 interface OnuTable {
 	element: HTMLElement;
-	update(onus: SubGateway[]): void;
+	update(onus: SubGateway[], pinning?: FttrStatus["onu_pinning"]): void;
 }
 
-function createOnuTable(onus: SubGateway[]): OnuTable {
+function createOnuTable(onus: SubGateway[], onSaved: (status: FttrStatus) => void): OnuTable {
 	const rows = new Map<number, OnuRow>();
-	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu));
+	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu, onSaved));
 	const emptyRow = (
 		<tr>
 			<td colSpan={12}>{_("No registered sub-gateways.")}</td>
@@ -366,7 +391,7 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 
 	return {
 		element,
-		update(nextOnus) {
+		update(nextOnus, pinning) {
 			const nextIds = new Set(nextOnus.map((onu) => onu.onu_id));
 			for (const [onuId, row] of rows) {
 				if (!nextIds.has(onuId)) {
@@ -389,10 +414,10 @@ function createOnuTable(onus: SubGateway[]): OnuTable {
 			for (const [index, onu] of nextOnus.entries()) {
 				let row = rows.get(onu.onu_id);
 				if (!row) {
-					row = createOnuRow(onu);
+					row = createOnuRow(onu, onSaved);
 					rows.set(onu.onu_id, row);
 				}
-				row.update(onu);
+				row.update(onu, pinning);
 				const current = body.children.item(index);
 				if (current !== row.element) body.insertBefore(row.element, current);
 			}
@@ -407,7 +432,8 @@ interface StatusView {
 
 function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevices): StatusView {
 	const initialOptical = initialStatus.optical_transceiver ?? {};
-	const onuTable = createOnuTable(initialStatus.sub_gateways ?? []);
+	let currentDevices = initialDevices;
+	const onuTable = createOnuTable(initialStatus.sub_gateways ?? [], (status) => update(status, currentDevices));
 	const ports = Array.from({ length: 16 }, (_port, index) => createPortCard(index + 1));
 
 	const provisioningStatusNode = <span class="fttr-badge" />;
@@ -608,6 +634,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 	);
 
 	const update = (status: FttrStatus, devices: NetworkDevices) => {
+		currentDevices = devices;
 		const optical = status.optical_transceiver;
 		const provisioning = status.provisioning;
 		const pinning = status.onu_pinning;
@@ -659,7 +686,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			updateBadge(cdrNode, "warning", _("Unlocked"));
 		}
 
-		onuTable.update(status.sub_gateways ?? []);
+		onuTable.update(status.sub_gateways ?? [], status.onu_pinning);
 		for (const port of ports) port.update(status, devices);
 	};
 

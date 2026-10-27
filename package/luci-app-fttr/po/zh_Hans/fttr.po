@@ -2049,3 +2049,45 @@ msgstr "启动配置无效，已暂停 ONU 分配。"
 
 msgid "Fixed interface changes pending FTTR restart."
 msgstr "固定接口修改将在重启 FTTR 后生效。"
+
+msgid "Pin"
+msgstr "固定"
+
+msgid "Confirm"
+msgstr "确认"
+
+msgid "Unpin"
+msgstr "取消固定"
+
+msgid "Pin interface"
+msgstr "固定接口"
+
+msgid "Unpin interface"
+msgstr "取消固定接口"
+
+msgid "Add this device on the configuration page before fixing its interface."
+msgstr "请先在配置页添加此设备，再固定接口。"
+
+msgid "Apply or discard pending FTTR configuration changes first."
+msgstr "请先应用或撤销尚未提交的 FTTR 配置修改。"
+
+msgid "Interface configuration changed. Refresh the page and try again."
+msgstr "接口配置已发生变化，请刷新页面后重试。"
+
+msgid "Interface setting saved. Restart FTTR for it to take effect."
+msgstr "接口设置已保存，重启 FTTR 后生效。"
+
+msgid "Saved, but configuration reload or status refresh failed:"
+msgstr "已保存，但配置重载或状态刷新失败："
+
+msgid "Failed to save interface setting:"
+msgstr "保存接口设置失败："
+
+msgid "Cancel the fixed interface for this device?"
+msgstr "确定取消此设备的固定接口？"
+
+msgid "Fix this device to its current interface?"
+msgstr "确定将此设备固定到当前接口？"
+
+msgid "This saves the configuration only. The current allocation stays unchanged until FTTR is restarted."
+msgstr "本操作将保存配置，当前分配保持不变，重启 FTTR 后生效。"
