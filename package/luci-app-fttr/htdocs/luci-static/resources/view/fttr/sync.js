@@ -831,11 +831,11 @@ function eg(e) {
         ...j(e)
     });
 }
-const eh = o("ZodMiniBoolean", (e, t)=>{
+const e_ = o("ZodMiniBoolean", (e, t)=>{
     F.init(e, t), ec.init(e, t);
 });
-function e_(e) {
-    return new eh({
+function eh(e) {
+    return new e_({
         type: "boolean",
         ...j(e)
     });
@@ -957,7 +957,7 @@ function eZ() {
         getter: ()=>ej([
                 eu(),
                 eg(),
-                e_(),
+                eh(),
                 new eb({
                     type: "null",
                     ...j(void 0)
@@ -1007,7 +1007,7 @@ eS("status", [
         data: eu()
     })
 ]);
-let eU = eu(), eF = eg(), eJ = e_(), eK = eI(eU), eG = eI(eF), eH = eI(eJ);
+let eU = eu(), eF = eg(), eJ = eh(), eK = eI(eU), eG = eI(eF), eH = eI(eJ);
 const eQ = eC([
     "waiting",
     "wan_reconciling",
@@ -1398,8 +1398,8 @@ let ts = ez({
     laser_bias_current_ma: tr,
     temperature_celsius: tr,
     vcc_voltage: tr,
-    cdr_locked: eL(e_()),
-    tx_enabled: eL(e_()),
+    cdr_locked: eL(eh()),
+    tx_enabled: eL(eh()),
     measurements: tn
 }), to = ez({
     equipment_id: eL(te),
@@ -1423,7 +1423,7 @@ const tl = ez({
     acs_bootstrap: eI(e8),
     identity: eL(to),
     identity_age_seconds: tr,
-    identity_current: e_(),
+    identity_current: eh(),
     fiber_distance_m: tr,
     ranging_delay_rtd_ns: tr,
     equalization_delay_bits: new eR({
@@ -1464,15 +1464,24 @@ const tl = ez({
     measurements: tn
 });
 let td = ez({
+    reserved_sn: eI(te),
     port: tt,
     interface: te,
-    carrier: e_(),
+    carrier: eh(),
     status: te,
     onu_id: eI(tt),
     onu_sn: eI(te),
     link_state: te
 });
 const tc = ez({
+    onu_pinning: eI(ez({
+        desired: eM(te, tt),
+        active: eM(te, tt),
+        pending_restart: eh(),
+        allocation_blocked: eh(),
+        startup_error: eL(te),
+        config_error: eL(te)
+    })),
     fpga_status: te,
     provisioning: eL(e7),
     optical_transceiver: ts,
@@ -1485,12 +1494,12 @@ const tc = ez({
     }))
 });
 eM(te, ez({
-    carrier: eI(e_()),
+    carrier: eI(eh()),
     mac: eI(te),
     link: eI(ez({
         speed: eI(tt),
         duplex: eI(te),
-        autoneg: eI(e_())
+        autoneg: eI(eh())
     })),
     stats: eI(eM(te, tt))
 }));
@@ -1518,7 +1527,7 @@ let tu = L.rpc.declare({
     object: "luci.fttr",
     method: "config_check",
     reject: !0
-}), th = (L.rpc.declare({
+}), t_ = (L.rpc.declare({
     object: "luci.fttr",
     method: "config_reload",
     reject: !0
@@ -1542,7 +1551,7 @@ let tu = L.rpc.declare({
     ],
     reject: !0
 }));
-const t_ = async ()=>tc.parse(eV(await tu())), tb = async ()=>e7.parse(eV(await tf())), tm = async ()=>e9.parse(await tg());
+const th = async ()=>tc.parse(eV(await tu())), tb = async ()=>e7.parse(eV(await tf())), tm = async ()=>e9.parse(await tg());
 ez({
     schema_version: eN(1),
     status: eC([
@@ -1557,16 +1566,16 @@ ez({
         "optical_reinitialize",
         "optical_shutdown"
     ]),
-    desired_enabled: eL(e_()),
-    tx_enabled: eL(e_()),
+    desired_enabled: eL(eh()),
+    tx_enabled: eL(eh()),
     actor_state: eC([
         "enabled",
         "disabled",
         "unknown"
     ]),
-    hardware_ready: e_(),
-    discovery_active: e_(),
-    cleanup_pending: e_(),
+    hardware_ready: eh(),
+    discovery_active: eh(),
+    cleanup_pending: eh(),
     error: eL(ez({
         code: eu(),
         message: eu()
@@ -1605,11 +1614,11 @@ let ty = ej([
             "apply",
             "plan"
         ]),
-        reconcile: eI(e_()),
-        retry: eI(e_())
+        reconcile: eI(eh()),
+        retry: eI(eh())
     })
 ]);
-const tv = async (e, t)=>ty.parse(eV(await th(e, t)));
+const tv = async (e, t)=>ty.parse(eV(await t_(e, t)));
 L.rpc.declare({
     object: "luci.fttr",
     method: "get_calibration",
@@ -1637,14 +1646,14 @@ L.rpc.declare({
     sha256: eu(),
     data: eI(eu()),
     factory: ez({
-        detected: e_(),
+        detected: eh(),
         device: eu(),
-        has_data: e_(),
+        has_data: eh(),
         sha256: eu(),
         data: eu()
     }),
     firmware: ez({
-        exists: e_(),
+        exists: eh(),
         path: eu(),
         size: eg(),
         sha256: eu(),
@@ -1652,17 +1661,17 @@ L.rpc.declare({
     }),
     error: eI(eu())
 }), ez({
-    success: e_(),
+    success: eh(),
     path: eu(),
     size: eg(),
     sha256: eu(),
     error: eI(eu())
 }), ez({
-    success: e_(),
+    success: eh(),
     output: eI(eu()),
     error: eI(eu())
 });
-let tw = eu(), tx = eg(), tz = e_(), tk = ez({
+let tw = eu(), tx = eg(), tz = eh(), tk = ez({
     id: tw,
     url: tw
 }), tj = ez({
@@ -2152,26 +2161,26 @@ let t2 = ez({
     schema_version: eN(1),
     version: eu(),
     features: ez({
-        acs: e_(),
-        mqtt: e_(),
-        "device-hl202": e_(),
-        "device-hwtc": e_()
+        acs: eh(),
+        mqtt: eh(),
+        "device-hl202": eh(),
+        "device-hwtc": eh()
     }),
     functions: ez({
-        optical: e_(),
-        omci_mib: e_(),
-        mqtt_telemetry: e_(),
-        hl202_management: e_(),
-        cwmp: e_()
+        optical: eh(),
+        omci_mib: eh(),
+        mqtt_telemetry: eh(),
+        hl202_management: eh(),
+        cwmp: eh()
     }),
     pages: ez({
-        status: e_(),
-        config: e_(),
-        sync: e_(),
-        hl202: e_(),
-        hardware: e_(),
-        calibration: e_(),
-        about: e_()
+        status: eh(),
+        config: eh(),
+        sync: eh(),
+        hl202: eh(),
+        hardware: eh(),
+        calibration: eh(),
+        about: eh()
     })
 }), t8 = L.rpc.declare({
     object: "luci.fttr",
@@ -2499,7 +2508,7 @@ let main = L.view.extend({
             }
         }, j = async (e)=>{
             try {
-                let t = (await t_()).sub_gateways.find((t)=>t.serial_number === e.optical_sn);
+                let t = (await th()).sub_gateways.find((t)=>t.serial_number === e.optical_sn);
                 if (!t) throw Error(_("Device is offline or no longer registered; refresh status and retry."));
                 !function(e) {
                     var t, r, n, i, a, o, l, d, c, p, u;
@@ -3230,7 +3239,7 @@ let main = L.view.extend({
                         if (!h) {
                             h = !0, O.disabled = M.disabled = !0, w.style.display = "", w.title = "0%", w.firstElementChild.style.width = "0%", v.textContent = _("Reading MIB\u2026");
                             try {
-                                let h = await t_(), j = h.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
+                                let h = await th(), j = h.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
                                 if (j?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
                                 if (!D()) return;
                                 let S = await tL(j.onu_id, j.serial_number, t);
@@ -4402,7 +4411,7 @@ let main = L.view.extend({
             }, s("div", Y)));
             let eo = new Set(Array.from(h.querySelectorAll("details[open]")).map((e)=>e.getAttribute("data-device")));
             h.replaceChildren(...(e.devices ?? []).map((t)=>{
-                var r, n, i, o, l, d, c, p, u, f, g, h, b, m, y, w, x, S, O, M, P, C, A, I, T, R, D, Z, W, B, V, q, U, F, J, K, G, H, Q, X, Y, ee, et, er, en, ei, ea, es, el, ed, ec, ep, eu, ef, eg, eh, e_, eb, em, ey, ev;
+                var r, n, i, o, l, d, c, p, u, f, g, h, b, m, y, w, x, S, O, M, P, C, A, I, T, R, D, Z, W, B, V, q, U, F, J, K, G, H, Q, X, Y, ee, et, er, en, ei, ea, es, el, ed, ec, ep, eu, ef, eg, e_, eh, eb, em, ey, ev;
                 let ew, ex, ez;
                 return r = eo.has(t.device), n = ()=>$("management_apply"), i = N.disabled, o = e.enabled, l = v, ex = ![
                     "completed",
@@ -4996,7 +5005,7 @@ let main = L.view.extend({
                                         (eb = {
                                             style: "display:flex;gap:16px;flex-wrap:wrap;font-size:90%;margin-bottom:6px",
                                             children: [
-                                                (eh = {
+                                                (e_ = {
                                                     children: [
                                                         s("span", {
                                                             style: "color:#888",
@@ -5008,8 +5017,8 @@ let main = L.view.extend({
                                                         " ",
                                                         t3(ew.wifi_cleanup)
                                                     ]
-                                                }, s("span", eh)),
-                                                (e_ = {
+                                                }, s("span", e_)),
+                                                (eh = {
                                                     children: [
                                                         s("span", {
                                                             style: "color:#888",
@@ -5021,7 +5030,7 @@ let main = L.view.extend({
                                                         " ",
                                                         t3(ew.wifi_stage)
                                                     ]
-                                                }, s("span", e_))
+                                                }, s("span", eh))
                                             ]
                                         }, s("div", eb)),
                                         s("pre", {

@@ -111,6 +111,7 @@ export const subGateway = z.object({
 	measurements,
 });
 const switchPort = z.object({
+	reserved_sn: z.optional(str),
 	port: num,
 	interface: str,
 	carrier: z.boolean(),
@@ -120,6 +121,16 @@ const switchPort = z.object({
 	link_state: str,
 });
 export const status = z.object({
+	onu_pinning: z.optional(
+		z.object({
+			desired: z.record(str, num),
+			active: z.record(str, num),
+			pending_restart: z.boolean(),
+			allocation_blocked: z.boolean(),
+			startup_error: z.nullable(str),
+			config_error: z.nullable(str),
+		}),
+	),
 	fpga_status: str,
 	provisioning: z.nullable(syncStatus),
 	optical_transceiver: optical,

@@ -2004,3 +2004,48 @@ msgstr "写入中"
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
+
+msgid "Fixed interface"
+msgstr "固定接口"
+
+msgid "Automatic allocation"
+msgstr "自动分配"
+
+msgid "Reserves this interface by optical serial number, even while offline. Changes take effect after restarting FTTR; Reload does not move registered devices."
+msgstr "按光纤序列号预留接口，设备离线时仍保留。修改在重启 FTTR 后生效；重载配置不会移动已注册设备。"
+
+msgid "Use current interface"
+msgstr "使用当前接口"
+
+msgid "Pin current interface"
+msgstr "固定到当前接口"
+
+msgid "Select a registered O5 device first."
+msgstr "请先选择已进入 O5 状态的设备。"
+
+msgid "Select an interface from fttr1 to fttr16."
+msgstr "请选择 fttr1 到 fttr16 范围内的接口。"
+
+msgid "Interface already reserved by another device."
+msgstr "此接口已被其他设备预留。"
+
+msgid "Active allocation"
+msgstr "当前生效分配"
+
+msgid "Not registered"
+msgstr "尚未注册"
+
+msgid "Reserved"
+msgstr "已预留"
+
+msgid "Pending restart"
+msgstr "待重启生效"
+
+msgid "Reserved (offline)"
+msgstr "已预留（离线）"
+
+msgid "ONU allocation blocked by invalid startup configuration."
+msgstr "启动配置无效，已暂停 ONU 分配。"
+
+msgid "Fixed interface changes pending FTTR restart."
+msgstr "固定接口修改将在重启 FTTR 后生效。"

@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
+
+import type { FttrStatus } from "../contracts/status";
 import { choice, field, grid, preview, reference } from "./form";
 
 interface ConnectedDevice {
@@ -16,7 +18,7 @@ function adapterFor(device?: ConnectedDevice): string | undefined {
 	return "generic";
 }
 
-export function addDevices(section: any, connected: ConnectedDevice[]): void {
+export function addDevices(section: any, connected: ConnectedDevice[], pinning?: FttrStatus["onu_pinning"]): void {
 	const bySerial = new Map(connected.map((device) => [device.serial_number, device]));
 	const label = (serial: string): string => {
 		const device = bySerial.get(serial);
@@ -79,6 +81,65 @@ export function addDevices(section: any, connected: ConnectedDevice[]): void {
 		adapterField.default = "generic";
 		adapterField.rmempty = false;
 		reference(s, "group", _("Group"), "group").modalonly = true;
+		const pin = choice(
+			s,
+			"onu_id",
+			_("Fixed interface"),
+			[
+				["", _("Automatic allocation")],
+				...Array.from({ length: 16 }, (_, id): [string, string] => [
+					String(id),
+					`fttr${id + 1} · ONU-ID ${id}`,
+				]),
+			],
+			true,
+		);
+		pin.modalonly = true;
+		pin.description = _(
+			"Reserves this interface by optical serial number, even while offline. Changes take effect after restarting FTTR; Reload does not move registered devices.",
+		);
+		const pinCurrent: InstanceType<typeof L.form.Button> = s.option(
+			L.form.Button,
+			"_pin_current",
+			_("Use current interface"),
+		);
+		pinCurrent.modalonly = true;
+		pinCurrent.inputtitle = _("Pin current interface");
+		pinCurrent.inputstyle = "apply";
+		pinCurrent.onclick = (_event, id) => {
+			const selected = String(serial.formvalue(id) ?? L.uci.get("fttr", id, "optical_sn") ?? "");
+			const current = connected.find((device) => device.serial_number.toUpperCase() === selected.toUpperCase());
+			if (current?.state !== "o5_operation" || current.onu_id == null) {
+				L.ui.addNotification(null, <p>{_("Select a registered O5 device first.")}</p>, "warning");
+				return;
+			}
+			pin.getUIElement(id)?.setValue(String(current.onu_id));
+		};
+		pin.validate = (id: string, value: string): boolean | string => {
+			if (!value) return true;
+			if (!/^(?:[0-9]|1[0-5])$/.test(value)) return _("Select an interface from fttr1 to fttr16.");
+			return L.uci.sections("fttr", "device").some((item) => {
+				if (item[".name"] === id) return false;
+				const other = pin.formvalue(item[".name"]) ?? item.onu_id;
+				return other != null && String(other) === value;
+			})
+				? _("Interface already reserved by another device.")
+				: true;
+		};
+		preview(s, "_active_pin", _("Active allocation"), (id) => {
+			const sn = String(L.uci.get("fttr", id, "optical_sn") || "");
+			const active = pinning?.active[sn.toUpperCase()];
+			const actual = connected.find((device) => device.serial_number.toUpperCase() === sn.toUpperCase())?.onu_id;
+			const desired = L.uci.get("fttr", id, "onu_id");
+			const pending = (desired == null || desired === "" ? undefined : Number(desired)) !== active;
+			return [
+				actual != null ? `fttr${actual + 1}` : _("Not registered"),
+				active != null ? `${_("Reserved")}: fttr${active + 1}` : _("Automatic allocation"),
+				pending ? _("Pending restart") : "",
+			]
+				.filter(Boolean)
+				.join(" · ");
+		});
 		const contract = choice(s, "cwmp_contract", _("CWMP contract"), [
 			["auto", _("Automatic (read-only capability discovery)")],
 			["hl202-cu", "HL202 · CU"],

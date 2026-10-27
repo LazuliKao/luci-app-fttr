@@ -1464,6 +1464,7 @@ const ts = ez({
     measurements: tt
 });
 let to = ez({
+    reserved_sn: eN(e7),
     port: e9,
     interface: e7,
     carrier: e_(),
@@ -1473,6 +1474,14 @@ let to = ez({
     link_state: e7
 });
 ez({
+    onu_pinning: eN(ez({
+        desired: eA(e7, e9),
+        active: eA(e7, e9),
+        pending_restart: e_(),
+        allocation_blocked: e_(),
+        startup_error: eZ(e7),
+        config_error: eZ(e7)
+    })),
     fpga_status: e7,
     provisioning: eZ(e3),
     optical_transceiver: tn,

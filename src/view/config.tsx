@@ -5,7 +5,7 @@ import { addDevices } from "./config/devices";
 import { addServices } from "./config/services";
 import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
-import type { SubGateway } from "./contracts/status";
+import type { FttrStatus, SubGateway } from "./contracts/status";
 
 const view = L.view;
 const uci = L.uci;
@@ -26,7 +26,7 @@ async function command<T>(
 	}
 }
 
-type InitialCheck = { error?: string; connectedDevices: SubGateway[] };
+type InitialCheck = { error?: string; connectedDevices: SubGateway[]; pinning?: FttrStatus["onu_pinning"] };
 const main = view.extend({
 	async load(): Promise<InitialCheck> {
 		await requirePage("config");
@@ -40,6 +40,7 @@ const main = view.extend({
 		return {
 			error: check.error || ("error" in status ? status.error : undefined),
 			connectedDevices: status.sub_gateways,
+			pinning: "onu_pinning" in status ? status.onu_pinning : undefined,
 		};
 	},
 	render(initialCheck: InitialCheck): Promise<Node> {
@@ -50,7 +51,7 @@ const main = view.extend({
 
 		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
 		addBasic(section, _("Basic"), globalId);
-		addDevices(section, initialCheck.connectedDevices ?? []);
+		addDevices(section, initialCheck.connectedDevices ?? [], initialCheck.pinning);
 		addServices(section);
 		const save = map.save;
 		map.save = function (cb?: () => void, silent?: boolean) {

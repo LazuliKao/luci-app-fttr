@@ -203,11 +203,14 @@ function createPortCard(number: number): PortCard {
 			linkBarNode.style.opacity = connected ? "1" : "0.25";
 			linkBarNode.style.backgroundColor = connected ? "rgb(46, 204, 113)" : "rgba(200, 200, 200, 0.4)";
 			portStateNode.textContent = text(
-				port?.link_state ??
+				(port?.reserved_sn && port.onu_id === undefined ? _("Reserved (offline)") : port?.link_state) ??
 					port?.status ??
 					(device ? (carrier ? _("Link up") : _("Link down")) : _("Unavailable")),
 			);
-			onuNode.textContent = text(port?.onu_sn ?? onu?.serial_number ?? port?.onu_id);
+			if (port?.reserved_sn && port.onu_id !== undefined)
+				portStateNode.textContent += ` · ${_("Fixed interface")}`;
+			onuNode.textContent = text(port?.onu_sn ?? onu?.serial_number ?? port?.reserved_sn ?? port?.onu_id);
+			element.title = port?.reserved_sn ? `${_("Reserved")}: ${port.reserved_sn}` : "";
 			macNode.textContent = text(device?.mac);
 
 			txSummaryNode.textContent = !connected && !txBytes ? "—" : formatBytes(txBytes);
@@ -435,6 +438,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 	const fpgaNode = <span class="fttr-badge" />;
 	const opticalNode = <span>{text(initialOptical.model)}</span>;
 	const cdrNode = <span class="fttr-badge" />;
+	const pinningNode = <p role="status" />;
 
 	const element = (
 		<div class="cbi-map fttr-overview">
@@ -574,6 +578,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			</style>
 			<h2>{_("FTTR overview")}</h2>
 			{provisioningNode}
+			{pinningNode}
 			<div class="cbi-section">
 				<h3>{_("Controller")}</h3>
 				<table class="table">
@@ -605,6 +610,17 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 	const update = (status: FttrStatus, devices: NetworkDevices) => {
 		const optical = status.optical_transceiver;
 		const provisioning = status.provisioning;
+		const pinning = status.onu_pinning;
+		pinningNode.textContent = pinning
+			? [
+					pinning.allocation_blocked ? _("ONU allocation blocked by invalid startup configuration.") : "",
+					pinning.pending_restart ? _("Fixed interface changes pending FTTR restart.") : "",
+					pinning.startup_error || pinning.config_error || "",
+				]
+					.filter(Boolean)
+					.join(" ")
+			: "";
+		pinningNode.hidden = !pinningNode.textContent;
 
 		if (provisioning) {
 			updateBadge(

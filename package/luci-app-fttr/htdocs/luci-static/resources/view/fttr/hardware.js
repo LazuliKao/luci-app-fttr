@@ -1465,6 +1465,7 @@ const ts = ek({
     measurements: tr
 });
 let tl = ek({
+    reserved_sn: eC(e9),
     port: te,
     interface: e9,
     carrier: eg(),
@@ -1474,6 +1475,14 @@ let tl = ek({
     link_state: e9
 });
 const td = ek({
+    onu_pinning: eC(ek({
+        desired: eM(e9, te),
+        active: eM(e9, te),
+        pending_restart: eg(),
+        allocation_blocked: eg(),
+        startup_error: eL(e9),
+        config_error: eL(e9)
+    })),
     fpga_status: e9,
     provisioning: eL(e7),
     optical_transceiver: ta,
