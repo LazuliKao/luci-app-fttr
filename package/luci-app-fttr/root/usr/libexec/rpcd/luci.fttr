@@ -92,7 +92,8 @@ case "$1" in
 				json_get_var onu onu_id
 				json_get_var sn optical_sn
 				json_get_var tables tables
-				case "$onu" in 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15) ;; *) error 'Invalid ONU ID';; esac
+				# ONU slots are zero-based; only Linux fttr port names are one-based.
+				case "$onu" in 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15) ;; *) error 'Invalid ONU ID';; esac
 				identifier "$sn" || error 'Invalid optical serial'
 				case "$tables" in 0|1) ;; *) error 'Invalid tables option';; esac
 				expected="$(registration "$onu" "$sn")" || error 'Device is offline or its ONU ID changed'
