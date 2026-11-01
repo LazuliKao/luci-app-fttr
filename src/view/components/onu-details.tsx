@@ -555,9 +555,11 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 	const header = <div class="onu-details-header">{tabMenu}</div>;
 
 	const dialogRoot = (
-		<div class="onu-details-dialog">
-			<style>
-				{`
+		<>
+			{header}
+			<div class="onu-details-dialog">
+				<style>
+					{`
 				.onu-details-dialog {
 					--fttr-border: rgba(127, 127, 127, 0.22);
 					--fttr-card-bg: rgba(127, 127, 127, 0.04);
@@ -953,11 +955,11 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					justify-content: flex-end;
 				}
 				`}
-			</style>
-			{header}
-			{basic}
-			{mib}
-			{rawPanel}
+				</style>
+				{basic}
+				{mib}
+				{rawPanel}
+			</div>
 			<div class="right onu-details-footer">
 				<button
 					type="button"
@@ -975,7 +977,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					{_("Close")}
 				</button>
 			</div>
-		</div>
+		</>
 	) as HTMLElement;
 
 	const active = (): boolean => !closed && dialogRoot.isConnected && dialogRoot.getClientRects().length > 0;

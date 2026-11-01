@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-22 10:02+0800\n"
+"POT-Creation-Date: 2026-11-01 17:16+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -70,9 +70,6 @@ msgstr "%d 小时前"
 msgid "%d hours"
 msgstr "%d 小时"
 
-msgid "%d hours %d minutes ago"
-msgstr "%d 小时 %d 分钟前"
-
 msgid "%d hours ago"
 msgstr "%d 小时前"
 
@@ -112,6 +109,12 @@ msgstr "1MB Factory UBI 分区（偏移 %s）"
 msgid "2. Firmware file path (second priority)"
 msgstr "2. 固件文件路径（第二优先级）"
 
+msgid ""
+"A missing group means a device points to a deleted group. Edit the device "
+"and select an existing group. If no suitable group exists, close this dialog "
+"and create a group first."
+msgstr "分组不存在表示设备仍关联着已删除的分组。请编辑该设备，选择一个现有分组。如果没有合适的分组，请先关闭此窗口并创建分组。"
+
 msgid "A standard Semtech UX3326 BOSA calibration file must be exactly"
 msgstr "标准 Semtech UX3326 BOSA 校准文件大小必须恰好为"
 
@@ -133,6 +136,9 @@ msgstr "ACS 状态文件"
 msgid "ACS URL"
 msgstr "ACS URL"
 
+msgid "Active allocation"
+msgstr "当前生效分配"
+
 msgid "Active data size"
 msgstr "当前生效数据大小"
 
@@ -144,6 +150,9 @@ msgstr "当前生效数据来源："
 
 msgid "ADC diagnostic polynomial conversion coefficients (offsets %s)"
 msgstr "ADC 诊断多项式转换系数（偏移 %s）"
+
+msgid "Add this device on the configuration page before fixing its interface."
+msgstr "请先在配置页添加此设备，再固定接口。"
 
 msgid "Address"
 msgstr "地址"
@@ -188,6 +197,9 @@ msgstr "应用差异变更"
 msgid "Apply management configuration"
 msgstr "应用管理配置"
 
+msgid "Apply or discard pending FTTR configuration changes first."
+msgstr "请先应用或撤销尚未提交的 FTTR 配置修改。"
+
 msgid "Apply to hardware immediately"
 msgstr "立即应用到硬件"
 
@@ -211,6 +223,9 @@ msgstr "自动"
 
 msgid "Automatic (read-only capability discovery)"
 msgstr "自动（只读能力发现）"
+
+msgid "Automatic allocation"
+msgstr "自动分配"
 
 msgid "Automatic triggers"
 msgstr "自动触发机制"
@@ -291,6 +306,12 @@ msgstr "校准数据来源检测概览"
 msgid "calibration file extracted from the factory backup to"
 msgstr "校准文件（从原厂备份中提取）至"
 
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel the fixed interface for this device?"
+msgstr "确定取消此设备的固定接口？"
+
 msgid "CDR lock"
 msgstr "CDR 锁定状态"
 
@@ -346,8 +367,14 @@ msgstr "配置"
 msgid "Configuration changed"
 msgstr "配置发生变更"
 
+msgid "Configuration delivery started for %s. Operation IDs: %s"
+msgstr ""
+
 msgid "Configuration diagnostics"
 msgstr "配置诊断"
+
+msgid "Configuration editor is unavailable."
+msgstr "无法打开此配置的编辑器。"
 
 msgid "Configuration item"
 msgstr "配置项"
@@ -357,6 +384,9 @@ msgstr "配置中"
 
 msgid "Configuring BOSA optical transceiver hardware..."
 msgstr "正在配置 BOSA 光收发器硬件..."
+
+msgid "Confirm"
+msgstr "确认"
 
 msgid "Conflicting values; inspect observations"
 msgstr "存在冲突数值；请检查观测记录"
@@ -391,6 +421,9 @@ msgstr "复制输出"
 msgid "Core components and open-source repositories powering the FTTR system."
 msgstr "为 FTTR 系统提供支持的核心组件与开源代码仓库。"
 
+msgid "Correct the invalid fields before saving."
+msgstr "请先修正无效字段，再保存。"
+
 msgid "CPE Connection Request password"
 msgstr "CPE 连接请求密码"
 
@@ -399,6 +432,17 @@ msgstr "CPE 连接请求端口"
 
 msgid "CPE Connection Request username"
 msgstr "CPE 连接请求用户名"
+
+msgid ""
+"Create a template first, then add its SSIDs and networks in their tabs. Each "
+"editor changes one item. Confirm stages changes; Save & Apply applies the "
+"page configuration."
+msgstr "先创建模板，再到“SSID 列表”和“网络配置”标签页添加其内容。每次只编辑一个条目。弹窗确认会暂存更改；“保存并应用”才会应用整页配置。"
+
+msgid ""
+"Create SSIDs here before selecting them in a network. Every SSID belongs to "
+"one template."
+msgstr "请先在这里创建 SSID，再到网络配置中选择。每个 SSID 只属于一个模板。"
 
 msgid "Current configuration"
 msgstr "当前配置"
@@ -460,8 +504,17 @@ msgstr "删除条目"
 msgid "Delete the WLAN object"
 msgstr "删除该 WLAN 对象"
 
+msgid "Delete this configuration"
+msgstr "删除此配置"
+
+msgid "Delete this configuration?"
+msgstr "确定删除此配置？"
+
 msgid "Deleted"
 msgstr "已删除"
+
+msgid "Deleting an unused template also deletes its SSIDs and networks."
+msgstr "删除未被使用的模板时，也会删除其下的 SSID 和网络配置。"
 
 msgid "Denominator D"
 msgstr "分母 D"
@@ -489,6 +542,9 @@ msgstr "设备绑定已变更，此结果已过期。"
 
 msgid "Device identification"
 msgstr "设备标识"
+
+msgid "Device is offline or no longer registered; refresh status and retry."
+msgstr ""
 
 msgid "Device is offline; reopen details after registration."
 msgstr "设备处于离线状态；请在重新注册后打开详情。"
@@ -554,6 +610,15 @@ msgstr "已断开"
 msgid "Discovering"
 msgstr "发现中"
 
+msgid "Discovery active"
+msgstr ""
+
+msgid "Discovery paused"
+msgstr ""
+
+msgid "Discovery state: unknown"
+msgstr ""
+
 msgid "Dispatching to %s (timeout: %s s)..."
 msgstr "正在下发至 %s（超时：%s 秒）..."
 
@@ -585,8 +650,13 @@ msgstr "不允许存在重复的 VLAN ID。"
 msgid "Duration"
 msgstr "耗时"
 
-msgid "Emitting"
-msgstr "发射中"
+msgid ""
+"Each item below identifies a configuration problem. Choose Edit to keep the "
+"item and correct its fields, or delete it if it is no longer needed."
+msgstr "下面列出了存在问题的配置。需要保留的条目可点击“编辑修复”修正字段；不再需要的条目可删除。"
+
+msgid "Edit to repair"
+msgstr "编辑修复"
 
 msgid "Enable"
 msgstr "启用"
@@ -695,6 +765,9 @@ msgstr "校准文件解析失败"
 msgid "Failed to save calibration file"
 msgstr "校准文件保存失败"
 
+msgid "Failed to save interface setting:"
+msgstr "保存接口设置失败："
+
 msgid "Field"
 msgstr "字段"
 
@@ -719,10 +792,14 @@ msgstr "固件路径"
 msgid "Firmware version"
 msgstr "固件版本"
 
-msgid ""
-"For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
-"TR069 is reserved for OMCI."
-msgstr "对于自定义 VLAN，可选择 INTERNET、OTHER、IPTV 和 VOIP 的任意组合。TR069 保留给 OMCI 使用。"
+msgid "Fix this device to its current interface?"
+msgstr "确定将此设备固定到当前接口？"
+
+msgid "Fixed interface"
+msgstr "固定接口"
+
+msgid "Fixed interface changes pending FTTR restart."
+msgstr "固定接口修改将在重启 FTTR 后生效。"
 
 msgid "FPGA identifier"
 msgstr "FPGA 标识"
@@ -762,9 +839,6 @@ msgstr "FTTR 配置同步"
 msgid "G.988 encoded field values"
 msgstr "G.988 编码字段值"
 
-msgid "General"
-msgstr "通用设置"
-
 msgid "Generated ACS URL"
 msgstr "生成的 ACS URL"
 
@@ -779,6 +853,9 @@ msgstr "GitHub 代码仓库"
 
 msgid "Group"
 msgstr "分组"
+
+msgid "Group is used by devices. Reassign those devices before deleting it."
+msgstr "该组仍被设备使用。请先将这些设备分配到其他组，再删除此组。"
 
 msgid "Groups"
 msgstr "分组管理"
@@ -874,6 +951,15 @@ msgstr "查看未绑定或未选中设备的只读 MQTT 来源报告与诊断信
 msgid "Inspect source report (read-only)"
 msgstr "查看来源报告（只读）"
 
+msgid "Interface already reserved by another device."
+msgstr "此接口已被其他设备预留。"
+
+msgid "Interface configuration changed. Refresh the page and try again."
+msgstr "接口配置已发生变化，请刷新页面后重试。"
+
+msgid "Interface setting saved. Restart FTTR for it to take effect."
+msgstr "接口设置已保存，重启 FTTR 后生效。"
+
 msgid "Interrupted"
 msgstr "已中断"
 
@@ -920,6 +1006,9 @@ msgstr "激光控制"
 
 msgid "Laser output"
 msgstr "激光输出"
+
+msgid "Last backend check result"
+msgstr "上次后端检查结果"
 
 msgid "Last good report"
 msgstr "最后成功解析的报告"
@@ -1057,6 +1146,9 @@ msgstr "MIB 查询超时；请重试。"
 msgid "MIB snapshot cannot be serialized"
 msgstr "MIB 快照无法序列化"
 
+msgid "Missing template"
+msgstr "未指定模板"
+
 msgid "Mode"
 msgstr "模式"
 
@@ -1084,11 +1176,19 @@ msgstr "MQTT 不可用"
 msgid "Name"
 msgstr "名称"
 
+msgid "Name is required."
+msgstr "名称不能为空。"
+
 msgid "Network"
 msgstr "网络"
 
 msgid "Networks"
 msgstr "网络配置"
+
+msgid ""
+"Networks bind VLAN services to wired ports and optional SSIDs within one "
+"template."
+msgstr "网络配置用于将同一模板中的 VLAN 业务绑定到有线端口和可选的 SSID。"
 
 msgid "New calibration tables are always saved to"
 msgstr "新校准表始终保存至"
@@ -1132,8 +1232,16 @@ msgstr "尚未解析任何 MQTT 报告。"
 msgid "No output returned."
 msgstr "未返回输出。"
 
+msgid ""
+"No problems were found by the local configuration checks. Use Check to see "
+"the backend result after Save & Apply."
+msgstr "本地配置检查未发现问题。请在“保存并应用”后点击“检查”，确认后端检查结果。"
+
 msgid "No registered sub-gateways."
 msgstr "无已注册的从网关。"
+
+msgid "No SSIDs selected"
+msgstr "未选择 SSID"
 
 msgid "No sub-gateways are currently registered."
 msgstr "当前没有已注册的从网关。"
@@ -1161,6 +1269,9 @@ msgstr "非原厂默认值（自行校准）"
 
 msgid "Not ready"
 msgstr "未就绪"
+
+msgid "Not registered"
+msgstr "尚未注册"
 
 msgid "Not started"
 msgstr "未开始"
@@ -1219,6 +1330,12 @@ msgstr "在线"
 msgid "ONU"
 msgstr "ONU"
 
+msgid "ONU allocation blocked by invalid startup configuration."
+msgstr "启动配置无效，已暂停 ONU 分配。"
+
+msgid "ONU cleanup pending"
+msgstr ""
+
 msgid "ONU ID"
 msgstr "ONU ID"
 
@@ -1275,6 +1392,11 @@ msgstr "光收发器"
 msgid "Optical TX power"
 msgstr "发送光功率"
 
+msgid ""
+"Optional for wired-only networks. Only SSIDs from the selected template are "
+"listed. Changing the template clears the SSID selection."
+msgstr "仅使用有线端口的网络可留空。这里只列出所选模板中的 SSID。切换模板会清空已选的 SSID。"
+
 msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr "外层过滤（优先级 / VID / TPID-DEI）"
 
@@ -1313,6 +1435,9 @@ msgstr "等待应用"
 msgid "Pending configuration changes"
 msgstr "待应用的配置变更"
 
+msgid "Pending restart"
+msgstr "待重启生效"
+
 msgid "Periodic"
 msgstr "周期性触发"
 
@@ -1321,6 +1446,15 @@ msgstr "周期性同步间隔（分钟）"
 
 msgid "Physical rates and diagnostics"
 msgstr "物理层速率与诊断"
+
+msgid "Pin"
+msgstr "固定"
+
+msgid "Pin current interface"
+msgstr "固定到当前接口"
+
+msgid "Pin interface"
+msgstr "固定接口"
 
 msgid "PONWrt Firmware"
 msgstr "PONWrt 固件"
@@ -1363,6 +1497,9 @@ msgstr "通过 OMCI 下发管理 VLAN 与 ACS 配置"
 
 msgid "Provisioning"
 msgstr "配置下发"
+
+msgid "Provisioning is disabled"
+msgstr ""
 
 msgid "Provisioning status unavailable"
 msgstr "配置下发状态不可用"
@@ -1494,6 +1631,11 @@ msgstr "远程 Shell 命令"
 msgid "Remove tags"
 msgstr "剥离 VLAN 标签"
 
+msgid ""
+"Repairs are staged in LuCI. Close this dialog, use Save & Apply, then run "
+"Check again to verify the applied configuration."
+msgstr "修复修改会暂存在 LuCI 中。请关闭此窗口，点击“保存并应用”，然后再次点击“检查”验证已应用的配置。"
+
 msgid "Request failed"
 msgstr "请求失败"
 
@@ -1504,6 +1646,18 @@ msgid ""
 "Required after management drift or service restart; verifies the child ACS "
 "settings before business synchronization."
 msgstr "管理配置偏移或服务重启后需要执行此操作，以在业务同步前校验子设备的 ACS 设置。"
+
+msgid "Reserved"
+msgstr "已预留"
+
+msgid "Reserved (offline)"
+msgstr "已预留（离线）"
+
+msgid ""
+"Reserves this interface by optical serial number, even while offline. "
+"Changes take effect after restarting FTTR; Reload does not move registered "
+"devices."
+msgstr "按光纤序列号预留接口，设备离线时仍保留。修改在重启 FTTR 后生效；重载配置不会移动已注册设备。"
 
 msgid "Reset pending"
 msgstr "待重置"
@@ -1525,6 +1679,9 @@ msgstr "重试中"
 msgid "Retrying identity"
 msgstr "正在重试采集设备标识"
 
+msgid "Review and repair configuration"
+msgstr "检查并修复配置"
+
 msgid "Revision"
 msgstr "版本"
 
@@ -1542,6 +1699,18 @@ msgid ""
 "backend defaults are selected. Leave these fields unchanged to preserve "
 "their saved values."
 msgstr "禁用连接请求或选择后端默认值时，已保存的自定义值仍会保留。保持这些字段不变即可保留其已保存的值。"
+
+msgid "Saved setting: off"
+msgstr ""
+
+msgid "Saved setting: on"
+msgstr ""
+
+msgid "Saved setting: unknown"
+msgstr ""
+
+msgid "Saved, but configuration reload or status refresh failed:"
+msgstr "已保存，但配置重载或状态刷新失败："
 
 msgid ""
 "Saving configuration does not synchronize devices in Manual mode. After Save "
@@ -1570,8 +1739,40 @@ msgstr "分段阈值：%s °C"
 msgid "Select a device to inspect reports and run operations."
 msgstr "请选择设备以查看报告并执行操作。"
 
+msgid "Select a registered O5 device first."
+msgstr "请先选择已进入 O5 状态的设备。"
+
+msgid "Select a wireless band."
+msgstr "请选择无线频段。"
+
+msgid "Select an existing group."
+msgstr "请选择已存在的设备组。"
+
+msgid "Select an existing item."
+msgstr "请选择已存在的条目。"
+
+msgid "Select an existing template."
+msgstr "请选择已存在的模板。"
+
+msgid "Select an interface from fttr1 to fttr16."
+msgstr "请选择 fttr1 到 fttr16 范围内的接口。"
+
+msgid "Select an item"
+msgstr "请选择"
+
+msgid ""
+"Select at least one of INTERNET, OTHER, IPTV, and VOIP for each custom VLAN. "
+"TR069 is reserved for OMCI."
+msgstr "每个自定义 VLAN 必须至少选择 INTERNET、OTHER、IPTV、VOIP 中的一项。TR069 保留供 OMCI 使用。"
+
+msgid "Select at least one WAN Service List label."
+msgstr "请至少选择一个 WAN 业务列表标签。"
+
 msgid "Select device."
 msgstr "请选择设备。"
+
+msgid "Select SSIDs belonging to this network's template."
+msgstr "请选择属于此网络模板的 SSID。"
 
 msgid "Selected file:"
 msgstr "已选文件："
@@ -1629,6 +1830,9 @@ msgstr "版本过期"
 msgid "Standard %s bytes"
 msgstr "标准 %s 字节"
 
+msgid "Start configuration delivery for this device"
+msgstr ""
+
 msgid "Started"
 msgstr "已启动"
 
@@ -1667,6 +1871,9 @@ msgstr "支持的文件："
 
 msgid "Supports Connection Request"
 msgstr "支持连接请求"
+
+msgid "Sync now"
+msgstr ""
 
 msgid "Synchronization"
 msgstr "配置同步"
@@ -1727,6 +1934,17 @@ msgid "The tutorial for adding and configuring sub-gateways will be provided her
 msgstr "添加与配置从网关的操作指南将在此展示。"
 
 msgid ""
+"This also deletes the template's SSIDs and networks. Templates used by "
+"groups cannot be deleted."
+msgstr "此操作还会删除该模板的 SSID 和网络。正在被分组使用的模板无法删除。"
+
+msgid "This device already has an active synchronization operation"
+msgstr ""
+
+msgid "This field is required."
+msgstr "此字段为必填项。"
+
+msgid ""
 "This is a lightweight preview. Download JSON to save the complete MIB "
 "snapshot."
 msgstr "这是一个轻量级预览。下载 JSON 以保存完整的 MIB 快照。"
@@ -1735,6 +1953,29 @@ msgid ""
 "This optical device has no fresh, unambiguous MQTT binding. Commands are "
 "unavailable."
 msgstr "此光设备没有有效且明确的 MQTT 绑定，无法执行命令。"
+
+msgid "This page is not supported by the installed FTTR build."
+msgstr ""
+
+msgid ""
+"This removes the device's FTTR configuration and stops managing it. It does "
+"not delete the physical device."
+msgstr "此操作将删除该设备的 FTTR 配置，并停止管理该设备，不会删除物理设备。"
+
+msgid ""
+"This removes the selected configuration entry. Existing reference checks and "
+"binding cleanup still apply."
+msgstr "此操作将删除选中的配置条目，并按现有规则检查引用、清理绑定。"
+
+msgid ""
+"This saves the configuration only. The current allocation stays unchanged "
+"until FTTR is restarted."
+msgstr "本操作将保存配置，当前分配保持不变，重启 FTTR 后生效。"
+
+msgid ""
+"This SSID is bound to a network. Remove its network bindings before changing "
+"the template."
+msgstr "该 SSID 已绑定到网络。请先解除网络中的绑定，再更改所属模板。"
 
 msgid "Timeout"
 msgstr "超时"
@@ -1798,6 +2039,9 @@ msgstr "配对并配置下联 FTTR 从网关的操作指南与说明。"
 msgid "Tutorial Coming Soon"
 msgstr "教程编写中"
 
+msgid "TX enabled (reset readback)"
+msgstr ""
+
 msgid "TX power"
 msgstr "发送功率"
 
@@ -1841,6 +2085,12 @@ msgstr "未知型号"
 
 msgid "Unlocked"
 msgstr "未锁定"
+
+msgid "Unpin"
+msgstr "取消固定"
+
+msgid "Unpin interface"
+msgstr "取消固定接口"
 
 msgid "Unsupported"
 msgstr "不支持"
@@ -1893,6 +2143,9 @@ msgstr "计算温度 ≤ %s °C 时使用备用参数"
 msgid "Use backend Connection Request defaults"
 msgstr "使用后端连接请求默认值"
 
+msgid "Use current interface"
+msgstr "使用当前接口"
+
 msgid "Use the form below to upload the %s-byte"
 msgstr "请使用下方表单上传 %s 字节的"
 
@@ -1910,6 +2163,9 @@ msgstr "有效数据（%s 字节）"
 
 msgid "Value"
 msgstr "数值"
+
+msgid "Value is outside the allowed range."
+msgstr "数值超出允许范围。"
 
 msgid "Vendor"
 msgstr "供应商"
@@ -1971,6 +2227,9 @@ msgstr "WAN 业务"
 msgid "WAN Service List (multi-select)"
 msgstr "WAN 业务列表（多选）"
 
+msgid "WAN Service List may only contain INTERNET, OTHER, IPTV, and VOIP."
+msgstr "WAN 业务列表只能包含 INTERNET、OTHER、IPTV 和 VOIP。"
+
 msgid "WAN verifying"
 msgstr "WAN 校验中"
 
@@ -2004,90 +2263,3 @@ msgstr "写入中"
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
-
-msgid "Fixed interface"
-msgstr "固定接口"
-
-msgid "Automatic allocation"
-msgstr "自动分配"
-
-msgid "Reserves this interface by optical serial number, even while offline. Changes take effect after restarting FTTR; Reload does not move registered devices."
-msgstr "按光纤序列号预留接口，设备离线时仍保留。修改在重启 FTTR 后生效；重载配置不会移动已注册设备。"
-
-msgid "Use current interface"
-msgstr "使用当前接口"
-
-msgid "Pin current interface"
-msgstr "固定到当前接口"
-
-msgid "Select a registered O5 device first."
-msgstr "请先选择已进入 O5 状态的设备。"
-
-msgid "Select an interface from fttr1 to fttr16."
-msgstr "请选择 fttr1 到 fttr16 范围内的接口。"
-
-msgid "Interface already reserved by another device."
-msgstr "此接口已被其他设备预留。"
-
-msgid "Active allocation"
-msgstr "当前生效分配"
-
-msgid "Not registered"
-msgstr "尚未注册"
-
-msgid "Reserved"
-msgstr "已预留"
-
-msgid "Pending restart"
-msgstr "待重启生效"
-
-msgid "Reserved (offline)"
-msgstr "已预留（离线）"
-
-msgid "ONU allocation blocked by invalid startup configuration."
-msgstr "启动配置无效，已暂停 ONU 分配。"
-
-msgid "Fixed interface changes pending FTTR restart."
-msgstr "固定接口修改将在重启 FTTR 后生效。"
-
-msgid "Pin"
-msgstr "固定"
-
-msgid "Confirm"
-msgstr "确认"
-
-msgid "Unpin"
-msgstr "取消固定"
-
-msgid "Pin interface"
-msgstr "固定接口"
-
-msgid "Unpin interface"
-msgstr "取消固定接口"
-
-msgid "Add this device on the configuration page before fixing its interface."
-msgstr "请先在配置页添加此设备，再固定接口。"
-
-msgid "Apply or discard pending FTTR configuration changes first."
-msgstr "请先应用或撤销尚未提交的 FTTR 配置修改。"
-
-msgid "Interface configuration changed. Refresh the page and try again."
-msgstr "接口配置已发生变化，请刷新页面后重试。"
-
-msgid "Interface setting saved. Restart FTTR for it to take effect."
-msgstr "接口设置已保存，重启 FTTR 后生效。"
-
-msgid "Saved, but configuration reload or status refresh failed:"
-msgstr "已保存，但配置重载或状态刷新失败："
-
-msgid "Failed to save interface setting:"
-msgstr "保存接口设置失败："
-
-msgid "Cancel the fixed interface for this device?"
-msgstr "确定取消此设备的固定接口？"
-
-msgid "Fix this device to its current interface?"
-msgstr "确定将此设备固定到当前接口？"
-
-msgid "This saves the configuration only. The current allocation stays unchanged until FTTR is restarted."
-msgstr "本操作将保存配置，当前分配保持不变，重启 FTTR 后生效。"

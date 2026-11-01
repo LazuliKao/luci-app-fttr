@@ -2,6 +2,8 @@
 
 import { addBasic } from "./config/basic";
 import { addDevices } from "./config/devices";
+import { openRecovery } from "./config/recovery";
+import { saveConfiguration } from "./config/save";
 import { addServices } from "./config/services";
 import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
@@ -53,22 +55,29 @@ const main = view.extend({
 		addBasic(section, _("Basic"), globalId);
 		addDevices(section, initialCheck.connectedDevices ?? [], initialCheck.pinning);
 		addServices(section);
-		const save = map.save;
-		map.save = function (cb?: () => void, silent?: boolean) {
-			uci.unset("fttr", "acs", "listen");
-			uci.unset("fttr", "management", "acs_url");
-			return save.call(this, cb, silent);
-		};
+		// The inherited Save & Apply handler calls this explicit page-save entry.
+		this.handleSave = () => saveConfiguration(map);
 
 		const output = <pre style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite" />;
 		let checkNotification: Node | null = null;
+		let backendError: string | undefined;
 		const showCheck = (result: { error?: string }): void => {
+			backendError = result?.error;
 			checkNotification?.parentNode?.removeChild(checkNotification);
 			checkNotification = null;
 			if (result?.error) {
 				checkNotification = L.ui.addNotification(
 					_("FTTR configuration check failed"),
-					<p>{String(result.error)}</p>,
+					<div>
+						<p>{String(result.error)}</p>
+						<button
+							class="cbi-button cbi-button-action"
+							type="button"
+							onclick={() => openRecovery(section, backendError)}
+						>
+							{_("Review and repair configuration")}
+						</button>
+					</div>,
 					"error",
 				);
 			}
@@ -83,6 +92,13 @@ const main = view.extend({
 					<a href={L.url("admin", "network", "fttr", "sync")}>{_("Open Synchronization")}</a>
 				</p>
 				<h3>{_("Configuration diagnostics")}</h3>
+				<button
+					class="cbi-button cbi-button-action"
+					type="button"
+					onclick={() => openRecovery(section, backendError)}
+				>
+					{_("Review and repair configuration")}
+				</button>{" "}
 				<button
 					class="cbi-button cbi-button-action"
 					type="button"
@@ -118,12 +134,10 @@ const main = view.extend({
 				{output}
 			</div>
 		);
-		return map.render().then((node: Node) => (
-			<div>
-				{node}
-				{actions}
-			</div>
-		));
+		section.tab("diagnostics", _("Configuration diagnostics"));
+		const diagnostics = section.taboption("diagnostics", form.DummyValue, "_diagnostics", "");
+		diagnostics.render = () => Promise.resolve(actions);
+		return map.render();
 	},
 });
 

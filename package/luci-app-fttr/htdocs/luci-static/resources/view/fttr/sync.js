@@ -831,11 +831,11 @@ const eg = p("ZodMiniType", (e, t)=>{
         }, {
             parent: !0
         }), e.with = e.check, e.clone = (t, r)=>O(e, t, r), e.brand = ()=>e, e.register = (t, r)=>(t.add(e, r), e), e.apply = (t)=>t(e);
-}), e_ = p("ZodMiniString", (e, t)=>{
+}), eh = p("ZodMiniString", (e, t)=>{
     K.init(e, t), eg.init(e, t);
 });
-function eh(e) {
-    return new e_({
+function e_(e) {
+    return new eh({
         type: "string",
         ...M(e)
     });
@@ -974,7 +974,7 @@ function eq() {
     let e = new eV({
         type: "lazy",
         getter: ()=>eM([
-                eh(),
+                e_(),
                 em(),
                 ev(),
                 new ew({
@@ -982,17 +982,17 @@ function eq() {
                     ...M(void 0)
                 }),
                 ej(e),
-                eN(eh(), e)
+                eN(e_(), e)
             ])
     });
     return e;
 }
 let eU = eS({
     error: eM([
-        eh(),
+        e_(),
         eS({
-            code: eh(),
-            message: eh()
+            code: e_(),
+            message: e_()
         })
     ])
 });
@@ -1012,7 +1012,7 @@ function eJ(e) {
 }
 const eK = eS({
     status: eL("pending"),
-    job: eh()
+    job: e_()
 });
 eC("status", [
     eS({
@@ -1023,10 +1023,10 @@ eC("status", [
         chunk: em(),
         chunks: em(),
         bytes: em(),
-        data: eh()
+        data: e_()
     })
 ]);
-let eG = eh(), eH = em(), eQ = ev(), eX = eD(eG), eY = eD(eH), e0 = eD(eQ);
+let eG = e_(), eH = em(), eQ = ev(), eX = eD(eG), eY = eD(eH), e0 = eD(eQ);
 const e1 = eI([
     "waiting",
     "wan_reconciling",
@@ -1376,7 +1376,7 @@ const tt = eS({
         devices: eD(ez())
     })
 ]);
-let ti = eh(), ta = em(), ts = eW(ta), to = eN(ti, eS({
+let ti = e_(), ta = em(), ts = eW(ta), to = eN(ti, eS({
     source: ti,
     unit: ti,
     reason: eW(ti),
@@ -1522,7 +1522,7 @@ eN(ti, eS({
     })),
     stats: eD(eN(ti, ta))
 }));
-const t_ = {
+const th = {
     not_started: _("Not started"),
     collecting_identity: _("Collecting identity"),
     retrying_identity: _("Retrying identity"),
@@ -1534,7 +1534,7 @@ const t_ = {
     retrying: _("Retrying"),
     offline: _("Offline")
 };
-let th = L.rpc.declare({
+let t_ = L.rpc.declare({
     object: "luci.fttr",
     method: "get_status",
     reject: !0
@@ -1570,7 +1570,7 @@ let th = L.rpc.declare({
     ],
     reject: !0
 }));
-const tv = async ()=>tg.parse(eJ(await th())), tw = async ()=>tr.parse(eJ(await tb())), tx = async ()=>tn.parse(await tm());
+const tv = async ()=>tg.parse(eJ(await t_())), tw = async ()=>tr.parse(eJ(await tb())), tx = async ()=>tn.parse(await tm());
 eS({
     schema_version: eL(1),
     status: eI([
@@ -1596,8 +1596,8 @@ eS({
     discovery_active: ev(),
     cleanup_pending: ev(),
     error: eW(eS({
-        code: eh(),
-        message: eh()
+        code: e_(),
+        message: e_()
     }))
 }), L.rpc.declare({
     object: "luci.fttr",
@@ -1614,7 +1614,7 @@ eS({
 let tz = eM([
     eS({
         operation_ids: ej(em()),
-        revision: eh()
+        revision: e_()
     }),
     eS({
         started: eL(!0),
@@ -1625,7 +1625,7 @@ let tz = eM([
     }),
     eS({
         reset: eL(!0),
-        device: eh()
+        device: e_()
     }),
     eS({
         operation_ids: ej(em()),
@@ -1660,37 +1660,37 @@ L.rpc.declare({
         "firmware",
         "builtin"
     ]),
-    active_path: eh(),
+    active_path: e_(),
     size: em(),
-    sha256: eh(),
-    data: eD(eh()),
+    sha256: e_(),
+    data: eD(e_()),
     factory: eS({
         detected: ev(),
-        device: eh(),
+        device: e_(),
         has_data: ev(),
-        sha256: eh(),
-        data: eh()
+        sha256: e_(),
+        data: e_()
     }),
     firmware: eS({
         exists: ev(),
-        path: eh(),
+        path: e_(),
         size: em(),
-        sha256: eh(),
-        data: eh()
+        sha256: e_(),
+        data: e_()
     }),
-    error: eD(eh())
+    error: eD(e_())
 }), eS({
     success: ev(),
-    path: eh(),
+    path: e_(),
     size: em(),
-    sha256: eh(),
-    error: eD(eh())
+    sha256: e_(),
+    error: eD(e_())
 }), eS({
     success: ev(),
-    output: eD(eh()),
-    error: eD(eh())
+    output: eD(e_()),
+    error: eD(e_())
 });
-let tj = eh(), t$ = em(), tS = ev(), tO = eS({
+let tj = e_(), t$ = em(), tS = ev(), tO = eS({
     id: tj,
     url: tj
 }), tM = eS({
@@ -1920,7 +1920,7 @@ function tJ(e) {
     var t;
     let r = (t = e.status) ? {
         tone: "verified" === t.phase ? "success" : t.error || "wan_bootstrap_pending" === t.phase ? "warning" : "neutral",
-        label: `${t_[t.phase]} \xb7 ${t.generation}${t.error ? ` \xb7 ${t.error}` : ""}`,
+        label: `${th[t.phase]} \xb7 ${t.generation}${t.error ? ` \xb7 ${t.error}` : ""}`,
         title: t.error || void 0
     } : {
         tone: "neutral",
@@ -2164,7 +2164,7 @@ function t8(e) {
 }
 let t5 = eS({
     schema_version: eL(1),
-    version: eh(),
+    version: e_(),
     features: eS({
         acs: ev(),
         mqtt: ev(),
@@ -2516,8 +2516,8 @@ let main = L.view.extend({
                 let t = (await tv()).sub_gateways.find((t)=>t.serial_number === e.optical_sn);
                 if (!t) throw Error(_("Device is offline or no longer registered; refresh status and retry."));
                 !function(e) {
-                    var t, r, n, i, a, l, c, p, u, f, g;
-                    let h = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "basic", b = !1, m = !1, y = null, v = null, w = (t = {
+                    var t, r, n, i, l, c, p, u, f, g, h, b;
+                    let m = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "basic", y = !1, v = !1, w = null, x = null, z = (t = {
                         class: "onu-basic-container",
                         children: [
                             {
@@ -2683,49 +2683,49 @@ let main = L.view.extend({
                                 ]
                             }, s("div", n);
                         })
-                    }, s("div", t)), x = (r = {
+                    }, s("div", t)), k = (r = {
                         class: "mib-status-bar",
                         role: "status",
                         children: s("span", {
                             class: "mib-hint-text",
                             children: _("Read MIB on demand. Results are a snapshot, not live polling.")
                         })
-                    }, s("div", r)), z = (n = {
+                    }, s("div", r)), j = (n = {
                         class: "cbi-progressbar",
                         style: "display:none;width:100%",
                         title: "0%",
                         children: s("div", {
                             style: "width:0%"
                         })
-                    }, s("div", n)), k = s("div", {}), j = s("pre", {
+                    }, s("div", n)), $ = s("div", {}), S = s("pre", {
                         class: "onu-raw-pre"
-                    }), $ = s("span", {
+                    }), O = s("span", {
                         class: "download-status",
                         role: "status"
-                    }), S = null, O = s("button", {
+                    }), M = null, P = s("button", {
                         type: "button",
                         class: "cbi-button cbi-button-action",
                         disabled: !0,
                         onclick: async ()=>{
-                            if (y && !b) {
-                                O.disabled = !0, $.textContent = _("Preparing JSON download\u2026");
+                            if (w && !y) {
+                                P.disabled = !0, O.textContent = _("Preparing JSON download\u2026");
                                 try {
-                                    let t = await t2(y);
-                                    if (b) return;
-                                    S && URL.revokeObjectURL(S), S = URL.createObjectURL(t);
+                                    let t = await t2(w);
+                                    if (y) return;
+                                    M && URL.revokeObjectURL(M), M = URL.createObjectURL(t);
                                     let r = document.createElement("a");
-                                    r.href = S, r.download = `mib-${e.serial_number}.json`, r.click(), $.textContent = _("JSON download started"), window.setTimeout(()=>{
-                                        URL.revokeObjectURL(r.href), S === r.href && (S = null);
+                                    r.href = M, r.download = `mib-${e.serial_number}.json`, r.click(), O.textContent = _("JSON download started"), window.setTimeout(()=>{
+                                        URL.revokeObjectURL(r.href), M === r.href && (M = null);
                                     }, 1000);
                                 } catch (e) {
-                                    $.textContent = String(e);
+                                    O.textContent = String(e);
                                 } finally{
-                                    O.disabled = !y || b;
+                                    P.disabled = !w || y;
                                 }
                             }
                         },
                         children: _("Download JSON")
-                    }), M = (a = {
+                    }), C = (l = {
                         class: "onu-raw-panel",
                         children: [
                             (i = {
@@ -2738,57 +2738,57 @@ let main = L.view.extend({
                                     s("div", {
                                         class: "onu-raw-actions",
                                         children: [
-                                            O,
-                                            $
+                                            P,
+                                            O
                                         ]
                                     })
                                 ]
                             }, s("div", i)),
-                            j
+                            S
                         ]
-                    }, s("div", a)), P = s("button", {
+                    }, s("div", l)), N = s("button", {
                         type: "button",
                         class: "cbi-button cbi-button-apply",
-                        onclick: ()=>B(!1),
+                        onclick: ()=>V(!1),
                         children: _("Read MIB")
-                    }), C = s("button", {
+                    }), A = s("button", {
                         type: "button",
                         class: "cbi-button cbi-button-action",
-                        onclick: ()=>B(!0),
+                        onclick: ()=>V(!0),
                         children: _("Read MIB and VLAN tables")
-                    }), N = (p = {
+                    }), I = (u = {
                         class: "onu-mib-panel",
                         children: [
-                            (c = {
+                            (p = {
                                 class: "mib-controls",
                                 children: [
-                                    (l = {
+                                    (c = {
                                         class: "mib-action-group",
                                         children: [
-                                            P,
-                                            C,
+                                            N,
+                                            A,
                                             s("small", {
                                                 class: "mib-action-hint",
                                                 children: _("Collecting VLAN tables queries extended filter tables and takes longer.")
                                             })
                                         ]
-                                    }, s("div", l)),
-                                    x,
-                                    z
+                                    }, s("div", c)),
+                                    k,
+                                    j
                                 ]
-                            }, s("div", c)),
-                            k
+                            }, s("div", p)),
+                            $
                         ]
-                    }, s("div", p)), A = {
-                        basic: w,
-                        mib: N,
-                        raw: M
-                    }, I = new Map();
-                    function T(e) {
-                        for (let [t, r] of Object.entries(A))t === e ? r.style.removeProperty("display") : r.style.setProperty("display", "none", "important");
-                        for (let [t, r] of I)r.className = t === e ? "cbi-tab" : "cbi-tab-disabled";
+                    }, s("div", u)), T = {
+                        basic: z,
+                        mib: I,
+                        raw: C
+                    }, R = new Map();
+                    function D(e) {
+                        for (let [t, r] of Object.entries(T))t === e ? r.style.removeProperty("display") : r.style.setProperty("display", "none", "important");
+                        for (let [t, r] of R)r.className = t === e ? "cbi-tab" : "cbi-tab-disabled";
                     }
-                    let R = (u = {
+                    let Z = (f = {
                         class: "cbi-tabmenu",
                         style: "margin:0;padding-left:0;display:flex;flex-wrap:wrap",
                         children: [
@@ -2807,26 +2807,29 @@ let main = L.view.extend({
                         ].map((e)=>{
                             var t;
                             let r = (t = {
-                                class: e.id === h ? "cbi-tab" : "cbi-tab-disabled",
+                                class: e.id === m ? "cbi-tab" : "cbi-tab-disabled",
                                 "data-tab": e.id,
                                 children: s("a", {
                                     href: `#tab-${e.id}`,
                                     onclick: (t)=>{
-                                        t.preventDefault(), T(e.id);
+                                        t.preventDefault(), D(e.id);
                                     },
                                     children: e.label
                                 })
                             }, s("li", t));
-                            return I.set(e.id, r), r;
+                            return R.set(e.id, r), r;
                         })
-                    }, s("ul", u)), D = s("div", {
-                        class: "onu-details-header",
-                        children: R
-                    }), Z = (g = {
-                        class: "onu-details-dialog",
+                    }, s("ul", f)), W = (b = {
                         children: [
-                            s("style", {
-                                children: `
+                            s("div", {
+                                class: "onu-details-header",
+                                children: Z
+                            }),
+                            (g = {
+                                class: "onu-details-dialog",
+                                children: [
+                                    s("style", {
+                                        children: `
 				.onu-details-dialog {
 					--fttr-border: rgba(127, 127, 127, 0.22);
 					--fttr-card-bg: rgba(127, 127, 127, 0.04);
@@ -3222,56 +3225,57 @@ let main = L.view.extend({
 					justify-content: flex-end;
 				}
 				`
-                            }),
-                            D,
-                            w,
-                            N,
-                            M,
-                            (f = {
+                                    }),
+                                    z,
+                                    I,
+                                    C
+                                ]
+                            }, s("div", g)),
+                            (h = {
                                 class: "right onu-details-footer",
                                 children: s("button", {
                                     type: "button",
                                     class: "cbi-button",
                                     onclick: ()=>{
-                                        b = !0, S && URL.revokeObjectURL(S), S = null, y = null, j.textContent = "", k.replaceChildren(), L.ui.hideModal();
+                                        y = !0, M && URL.revokeObjectURL(M), M = null, w = null, S.textContent = "", $.replaceChildren(), L.ui.hideModal();
                                     },
                                     children: _("Close")
                                 })
-                            }, s("div", f))
+                            }, s("div", h))
                         ]
-                    }, s("div", g)), W = ()=>!b && Z.isConnected && Z.getClientRects().length > 0;
-                    async function B(t) {
-                        if (!m) {
-                            m = !0, P.disabled = C.disabled = !0, z.style.display = "", z.title = "0%", z.firstElementChild.style.width = "0%", x.textContent = _("Reading MIB\u2026");
+                    }, s(a, b)), B = ()=>!y && W.isConnected && W.getClientRects().length > 0;
+                    async function V(t) {
+                        if (!v) {
+                            v = !0, N.disabled = A.disabled = !0, j.style.display = "", j.title = "0%", j.firstElementChild.style.width = "0%", k.textContent = _("Reading MIB\u2026");
                             try {
-                                let m = await tv(), $ = m.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
-                                if ($?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
-                                if (!W()) return;
-                                let S = await tW($.onu_id, $.serial_number, t);
-                                v = S.job;
-                                let M = Date.now() + 140000;
-                                for(; W();){
-                                    let e = await tB(S.job, 0);
-                                    if (!W()) return;
+                                let y = await tv(), v = y.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
+                                if (v?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
+                                if (!B()) return;
+                                let z = await tW(v.onu_id, v.serial_number, t);
+                                x = z.job;
+                                let O = Date.now() + 140000;
+                                for(; B();){
+                                    let e = await tB(z.job, 0);
+                                    if (!B()) return;
                                     if ("ready" === e.status) {
-                                        var r, n, i, a, l, d, c, p, u, f, g, h, b, w;
+                                        var r, n, i, a, l, d, c, p, u, f, g, h, b, m;
                                         if (!e.chunks || e.chunks > 1024 || !e.bytes || e.bytes > 33554432 || 0 !== e.chunk || !e.data) throw Error(_("Invalid MIB snapshot"));
-                                        let t = new Uint8Array(e.bytes), m = 0;
+                                        let t = new Uint8Array(e.bytes), y = 0;
                                         for(let r = 0; r < e.chunks; r++){
-                                            let n = 0 === r ? e : await tB(S.job, r);
-                                            if (!W()) return;
+                                            let n = 0 === r ? e : await tB(z.job, r);
+                                            if (!B()) return;
                                             if ("ready" !== n.status || n.chunk !== r || n.chunks !== e.chunks || n.bytes !== e.bytes || !n.data) throw Error(_("Invalid MIB snapshot chunk"));
                                             let i = atob(n.data);
-                                            if (i.length > 32768 || m + i.length > t.length) throw Error(_("Invalid MIB snapshot size"));
-                                            for(let e = 0; e < i.length; e++)t[m++] = i.charCodeAt(e);
+                                            if (i.length > 32768 || y + i.length > t.length) throw Error(_("Invalid MIB snapshot size"));
+                                            for(let e = 0; e < i.length; e++)t[y++] = i.charCodeAt(e);
                                             let a = Math.min(100, Math.round((r + 1) / e.chunks * 100));
-                                            z.title = `${a}%`, z.firstElementChild.style.width = `${a}%`, x.textContent = `${_("Downloading MIB snapshot")}: ${r + 1}/${e.chunks}`;
+                                            j.title = `${a}%`, j.firstElementChild.style.width = `${a}%`, k.textContent = `${_("Downloading MIB snapshot")}: ${r + 1}/${e.chunks}`;
                                         }
-                                        if (m !== t.length) throw Error(_("Incomplete MIB snapshot"));
-                                        if (await V(), y = tI.parse(eJ(JSON.parse(new TextDecoder("utf-8", {
+                                        if (y !== t.length) throw Error(_("Incomplete MIB snapshot"));
+                                        if (await q(), w = tI.parse(eJ(JSON.parse(new TextDecoder("utf-8", {
                                             fatal: !0
-                                        }).decode(t)))).report, 1 !== y.schema_version || y.onu_id !== $.onu_id) throw Error(_("Unexpected MIB response"));
-                                        z.style.display = "none", x.replaceChildren((r = y, g = {
+                                        }).decode(t)))).report, 1 !== w.schema_version || w.onu_id !== v.onu_id) throw Error(_("Unexpected MIB response"));
+                                        j.style.display = "none", k.replaceChildren((r = w, g = {
                                             class: "mib-chips",
                                             children: [
                                                 (i = {
@@ -3327,7 +3331,7 @@ let main = L.view.extend({
                                                     children: new Date().toLocaleTimeString()
                                                 }, s("span", f))
                                             ]
-                                        }, s("div", g))), k.replaceChildren(function(e) {
+                                        }, s("div", g))), $.replaceChildren(function(e) {
                                             var t, r, n, i, a, l;
                                             let d = e.classes.length ? e.classes[0].class_id : null, c = (t = {
                                                 class: "mib-content"
@@ -3634,7 +3638,7 @@ let main = L.view.extend({
                                                     c
                                                 ]
                                             }, s("div", l);
-                                        }(y), (w = {
+                                        }(w), (m = {
                                             class: "mib-upload-diagnostics",
                                             children: [
                                                 (h = {
@@ -3642,10 +3646,10 @@ let main = L.view.extend({
                                                 }, s("summary", h)),
                                                 (b = {
                                                     class: "mib-pre",
-                                                    children: t1(y.diagnostics)
+                                                    children: t1(w.diagnostics)
                                                 }, s("pre", b))
                                             ]
-                                        }, s("details", w))), n = y, j.textContent = t1({
+                                        }, s("details", m))), n = w, S.textContent = t1({
                                             schema_version: n.schema_version,
                                             reference_version: n.reference_version,
                                             onu_id: n.onu_id,
@@ -3664,43 +3668,43 @@ let main = L.view.extend({
                                             first_record: n.records[0] ?? null,
                                             table_count: n.tables.length,
                                             diagnostics_count: n.diagnostics.length
-                                        }), O.disabled = !1;
+                                        }), P.disabled = !1;
                                         return;
                                     }
                                     if (e.progress) {
                                         let { phase: t, received: r, expected: n } = e.progress;
-                                        if (x.textContent = "starting" === t ? _("Starting OMCI MIB read\u2026") : "tables" === t ? `${_("Collecting VLAN tables")}${null == n ? "" : `: ${r}/${n}`}` : null == n ? _("Reading OMCI MIB records\u2026") : `${_("Reading OMCI MIB records")}: ${r}/${n}`, n && n > 0) {
+                                        if (k.textContent = "starting" === t ? _("Starting OMCI MIB read\u2026") : "tables" === t ? `${_("Collecting VLAN tables")}${null == n ? "" : `: ${r}/${n}`}` : null == n ? _("Reading OMCI MIB records\u2026") : `${_("Reading OMCI MIB records")}: ${r}/${n}`, n && n > 0) {
                                             let e = Math.min(100, Math.round(r / n * 100));
-                                            z.title = `${e}%`, z.firstElementChild.style.width = `${e}%`;
+                                            j.title = `${e}%`, j.firstElementChild.style.width = `${e}%`;
                                         }
                                     }
-                                    if (Date.now() >= M) throw Error(_("MIB query timed out; retry."));
+                                    if (Date.now() >= O) throw Error(_("MIB query timed out; retry."));
                                     await new Promise((e)=>setTimeout(e, 1000));
                                 }
                             } catch (e) {
-                                W() && (z.style.display = "none", x.replaceChildren(s("span", {
+                                B() && (j.style.display = "none", k.replaceChildren(s("span", {
                                     class: "mib-error-text",
                                     children: [
                                         String(e),
-                                        y ? ` \xb7 ${_("Previous snapshot retained")}` : ""
+                                        w ? ` \xb7 ${_("Previous snapshot retained")}` : ""
                                     ]
                                 })));
                             } finally{
-                                await V(), m = !1, P.disabled = C.disabled = !1;
+                                await q(), v = !1, N.disabled = A.disabled = !1;
                             }
                         }
                     }
-                    async function V() {
-                        if (!v) return;
-                        let e = v;
-                        v = null;
+                    async function q() {
+                        if (!x) return;
+                        let e = x;
+                        x = null;
                         try {
                             await tV(e);
                         } catch (e) {
                             console.warn("Failed to release MIB snapshot", e);
                         }
                     }
-                    T(h), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, Z, "modal-wide");
+                    D(m), L.ui.showModal(`${e.model} \u{2014} ${e.serial_number}`, W, "modal-wide");
                 }(t, "mib");
             } catch (e) {
                 m.replaceChildren(s("div", {
@@ -4416,7 +4420,7 @@ let main = L.view.extend({
             }, s("div", er)));
             let ec = new Set(Array.from(v.querySelectorAll("details[open]")).map((e)=>e.getAttribute("data-device")));
             v.replaceChildren(...(e.devices ?? []).map((t)=>{
-                var r, n, i, d, p, u, f, g, h, b, m, y, v, w, x, z, j, $, C, N, A, I, T, D, Z, W, B, V, q, U, F, J, K, G, H, Q, X, Y, ee, et, er, en, ei, ea, es, eo, el, ed, ep, eu, ef, eg, e_, eh, eb, em, ey, ev, ew, ex, ez;
+                var r, n, i, d, p, u, f, g, h, b, m, y, v, w, x, z, j, $, C, N, A, I, T, D, Z, W, B, V, q, U, F, J, K, G, H, Q, X, Y, ee, et, er, en, ei, ea, es, eo, el, ed, ep, eu, ef, eg, eh, e_, eb, em, ey, ev, ew, ex, ez;
                 let ek, ej, e$;
                 return r = ec.has(t.device), n = ()=>P("management_apply"), i = R.disabled, d = e.enabled, p = k, ej = ![
                     "completed",
@@ -4749,7 +4753,7 @@ let main = L.view.extend({
                                 }, s("div", J))
                             ]
                         }, s("div", K)) : null,
-                        (u = t.acs_bootstrap) ? (eh = {
+                        (u = t.acs_bootstrap) ? (e_ = {
                             style: "margin-top:1.2em",
                             children: [
                                 (H = {
@@ -4954,7 +4958,7 @@ let main = L.view.extend({
                                         style: "overflow-wrap:anywhere;margin-top:8px",
                                         children: e
                                     })),
-                                u.manual_steps?.length ? (e_ = {
+                                u.manual_steps?.length ? (eh = {
                                     style: "margin-top:8px",
                                     children: [
                                         s("summary", {
@@ -4973,9 +4977,9 @@ let main = L.view.extend({
                                                 }))
                                         }, s("div", eg))
                                     ]
-                                }, s("details", e_)) : null
+                                }, s("details", eh)) : null
                             ]
-                        }, s("div", eh)) : null,
+                        }, s("div", e_)) : null,
                         e$.length ? (eb = {
                             style: "margin-top:1.2em",
                             children: [

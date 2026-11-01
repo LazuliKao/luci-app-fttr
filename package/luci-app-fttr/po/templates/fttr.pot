@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-10-22 10:02+0800\n"
+"POT-Creation-Date: 2026-11-01 17:16+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -70,9 +70,6 @@ msgstr ""
 msgid "%d hours"
 msgstr ""
 
-msgid "%d hours %d minutes ago"
-msgstr ""
-
 msgid "%d hours ago"
 msgstr ""
 
@@ -112,6 +109,12 @@ msgstr ""
 msgid "2. Firmware file path (second priority)"
 msgstr ""
 
+msgid ""
+"A missing group means a device points to a deleted group. Edit the device "
+"and select an existing group. If no suitable group exists, close this dialog "
+"and create a group first."
+msgstr ""
+
 msgid "A standard Semtech UX3326 BOSA calibration file must be exactly"
 msgstr ""
 
@@ -133,6 +136,9 @@ msgstr ""
 msgid "ACS URL"
 msgstr ""
 
+msgid "Active allocation"
+msgstr ""
+
 msgid "Active data size"
 msgstr ""
 
@@ -143,6 +149,9 @@ msgid "Active data source:"
 msgstr ""
 
 msgid "ADC diagnostic polynomial conversion coefficients (offsets %s)"
+msgstr ""
+
+msgid "Add this device on the configuration page before fixing its interface."
 msgstr ""
 
 msgid "Address"
@@ -188,6 +197,9 @@ msgstr ""
 msgid "Apply management configuration"
 msgstr ""
 
+msgid "Apply or discard pending FTTR configuration changes first."
+msgstr ""
+
 msgid "Apply to hardware immediately"
 msgstr ""
 
@@ -210,6 +222,9 @@ msgid "Automatic"
 msgstr ""
 
 msgid "Automatic (read-only capability discovery)"
+msgstr ""
+
+msgid "Automatic allocation"
 msgstr ""
 
 msgid "Automatic triggers"
@@ -291,6 +306,12 @@ msgstr ""
 msgid "calibration file extracted from the factory backup to"
 msgstr ""
 
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel the fixed interface for this device?"
+msgstr ""
+
 msgid "CDR lock"
 msgstr ""
 
@@ -346,7 +367,13 @@ msgstr ""
 msgid "Configuration changed"
 msgstr ""
 
+msgid "Configuration delivery started for %s. Operation IDs: %s"
+msgstr ""
+
 msgid "Configuration diagnostics"
+msgstr ""
+
+msgid "Configuration editor is unavailable."
 msgstr ""
 
 msgid "Configuration item"
@@ -356,6 +383,9 @@ msgid "Configuring"
 msgstr ""
 
 msgid "Configuring BOSA optical transceiver hardware..."
+msgstr ""
+
+msgid "Confirm"
 msgstr ""
 
 msgid "Conflicting values; inspect observations"
@@ -391,6 +421,9 @@ msgstr ""
 msgid "Core components and open-source repositories powering the FTTR system."
 msgstr ""
 
+msgid "Correct the invalid fields before saving."
+msgstr ""
+
 msgid "CPE Connection Request password"
 msgstr ""
 
@@ -398,6 +431,17 @@ msgid "CPE Connection Request port"
 msgstr ""
 
 msgid "CPE Connection Request username"
+msgstr ""
+
+msgid ""
+"Create a template first, then add its SSIDs and networks in their tabs. Each "
+"editor changes one item. Confirm stages changes; Save & Apply applies the "
+"page configuration."
+msgstr ""
+
+msgid ""
+"Create SSIDs here before selecting them in a network. Every SSID belongs to "
+"one template."
 msgstr ""
 
 msgid "Current configuration"
@@ -460,7 +504,16 @@ msgstr ""
 msgid "Delete the WLAN object"
 msgstr ""
 
+msgid "Delete this configuration"
+msgstr ""
+
+msgid "Delete this configuration?"
+msgstr ""
+
 msgid "Deleted"
+msgstr ""
+
+msgid "Deleting an unused template also deletes its SSIDs and networks."
 msgstr ""
 
 msgid "Denominator D"
@@ -488,6 +541,9 @@ msgid "Device binding changed; this result is stale."
 msgstr ""
 
 msgid "Device identification"
+msgstr ""
+
+msgid "Device is offline or no longer registered; refresh status and retry."
 msgstr ""
 
 msgid "Device is offline; reopen details after registration."
@@ -552,6 +608,15 @@ msgstr ""
 msgid "Discovering"
 msgstr ""
 
+msgid "Discovery active"
+msgstr ""
+
+msgid "Discovery paused"
+msgstr ""
+
+msgid "Discovery state: unknown"
+msgstr ""
+
 msgid "Dispatching to %s (timeout: %s s)..."
 msgstr ""
 
@@ -583,7 +648,12 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
-msgid "Emitting"
+msgid ""
+"Each item below identifies a configuration problem. Choose Edit to keep the "
+"item and correct its fields, or delete it if it is no longer needed."
+msgstr ""
+
+msgid "Edit to repair"
 msgstr ""
 
 msgid "Enable"
@@ -693,6 +763,9 @@ msgstr ""
 msgid "Failed to save calibration file"
 msgstr ""
 
+msgid "Failed to save interface setting:"
+msgstr ""
+
 msgid "Field"
 msgstr ""
 
@@ -717,9 +790,13 @@ msgstr ""
 msgid "Firmware version"
 msgstr ""
 
-msgid ""
-"For custom VLANs, select any combination of INTERNET, OTHER, IPTV, and VOIP. "
-"TR069 is reserved for OMCI."
+msgid "Fix this device to its current interface?"
+msgstr ""
+
+msgid "Fixed interface"
+msgstr ""
+
+msgid "Fixed interface changes pending FTTR restart."
 msgstr ""
 
 msgid "FPGA identifier"
@@ -760,9 +837,6 @@ msgstr ""
 msgid "G.988 encoded field values"
 msgstr ""
 
-msgid "General"
-msgstr ""
-
 msgid "Generated ACS URL"
 msgstr ""
 
@@ -776,6 +850,9 @@ msgid "GitHub Repositories"
 msgstr ""
 
 msgid "Group"
+msgstr ""
+
+msgid "Group is used by devices. Reassign those devices before deleting it."
 msgstr ""
 
 msgid "Groups"
@@ -868,6 +945,15 @@ msgstr ""
 msgid "Inspect source report (read-only)"
 msgstr ""
 
+msgid "Interface already reserved by another device."
+msgstr ""
+
+msgid "Interface configuration changed. Refresh the page and try again."
+msgstr ""
+
+msgid "Interface setting saved. Restart FTTR for it to take effect."
+msgstr ""
+
 msgid "Interrupted"
 msgstr ""
 
@@ -913,6 +999,9 @@ msgid "Laser control"
 msgstr ""
 
 msgid "Laser output"
+msgstr ""
+
+msgid "Last backend check result"
 msgstr ""
 
 msgid "Last good report"
@@ -1049,6 +1138,9 @@ msgstr ""
 msgid "MIB snapshot cannot be serialized"
 msgstr ""
 
+msgid "Missing template"
+msgstr ""
+
 msgid "Mode"
 msgstr ""
 
@@ -1076,10 +1168,18 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Name is required."
+msgstr ""
+
 msgid "Network"
 msgstr ""
 
 msgid "Networks"
+msgstr ""
+
+msgid ""
+"Networks bind VLAN services to wired ports and optional SSIDs within one "
+"template."
 msgstr ""
 
 msgid "New calibration tables are always saved to"
@@ -1124,7 +1224,15 @@ msgstr ""
 msgid "No output returned."
 msgstr ""
 
+msgid ""
+"No problems were found by the local configuration checks. Use Check to see "
+"the backend result after Save & Apply."
+msgstr ""
+
 msgid "No registered sub-gateways."
+msgstr ""
+
+msgid "No SSIDs selected"
 msgstr ""
 
 msgid "No sub-gateways are currently registered."
@@ -1152,6 +1260,9 @@ msgid "Not factory default (self-calibrated)"
 msgstr ""
 
 msgid "Not ready"
+msgstr ""
+
+msgid "Not registered"
 msgstr ""
 
 msgid "Not started"
@@ -1211,6 +1322,12 @@ msgstr ""
 msgid "ONU"
 msgstr ""
 
+msgid "ONU allocation blocked by invalid startup configuration."
+msgstr ""
+
+msgid "ONU cleanup pending"
+msgstr ""
+
 msgid "ONU ID"
 msgstr ""
 
@@ -1265,6 +1382,11 @@ msgstr ""
 msgid "Optical TX power"
 msgstr ""
 
+msgid ""
+"Optional for wired-only networks. Only SSIDs from the selected template are "
+"listed. Changing the template clears the SSID selection."
+msgstr ""
+
 msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr ""
 
@@ -1303,6 +1425,9 @@ msgstr ""
 msgid "Pending configuration changes"
 msgstr ""
 
+msgid "Pending restart"
+msgstr ""
+
 msgid "Periodic"
 msgstr ""
 
@@ -1310,6 +1435,15 @@ msgid "Periodic synchronization interval (minutes)"
 msgstr ""
 
 msgid "Physical rates and diagnostics"
+msgstr ""
+
+msgid "Pin"
+msgstr ""
+
+msgid "Pin current interface"
+msgstr ""
+
+msgid "Pin interface"
 msgstr ""
 
 msgid "PONWrt Firmware"
@@ -1352,6 +1486,9 @@ msgid "Provision management VLAN and ACS via OMCI"
 msgstr ""
 
 msgid "Provisioning"
+msgstr ""
+
+msgid "Provisioning is disabled"
 msgstr ""
 
 msgid "Provisioning status unavailable"
@@ -1484,6 +1621,11 @@ msgstr ""
 msgid "Remove tags"
 msgstr ""
 
+msgid ""
+"Repairs are staged in LuCI. Close this dialog, use Save & Apply, then run "
+"Check again to verify the applied configuration."
+msgstr ""
+
 msgid "Request failed"
 msgstr ""
 
@@ -1493,6 +1635,18 @@ msgstr ""
 msgid ""
 "Required after management drift or service restart; verifies the child ACS "
 "settings before business synchronization."
+msgstr ""
+
+msgid "Reserved"
+msgstr ""
+
+msgid "Reserved (offline)"
+msgstr ""
+
+msgid ""
+"Reserves this interface by optical serial number, even while offline. "
+"Changes take effect after restarting FTTR; Reload does not move registered "
+"devices."
 msgstr ""
 
 msgid "Reset pending"
@@ -1515,6 +1669,9 @@ msgstr ""
 msgid "Retrying identity"
 msgstr ""
 
+msgid "Review and repair configuration"
+msgstr ""
+
 msgid "Revision"
 msgstr ""
 
@@ -1531,6 +1688,18 @@ msgid ""
 "Saved custom values are retained when Connection Requests are disabled or "
 "backend defaults are selected. Leave these fields unchanged to preserve "
 "their saved values."
+msgstr ""
+
+msgid "Saved setting: off"
+msgstr ""
+
+msgid "Saved setting: on"
+msgstr ""
+
+msgid "Saved setting: unknown"
+msgstr ""
+
+msgid "Saved, but configuration reload or status refresh failed:"
 msgstr ""
 
 msgid ""
@@ -1560,7 +1729,39 @@ msgstr ""
 msgid "Select a device to inspect reports and run operations."
 msgstr ""
 
+msgid "Select a registered O5 device first."
+msgstr ""
+
+msgid "Select a wireless band."
+msgstr ""
+
+msgid "Select an existing group."
+msgstr ""
+
+msgid "Select an existing item."
+msgstr ""
+
+msgid "Select an existing template."
+msgstr ""
+
+msgid "Select an interface from fttr1 to fttr16."
+msgstr ""
+
+msgid "Select an item"
+msgstr ""
+
+msgid ""
+"Select at least one of INTERNET, OTHER, IPTV, and VOIP for each custom VLAN. "
+"TR069 is reserved for OMCI."
+msgstr ""
+
+msgid "Select at least one WAN Service List label."
+msgstr ""
+
 msgid "Select device."
+msgstr ""
+
+msgid "Select SSIDs belonging to this network's template."
 msgstr ""
 
 msgid "Selected file:"
@@ -1619,6 +1820,9 @@ msgstr ""
 msgid "Standard %s bytes"
 msgstr ""
 
+msgid "Start configuration delivery for this device"
+msgstr ""
+
 msgid "Started"
 msgstr ""
 
@@ -1656,6 +1860,9 @@ msgid "Supported file:"
 msgstr ""
 
 msgid "Supports Connection Request"
+msgstr ""
+
+msgid "Sync now"
 msgstr ""
 
 msgid "Synchronization"
@@ -1717,6 +1924,17 @@ msgid "The tutorial for adding and configuring sub-gateways will be provided her
 msgstr ""
 
 msgid ""
+"This also deletes the template's SSIDs and networks. Templates used by "
+"groups cannot be deleted."
+msgstr ""
+
+msgid "This device already has an active synchronization operation"
+msgstr ""
+
+msgid "This field is required."
+msgstr ""
+
+msgid ""
 "This is a lightweight preview. Download JSON to save the complete MIB "
 "snapshot."
 msgstr ""
@@ -1724,6 +1942,29 @@ msgstr ""
 msgid ""
 "This optical device has no fresh, unambiguous MQTT binding. Commands are "
 "unavailable."
+msgstr ""
+
+msgid "This page is not supported by the installed FTTR build."
+msgstr ""
+
+msgid ""
+"This removes the device's FTTR configuration and stops managing it. It does "
+"not delete the physical device."
+msgstr ""
+
+msgid ""
+"This removes the selected configuration entry. Existing reference checks and "
+"binding cleanup still apply."
+msgstr ""
+
+msgid ""
+"This saves the configuration only. The current allocation stays unchanged "
+"until FTTR is restarted."
+msgstr ""
+
+msgid ""
+"This SSID is bound to a network. Remove its network bindings before changing "
+"the template."
 msgstr ""
 
 msgid "Timeout"
@@ -1788,6 +2029,9 @@ msgstr ""
 msgid "Tutorial Coming Soon"
 msgstr ""
 
+msgid "TX enabled (reset readback)"
+msgstr ""
+
 msgid "TX power"
 msgstr ""
 
@@ -1830,6 +2074,12 @@ msgid "Unknown model"
 msgstr ""
 
 msgid "Unlocked"
+msgstr ""
+
+msgid "Unpin"
+msgstr ""
+
+msgid "Unpin interface"
 msgstr ""
 
 msgid "Unsupported"
@@ -1883,6 +2133,9 @@ msgstr ""
 msgid "Use backend Connection Request defaults"
 msgstr ""
 
+msgid "Use current interface"
+msgstr ""
+
 msgid "Use the form below to upload the %s-byte"
 msgstr ""
 
@@ -1899,6 +2152,9 @@ msgid "Valid data (%s bytes)"
 msgstr ""
 
 msgid "Value"
+msgstr ""
+
+msgid "Value is outside the allowed range."
 msgstr ""
 
 msgid "Vendor"
@@ -1959,6 +2215,9 @@ msgid "WAN service"
 msgstr ""
 
 msgid "WAN Service List (multi-select)"
+msgstr ""
+
+msgid "WAN Service List may only contain INTERNET, OTHER, IPTV, and VOIP."
 msgstr ""
 
 msgid "WAN verifying"

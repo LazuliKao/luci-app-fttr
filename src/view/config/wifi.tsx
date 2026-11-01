@@ -1,8 +1,26 @@
 // SPDX-License-Identifier: Apache-2.0
-import { choice, field, preview, templateGrid } from "./form";
-export function addTemplateWifi(section: any, template: string): void {
-	const wifi = templateGrid(section, "wifi", "_wifi", "wifi", _("SSIDs"), template, (s) => {
+import { choice, field, grid, guardRemoval, preview, templateReference } from "./form";
+import { canMoveWifi, removeWifi } from "./operations";
+
+export function addWifi(section: any): void {
+	section.tab("wifi", _("SSIDs"));
+	const wifi = grid(section, "wifi", "_wifi", "wifi", _("SSIDs"), (s) => {
+		s.description = _("Create SSIDs here before selecting them in a network. Every SSID belongs to one template.");
+		const template = templateReference(s);
+		const validateTemplate = template.validate;
+		template.validate = function (id: string, value: string): boolean | string {
+			const valid = validateTemplate.call(this, id, value);
+			if (valid !== true) return valid;
+			return canMoveWifi(id, value)
+				? true
+				: _("This SSID is bound to a network. Remove its network bindings before changing the template.");
+		};
 		preview(s, "_ssid", _("SSID"), (id) => String(L.uci.get("fttr", id, "ssid") || id));
+		preview(s, "_radio", _("Band"), (id) => (L.uci.get("fttr", id, "radio") === "2g" ? "2.4 GHz" : "5 GHz"));
+		preview(s, "_security", _("Security"), (id) => {
+			const security = String(L.uci.get("fttr", id, "security") || "");
+			return security === "none" ? _("None (Open)") : security || _("Keep current key");
+		});
 		const ssid = field(s, L.form.Value, "ssid", _("SSID"));
 		ssid.modalonly = true;
 		ssid.rmempty = false;
@@ -10,10 +28,12 @@ export function addTemplateWifi(section: any, template: string): void {
 			new TextEncoder().encode(value).length >= 1 && new TextEncoder().encode(value).length <= 32
 				? true
 				: _("SSID must be 1–32 bytes.");
-		choice(s, "radio", _("Band"), [
+		const radio = choice(s, "radio", _("Band"), [
 			["2g", "2.4 GHz"],
 			["5g", "5 GHz"],
-		]).modalonly = true;
+		]);
+		radio.modalonly = true;
+		radio.default = "2g";
 		const security = choice(
 			s,
 			"security",
@@ -42,13 +62,5 @@ export function addTemplateWifi(section: any, template: string): void {
 			return length >= 8 && length <= 63 ? true : _("Password must be 8–63 bytes.");
 		};
 	});
-	const remove = wifi.handleRemove;
-	wifi.handleRemove = function (id: string, event: Event): any {
-		for (const network of L.uci.sections("fttr", "network")) {
-			const refs = network.ssid == null ? [] : Array.isArray(network.ssid) ? network.ssid : [network.ssid];
-			if (refs.includes(id))
-				L.uci.set("fttr", network[".name"], "ssid", refs.filter((ref) => ref !== id).map(String));
-		}
-		return remove.call(this, id, event);
-	};
+	guardRemoval(wifi, removeWifi);
 }

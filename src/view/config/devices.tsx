@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { FttrStatus } from "../contracts/status";
-import { choice, field, grid, preview, reference } from "./form";
+import { choice, field, grid, guardRemoval, preview, reference } from "./form";
+import { removeGroup } from "./operations";
 
 interface ConnectedDevice {
 	serial_number: string;
@@ -27,11 +28,12 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		return `${model} · ${serial} · ${device?.state === "o5_operation" ? _("Connected") : _("Offline")}${device?.onu_id != null ? ` · ONU ${device.onu_id}` : ""}`;
 	};
 	section.tab("devices", _("Devices & groups"));
-	grid(section, "devices", "_groups", "group", _("Groups"), (s) => {
+	const groups = grid(section, "devices", "_groups", "group", _("Groups"), (s) => {
 		preview(s, "_name", _("Group"), (id) => String(L.uci.get("fttr", id, "name") || id));
 		field(s, L.form.Value, "name", _("Name")).modalonly = true;
 		reference(s, "template", _("Template"), "template").modalonly = true;
 	});
+	guardRemoval(groups, removeGroup);
 	grid(section, "devices", "_devices", "device", _("Devices"), (s) => {
 		preview(s, "_device", _("Device"), (id) => {
 			const serial = String(L.uci.get("fttr", id, "optical_sn") || "");

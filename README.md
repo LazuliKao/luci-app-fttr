@@ -38,6 +38,33 @@ your normal OpenWrt package installation process. The backend package
 
 After installing the package, open **Network → FTTR** in LuCI.
 
+### Configuration editing
+
+Templates, SSIDs and networks have separate tabs and single-item editors. Create
+a template, confirm it, add its SSIDs, then select those SSIDs when creating its
+networks. SSID and network lists show the owning template. Wired-only networks
+may have no SSID bindings. Each custom network requires at least one WAN Service
+List label.
+
+Confirming an editor stages its changes in LuCI; cancelling a new item removes
+its provisional section. **Save** validates the page after parsing its fields;
+**Save & Apply** then applies the staged configuration. Invalid existing rows can
+still be deleted or repaired without unrelated whole-page checks blocking the
+operation.
+
+Deleting an SSID removes its network bindings. A bound SSID cannot move to a
+different template until its bindings are removed. A template used by a group,
+or a group used by a device, must be unreferenced before deletion. Deleting an
+unused template also deletes its SSIDs and networks.
+
+The **Configuration diagnostics** tab contains Check, repair, Reload and Restart
+actions. **Review and repair configuration** lists locally detectable errors by
+item, including devices referring to a deleted group. Open the affected item's
+editor to select a valid reference, or explicitly delete an unwanted entry.
+Deletion shows the affected item before using the normal reference checks and
+cleanup rules. After repairs, use **Save & Apply**, then **Check**; the backend
+result reflects applied configuration, not uncommitted editor changes.
+
 ### Synchronization
 
 In automatic mode, choose configuration-change, device-online, CWMP boot,
@@ -96,6 +123,15 @@ pnpm typecheck
 `package/luci-app-fttr/htdocs/luci-static/resources/view/fttr/`. Edit the TSX
 sources, not the generated JavaScript. To check formatting and lint rules, run
 `pnpm lint`.
+
+Run `pnpm test` for offline configuration regressions and `pnpm test:luci` for
+contract tests against pinned upstream LuCI form classes (requires GitHub
+access). See [tests/README.md](tests/README.md) for test scope and browser checks.
+
+The configuration editor separates UCI snapshots (`config/model.ts`), data-only
+validation (`config/validation.ts`), reference operations (`config/operations.ts`),
+and the explicit page-save boundary (`config/save.ts`). Native grid/modal saves
+are not overridden; `config/form.tsx` contains the shared UI adapters.
 
 ### Remote development
 
