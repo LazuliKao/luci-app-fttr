@@ -105,6 +105,7 @@ const dom = { elem: () => false, findClassInstance: (node: any) => node?.instanc
 const L: any = {
 	uci,
 	ui,
+	rpc: { declare: () => async () => ({ schema_version: 1, version: "0.1.0", features: {}, functions: {}, pages: {}, adapters: [] }) },
 	hasViewPermission: () => true,
 	bind: (fn: Function, self: unknown, ...args: unknown[]) => fn.bind(self, ...args),
 	toArray: (value: unknown) => (value == null ? [] : Array.isArray(value) ? value : [value]),
@@ -427,4 +428,44 @@ test("device editor modal configures general, cwmp, and advanced tabs", () => {
 
 	assert.ok(advanced.includes("omci_management"));
 	assert.ok(advanced.includes("wifi_cleanup"));
+});
+
+test("device editor obtains candidate adapters from capabilities and persists selected adapter", () => {
+	const map = new L.form.Map("fttr");
+	const root = map.section(L.form.NamedSection, "main", "main");
+	const capabilities: any = {
+		schema_version: 1,
+		version: "0.1.0",
+		features: { acs: true, mqtt: true, "device-hl202": true, "device-hwtc": false },
+		functions: { optical: true, omci_mib: true, mqtt_telemetry: true, hl202_management: true, cwmp: true },
+		pages: { status: true, config: true, sync: true, hl202: true, hardware: true, calibration: true, about: true },
+		adapters: [
+			{ id: "hl202", name: "H3C HL202" },
+			{ id: "star", name: "STAR SG631" },
+			{ id: "generic", name: "Generic G.988 Bridge" },
+		],
+	};
+	const connected = [
+		{ serial_number: "H3CT12345678", model: "HL202-DU-C", vendor: "H3CT", state: "o5_operation", onu_id: 0 },
+		{ serial_number: "STAR12345678", model: "SG631Z-C", vendor: "STAR", state: "o5_operation", onu_id: 1 },
+	];
+	addDevices(root, connected, undefined, capabilities);
+	const deviceGrid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
+	const adapterOpt = deviceGrid.children.find((opt: any) => opt.option === "adapter");
+	assert.deepEqual(adapterOpt.keylist, ["hl202", "star", "generic"]);
+
+	// Write device and verify adapter is populated and stored into UCI
+	const serialOpt = deviceGrid.children.find((opt: any) => opt.option === "optical_sn");
+	rows.set("dev1", { ".name": "dev1", ".type": "device" });
+	serialOpt.write("dev1", "H3CT12345678");
+	adapterOpt.write("dev1", "hl202");
+	assert.equal(rows.get("dev1")?.optical_sn, "H3CT12345678");
+	assert.equal(rows.get("dev1")?.adapter, "hl202");
+
+	// For a STAR device, adapter automatically selects star and persists
+	rows.set("dev2", { ".name": "dev2", ".type": "device" });
+	serialOpt.write("dev2", "STAR12345678");
+	adapterOpt.write("dev2", "");
+	assert.equal(rows.get("dev2")?.optical_sn, "STAR12345678");
+	assert.equal(rows.get("dev2")?.adapter, "star");
 });

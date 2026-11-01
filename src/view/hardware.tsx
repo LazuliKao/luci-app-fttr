@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
-import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
+import { formatAge, formatBytes, formatFirmware, formatPackets, formatPower, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
-import { getOpticalStatus, getStatus, type OpticalReply, setOptical } from "./contracts/api";
+import { getOpticalStatus, getStatus, type OpticalReply, setNpu, setOptical } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -119,6 +119,56 @@ function applyLaserRow(txEnabled: boolean | null): void {
 			.filter(Boolean)
 			.join(" · ");
 	}
+}
+
+let npuOverride: boolean | null = null;
+let npuPanel: HTMLElement | null = null;
+let npuBusy = false;
+let npuRevision = 0;
+
+function applyNpuRow(enabled: boolean | null): void {
+	const panel = npuPanel;
+	if (!panel) return;
+	const stateNode = panel.querySelector('[data-fttr="npu-state"]');
+	const toggle = panel.querySelector('[data-fttr="npu-toggle"]');
+	if (!(stateNode instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return;
+	if (enabled === true) {
+		stateNode.textContent = _("Enabled");
+		stateNode.className = "fttr-badge fttr-badge-success";
+	} else if (enabled === false) {
+		stateNode.textContent = _("Disabled");
+		stateNode.className = "fttr-badge fttr-badge-warning";
+	} else {
+		stateNode.textContent = _("Unknown");
+		stateNode.className = "fttr-badge fttr-badge-neutral";
+	}
+	toggle.textContent = enabled === false ? _("Turn NPU offload on") : _("Turn NPU offload off");
+	toggle.disabled = npuBusy;
+	toggle.onclick = async () => {
+		if (npuBusy) return;
+		const enabling = npuOverride === false;
+		const warning = enabling
+			? _("Enable NPU / PPE hardware offload for FTTR bridge traffic?")
+			: _("Disable NPU / PPE hardware offload? Traffic will fall back to Linux software bridge.");
+		if (!window.confirm(warning)) return;
+		npuBusy = true;
+		npuRevision++;
+		applyNpuRow(npuOverride);
+		try {
+			const reply = await setNpu(enabling);
+			npuOverride = reply.enabled ?? enabling;
+			if (reply.status === "error") {
+				window.alert(`${_("Failed to change NPU offload state")}: ${reply.error ?? _("unknown error")}`);
+				return;
+			}
+		} catch (error) {
+			npuOverride = null;
+			window.alert(`${_("Failed to change NPU offload state")}: ${String(error)}`);
+		} finally {
+			npuBusy = false;
+			applyNpuRow(npuOverride);
+		}
+	};
 }
 
 function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
@@ -252,6 +302,25 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 					</span>
 				);
 
+				const offloadAdmitted = onu.data_path?.offload?.bridge_enabled === true;
+				const offloadBadge = offloadAdmitted ? (
+					<span
+						class="fttr-badge fttr-badge-success"
+						title={_("NPU hardware offload admitted")}
+						style="font-size:80%"
+					>
+						{_("NPU Offloaded")}
+					</span>
+				) : (
+					<span
+						class="fttr-badge fttr-badge-neutral"
+						title={_("Standard software forwarding")}
+						style="font-size:80%"
+					>
+						{_("Software")}
+					</span>
+				);
+
 				return (
 					<div class="cbi-section fttr-onu-card">
 						<div class="fttr-card-header">
@@ -266,6 +335,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 									<code>{onu.serial_number}</code>
 									{renderStateBadge(onu.state)}
 									{freshnessBadge}
+									{offloadBadge}
 								</div>
 							</div>
 							<div>
@@ -353,23 +423,192 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 	);
 }
 
+function createNpuPanel(status: FttrHardwareStatus): HTMLElement {
+	const npu = status.npu;
+	if (!npu?.supported) {
+		return (
+			<div class="cbi-section fttr-panel-npu">
+				<p style="text-align:center;color:#888;padding:2em 0">
+					{_("NPU hardware acceleration is not compiled or unsupported on this target.")}
+				</p>
+			</div>
+		);
+	}
+
+	const engineBadge = npu.engine_attached ? (
+		<span class="fttr-badge fttr-badge-success">{_("Attached (Ready)")}</span>
+	) : (
+		<span class="fttr-badge fttr-badge-neutral">{_("Detached")}</span>
+	);
+
+	const hooksBadge = npu.fw4_hooks_ready ? (
+		<span class="fttr-badge fttr-badge-success">{_("Ready")}</span>
+	) : (
+		<span class="fttr-badge fttr-badge-warning">{_("Pending")}</span>
+	);
+
+	const debugBadge = npu.bridge_offload_debug ? (
+		<span class="fttr-badge fttr-badge-warning">{_("Active")}</span>
+	) : (
+		<span class="fttr-badge fttr-badge-neutral">{_("Disabled")}</span>
+	);
+
+	const activePortsText = npu.active_ports.length > 0 ? npu.active_ports.join(", ") : _("None");
+
+	return (
+		<div class="cbi-section fttr-panel-npu">
+			<h3 style="margin-bottom:12px">{_("NPU hardware offload & PPE flow tables")}</h3>
+			<div class="fttr-grid-3">
+				<div class="fttr-card">
+					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Engine and admission status")}</h4>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("NPU engine")}</span>
+						<span>{engineBadge}</span>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Hardware offload")}</span>
+						<span class="fttr-badge fttr-badge-neutral" data-fttr="npu-state">
+							{_("Loading…")}
+						</span>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Managed bridge")}</span>
+						<code>{npu.bridge}</code>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Bridge offload mask")}</span>
+						<code>{`0x${npu.bridge_offload_mask.toString(16).padStart(4, "0")} (${npu.bridge_offload_mask})`}</code>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Active offload ports")}</span>
+						<span>{activePortsText}</span>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Firewall hooks")}</span>
+						<span>{hooksBadge}</span>
+					</div>
+				</div>
+
+				<div class="fttr-card">
+					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">
+						{_("Traffic counters & flow capacity")}
+					</h4>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Bound hardware flows")}</span>
+						<strong>{npu.bound_entries}</strong>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Total FOE entries")}</span>
+						<span>{npu.total_entries}</span>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Offloaded packets")}</span>
+						<strong>{formatPackets(npu.total_packets)}</strong>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Offloaded traffic")}</span>
+						<strong>{formatBytes(npu.total_bytes)}</strong>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Routed offload mask")}</span>
+						<code>{`0x${npu.routed_offload_mask.toString(16).padStart(4, "0")}`}</code>
+					</div>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">{_("Driver debug logging")}</span>
+						<span>{debugBadge}</span>
+					</div>
+				</div>
+
+				<div class="fttr-card">
+					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("NPU control")}</h4>
+					<p style="font-size:85%;color:#888;margin:6px 0 12px 0">
+						{_(
+							"Toggle hardware-level flow offloading on Airoha PPE. Disabling falls back to standard Linux software bridge forwarding.",
+						)}
+					</p>
+					<div style="margin-top:10px">
+						<button class="fttr-btn-subtle" data-fttr="npu-toggle" type="button" disabled>
+							{_("Loading…")}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div style="margin-top:16px">
+				<h4 style="margin-bottom:8px">{_("Active hardware offload flows (PPE FOE Bound)")}</h4>
+				{npu.bound_flows.length === 0 ? (
+					<p style="color:#888;font-size:90%;font-style:italic">
+						{_(
+							"No active hardware-offloaded flows in PPE table. Flows bind automatically during continuous inter-ONU traffic.",
+						)}
+					</p>
+				) : (
+					<div style="overflow-x:auto">
+						<table class="table" style="font-size:85%;width:100%">
+							<thead>
+								<tr>
+									<th>{_("Index")}</th>
+									<th>{_("Type")}</th>
+									<th>{_("Tuple / Endpoints")}</th>
+									<th>{_("Ethernet / MAC")}</th>
+									<th>{_("VLAN")}</th>
+									<th>{_("Packets")}</th>
+									<th>{_("Bytes")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{npu.bound_flows.map((flow) => (
+									<tr>
+										<td>
+											<code>{flow.index}</code>
+										</td>
+										<td>
+											<span class="fttr-badge fttr-badge-info">{flow.pkt_type}</span>
+										</td>
+										<td>
+											<code>{flow.orig_tuple || "—"}</code>
+										</td>
+										<td style="font-size:85%">
+											<code>{flow.eth || "—"}</code>
+										</td>
+										<td>{flow.vlan || "0,0"}</td>
+										<td>
+											<strong>{formatPackets(flow.packets)}</strong>
+										</td>
+										<td>
+											<strong>{formatBytes(flow.bytes)}</strong>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				)}
+			</div>
+		</div>
+	);
+}
+
 function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
-	type TabId = "controller" | "subgateways";
+	type TabId = "controller" | "subgateways" | "npu";
 	let activeTab: TabId = "controller";
 
 	// Module state survives LuCI view remounts; clear a stuck in-flight flag
 	// from a previous mount whose rpcd reply may never settle after unload.
 	laserBusy = false;
+	npuBusy = false;
 
 	const tabs: Array<{ id: TabId; label: string }> = [
 		{ id: "controller", label: _("Controller & optical transceiver") },
 		{ id: "subgateways", label: _("Sub-gateways & optical links") },
+		{ id: "npu", label: _("NPU & hardware offload") },
 	];
 
 	const tabItems = new Map<TabId, HTMLElement>();
 
 	let controllerPanel = createControllerPanel(initialStatus);
 	let subgatewaysPanel = createSubgatewaysPanel(initialStatus.sub_gateways ?? []);
+	let npuPanelNode = createNpuPanel(initialStatus);
 
 	const switchTab = (id: TabId): void => {
 		activeTab = id;
@@ -378,6 +617,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 		}
 		controllerPanel.hidden = id !== "controller";
 		subgatewaysPanel.hidden = id !== "subgateways";
+		npuPanelNode.hidden = id !== "npu";
 		window.dispatchEvent(new Event("resize"));
 	};
 
@@ -405,6 +645,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;
+	npuPanelNode.hidden = true;
 	laserOverride = initialStatus.optical_transceiver.tx_enabled;
 	laserReply = null;
 	const initialRevision = laserRevision;
@@ -423,10 +664,15 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 	laserPanel = controllerPanel;
 	applyLaserRow(laserOverride);
 
+	npuPanel = npuPanelNode;
+	npuOverride = initialStatus.npu?.bridge_offload_enabled ?? null;
+	applyNpuRow(npuOverride);
+
 	const panelsContainer = (
 		<div id="fttr-panels-container">
 			{controllerPanel}
 			{subgatewaysPanel}
+			{npuPanelNode}
 		</div>
 	);
 
@@ -626,27 +872,37 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 		if (!root.isConnected || updating) return;
 		updating = true;
 		const revision = laserRevision;
+		const currentNpuRevision = npuRevision;
 		try {
-			if (laserBusy) return;
+			if (laserBusy || npuBusy) return;
 			const [latest, optical] = await Promise.all([getStatus(), getOpticalStatus()]);
-			if (laserBusy || revision !== laserRevision) return;
+			if (laserBusy || npuBusy || revision !== laserRevision || currentNpuRevision !== npuRevision) return;
 			const newController = createControllerPanel(latest);
 			const newSubgateways = createSubgatewaysPanel(latest.sub_gateways ?? []);
+			const newNpu = createNpuPanel(latest);
 			newController.hidden = activeTab !== "controller";
 			newSubgateways.hidden = activeTab !== "subgateways";
+			newNpu.hidden = activeTab !== "npu";
 			controllerPanel.replaceWith(newController);
 			subgatewaysPanel.replaceWith(newSubgateways);
+			npuPanelNode.replaceWith(newNpu);
 			controllerPanel = newController;
 			subgatewaysPanel = newSubgateways;
+			npuPanelNode = newNpu;
 			laserPanel = newController;
+			npuPanel = newNpu;
 			laserReply = optical;
 			laserOverride = optical.tx_enabled;
 			applyLaserRow(laserOverride);
+			npuOverride = latest.npu?.bridge_offload_enabled ?? null;
+			applyNpuRow(npuOverride);
 		} catch {
-			if (laserBusy || revision !== laserRevision) return;
+			if (laserBusy || npuBusy || revision !== laserRevision || currentNpuRevision !== npuRevision) return;
 			laserReply = null;
 			laserOverride = null;
 			applyLaserRow(laserOverride);
+			npuOverride = null;
+			applyNpuRow(npuOverride);
 		} finally {
 			updating = false;
 		}

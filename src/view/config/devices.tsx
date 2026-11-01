@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { adaptersFromCapabilities, type Capabilities } from "../contracts/capabilities";
 import type { FttrStatus } from "../contracts/status";
 import { field, grid, guardRemoval, preview, reference, tabchoice, tabfield, tabreference } from "./form";
 import { removeGroup } from "./operations";
@@ -12,15 +13,28 @@ interface ConnectedDevice {
 	onu_id?: number;
 }
 
-function adapterFor(device?: ConnectedDevice): string | undefined {
+function adapterFor(device?: ConnectedDevice, supported?: Set<string>): string {
 	const vendor = device?.vendor || device?.serial_number.slice(0, 4);
-	if (vendor === "HWTC") return "hwtc";
-	if (device?.model?.startsWith("HL202")) return "hl202";
+	if (vendor === "HWTC" && (!supported || supported.has("hwtc"))) return "hwtc";
+	if (device?.model?.startsWith("HL202") && (!supported || supported.has("hl202"))) return "hl202";
+	if (
+		(vendor === "STAR" || device?.model?.includes("SG631") || device?.serial_number.startsWith("STAR")) &&
+		(!supported || supported.has("star"))
+	) {
+		return "star";
+	}
 	return "generic";
 }
 
-export function addDevices(section: any, connected: ConnectedDevice[], pinning?: FttrStatus["onu_pinning"]): void {
+export function addDevices(
+	section: any,
+	connected: ConnectedDevice[],
+	pinning?: FttrStatus["onu_pinning"],
+	capabilities?: Capabilities,
+): void {
 	const bySerial = new Map(connected.map((device) => [device.serial_number, device]));
+	const adapterChoices = adaptersFromCapabilities(capabilities);
+	const supportedAdapters = new Set(adapterChoices.map(([key]) => key));
 	const label = (serial: string): string => {
 		const device = bySerial.get(serial);
 		const configured = L.uci.sections("fttr", "device").find((item) => item.optical_sn === serial);
@@ -76,11 +90,20 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 					.map((item) => item.optical_sn),
 			);
 			for (const device of connected)
-				if (device.state === "o5_operation" && adapterFor(device) && !used.has(device.serial_number))
+				if (
+					device.state === "o5_operation" &&
+					adapterFor(device, supportedAdapters) &&
+					!used.has(device.serial_number)
+				)
 					this.value(device.serial_number, label(device.serial_number));
 			if (current && !this.keylist.includes(current)) this.value(current, label(current));
 			const selected = configured || current || this.keylist[0] || "";
 			return render.call(this, id, index, selected);
+		};
+		serial.onchange = (_event: Event, id: string, value: string): void => {
+			const target = bySerial.get(value);
+			const recommended = adapterFor(target, supportedAdapters);
+			adapterField.getUIElement(id)?.setValue(recommended);
 		};
 		serial.validate = (id: string, value: string): boolean | string => {
 			if (!value) return _("Select device.");
@@ -90,17 +113,32 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		};
 		serial.write = (id: string, value: string): void => {
 			L.uci.set("fttr", id, "optical_sn", value);
-			const adapter = adapterFor(bySerial.get(value));
-			if (adapter && !L.uci.get("fttr", id, "adapter")) L.uci.set("fttr", id, "adapter", adapter);
+			const target = bySerial.get(value);
+			const adapter = adapterFor(target, supportedAdapters);
+			if (!L.uci.get("fttr", id, "adapter")) L.uci.set("fttr", id, "adapter", adapter);
 		};
-		const adapterField = tabchoice(s, "general", "adapter", _("Device adapter"), [
-			["hl202", "H3C HL202"],
-			["hwtc", "Huawei HWTC"],
-			["generic", _("Generic G.988 Bridge")],
-		]);
+		const adapterField = tabchoice(s, "general", "adapter", _("Device adapter"), adapterChoices);
 		adapterField.modalonly = true;
 		adapterField.default = "generic";
 		adapterField.rmempty = false;
+		const adapterRender = adapterField.renderWidget;
+		adapterField.renderWidget = function (id: string, index: number, configured: string | null): any {
+			const currentSerial = String(L.uci.get("fttr", id, "optical_sn") || "");
+			const target = bySerial.get(currentSerial);
+			const recommended = adapterFor(target, supportedAdapters);
+			const selected = configured || L.uci.get("fttr", id, "adapter") || recommended;
+			if (selected && !this.keylist.includes(selected)) {
+				this.value(selected, selected);
+			}
+			return adapterRender.call(this, id, index, selected);
+		};
+		adapterField.write = (id: string, value: string): void => {
+			const currentSerial = String(L.uci.get("fttr", id, "optical_sn") || "");
+			const target = bySerial.get(currentSerial);
+			const recommended = adapterFor(target, supportedAdapters);
+			const finalValue = value || recommended || "generic";
+			L.uci.set("fttr", id, "adapter", finalValue);
+		};
 		const method = tabchoice(s, "general", "provisioning_method", _("Provisioning method"), [
 			["", _("Automatic (HL202 command, otherwise ACS)")],
 			["command", _("Command (MQTT / tcapi)")],

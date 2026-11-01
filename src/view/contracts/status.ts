@@ -87,6 +87,15 @@ export const subGateway = z.object({
 		rx_bytes: nullableNumber,
 		current_tx_kbps: nullableNumber,
 		current_rx_kbps: nullableNumber,
+		offload: z.optional(
+			z.object({
+				enabled: z.optional(z.nullable(z.boolean())),
+				routed_enabled: z.optional(z.nullable(z.boolean())),
+				bridge_enabled: z.optional(z.nullable(z.boolean())),
+				engine_attached: z.optional(z.nullable(z.boolean())),
+				forwarding_verified: z.optional(z.nullable(z.boolean())),
+			}),
+		),
 		measurements,
 	}),
 	wifi_mesh: z.object({
@@ -120,6 +129,37 @@ const switchPort = z.object({
 	onu_sn: z.optional(str),
 	link_state: str,
 });
+export const ppeFlowEntry = z.object({
+	index: str,
+	state: str,
+	pkt_type: str,
+	orig_tuple: str,
+	new_tuple: str,
+	eth: str,
+	vlan: str,
+	packets: num,
+	bytes: num,
+});
+export type PpeFlowEntry = z.infer<typeof ppeFlowEntry>;
+
+export const npuStatus = z.object({
+	supported: z.boolean(),
+	engine_attached: z.boolean(),
+	bridge_offload_enabled: z.boolean(),
+	bridge_offload_mask: num,
+	routed_offload_mask: num,
+	bridge_offload_debug: z.boolean(),
+	bridge: str,
+	active_ports: z.array(str),
+	fw4_hooks_ready: z.boolean(),
+	total_entries: num,
+	bound_entries: num,
+	total_packets: num,
+	total_bytes: num,
+	bound_flows: z.array(ppeFlowEntry),
+});
+export type NpuStatus = z.infer<typeof npuStatus>;
+
 export const status = z.object({
 	onu_pinning: z.optional(
 		z.object({
@@ -137,6 +177,7 @@ export const status = z.object({
 	switch_ports: z.array(switchPort),
 	sub_gateways: z.array(subGateway),
 	telemetry_gateways: z.array(z.object({ id: str, last_seen_sec_ago: num, last_payload_bytes: num })),
+	npu: z.optional(z.nullable(npuStatus)),
 });
 export const networkDevices = z.record(
 	str,

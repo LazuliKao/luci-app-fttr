@@ -7,9 +7,9 @@
 'require poll as __fttr_poll';
 'require dom as __fttr_dom';
 var e;
-let t, n, r, i, o;
-const a = Symbol.for("jsx.fragment");
-function s(e, t) {
+let t, n, r, i, o, a;
+const s = Symbol.for("jsx.fragment");
+function l(e, t) {
     let { children: n, ...r } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, i = function e(t) {
         let n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
         for (let r of t)null != r && "boolean" != typeof r && (Array.isArray(r) ? e(r, n) : n.push(r instanceof Node ? r : String(r)));
@@ -17,7 +17,7 @@ function s(e, t) {
     }(null == n ? [] : Array.isArray(n) ? n : [
         n
     ]);
-    if (e === a) {
+    if (e === s) {
         let e = document.createDocumentFragment();
         return e.append(...i), e;
     }
@@ -32,18 +32,18 @@ function s(e, t) {
         return t;
     }
     if ("string" != typeof e) throw TypeError("JSX element types must be tag names or component functions");
-    let o = {}, s = {
+    let o = {}, a = {
         ...r
     };
-    for (let [e, t] of Object.entries(s))e.startsWith("on") && "function" == typeof t ? (o[e] = t, delete s[e]) : "boolean" == typeof t && (t ? s[e] = e : delete s[e]);
-    let l = Object.keys(s).length > 0 ? i.length > 1 ? E(e, s, i) : E(e, s, i[0]) : i.length > 1 ? E(e, {}, i) : E(e, {}, i[0]);
+    for (let [e, t] of Object.entries(a))e.startsWith("on") && "function" == typeof t ? (o[e] = t, delete a[e]) : "boolean" == typeof t && (t ? a[e] = e : delete a[e]);
+    let l = Object.keys(a).length > 0 ? i.length > 1 ? E(e, a, i) : E(e, a, i[0]) : i.length > 1 ? E(e, {}, i) : E(e, {}, i[0]);
     for (let [e, t] of Object.entries(o)){
         let n = e.slice(2).toLowerCase();
         l.addEventListener(n, t);
     }
     return l;
 }
-function l(e, t, n) {
+function d(e, t, n) {
     function r(n, r) {
         if (n._zod || Object.defineProperty(n, "_zod", {
             value: {
@@ -87,14 +87,14 @@ class c extends Error {
         super("Encountered Promise during synchronous parse. Use .parseAsync() instead.");
     }
 }
-const d = {};
-function u(e) {
-    return e && Object.assign(d, e), d;
+const u = {};
+function p(e) {
+    return e && Object.assign(u, e), u;
 }
-function p(e, t) {
+function h(e, t) {
     return "bigint" == typeof t ? t.toString() : t;
 }
-function h(e) {
+function m(e) {
     return {
         get value () {
             {
@@ -106,16 +106,16 @@ function h(e) {
         }
     };
 }
-function m(e) {
+function f(e) {
     let t = +!!e.startsWith("^"), n = e.endsWith("$") ? e.length - 1 : e.length;
     return e.slice(t, n);
 }
-const f = Symbol("evaluating");
-function g(e, t, n) {
+const g = Symbol("evaluating");
+function b(e, t, n) {
     let r;
     Object.defineProperty(e, t, {
         get () {
-            if (r !== f) return void 0 === r && (r = f, r = n()), r;
+            if (r !== g) return void 0 === r && (r = g, r = n()), r;
         },
         set (n) {
             Object.defineProperty(e, t, {
@@ -125,19 +125,19 @@ function g(e, t, n) {
         configurable: !0
     });
 }
-const b = "captureStackTrace" in Error ? Error.captureStackTrace : (...e)=>{};
-function y(e) {
+const y = "captureStackTrace" in Error ? Error.captureStackTrace : (...e)=>{};
+function v(e) {
     return "object" == typeof e && null !== e && !Array.isArray(e);
 }
-const v = new Set([
+const w = new Set([
     "string",
     "number",
     "symbol"
 ]);
-function w(e) {
+function x(e) {
     return e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-function x(e) {
+function z(e) {
     if (!e) return {};
     if ("string" == typeof e) return {
         error: ()=>e
@@ -151,54 +151,54 @@ function x(e) {
         error: ()=>e.error
     } : e;
 }
-function z(e, t = 0) {
+function T(e, t = 0) {
     if (!0 === e.aborted) return !0;
     for(let n = t; n < e.issues.length; n++)if (e.issues[n]?.continue !== !0) return !0;
     return !1;
 }
-function T(e, t) {
+function C(e, t) {
     return t.map((t)=>(t.path ?? (t.path = []), t.path.unshift(e), t));
 }
-function C(e) {
+function k(e) {
     return "string" == typeof e ? e : e?.message;
 }
-function k(e, t, n) {
+function $(e, t, n) {
     let r = {
         ...e,
         path: e.path ?? []
     };
-    return e.message || (r.message = C(e.inst?._zod.def?.error?.(e)) ?? C(t?.error?.(e)) ?? C(n.customError?.(e)) ?? C(n.localeError?.(e)) ?? "Invalid input"), delete r.inst, delete r.continue, t?.reportInput || delete r.input, r;
+    return e.message || (r.message = k(e.inst?._zod.def?.error?.(e)) ?? k(t?.error?.(e)) ?? k(n.customError?.(e)) ?? k(n.localeError?.(e)) ?? "Invalid input"), delete r.inst, delete r.continue, t?.reportInput || delete r.input, r;
 }
-const $ = (e, t)=>{
+const S = (e, t)=>{
     e.name = "$ZodError", Object.defineProperty(e, "_zod", {
         value: e._zod,
         enumerable: !1
     }), Object.defineProperty(e, "issues", {
         value: t,
         enumerable: !1
-    }), e.message = JSON.stringify(t, p, 2), Object.defineProperty(e, "toString", {
+    }), e.message = JSON.stringify(t, h, 2), Object.defineProperty(e, "toString", {
         value: ()=>e.message,
         enumerable: !1
     });
-}, S = l("$ZodError", $), O = l("$ZodError", $, {
+}, O = d("$ZodError", S), j = d("$ZodError", S, {
     Parent: Error
-}), j = (t = O, (e, n, r, i)=>{
+}), N = (n = j, (e, t, r, i)=>{
     let o = r ? Object.assign(r, {
         async: !1
     }) : {
         async: !1
     }, a = e._zod.run({
-        value: n,
+        value: t,
         issues: []
     }, o);
     if (a instanceof Promise) throw new c();
     if (a.issues.length) {
-        let e = new (i?.Err ?? t)(a.issues.map((e)=>k(e, o, u())));
-        throw b(e, i?.callee), e;
+        let e = new (i?.Err ?? n)(a.issues.map((e)=>$(e, o, p())));
+        throw y(e, i?.callee), e;
     }
     return a.value;
-}), N = (n = O, async (e, t, r, i)=>{
-    let o = r ? Object.assign(r, {
+}), P = (r = j, async (e, t, n, i)=>{
+    let o = n ? Object.assign(n, {
         async: !0
     }) : {
         async: !0
@@ -207,12 +207,12 @@ const $ = (e, t)=>{
         issues: []
     }, o);
     if (a instanceof Promise && (a = await a), a.issues.length) {
-        let e = new (i?.Err ?? n)(a.issues.map((e)=>k(e, o, u())));
-        throw b(e, i?.callee), e;
+        let e = new (i?.Err ?? r)(a.issues.map((e)=>$(e, o, p())));
+        throw y(e, i?.callee), e;
     }
     return a.value;
-}), P = (r = O, (e, t, n)=>{
-    let i = n ? {
+}), M = (i = j, (e, t, n)=>{
+    let r = n ? {
         ...n,
         async: !1
     } : {
@@ -220,38 +220,38 @@ const $ = (e, t)=>{
     }, o = e._zod.run({
         value: t,
         issues: []
-    }, i);
+    }, r);
     if (o instanceof Promise) throw new c();
     return o.issues.length ? {
         success: !1,
-        error: new (r ?? S)(o.issues.map((e)=>k(e, i, u())))
+        error: new (i ?? O)(o.issues.map((e)=>$(e, r, p())))
     } : {
         success: !0,
         data: o.value
     };
-}), M = (i = O, async (e, t, n)=>{
+}), R = (o = j, async (e, t, n)=>{
     let r = n ? Object.assign(n, {
         async: !0
     }) : {
         async: !0
-    }, o = e._zod.run({
+    }, i = e._zod.run({
         value: t,
         issues: []
     }, r);
-    return o instanceof Promise && (o = await o), o.issues.length ? {
+    return i instanceof Promise && (i = await i), i.issues.length ? {
         success: !1,
-        error: new i(o.issues.map((e)=>k(e, r, u())))
+        error: new o(i.issues.map((e)=>$(e, r, p())))
     } : {
         success: !0,
-        data: o.value
+        data: i.value
     };
-}), R = /^-?\d+(?:\.\d+)?$/, Z = /^(?:true|false)$/i, A = /^null$/i, D = {
+}), Z = /^-?\d+(?:\.\d+)?$/, A = /^(?:true|false)$/i, D = /^null$/i, J = {
     major: 4,
     minor: 3,
     patch: 6
-}, J = l("$ZodType", (e, t)=>{
+}, q = d("$ZodType", (e, t)=>{
     var n;
-    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = D;
+    e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = J;
     let r = [
         ...e._zod.def.checks ?? []
     ];
@@ -261,7 +261,7 @@ const $ = (e, t)=>{
     });
     else {
         let t = (e, t, n)=>{
-            let r, i = z(e);
+            let r, i = T(e);
             for (let o of t){
                 if (o._zod.def.when) {
                     if (!o._zod.def.when(e)) continue;
@@ -269,16 +269,16 @@ const $ = (e, t)=>{
                 let t = e.issues.length, a = o._zod.check(e);
                 if (a instanceof Promise && n?.async === !1) throw new c();
                 if (r || a instanceof Promise) r = (r ?? Promise.resolve()).then(async ()=>{
-                    await a, e.issues.length !== t && (i || (i = z(e, t)));
+                    await a, e.issues.length !== t && (i || (i = T(e, t)));
                 });
                 else {
                     if (e.issues.length === t) continue;
-                    i || (i = z(e, t));
+                    i || (i = T(e, t));
                 }
             }
             return r ? r.then(()=>e) : e;
         }, n = (n, i, o)=>{
-            if (z(n)) return n.aborted = !0, n;
+            if (T(n)) return n.aborted = !0, n;
             let a = t(i, r, o);
             if (a instanceof Promise) {
                 if (!1 === o.async) throw new c();
@@ -306,17 +306,17 @@ const $ = (e, t)=>{
             return t(a, r, o);
         };
     }
-    g(e, "~standard", ()=>({
+    b(e, "~standard", ()=>({
             validate: (t)=>{
                 try {
-                    let n = P(e, t);
+                    let n = M(e, t);
                     return n.success ? {
                         value: n.data
                     } : {
                         issues: n.error?.issues
                     };
                 } catch (n) {
-                    return M(e, t).then((e)=>e.success ? {
+                    return R(e, t).then((e)=>e.success ? {
                             value: e.data
                         } : {
                             issues: e.error?.issues
@@ -326,10 +326,10 @@ const $ = (e, t)=>{
             vendor: "zod",
             version: 1
         }));
-}), q = l("$ZodString", (e, t)=>{
+}), I = d("$ZodString", (e, t)=>{
     var n;
     let r;
-    J.init(e, t), e._zod.pattern = [
+    q.init(e, t), e._zod.pattern = [
         ...e?._zod.bag?.patterns ?? []
     ].pop() ?? (r = (n = e._zod.bag) ? `[\\s\\S]{${n?.minimum ?? 0},${n?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${r}$`)), e._zod.parse = (n, r)=>{
         if (t.coerce) try {
@@ -342,8 +342,8 @@ const $ = (e, t)=>{
             inst: e
         }), n;
     };
-}), I = l("$ZodNumber", (e, t)=>{
-    J.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? R, e._zod.parse = (n, r)=>{
+}), Q = d("$ZodNumber", (e, t)=>{
+    q.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? Z, e._zod.parse = (n, r)=>{
         if (t.coerce) try {
             n.value = Number(n.value);
         } catch (e) {}
@@ -360,8 +360,8 @@ const $ = (e, t)=>{
             } : {}
         }), n;
     };
-}), Q = l("$ZodBoolean", (e, t)=>{
-    J.init(e, t), e._zod.pattern = Z, e._zod.parse = (n, r)=>{
+}), U = d("$ZodBoolean", (e, t)=>{
+    q.init(e, t), e._zod.pattern = A, e._zod.parse = (n, r)=>{
         if (t.coerce) try {
             n.value = !!n.value;
         } catch (e) {}
@@ -373,8 +373,8 @@ const $ = (e, t)=>{
             inst: e
         }), n;
     };
-}), U = l("$ZodNull", (e, t)=>{
-    J.init(e, t), e._zod.pattern = A, e._zod.values = new Set([
+}), V = d("$ZodNull", (e, t)=>{
+    q.init(e, t), e._zod.pattern = D, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, n)=>{
         let r = t.value;
@@ -385,19 +385,19 @@ const $ = (e, t)=>{
             inst: e
         }), t;
     };
-}), V = l("$ZodNever", (e, t)=>{
-    J.init(e, t), e._zod.parse = (t, n)=>(t.issues.push({
+}), F = d("$ZodNever", (e, t)=>{
+    q.init(e, t), e._zod.parse = (t, n)=>(t.issues.push({
             expected: "never",
             code: "invalid_type",
             input: t.value,
             inst: e
         }), t);
 });
-function F(e, t, n) {
-    e.issues.length && t.issues.push(...T(n, e.issues)), t.value[n] = e.value;
+function W(e, t, n) {
+    e.issues.length && t.issues.push(...C(n, e.issues)), t.value[n] = e.value;
 }
-const W = l("$ZodArray", (e, t)=>{
-    J.init(e, t), e._zod.parse = (n, r)=>{
+const H = d("$ZodArray", (e, t)=>{
+    q.init(e, t), e._zod.parse = (n, r)=>{
         let i = n.value;
         if (!Array.isArray(i)) return n.issues.push({
             expected: "array",
@@ -412,21 +412,21 @@ const W = l("$ZodArray", (e, t)=>{
                 value: a,
                 issues: []
             }, r);
-            s instanceof Promise ? o.push(s.then((t)=>F(t, n, e))) : F(s, n, e);
+            s instanceof Promise ? o.push(s.then((t)=>W(t, n, e))) : W(s, n, e);
         }
         return o.length ? Promise.all(o).then(()=>n) : n;
     };
 });
-function H(e, t, n, r, i) {
+function K(e, t, n, r, i) {
     if (e.issues.length) {
         if (i && !(n in r)) return;
-        t.issues.push(...T(n, e.issues));
+        t.issues.push(...C(n, e.issues));
     }
     void 0 === e.value ? n in r && (t.value[n] = void 0) : t.value[n] = e.value;
 }
-const K = l("$ZodObject", (e, t)=>{
+const B = d("$ZodObject", (e, t)=>{
     let n;
-    J.init(e, t);
+    q.init(e, t);
     let r = Object.getOwnPropertyDescriptor(t, "shape");
     if (!r?.get) {
         let e = t.shape;
@@ -441,7 +441,7 @@ const K = l("$ZodObject", (e, t)=>{
             }
         });
     }
-    let i = h(()=>(function(e) {
+    let i = m(()=>(function(e) {
             var t;
             let n = Object.keys(e.shape);
             for (let t of n)if (!e.shape?.[t]?._zod?.traits?.has("$ZodType")) throw Error(`Invalid element at key "${t}": expected a Zod schema`);
@@ -454,7 +454,7 @@ const K = l("$ZodObject", (e, t)=>{
                 optionalKeys: new Set(r)
             };
         })(t));
-    g(e._zod, "propValues", ()=>{
+    b(e._zod, "propValues", ()=>{
         let e = t.shape, n = {};
         for(let t in e){
             let r = e[t]._zod;
@@ -466,7 +466,7 @@ const K = l("$ZodObject", (e, t)=>{
     e._zod.parse = (t, r)=>{
         n ?? (n = i.value);
         let a = t.value;
-        if (!y(a)) return t.issues.push({
+        if (!v(a)) return t.issues.push({
             expected: "object",
             code: "invalid_type",
             input: a,
@@ -479,13 +479,13 @@ const K = l("$ZodObject", (e, t)=>{
                 value: a[e],
                 issues: []
             }, r);
-            o instanceof Promise ? s.push(o.then((n)=>H(n, t, e, a, i))) : H(o, t, e, a, i);
+            o instanceof Promise ? s.push(o.then((n)=>K(n, t, e, a, i))) : K(o, t, e, a, i);
         }
         return o ? function(e, t, n, r, i, o) {
-            let a = [], s = i.keySet, l = i.catchall._zod, c = l.def.type, d = "optional" === l.optout;
+            let a = [], s = i.keySet, l = i.catchall._zod, d = l.def.type, c = "optional" === l.optout;
             for(let i in t){
                 if (s.has(i)) continue;
-                if ("never" === c) {
+                if ("never" === d) {
                     a.push(i);
                     continue;
                 }
@@ -493,7 +493,7 @@ const K = l("$ZodObject", (e, t)=>{
                     value: t[i],
                     issues: []
                 }, r);
-                o instanceof Promise ? e.push(o.then((e)=>H(e, n, i, t, d))) : H(o, n, i, t, d);
+                o instanceof Promise ? e.push(o.then((e)=>K(e, n, i, t, c))) : K(o, n, i, t, c);
             }
             return (a.length && n.issues.push({
                 code: "unrecognized_keys",
@@ -504,23 +504,23 @@ const K = l("$ZodObject", (e, t)=>{
         }(s, a, t, r, i.value, e) : s.length ? Promise.all(s).then(()=>t) : t;
     };
 });
-function B(e, t, n, r) {
+function X(e, t, n, r) {
     for (let n of e)if (0 === n.issues.length) return t.value = n.value, t;
-    let i = e.filter((e)=>!z(e));
+    let i = e.filter((e)=>!T(e));
     return 1 === i.length ? (t.value = i[0].value, i[0]) : (t.issues.push({
         code: "invalid_union",
         input: t.value,
         inst: n,
-        errors: e.map((e)=>e.issues.map((e)=>k(e, r, u())))
+        errors: e.map((e)=>e.issues.map((e)=>$(e, r, p())))
     }), t);
 }
-const X = l("$ZodUnion", (e, t)=>{
-    J.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
+const G = d("$ZodUnion", (e, t)=>{
+    q.init(e, t), b(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), b(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), b(e._zod, "values", ()=>{
         if (t.options.every((e)=>e._zod.values)) return new Set(t.options.flatMap((e)=>Array.from(e._zod.values)));
-    }), g(e._zod, "pattern", ()=>{
+    }), b(e._zod, "pattern", ()=>{
         if (t.options.every((e)=>e._zod.pattern)) {
             let e = t.options.map((e)=>e._zod.pattern);
-            return RegExp(`^(${e.map((e)=>m(e.source)).join("|")})$`);
+            return RegExp(`^(${e.map((e)=>f(e.source)).join("|")})$`);
         }
     });
     let n = 1 === t.options.length, r = t.options[0]._zod.run;
@@ -538,12 +538,12 @@ const X = l("$ZodUnion", (e, t)=>{
                 s.push(t);
             }
         }
-        return a ? Promise.all(s).then((t)=>B(t, i, e, o)) : B(s, i, e, o);
+        return a ? Promise.all(s).then((t)=>X(t, i, e, o)) : X(s, i, e, o);
     };
-}), G = l("$ZodDiscriminatedUnion", (e, t)=>{
-    t.inclusive = !1, X.init(e, t);
+}), Y = d("$ZodDiscriminatedUnion", (e, t)=>{
+    t.inclusive = !1, G.init(e, t);
     let n = e._zod.parse;
-    g(e._zod, "propValues", ()=>{
+    b(e._zod, "propValues", ()=>{
         let e = {};
         for (let n of t.options){
             let r = n._zod.propValues;
@@ -552,7 +552,7 @@ const X = l("$ZodUnion", (e, t)=>{
         }
         return e;
     });
-    let r = h(()=>{
+    let r = m(()=>{
         let e = t.options, n = new Map();
         for (let r of e){
             let e = r._zod.propValues?.[t.discriminator];
@@ -566,7 +566,7 @@ const X = l("$ZodUnion", (e, t)=>{
     });
     e._zod.parse = (i, o)=>{
         let a = i.value;
-        if (!y(a)) return i.issues.push({
+        if (!v(a)) return i.issues.push({
             code: "invalid_type",
             expected: "object",
             input: a,
@@ -585,15 +585,15 @@ const X = l("$ZodUnion", (e, t)=>{
             inst: e
         }), i);
     };
-}), Y = l("$ZodRecord", (e, t)=>{
-    J.init(e, t), e._zod.parse = (n, r)=>{
+}), ee = d("$ZodRecord", (e, t)=>{
+    q.init(e, t), e._zod.parse = (n, r)=>{
         let i = n.value;
         if (!function(e) {
-            if (!1 === y(e)) return !1;
+            if (!1 === v(e)) return !1;
             let t = e.constructor;
             if (void 0 === t || "function" != typeof t) return !0;
             let n = t.prototype;
-            return !1 !== y(n) && !1 !== Object.prototype.hasOwnProperty.call(n, "isPrototypeOf");
+            return !1 !== v(n) && !1 !== Object.prototype.hasOwnProperty.call(n, "isPrototypeOf");
         }(i)) return n.issues.push({
             expected: "record",
             code: "invalid_type",
@@ -612,8 +612,8 @@ const X = l("$ZodUnion", (e, t)=>{
                     issues: []
                 }, r);
                 a instanceof Promise ? o.push(a.then((t)=>{
-                    t.issues.length && n.issues.push(...T(e, t.issues)), n.value[e] = t.value;
-                })) : (a.issues.length && n.issues.push(...T(e, a.issues)), n.value[e] = a.value);
+                    t.issues.length && n.issues.push(...C(e, t.issues)), n.value[e] = t.value;
+                })) : (a.issues.length && n.issues.push(...C(e, a.issues)), n.value[e] = a.value);
             }
             for(let e in i)l.has(e) || (s = s ?? []).push(e);
             s && s.length > 0 && n.issues.push({
@@ -629,7 +629,7 @@ const X = l("$ZodUnion", (e, t)=>{
                 issues: []
             }, r);
             if (s instanceof Promise) throw Error("Async schemas not supported in object keys currently");
-            if ("string" == typeof a && R.test(a) && s.issues.length) {
+            if ("string" == typeof a && Z.test(a) && s.issues.length) {
                 let e = t.keyType._zod.run({
                     value: Number(a),
                     issues: []
@@ -641,7 +641,7 @@ const X = l("$ZodUnion", (e, t)=>{
                 "loose" === t.mode ? n.value[a] = i[a] : n.issues.push({
                     code: "invalid_key",
                     origin: "record",
-                    issues: s.issues.map((e)=>k(e, r, u())),
+                    issues: s.issues.map((e)=>$(e, r, p())),
                     input: a,
                     path: [
                         a
@@ -655,17 +655,17 @@ const X = l("$ZodUnion", (e, t)=>{
                 issues: []
             }, r);
             l instanceof Promise ? o.push(l.then((e)=>{
-                e.issues.length && n.issues.push(...T(a, e.issues)), n.value[s.value] = e.value;
-            })) : (l.issues.length && n.issues.push(...T(a, l.issues)), n.value[s.value] = l.value);
+                e.issues.length && n.issues.push(...C(a, e.issues)), n.value[s.value] = e.value;
+            })) : (l.issues.length && n.issues.push(...C(a, l.issues)), n.value[s.value] = l.value);
         }
         return o.length ? Promise.all(o).then(()=>n) : n;
     };
-}), ee = l("$ZodEnum", (e, t)=>{
+}), et = d("$ZodEnum", (e, t)=>{
     var n;
     let r;
-    J.init(e, t);
+    q.init(e, t);
     let i = (r = Object.values(n = t.entries).filter((e)=>"number" == typeof e), Object.entries(n).filter(([e, t])=>-1 === r.indexOf(+e)).map(([e, t])=>t)), o = new Set(i);
-    e._zod.values = o, e._zod.pattern = RegExp(`^(${i.filter((e)=>v.has(typeof e)).map((e)=>"string" == typeof e ? w(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
+    e._zod.values = o, e._zod.pattern = RegExp(`^(${i.filter((e)=>w.has(typeof e)).map((e)=>"string" == typeof e ? x(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
         let r = t.value;
         return o.has(r) || t.issues.push({
             code: "invalid_value",
@@ -674,10 +674,10 @@ const X = l("$ZodUnion", (e, t)=>{
             inst: e
         }), t;
     };
-}), et = l("$ZodLiteral", (e, t)=>{
-    if (J.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
+}), en = d("$ZodLiteral", (e, t)=>{
+    if (q.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let n = new Set(t.values);
-    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? w(e) : e ? w(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (r, i)=>{
+    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? x(e) : e ? x(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (r, i)=>{
         let o = r.value;
         return n.has(o) || r.issues.push({
             code: "invalid_value",
@@ -687,36 +687,36 @@ const X = l("$ZodUnion", (e, t)=>{
         }), r;
     };
 });
-function en(e, t) {
+function er(e, t) {
     return e.issues.length && void 0 === t ? {
         issues: [],
         value: void 0
     } : e;
 }
-const er = l("$ZodOptional", (e, t)=>{
-    J.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+const ei = d("$ZodOptional", (e, t)=>{
+    q.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", b(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             void 0
-        ]) : void 0), g(e._zod, "pattern", ()=>{
+        ]) : void 0), b(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
-        return e ? RegExp(`^(${m(e.source)})?$`) : void 0;
+        return e ? RegExp(`^(${f(e.source)})?$`) : void 0;
     }), e._zod.parse = (e, n)=>{
         if ("optional" === t.innerType._zod.optin) {
             let r = t.innerType._zod.run(e, n);
-            return r instanceof Promise ? r.then((t)=>en(t, e.value)) : en(r, e.value);
+            return r instanceof Promise ? r.then((t)=>er(t, e.value)) : er(r, e.value);
         }
         return void 0 === e.value ? e : t.innerType._zod.run(e, n);
     };
-}), ei = l("$ZodNullable", (e, t)=>{
-    J.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
+}), eo = d("$ZodNullable", (e, t)=>{
+    q.init(e, t), b(e._zod, "optin", ()=>t.innerType._zod.optin), b(e._zod, "optout", ()=>t.innerType._zod.optout), b(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
-        return e ? RegExp(`^(${m(e.source)}|null)$`) : void 0;
-    }), g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+        return e ? RegExp(`^(${f(e.source)}|null)$`) : void 0;
+    }), b(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             null
         ]) : void 0), e._zod.parse = (e, n)=>null === e.value ? e : t.innerType._zod.run(e, n);
-}), eo = l("$ZodLazy", (e, t)=>{
-    J.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, n)=>e._zod.innerType._zod.run(t, n);
+}), ea = d("$ZodLazy", (e, t)=>{
+    q.init(e, t), b(e._zod, "innerType", ()=>t.getter()), b(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), b(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), b(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), b(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, n)=>e._zod.innerType._zod.run(t, n);
 });
 Symbol("ZodOutput"), Symbol("ZodInput");
 (e = globalThis).__zod_globalRegistry ?? (e.__zod_globalRegistry = new class e {
@@ -753,13 +753,13 @@ Symbol("ZodOutput"), Symbol("ZodInput");
         return this._map.has(e);
     }
 }());
-const ea = l("ZodMiniType", (e, t)=>{
+const es = d("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
-    J.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>j(e, t, n, {
+    q.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>N(e, t, n, {
             callee: e.parse
-        }), e.safeParse = (t, n)=>P(e, t, n), e.parseAsync = async (t, n)=>N(e, t, n, {
+        }), e.safeParse = (t, n)=>M(e, t, n), e.parseAsync = async (t, n)=>P(e, t, n, {
             callee: e.parseAsync
-        }), e.safeParseAsync = async (t, n)=>M(e, t, n), e.check = (...n)=>e.clone({
+        }), e.safeParseAsync = async (t, n)=>R(e, t, n), e.check = (...n)=>e.clone({
             ...t,
             checks: [
                 ...t.checks ?? [],
@@ -779,365 +779,364 @@ const ea = l("ZodMiniType", (e, t)=>{
         let r;
         return r = new e._zod.constr(t ?? e._zod.def), (!t || n?.parent) && (r._zod.parent = e), r;
     }, e.brand = ()=>e, e.register = (t, n)=>(t.add(e, n), e), e.apply = (t)=>t(e);
-}), es = l("ZodMiniString", (e, t)=>{
-    q.init(e, t), ea.init(e, t);
-});
-function el(e) {
-    return new es({
-        type: "string",
-        ...x(e)
-    });
-}
-const ec = l("ZodMiniNumber", (e, t)=>{
-    I.init(e, t), ea.init(e, t);
+}), el = d("ZodMiniString", (e, t)=>{
+    I.init(e, t), es.init(e, t);
 });
 function ed(e) {
+    return new el({
+        type: "string",
+        ...z(e)
+    });
+}
+const ec = d("ZodMiniNumber", (e, t)=>{
+    Q.init(e, t), es.init(e, t);
+});
+function eu(e) {
     return new ec({
         type: "number",
         checks: [],
-        ...x(e)
+        ...z(e)
     });
 }
-const eu = l("ZodMiniBoolean", (e, t)=>{
-    Q.init(e, t), ea.init(e, t);
+const ep = d("ZodMiniBoolean", (e, t)=>{
+    U.init(e, t), es.init(e, t);
 });
-function ep(e) {
-    return new eu({
+function eh(e) {
+    return new ep({
         type: "boolean",
-        ...x(e)
+        ...z(e)
     });
 }
-const eh = l("ZodMiniNull", (e, t)=>{
-    U.init(e, t), ea.init(e, t);
-}), em = l("ZodMiniNever", (e, t)=>{
-    V.init(e, t), ea.init(e, t);
+const em = d("ZodMiniNull", (e, t)=>{
+    V.init(e, t), es.init(e, t);
+}), ef = d("ZodMiniNever", (e, t)=>{
+    F.init(e, t), es.init(e, t);
 });
-function ef(e) {
-    return new em({
+function eg(e) {
+    return new ef({
         type: "never",
-        ...x(e)
+        ...z(e)
     });
 }
-const eg = l("ZodMiniArray", (e, t)=>{
-    W.init(e, t), ea.init(e, t);
+const eb = d("ZodMiniArray", (e, t)=>{
+    H.init(e, t), es.init(e, t);
 });
-function eb(e, t) {
-    return new eg({
+function ey(e, t) {
+    return new eb({
         type: "array",
         element: e,
-        ...x(t)
+        ...z(t)
     });
 }
-const ey = l("ZodMiniObject", (e, t)=>{
-    K.init(e, t), ea.init(e, t), g(e, "shape", ()=>t.shape);
+const e_ = d("ZodMiniObject", (e, t)=>{
+    B.init(e, t), es.init(e, t), b(e, "shape", ()=>t.shape);
 });
-function e_(e, t) {
-    return new ey({
+function ev(e, t) {
+    return new e_({
         type: "object",
         shape: e ?? {},
-        ...x(t)
+        ...z(t)
     });
 }
-const ev = l("ZodMiniUnion", (e, t)=>{
-    X.init(e, t), ea.init(e, t);
+const ew = d("ZodMiniUnion", (e, t)=>{
+    G.init(e, t), es.init(e, t);
 });
-function ew(e, t) {
-    return new ev({
+function ex(e, t) {
+    return new ew({
         type: "union",
         options: e,
-        ...x(t)
+        ...z(t)
     });
 }
-const ex = l("ZodMiniDiscriminatedUnion", (e, t)=>{
-    G.init(e, t), ea.init(e, t);
+const ez = d("ZodMiniDiscriminatedUnion", (e, t)=>{
+    Y.init(e, t), es.init(e, t);
 });
-function ez(e, t, n) {
-    return new ex({
+function eT(e, t, n) {
+    return new ez({
         type: "union",
         options: t,
         discriminator: e,
-        ...x(n)
+        ...z(n)
     });
 }
-const eT = l("ZodMiniRecord", (e, t)=>{
-    Y.init(e, t), ea.init(e, t);
+const eC = d("ZodMiniRecord", (e, t)=>{
+    ee.init(e, t), es.init(e, t);
 });
-function eC(e, t, n) {
-    return new eT({
+function ek(e, t, n) {
+    return new eC({
         type: "record",
         keyType: e,
         valueType: t,
-        ...x(n)
+        ...z(n)
     });
 }
-const ek = l("ZodMiniEnum", (e, t)=>{
-    ee.init(e, t), ea.init(e, t), e.options = Object.values(t.entries);
+const e$ = d("ZodMiniEnum", (e, t)=>{
+    et.init(e, t), es.init(e, t), e.options = Object.values(t.entries);
 });
-function e$(e, t) {
-    return new ek({
+function eS(e, t) {
+    return new e$({
         type: "enum",
         entries: Array.isArray(e) ? Object.fromEntries(e.map((e)=>[
                 e,
                 e
             ])) : e,
-        ...x(t)
+        ...z(t)
     });
 }
-const eS = l("ZodMiniLiteral", (e, t)=>{
-    et.init(e, t), ea.init(e, t);
+const eO = d("ZodMiniLiteral", (e, t)=>{
+    en.init(e, t), es.init(e, t);
 });
-function eO(e, t) {
-    return new eS({
+function eE(e, t) {
+    return new eO({
         type: "literal",
         values: Array.isArray(e) ? e : [
             e
         ],
-        ...x(t)
+        ...z(t)
     });
 }
-const eE = l("ZodMiniOptional", (e, t)=>{
-    er.init(e, t), ea.init(e, t);
+const ej = d("ZodMiniOptional", (e, t)=>{
+    ei.init(e, t), es.init(e, t);
 });
-function ej(e) {
-    return new eE({
+function eN(e) {
+    return new ej({
         type: "optional",
         innerType: e
     });
 }
-const eN = l("ZodMiniNullable", (e, t)=>{
-    ei.init(e, t), ea.init(e, t);
+const eP = d("ZodMiniNullable", (e, t)=>{
+    eo.init(e, t), es.init(e, t);
 });
-function eP(e) {
-    return new eN({
+function eM(e) {
+    return new eP({
         type: "nullable",
         innerType: e
     });
 }
-const eM = l("ZodMiniLazy", (e, t)=>{
-    eo.init(e, t), ea.init(e, t);
+const eL = d("ZodMiniLazy", (e, t)=>{
+    ea.init(e, t), es.init(e, t);
 });
-let eL = e_({
-    error: ew([
-        el(),
-        e_({
-            code: el(),
-            message: el()
+let eR = ev({
+    error: ex([
+        ed(),
+        ev({
+            code: ed(),
+            message: ed()
         })
     ])
 });
-class eR extends Error {
+class eZ extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function eZ(e) {
-    let t = eL.safeParse(e);
+function eA(e) {
+    let t = eR.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new eR("rpc", e) : new eR(e.code, e.message);
+        throw "string" == typeof e ? new eZ("rpc", e) : new eZ(e.code, e.message);
     }
     return e;
 }
-const eA = e_({
-    status: eO("pending"),
-    job: el()
-}), eD = ez("status", [
-    e_({
-        status: eO("pending")
+const eD = ev({
+    status: eE("pending"),
+    job: ed()
+}), eJ = eT("status", [
+    ev({
+        status: eE("pending")
     }),
-    e_({
-        status: eO("ready"),
-        chunk: ed(),
-        chunks: ed(),
-        bytes: ed(),
-        data: el()
+    ev({
+        status: eE("ready"),
+        chunk: eu(),
+        chunks: eu(),
+        bytes: eu(),
+        data: ed()
     })
 ]);
-let eJ = e_({
-    schema_version: eO(1),
-    version: el(),
-    features: e_({
-        acs: ep(),
-        mqtt: ep(),
-        "device-hl202": ep(),
-        "device-hwtc": ep()
+let eq = ev({
+    id: ed(),
+    name: ed()
+}), eI = ev({
+    schema_version: eE(1),
+    version: ed(),
+    features: ek(ed(), eh()),
+    functions: ev({
+        optical: eh(),
+        omci_mib: eh(),
+        mqtt_telemetry: eh(),
+        hl202_management: eh(),
+        cwmp: eh()
     }),
-    functions: e_({
-        optical: ep(),
-        omci_mib: ep(),
-        mqtt_telemetry: ep(),
-        hl202_management: ep(),
-        cwmp: ep()
+    pages: ev({
+        status: eh(),
+        config: eh(),
+        sync: eh(),
+        hl202: eh(),
+        hardware: eh(),
+        calibration: eh(),
+        about: eh()
     }),
-    pages: e_({
-        status: ep(),
-        config: ep(),
-        sync: ep(),
-        hl202: ep(),
-        hardware: ep(),
-        calibration: ep(),
-        about: ep()
-    })
-}), eq = L.rpc.declare({
-    object: "luci.fttr",
-    method: "get_capabilities",
-    reject: !0
+    adapters: eN(ey(eq))
 });
-const eI = async ()=>eJ.parse(eZ(await eq()));
-async function eQ(e) {
-    if (!(await eI()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
+const eQ = async ()=>eI.parse(eA(await (!t && (t = L.rpc.declare({
+        object: "luci.fttr",
+        method: "get_capabilities",
+        reject: !0
+    })), t())));
+async function eU(e) {
+    if (!(await eQ()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
 }
 _("Ready"), _("Online"), _("Success"), _("Offline"), _("Error"), _("Failed"), _("Timeout"), _("Pending"), _("Running"), _("Unavailable"), _("Disabled"), _("Enabled");
-const eU = (e)=>null == e || "" === e ? "\u2014" : String(e), eV = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
-function eF(e, t, n) {
-    return s("span", {
+const eV = (e)=>null == e || "" === e ? "\u2014" : String(e), eF = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
+function eW(e, t, n) {
+    return l("span", {
         class: `hl202-badge hl202-badge-${e}`,
         title: n,
         children: t
     });
 }
-let eW = el(), eH = ed(), eK = ep();
-e_({
-    optical_sn: eW,
-    onu_id: eH,
-    binding_generation: eW
-}), e_({
-    mqtt_mac: eW,
-    binding_generation: eW
+let eH = ed(), eK = eu(), eB = eh();
+ev({
+    optical_sn: eH,
+    onu_id: eK,
+    binding_generation: eH
+}), ev({
+    mqtt_mac: eH,
+    binding_generation: eH
 });
-let eB = e_({
-    mqtt_mac: eW,
-    optical_sn: eP(eW),
-    onu_id: eP(eH),
-    binding_generation: eW,
-    last_seen: eH,
-    reason: eW
-}), eX = {
-    target: eW,
-    request_id: ej(eW),
-    output: ej(eW),
-    output_truncated: eK,
-    error: ej(eW)
+let eX = ev({
+    mqtt_mac: eH,
+    optical_sn: eM(eH),
+    onu_id: eM(eK),
+    binding_generation: eH,
+    last_seen: eK,
+    reason: eH
+}), eG = {
+    target: eH,
+    request_id: eN(eH),
+    output: eN(eH),
+    output_truncated: eB,
+    error: eN(eH)
 };
-const eG = ez("status", [
-    e_({
-        ...eX,
-        status: eO("executed"),
-        exit_code: eP(eH)
+const eY = eT("status", [
+    ev({
+        ...eG,
+        status: eE("executed"),
+        exit_code: eM(eK)
     }),
-    e_({
-        ...eX,
-        status: eO("dispatched"),
-        exit_code: ej(ef())
+    ev({
+        ...eG,
+        status: eE("dispatched"),
+        exit_code: eN(eg())
     }),
-    e_({
-        ...eX,
-        status: eO("timeout"),
-        exit_code: ej(ef())
+    ev({
+        ...eG,
+        status: eE("timeout"),
+        exit_code: eN(eg())
     }),
-    e_({
-        ...eX,
-        status: eO("error"),
-        exit_code: ej(ef())
+    ev({
+        ...eG,
+        status: eE("error"),
+        exit_code: eN(eg())
     })
 ]);
-let eY = e_({
-    target: eB,
-    result: eG,
-    binding_current: eK
-}), e0 = e_({
-    schema_version: eH,
-    compressed_bytes: eH,
-    decompressed_bytes: eH,
-    fields: eC(eW, e_({
-        value: o = new eM({
+let e0 = ev({
+    target: eX,
+    result: eY,
+    binding_current: eB
+}), e2 = ev({
+    schema_version: eK,
+    compressed_bytes: eK,
+    decompressed_bytes: eK,
+    fields: ek(eH, ev({
+        value: a = new eL({
             type: "lazy",
-            getter: ()=>ew([
-                    el(),
+            getter: ()=>ex([
                     ed(),
-                    ep(),
-                    new eh({
+                    eu(),
+                    eh(),
+                    new em({
                         type: "null",
-                        ...x(void 0)
+                        ...z(void 0)
                     }),
-                    eb(o),
-                    eC(el(), o)
+                    ey(a),
+                    ek(ed(), a)
                 ])
         }),
-        member: eW,
-        unit: eP(eW)
+        member: eH,
+        unit: eM(eH)
     })),
-    members: eb(e_({
-        name: eW,
-        bytes: eH,
-        encoding: eW,
-        text: eP(eW),
-        text_omitted: eK
+    members: ey(ev({
+        name: eH,
+        bytes: eK,
+        encoding: eH,
+        text: eM(eH),
+        text_omitted: eB
     })),
-    errors: eb(eW)
-}), e2 = e_({
-    revision: eH,
-    last_received: eH,
-    last_processed_receipt: eP(eH),
-    last_good: eP(eH),
-    error: eP(eW),
-    report: eP(e0)
-}), e1 = {
-    schema_version: eO(1),
-    target: eB,
-    report: eP(e2)
+    errors: ey(eH)
+}), e1 = ev({
+    revision: eK,
+    last_received: eK,
+    last_processed_receipt: eM(eK),
+    last_good: eM(eK),
+    error: eM(eH),
+    report: eM(e2)
+}), e8 = {
+    schema_version: eE(1),
+    target: eX,
+    report: eM(e1)
 };
-const e8 = ew([
-    e_({
-        ...e1,
-        state: e$([
+const e4 = ex([
+    ev({
+        ...e8,
+        state: eS([
             "received",
             "report_unavailable"
         ])
     }),
-    e_({
-        ...e1,
-        read_only: eO(!0)
+    ev({
+        ...e8,
+        read_only: eE(!0)
     })
-]), e4 = e_({
-    schema_version: eO(1),
-    devices: eb(e_({
-        optical_sn: eW,
-        onu_id: eH,
-        model: eW,
-        optical_online: eK,
-        can_execute: eK,
-        mqtt: eP(eB),
-        report_revision: eP(eH)
+]), e3 = ev({
+    schema_version: eE(1),
+    devices: ey(ev({
+        optical_sn: eH,
+        onu_id: eK,
+        model: eH,
+        optical_online: eB,
+        can_execute: eB,
+        mqtt: eM(eX),
+        report_revision: eM(eK)
     })),
-    sources: eb(eB)
-}), e3 = e_({
-    schema_version: eO(1),
-    operation: eY,
-    accounts: eP(eb(e_({
-        entry: ew([
-            eO(0),
-            eO(1),
-            eO(2)
+    sources: ey(eX)
+}), e5 = ev({
+    schema_version: eE(1),
+    operation: e0,
+    accounts: eM(ey(ev({
+        entry: ex([
+            eE(0),
+            eE(1),
+            eE(2)
         ]),
-        username: eW,
-        active: eK
+        username: eH,
+        active: eB
     }))),
-    write_status: e$([
+    write_status: eS([
         "not_applicable",
         "accepted_and_saved",
         "unconfirmed"
     ])
-}), e5 = e_({
-    schema_version: eO(1),
-    operation: eY
+}), e6 = ev({
+    schema_version: eE(1),
+    operation: e0
 });
-let e6 = L.rpc.declare({
+let e7 = L.rpc.declare({
     object: "luci.fttr",
     method: "hl202_list",
     reject: !0
-}), e7 = L.rpc.declare({
+}), e9 = L.rpc.declare({
     object: "luci.fttr",
     method: "hl202_job_result",
     params: [
@@ -1145,21 +1144,21 @@ let e6 = L.rpc.declare({
         "chunk"
     ],
     reject: !0
-}), e9 = L.rpc.declare({
+}), te = L.rpc.declare({
     object: "luci.fttr",
     method: "hl202_report",
     params: [
         "target"
     ],
     reject: !0
-}), te = L.rpc.declare({
+}), tt = L.rpc.declare({
     object: "luci.fttr",
     method: "hl202_accounts_start",
     params: [
         "target"
     ],
     reject: !0
-}), tt = L.rpc.declare({
+}), tn = L.rpc.declare({
     object: "luci.fttr",
     method: "hl202_account_update",
     params: [
@@ -1170,7 +1169,7 @@ let e6 = L.rpc.declare({
         "active"
     ],
     reject: !0
-}), tn = L.rpc.declare({
+}), tr = L.rpc.declare({
     object: "luci.fttr",
     method: "hl202_exec_start",
     params: [
@@ -1180,57 +1179,57 @@ let e6 = L.rpc.declare({
     ],
     reject: !0
 });
-async function tr(e) {
-    let t = eA.parse(eZ(e)), n = Date.now() + 330000, r = window.location.pathname, i = [], o = 0, a = null;
+async function ti(e) {
+    let t = eD.parse(eA(e)), n = Date.now() + 330000, r = window.location.pathname, i = [], o = 0, a = null;
     for(let e = 0; e < 128;){
-        if (window.location.pathname !== r) throw new eR("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
-        if (Date.now() > n) throw new eR("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
-        let s = eD.parse(eZ(await e7(t.job, e)));
+        if (window.location.pathname !== r) throw new eZ("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
+        if (Date.now() > n) throw new eZ("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
+        let s = eJ.parse(eA(await e9(t.job, e)));
         switch(s.status){
             case "pending":
                 await new Promise((e)=>window.setTimeout(e, 1000));
                 continue;
             case "ready":
                 {
-                    if (!Number.isInteger(s.chunks) || s.chunks < 1 || s.chunks > 128 || s.chunk !== e || !Number.isInteger(s.bytes) || s.bytes < 1 || s.bytes > 4194304 || s.data.length > 43692) throw new eR("transport", _("Invalid job result"));
-                    if (a && (s.chunks !== a.chunks || s.bytes !== a.bytes)) throw new eR("transport", _("Inconsistent job result chunks"));
+                    if (!Number.isInteger(s.chunks) || s.chunks < 1 || s.chunks > 128 || s.chunk !== e || !Number.isInteger(s.bytes) || s.bytes < 1 || s.bytes > 4194304 || s.data.length > 43692) throw new eZ("transport", _("Invalid job result"));
+                    if (a && (s.chunks !== a.chunks || s.bytes !== a.bytes)) throw new eZ("transport", _("Inconsistent job result chunks"));
                     a = {
                         chunks: s.chunks,
                         bytes: s.bytes
                     };
                     let t = Uint8Array.from(atob(s.data), (e)=>e.charCodeAt(0));
-                    if (t.length > 32768 || o + t.length > s.bytes) throw new eR("transport", _("Job result exceeds the transport limit"));
+                    if (t.length > 32768 || o + t.length > s.bytes) throw new eZ("transport", _("Job result exceeds the transport limit"));
                     if (i.push(t), o += t.length, ++e === s.chunks) {
-                        if (o !== s.bytes) throw new eR("transport", _("Incomplete job result"));
+                        if (o !== s.bytes) throw new eZ("transport", _("Incomplete job result"));
                         let e = new Uint8Array(o), t = 0;
                         for (let n of i)e.set(n, t), t += n.length;
-                        return eZ(JSON.parse(new TextDecoder("utf-8", {
+                        return eA(JSON.parse(new TextDecoder("utf-8", {
                             fatal: !0
                         }).decode(e)));
                     }
                 }
         }
     }
-    throw new eR("transport", _("Too many result chunks"));
+    throw new eZ("transport", _("Too many result chunks"));
 }
-const ti = async ()=>e4.parse(eZ(await e6())), to = async (e)=>e8.parse(await tr(await e9(e))), ta = async (e)=>e3.parse(await tr(await te(e))), ts = async (e, t)=>e3.parse(await tr(await tt(e, `account_set_${t.kind}`, t.entry, t.password, t.active))), tl = async (e, t, n)=>e5.parse(await tr(await tn(e, t, n)));
+const to = async ()=>e3.parse(eA(await e7())), ta = async (e)=>e4.parse(await ti(await te(e))), ts = async (e)=>e5.parse(await ti(await tt(e))), tl = async (e, t)=>e5.parse(await ti(await tn(e, `account_set_${t.kind}`, t.entry, t.password, t.active))), td = async (e, t, n)=>e6.parse(await ti(await tr(e, t, n)));
 let tc = !1;
-function td() {
+function tu() {
     var e, t;
-    let n = null, r = s("div", {
+    let n = null, r = l("div", {
         style: "margin:8px 0;display:flex;align-items:center;flex-wrap:wrap;gap:10px"
-    }), i = s("div", {
+    }), i = l("div", {
         style: "overflow-x:auto;margin:8px 0"
-    }), o = s("div", {
+    }), o = l("div", {
         style: "margin-top:10px"
-    }), a = s("div", {
+    }), a = l("div", {
         style: "font-size:88%;color:#888;margin:6px 0",
         "aria-live": "polite"
-    }), l = s("button", {
+    }), s = l("button", {
         type: "button",
         class: "cbi-button cbi-button-action",
         children: _("Read MQTT report")
-    }), c = async (e)=>{
+    }), d = async (e)=>{
         let t = e || n;
         if (!t) {
             a.textContent = _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.");
@@ -1240,28 +1239,28 @@ function td() {
             a.textContent = _("Another operation is in progress.");
             return;
         }
-        tc = !0, l.disabled = !0, a.textContent = _("Waiting for device result\u2026");
+        tc = !0, s.disabled = !0, a.textContent = _("Waiting for device result\u2026");
         try {
-            var c, d, u, p, h, m, f, g, b, y, v, w, x, z, T, C, k, $, S, O, j, N;
-            let e = await to(t);
+            var d, c, u, p, h, m, f, g, b, y, v, w, x, z, T, C, k, $, S, O, j, N;
+            let e = await ta(t);
             if (JSON.stringify(t) !== JSON.stringify(n)) return;
             if (!e.report) {
                 r.replaceChildren(), i.replaceChildren(), o.replaceChildren(), a.textContent = _("No MQTT report has been parsed yet.");
                 return;
             }
-            let l = e.report;
-            if (r.replaceChildren((d = {
+            let s = e.report;
+            if (r.replaceChildren((c = {
                 children: [
-                    (c = {
+                    (d = {
                         style: "color:#888;margin-right:4px",
                         children: [
                             _("Revision"),
                             ":"
                         ]
-                    }, s("span", c)),
-                    eF("info", `#${String(l.revision)}`)
+                    }, l("span", d)),
+                    eW("info", `#${String(s.revision)}`)
                 ]
-            }, s("span", d)), (h = {
+            }, l("span", c)), (h = {
                 children: [
                     (u = {
                         style: "color:#888;margin-right:4px",
@@ -1269,12 +1268,12 @@ function td() {
                             _("Last received"),
                             ":"
                         ]
-                    }, s("span", u)),
+                    }, l("span", u)),
                     (p = {
-                        children: eV("number" == typeof l.last_received ? l.last_received : void 0)
-                    }, s("strong", p))
+                        children: eF("number" == typeof s.last_received ? s.last_received : void 0)
+                    }, l("strong", p))
                 ]
-            }, s("span", h)), (g = {
+            }, l("span", h)), (g = {
                 children: [
                     (m = {
                         style: "color:#888;margin-right:4px",
@@ -1282,21 +1281,21 @@ function td() {
                             _("Last good report"),
                             ":"
                         ]
-                    }, s("span", m)),
+                    }, l("span", m)),
                     (f = {
-                        children: eV("number" == typeof l.last_good ? l.last_good : void 0)
-                    }, s("strong", f))
+                        children: eF("number" == typeof s.last_good ? s.last_good : void 0)
+                    }, l("strong", f))
                 ]
-            }, s("span", g))), "string" == typeof l.error && r.append((b = {
+            }, l("span", g))), "string" == typeof s.error && r.append((b = {
                 class: "alert-message warning",
                 style: "width:100%;margin-top:6px",
                 children: [
                     _("Latest report error"),
                     ": ",
-                    l.error
+                    s.error
                 ]
-            }, s("div", b))), l.report) {
-                let e = l.report, t = e.fields;
+            }, l("div", b))), s.report) {
+                let e = s.report, t = e.fields;
                 i.replaceChildren((C = {
                     class: "table",
                     style: "font-size:90%",
@@ -1306,48 +1305,48 @@ function td() {
                                 children: [
                                     (y = {
                                         children: _("Field")
-                                    }, s("th", y)),
+                                    }, l("th", y)),
                                     (v = {
                                         children: _("Value")
-                                    }, s("th", v)),
+                                    }, l("th", v)),
                                     (w = {
                                         children: _("Source member")
-                                    }, s("th", w))
+                                    }, l("th", w))
                                 ]
-                            }, s("tr", x))
-                        }, s("thead", z)),
+                            }, l("tr", x))
+                        }, l("thead", z)),
                         (T = {
                             children: Object.entries(t).map((e)=>{
-                                var t, n, r, i, o, a, l;
-                                let [c, d] = e, u = d.value, p = null === u ? "\u2014" : `${"object" == typeof u ? JSON.stringify(u) : String(u)}${d.unit ? ` ${d.unit}` : ""}`;
-                                return "uptime_seconds" === c && "number" == typeof u && (p = function(e) {
+                                var t, n, r, i, o, a, s;
+                                let [d, c] = e, u = c.value, p = null === u ? "\u2014" : `${"object" == typeof u ? JSON.stringify(u) : String(u)}${c.unit ? ` ${c.unit}` : ""}`;
+                                return "uptime_seconds" === d && "number" == typeof u && (p = function(e) {
                                     if (void 0 === e || !Number.isFinite(e) || e < 0) return "\u2014";
                                     let t = Math.floor(e / 86400), n = Math.floor(e % 86400 / 3600), r = Math.floor(e % 3600 / 60), i = [];
                                     return t > 0 && i.push(_("%d days").replace("%d", String(t))), (n > 0 || t > 0) && i.push(_("%d hours").replace("%d", String(n))), (r > 0 || n > 0 || t > 0) && i.push(_("%d minutes").replace("%d", String(r))), i.push(_("%d seconds").replace("%d", String(e % 60))), `${i.join(" ")} (${e} s)`;
-                                }(u)), l = {
+                                }(u)), s = {
                                     children: [
                                         (n = {
                                             children: (t = {
-                                                children: c
-                                            }, s("code", t))
-                                        }, s("td", n)),
+                                                children: d
+                                            }, l("code", t))
+                                        }, l("td", n)),
                                         (i = {
                                             children: (r = {
                                                 children: p
-                                            }, s("strong", r))
-                                        }, s("td", i)),
+                                            }, l("strong", r))
+                                        }, l("td", i)),
                                         (a = {
                                             children: (o = {
                                                 class: "hl202-badge hl202-badge-neutral",
-                                                children: eU(d.member)
-                                            }, s("span", o))
-                                        }, s("td", a))
+                                                children: eV(c.member)
+                                            }, l("span", o))
+                                        }, l("td", a))
                                     ]
-                                }, s("tr", l);
+                                }, l("tr", s);
                             })
-                        }, s("tbody", T))
+                        }, l("tbody", T))
                     ]
-                }, s("table", C)));
+                }, l("table", C)));
                 let n = [];
                 for (let t of e.members){
                     let e = (k = {
@@ -1360,7 +1359,7 @@ function td() {
                             }, 1500));
                         },
                         children: _("Copy member text")
-                    }, s("button", k));
+                    }, l("button", k));
                     n.push((N = {
                         style: "margin:6px 0;border:1px solid rgba(127,140,141,0.15);border-radius:4px;padding:4px 8px",
                         children: [
@@ -1370,38 +1369,38 @@ function td() {
                                     _("%s (%s bytes, %s)").format(String(t.name), String(t.bytes), String(t.encoding)),
                                     "string" == typeof t.text ? e : null
                                 ]
-                            }, s("summary", $)),
+                            }, l("summary", $)),
                             (j = {
                                 style: "margin-top:6px",
                                 children: "string" == typeof t.text ? (S = {
                                     class: "hl202-terminal-output",
                                     style: "max-height:16rem",
                                     children: t.text
-                                }, s("pre", S)) : (O = {
+                                }, l("pre", S)) : (O = {
                                     style: "font-size:85%;color:#888;margin:4px 0",
                                     children: t.text_omitted ? _("Text omitted at the shared byte limit.") : _("Binary member; text is unavailable.")
-                                }, s("p", O))
-                            }, s("div", j))
+                                }, l("p", O))
+                            }, l("div", j))
                         ]
-                    }, s("details", N)));
+                    }, l("details", N)));
                 }
                 o.replaceChildren(...e.errors.map((e)=>{
                     var t;
                     return t = {
                         class: "alert-message warning",
                         children: e
-                    }, s("div", t);
+                    }, l("div", t);
                 }), ...n);
             } else i.replaceChildren(), o.replaceChildren();
             a.textContent = "";
         } catch (e) {
             a.textContent = e instanceof Error ? e.message : _("Request failed");
         } finally{
-            tc = !1, l.disabled = !n;
+            tc = !1, s.disabled = !n;
         }
     };
-    return l.addEventListener("click", ()=>{
-        c();
+    return s.addEventListener("click", ()=>{
+        d();
     }), {
         element: (t = {
             class: "cbi-section hl202-panel-report",
@@ -1409,61 +1408,61 @@ function td() {
                 (e = {
                     style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px",
                     children: [
-                        s("h3", {
+                        l("h3", {
                             style: "margin:0",
                             children: _("MQTT report")
                         }),
-                        l
+                        s
                     ]
-                }, s("div", e)),
+                }, l("div", e)),
                 a,
                 r,
                 i,
                 o
             ]
-        }, s("div", t)),
+        }, l("div", t)),
         setTarget (e) {
-            JSON.stringify(e) !== JSON.stringify(n) && (r.replaceChildren(), i.replaceChildren(), o.replaceChildren(), a.textContent = ""), n = e, l.disabled = !e;
+            JSON.stringify(e) !== JSON.stringify(n) && (r.replaceChildren(), i.replaceChildren(), o.replaceChildren(), a.textContent = ""), n = e, s.disabled = !e;
         },
-        refresh: (e)=>c(e)
+        refresh: (e)=>d(e)
     };
 }
-let tu = L.view;
-if (!("extend" in tu) || "function" != typeof tu.extend) throw Error("LuCI view extension is unavailable");
-let main = Reflect.apply(tu.extend, tu, [
+let tp = L.view;
+if (!("extend" in tp) || "function" != typeof tp.extend) throw Error("LuCI view extension is unavailable");
+let main = Reflect.apply(tp.extend, tp, [
     {
-        load: ()=>eQ("hl202"),
+        load: ()=>eU("hl202"),
         render: function() {
-            var e, t, n, r, i, o, a, l, c, d, u, p, h;
-            let m, f, g, b, y, v = s("select", {
+            var e, t, n, r, i, o, a, s, d, c, u, p, h;
+            let m, f, g, b, y, v = l("select", {
                 id: "hl202-device",
                 class: "cbi-input-select",
                 "aria-label": _("HL202 device"),
                 style: "min-width:320px"
-            }), w = s("button", {
+            }), w = l("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 children: _("Refresh devices")
-            }), x = s("div", {
+            }), x = l("div", {
                 style: "font-size:88%;color:#888;margin:6px 0",
                 "aria-live": "polite"
-            }), z = s("strong", {
+            }), z = l("strong", {
                 children: "\u2014"
-            }), T = s("span", {
+            }), T = l("span", {
                 class: "hl202-badge hl202-badge-neutral",
                 style: "font-size:80%",
                 children: "\u2014"
-            }), C = s("span", {
+            }), C = l("span", {
                 class: "hl202-badge hl202-badge-neutral",
                 children: "\u2014"
-            }), k = s("span", {
+            }), k = l("span", {
                 class: "hl202-badge hl202-badge-neutral",
                 children: "\u2014"
-            }), $ = s("span", {
+            }), $ = l("span", {
                 class: "hl202-badge hl202-badge-info",
                 style: "font-size:80%",
                 children: "\u2014"
-            }), S = s("div", {
+            }), S = l("div", {
                 class: "alert-message warning",
                 style: "margin-top:8px",
                 hidden: !0,
@@ -1475,14 +1474,14 @@ let main = Reflect.apply(tu.extend, tu, [
                     (t = {
                         class: "hl202-card-header",
                         children: [
-                            s("div", {
+                            l("div", {
                                 class: "hl202-device-title",
                                 children: [
                                     z,
                                     T
                                 ]
                             }),
-                            s("div", {
+                            l("div", {
                                 class: "hl202-device-badges",
                                 children: [
                                     C,
@@ -1492,7 +1491,7 @@ let main = Reflect.apply(tu.extend, tu, [
                             }),
                             (e = {
                                 class: "hl202-device-links",
-                                children: s("a", {
+                                children: l("a", {
                                     href: L.url("admin", "network", "fttr", "hardware"),
                                     class: "fttr-btn-subtle",
                                     children: [
@@ -1500,17 +1499,17 @@ let main = Reflect.apply(tu.extend, tu, [
                                         " \u2192"
                                     ]
                                 })
-                            }, s("div", e))
+                            }, l("div", e))
                         ]
-                    }, s("div", t)),
+                    }, l("div", t)),
                     S
                 ]
-            }, s("div", n)), j = td(), N = (m = null, f = s("div", {
+            }, l("div", n)), j = tu(), N = (m = null, f = l("div", {
                 style: "font-size:88%;color:#888;margin:6px 0",
                 "aria-live": "polite"
-            }), g = s("div", {
+            }), g = l("div", {
                 style: "margin-top:10px;display:flex;flex-direction:column;gap:10px"
-            }), (b = s("button", {
+            }), (b = l("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 children: _("Read users")
@@ -1526,38 +1525,38 @@ let main = Reflect.apply(tu.extend, tu, [
                 tc = !0, b.disabled = !0, f.textContent = _("Waiting for device result\u2026");
                 let e = m;
                 try {
-                    let h = await ta(e);
+                    let h = await ts(e);
                     if (JSON.stringify(e) !== JSON.stringify(m)) return;
                     g.replaceChildren();
                     let b = h.operation, y = b.result;
                     if ("timeout" === y.status ? f.textContent = _("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.") : f.textContent = b.binding_current ? y.error ?? (null === h.accounts ? _("Account data is unavailable.") : "") : _("Device binding changed; this result is stale."), h.accounts && b.binding_current) {
                         let f = [];
                         for (let g of h.accounts){
-                            var t, n, r, i, o, a, l, c, d, u, p;
+                            var t, n, r, i, o, a, s, d, c, u, p;
                             let h = g.entry, b = g.active, y = (t = {
                                 class: `hl202-badge ${b ? "hl202-badge-success" : "hl202-badge-neutral"}`,
                                 style: "font-size:80%",
                                 children: b ? _("Enabled") : _("Disabled")
-                            }, s("span", t)), v = (n = {
+                            }, l("span", t)), v = (n = {
                                 type: "password",
                                 class: "cbi-input-text",
                                 placeholder: _("New password"),
                                 autocomplete: "new-password",
                                 style: "width:180px"
-                            }, s("input", n)), w = (r = {
+                            }, l("input", n)), w = (r = {
                                 type: "button",
                                 class: "cbi-button cbi-button-action",
                                 children: _("Set password")
-                            }, s("button", r)), x = (i = {
+                            }, l("button", r)), x = (i = {
                                 type: "button",
                                 class: `cbi-button ${b ? "cbi-button-neutral" : "cbi-button-apply"}`,
                                 children: b ? _("Disable") : _("Enable")
-                            }, s("button", i));
+                            }, l("button", i));
                             w.disabled = x.disabled = !L.hasViewPermission();
                             let z = (o = {
                                 style: "font-size:82%;margin-top:4px",
                                 "aria-live": "polite"
-                            }, s("div", o));
+                            }, l("div", o));
                             w.addEventListener("click", async ()=>{
                                 if (!m || tc || JSON.stringify(e) !== JSON.stringify(m)) return;
                                 let t = v.value;
@@ -1567,7 +1566,7 @@ let main = Reflect.apply(tu.extend, tu, [
                                 }
                                 v.value = "", tc = !0, w.disabled = x.disabled = !0, z.textContent = _("Waiting for device result\u2026");
                                 try {
-                                    let n = await ts(e, {
+                                    let n = await tl(e, {
                                         entry: h,
                                         kind: "password",
                                         password: t,
@@ -1585,7 +1584,7 @@ let main = Reflect.apply(tu.extend, tu, [
                                 if (m && !tc && JSON.stringify(e) === JSON.stringify(m)) {
                                     tc = !0, w.disabled = x.disabled = !0, z.textContent = _("Waiting for device result\u2026");
                                     try {
-                                        let t = !b, n = await ts(e, {
+                                        let t = !b, n = await tl(e, {
                                             entry: h,
                                             kind: "active",
                                             password: "",
@@ -1611,33 +1610,33 @@ let main = Reflect.apply(tu.extend, tu, [
                                     (u = {
                                         style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px",
                                         children: [
-                                            (c = {
+                                            (d = {
                                                 style: "display:flex;align-items:center;gap:8px",
                                                 children: [
                                                     (a = {
                                                         style: "font-size:105%",
                                                         children: g.username
-                                                    }, s("strong", a)),
-                                                    (l = {
+                                                    }, l("strong", a)),
+                                                    (s = {
                                                         style: "font-size:80%;color:#888",
                                                         children: _("(Entry %s)").replace("%s", String(h))
-                                                    }, s("span", l)),
+                                                    }, l("span", s)),
                                                     y
                                                 ]
-                                            }, s("div", c)),
-                                            (d = {
+                                            }, l("div", d)),
+                                            (c = {
                                                 style: "display:flex;align-items:center;flex-wrap:wrap;gap:8px",
                                                 children: [
                                                     v,
                                                     w,
                                                     x
                                                 ]
-                                            }, s("div", d))
+                                            }, l("div", c))
                                         ]
-                                    }, s("div", u)),
+                                    }, l("div", u)),
                                     z
                                 ]
-                            }, s("div", p)));
+                            }, l("div", p)));
                         }
                         g.replaceChildren(...f);
                     }
@@ -1655,37 +1654,37 @@ let main = Reflect.apply(tu.extend, tu, [
                         (p = {
                             style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px",
                             children: [
-                                s("h3", {
+                                l("h3", {
                                     style: "margin:0",
                                     children: _("User management")
                                 }),
                                 b
                             ]
-                        }, s("div", p)),
-                        s("p", {
+                        }, l("div", p)),
+                        l("p", {
                             style: "font-size:85%;color:#888;margin:4px 0",
                             children: _("Password writes are accepted and saved by the device; this does not prove web login permission. Existing permission masks are preserved.")
                         }),
                         f,
                         g
                     ]
-                }, s("div", h)),
+                }, l("div", h)),
                 setTarget (e) {
                     JSON.stringify(e) !== JSON.stringify(m) && (g.replaceChildren(), f.textContent = ""), m = e, b.disabled = !e || !L.hasViewPermission();
                 },
                 refresh: ()=>y()
             }), P = function() {
                 var e, t, n, r;
-                let i = null, o = s("div", {
+                let i = null, o = l("div", {
                     style: "font-size:88%;color:#666;margin:4px 0"
-                }), a = s("textarea", {
+                }), a = l("textarea", {
                     id: "hl202-script",
                     rows: 8,
                     class: "hl202-terminal-textarea",
                     spellcheck: !1,
                     "aria-label": _("Remote shell command"),
                     placeholder: _("# Enter shell commands to execute on the selected sub-gateway (Ctrl + Enter to execute)...")
-                }), l = s("input", {
+                }), s = l("input", {
                     type: "number",
                     id: "hl202-timeout",
                     min: "1",
@@ -1694,20 +1693,20 @@ let main = Reflect.apply(tu.extend, tu, [
                     class: "cbi-input-text",
                     style: "width:70px;text-align:center",
                     "aria-label": _("Timeout in seconds")
-                }), c = s("button", {
+                }), d = l("button", {
                     type: "button",
                     class: "cbi-button cbi-button-apply",
                     style: "font-weight:600",
                     children: _("Execute on selected HL202")
                 });
-                c.disabled = !L.hasViewPermission();
-                let d = s("div", {
+                d.disabled = !L.hasViewPermission();
+                let c = l("div", {
                     style: "display:flex;align-items:center;flex-wrap:wrap;gap:8px"
-                }), u = s("pre", {
+                }), u = l("pre", {
                     class: "hl202-terminal-output",
                     style: "min-height:4rem;display:none",
                     children: _("# Waiting for commands...")
-                }), p = s("button", {
+                }), p = l("button", {
                     type: "button",
                     class: "fttr-btn-subtle",
                     onclick: ()=>{
@@ -1716,40 +1715,40 @@ let main = Reflect.apply(tu.extend, tu, [
                         }, 1500));
                     },
                     children: _("Copy output")
-                }), h = s("button", {
+                }), h = l("button", {
                     type: "button",
                     class: "fttr-btn-subtle",
                     onclick: ()=>{
-                        u.textContent = "", u.style.display = "none", d.replaceChildren();
+                        u.textContent = "", u.style.display = "none", c.replaceChildren();
                     },
                     children: _("Clear output")
                 }), m = async ()=>{
                     var e, t, n, r, o, m, f, g, b, y, v;
-                    if (!i) return void d.replaceChildren(s("div", {
+                    if (!i) return void c.replaceChildren(l("div", {
                         class: "alert-message warning",
                         children: _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")
                     }));
-                    if (tc) return void d.replaceChildren(s("div", {
+                    if (tc) return void c.replaceChildren(l("div", {
                         class: "alert-message warning",
                         children: _("Another operation is in progress.")
                     }));
-                    let w = Number(l.value);
-                    if (!Number.isInteger(w) || w < 1 || w > 300) return void d.replaceChildren(s("div", {
+                    let w = Number(s.value);
+                    if (!Number.isInteger(w) || w < 1 || w > 300) return void c.replaceChildren(l("div", {
                         class: "alert-message warning",
                         children: _("Timeout must be 1\u2013300 seconds.")
                     }));
                     let x = a.value.trim();
-                    if (!x || x.includes("\0") || new TextEncoder().encode(x).length > 65536) return void d.replaceChildren(s("div", {
+                    if (!x || x.includes("\0") || new TextEncoder().encode(x).length > 65536) return void c.replaceChildren(l("div", {
                         class: "alert-message warning",
                         children: _("Enter a non-empty UTF-8 script up to 64 KiB without NUL characters.")
                     }));
-                    tc = !0, c.disabled = !0, u.style.display = "block", u.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(i.optical_sn, String(w))}\n`, d.replaceChildren(eF("info", _("Waiting for device result\u2026")));
+                    tc = !0, d.disabled = !0, u.style.display = "block", u.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(i.optical_sn, String(w))}\n`, c.replaceChildren(eW("info", _("Waiting for device result\u2026")));
                     let z = Date.now(), T = i;
                     try {
-                        let l = await tl(T, a.value, w);
+                        let s = await td(T, a.value, w);
                         if (JSON.stringify(T) !== JSON.stringify(i)) return;
-                        let c = ((Date.now() - z) / 1000).toFixed(2), v = l.operation, x = v.result, C = x.status, k = x.exit_code, $ = v.binding_current && !x.error && "executed" === C && 0 === k, S = eF($ ? "success" : "timeout" === C ? "warning" : "danger", $ ? _("Success") : "timeout" === C ? _("Timeout") : `${_("Exit code")} ${String(k ?? C)}`);
-                        d.replaceChildren(S, (n = {
+                        let d = ((Date.now() - z) / 1000).toFixed(2), v = s.operation, x = v.result, C = x.status, k = x.exit_code, $ = v.binding_current && !x.error && "executed" === C && 0 === k, S = eW($ ? "success" : "timeout" === C ? "warning" : "danger", $ ? _("Success") : "timeout" === C ? _("Timeout") : `${_("Exit code")} ${String(k ?? C)}`);
+                        c.replaceChildren(S, (n = {
                             children: [
                                 (e = {
                                     style: "color:#888",
@@ -1757,13 +1756,13 @@ let main = Reflect.apply(tu.extend, tu, [
                                         _("Exit code"),
                                         ":"
                                     ]
-                                }, s("span", e)),
+                                }, l("span", e)),
                                 " ",
                                 (t = {
                                     children: String(k ?? "\u2014")
-                                }, s("code", t))
+                                }, l("code", t))
                             ]
-                        }, s("span", n)), (m = {
+                        }, l("span", n)), (m = {
                             children: [
                                 (r = {
                                     style: "color:#888",
@@ -1771,16 +1770,16 @@ let main = Reflect.apply(tu.extend, tu, [
                                         _("Duration"),
                                         ":"
                                     ]
-                                }, s("span", r)),
+                                }, l("span", r)),
                                 " ",
                                 (o = {
                                     children: [
-                                        c,
+                                        d,
                                         " s"
                                     ]
-                                }, s("strong", o))
+                                }, l("strong", o))
                             ]
-                        }, s("span", m)), (b = {
+                        }, l("span", m)), (b = {
                             children: [
                                 (f = {
                                     style: "color:#888",
@@ -1788,26 +1787,26 @@ let main = Reflect.apply(tu.extend, tu, [
                                         _("Request ID"),
                                         ":"
                                     ]
-                                }, s("span", f)),
+                                }, l("span", f)),
                                 " ",
                                 (g = {
                                     children: String(x.request_id ?? "\u2014")
-                                }, s("code", g))
+                                }, l("code", g))
                             ]
-                        }, s("span", b)), (y = {
+                        }, l("span", b)), (y = {
                             style: "margin-left:auto;display:flex;gap:6px",
                             children: [
                                 p,
                                 h
                             ]
-                        }, s("div", y)));
+                        }, l("div", y)));
                         let O = [];
                         v.binding_current || O.push(_("Device binding changed; this result is stale.")), ("timeout" === C || "dispatched" === C) && O.push(_("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.")), "string" == typeof x.output && x.output.length && O.push(x.output), "string" == typeof x.error && x.error.length && O.push(`[STDERR]\n${x.error}`), !0 === x.output_truncated && O.push(`\n[!] ${_("Output was truncated at the byte limit.")}`), 0 === O.length && O.push(_("No output returned.")), u.textContent = O.join("\n");
                     } catch (t) {
                         let e = ((Date.now() - z) / 1000).toFixed(2);
-                        d.replaceChildren(eF("danger", _("Failed")), (v = {
+                        c.replaceChildren(eW("danger", _("Failed")), (v = {
                             children: [
-                                s("span", {
+                                l("span", {
                                     style: "color:#888",
                                     children: [
                                         _("Duration"),
@@ -1818,7 +1817,7 @@ let main = Reflect.apply(tu.extend, tu, [
                                 e,
                                 " s"
                             ]
-                        }, s("span", v)), s("div", {
+                        }, l("span", v)), l("div", {
                             style: "margin-left:auto;display:flex;gap:6px",
                             children: [
                                 p,
@@ -1826,10 +1825,10 @@ let main = Reflect.apply(tu.extend, tu, [
                             ]
                         })), u.textContent = `[ERROR] ${t instanceof Error ? t.message : _("Request failed")}`;
                     } finally{
-                        tc = !1, c.disabled = !i || !L.hasViewPermission();
+                        tc = !1, d.disabled = !i || !L.hasViewPermission();
                     }
                 };
-                c.addEventListener("click", ()=>{
+                d.addEventListener("click", ()=>{
                     m();
                 }), a.addEventListener("keydown", (e)=>{
                     (e.ctrlKey || e.metaKey) && "Enter" === e.key && (e.preventDefault(), m());
@@ -1862,14 +1861,14 @@ let main = Reflect.apply(tu.extend, tu, [
                 ], g = (e = {
                     class: "hl202-snippets",
                     children: [
-                        s("span", {
+                        l("span", {
                             style: "font-size:80%;color:#888;margin-right:2px",
                             children: [
                                 _("Quick diagnostic commands"),
                                 ":"
                             ]
                         }),
-                        f.map((e)=>s("button", {
+                        f.map((e)=>l("button", {
                                 type: "button",
                                 class: "hl202-snippet-tag",
                                 onclick: ()=>{
@@ -1878,22 +1877,22 @@ let main = Reflect.apply(tu.extend, tu, [
                                 children: e.label
                             }))
                     ]
-                }, s("div", e));
+                }, l("div", e));
                 return {
                     element: (r = {
                         class: "cbi-section hl202-panel-console",
                         children: [
-                            s("h3", {
+                            l("h3", {
                                 style: "margin-bottom:4px",
                                 children: _("Raw command console")
                             }),
-                            s("p", {
+                            l("p", {
                                 style: "font-size:85%;color:#888;margin-top:0;margin-bottom:6px",
                                 children: _("Shell executes on the selected ONU. Timeout does not cancel execution. Raw output can contain secrets.")
                             }),
                             o,
                             g,
-                            s("div", {
+                            l("div", {
                                 class: "hl202-terminal",
                                 style: "margin-bottom:8px",
                                 children: a
@@ -1905,39 +1904,39 @@ let main = Reflect.apply(tu.extend, tu, [
                                         htmlFor: "hl202-timeout",
                                         style: "display:flex;align-items:center;gap:6px;font-size:90%",
                                         children: [
-                                            s("span", {
+                                            l("span", {
                                                 children: [
                                                     _("Timeout in seconds"),
                                                     ":"
                                                 ]
                                             }),
-                                            l
+                                            s
                                         ]
-                                    }, s("label", t)),
-                                    s("span", {
+                                    }, l("label", t)),
+                                    l("span", {
                                         style: "font-size:82%;color:#888",
                                         children: _("(Shortcut: %s)").replace("%s", "Ctrl + Enter")
                                     }),
-                                    s("div", {
+                                    l("div", {
                                         style: "margin-left:auto",
-                                        children: c
+                                        children: d
                                     })
                                 ]
-                            }, s("div", n)),
-                            s("div", {
+                            }, l("div", n)),
+                            l("div", {
                                 style: "margin-top:10px",
                                 children: [
-                                    d,
+                                    c,
                                     u
                                 ]
                             })
                         ]
-                    }, s("div", r)),
+                    }, l("div", r)),
                     setTarget (e) {
                         var t;
-                        JSON.stringify(e) !== JSON.stringify(i) && (d.replaceChildren(), u.textContent = "", u.style.display = "none"), i = e, c.disabled = !e || !L.hasViewPermission(), e ? o.replaceChildren((t = {
+                        JSON.stringify(e) !== JSON.stringify(i) && (c.replaceChildren(), u.textContent = "", u.style.display = "none"), i = e, d.disabled = !e || !L.hasViewPermission(), e ? o.replaceChildren((t = {
                             children: [
-                                s("span", {
+                                l("span", {
                                     style: "color:#888",
                                     children: [
                                         _("Target"),
@@ -1945,55 +1944,55 @@ let main = Reflect.apply(tu.extend, tu, [
                                     ]
                                 }),
                                 " ",
-                                s("strong", {
+                                l("strong", {
                                     children: e.optical_sn
                                 }),
                                 " (ONU",
                                 " ",
                                 e.onu_id,
                                 ") \xb7 ",
-                                s("code", {
+                                l("code", {
                                     children: [
                                         "gen: ",
                                         e.binding_generation
                                     ]
                                 })
                             ]
-                        }, s("span", t))) : o.replaceChildren(s("span", {
+                        }, l("span", t))) : o.replaceChildren(l("span", {
                             style: "color:#e74c3c",
                             children: _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")
                         }));
                     }
                 };
-            }(), M = s("select", {
+            }(), M = l("select", {
                 id: "hl202-source",
                 class: "cbi-input-select",
                 "aria-label": _("Read-only MQTT source"),
                 style: "min-width:240px"
-            }), R = s("button", {
+            }), R = l("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 style: "margin-left:8px",
                 children: _("Inspect source report (read-only)")
-            }), Z = s("div", {
+            }), Z = l("div", {
                 style: "margin-top:10px"
-            }), A = [], D = s("pre", {
+            }), A = [], D = l("pre", {
                 style: "white-space:pre-wrap;overflow-wrap:anywhere;font-size:80%;max-height:200px;overflow-y:auto"
             }), J = (o = {
                 class: "cbi-section hl202-panel-sources",
                 children: [
-                    s("h3", {
+                    l("h3", {
                         style: "margin-bottom:4px",
                         children: _("MQTT source identity")
                     }),
-                    s("p", {
+                    l("p", {
                         style: "font-size:85%;color:#888;margin-top:0;margin-bottom:8px",
                         children: _("Inspect read-only MQTT source reports and diagnostics for unbound or unselected devices.")
                     }),
                     (r = {
                         style: "display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px",
                         children: [
-                            s("label", {
+                            l("label", {
                                 htmlFor: "hl202-source",
                                 children: [
                                     _("Read-only MQTT source"),
@@ -2003,23 +2002,23 @@ let main = Reflect.apply(tu.extend, tu, [
                             }),
                             R
                         ]
-                    }, s("div", r)),
+                    }, l("div", r)),
                     Z,
                     (i = {
                         style: "margin-top:10px",
                         children: [
-                            s("summary", {
+                            l("summary", {
                                 style: "cursor:pointer;font-size:85%;color:#888;font-weight:600",
                                 children: _("Raw source observations (JSON)")
                             }),
-                            s("div", {
+                            l("div", {
                                 style: "margin-top:6px",
                                 children: D
                             })
                         ]
-                    }, s("details", i))
+                    }, l("details", i))
                 ]
-            }, s("div", o)), q = "report", I = [
+            }, l("div", o)), q = "report", I = [
                 {
                     id: "report",
                     label: _("MQTT report")
@@ -2044,7 +2043,7 @@ let main = Reflect.apply(tu.extend, tu, [
                     let n = (t = {
                         class: q === e.id ? "cbi-tab" : "cbi-tab-disabled",
                         "data-tab": e.id,
-                        children: s("a", {
+                        children: l("a", {
                             href: `#tab-${e.id}`,
                             onclick: (t)=>{
                                 t.preventDefault();
@@ -2054,12 +2053,12 @@ let main = Reflect.apply(tu.extend, tu, [
                             },
                             children: e.label
                         })
-                    }, s("li", t));
+                    }, l("li", t));
                     return Q.set(e.id, n), n;
                 })
-            }, s("ul", a));
+            }, l("ul", a));
             j.element.hidden = !1, N.element.hidden = !0, P.element.hidden = !0, J.hidden = !0;
-            let V = s("div", {
+            let V = l("div", {
                 id: "hl202-panels-container",
                 children: [
                     j.element,
@@ -2085,7 +2084,7 @@ let main = Reflect.apply(tu.extend, tu, [
             }, B = async ()=>{
                 w.disabled = !0, x.textContent = _("Loading devices\u2026");
                 try {
-                    let t = await ti(), n = t.devices;
+                    let t = await to(), n = t.devices;
                     F = n;
                     let r = n.map((e)=>`${e.optical_sn}:${e.onu_id}:${e.optical_online}:${e.can_execute}:${e.report_revision}:${e.mqtt?.binding_generation}`).join("|");
                     if (r !== W) {
@@ -2095,8 +2094,8 @@ let main = Reflect.apply(tu.extend, tu, [
                             var t;
                             return t = {
                                 value: e.optical_sn,
-                                children: eU(`${e.model} / ${e.optical_sn} / ONU ${e.onu_id} \u{2014} ${e.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${e.optical_online ? _("Optical online") : _("Optical offline")}`)
-                            }, s("option", t);
+                                children: eV(`${e.model} / ${e.optical_sn} / ONU ${e.onu_id} \u{2014} ${e.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${e.optical_online ? _("Optical online") : _("Optical offline")}`)
+                            }, l("option", t);
                         })), n.some((t)=>t.optical_sn === e) && (v.value = e);
                     }
                     x.textContent = n.length ? _("Select a device to inspect reports and run operations.") : _("No HL202 optical devices were found."), D.textContent = JSON.stringify(t.sources, null, 2);
@@ -2108,8 +2107,8 @@ let main = Reflect.apply(tu.extend, tu, [
                             binding_generation: n.binding_generation
                         }), M.append((e = {
                             value: n.mqtt_mac,
-                            children: eU(`${n.mqtt_mac} \u{2014} ${String(n.reason)}`)
-                        }, s("option", e)));
+                            children: eV(`${n.mqtt_mac} \u{2014} ${String(n.reason)}`)
+                        }, l("option", e)));
                     }
                     A = o, o.some((e)=>e.mqtt_mac === i) && (M.value = i), R.disabled = 0 === o.length, K();
                     let a = n.find((e)=>e.optical_sn === v.value);
@@ -2123,7 +2122,7 @@ let main = Reflect.apply(tu.extend, tu, [
             v.addEventListener("change", K), R.addEventListener("click", ()=>{
                 let e = A.find((e)=>e.mqtt_mac === M.value);
                 if (Z.replaceChildren(), e) {
-                    let t = td();
+                    let t = tu();
                     t.setTarget(e), Z.append(t.element), t.refresh(e);
                 }
             }), w.addEventListener("click", ()=>{
@@ -2132,7 +2131,7 @@ let main = Reflect.apply(tu.extend, tu, [
             let X = (u = {
                 class: "cbi-map hl202-management",
                 children: [
-                    s("style", {
+                    l("style", {
                         children: `
 				.hl202-management {
 					--fttr-success-bg: rgba(46, 204, 113, 0.15);
@@ -2350,20 +2349,20 @@ let main = Reflect.apply(tu.extend, tu, [
 				}
 				`
                     }),
-                    s("h2", {
+                    l("h2", {
                         children: _("HL202 sub-gateway management")
                     }),
-                    (d = {
+                    (c = {
                         class: "cbi-section",
                         children: [
-                            (c = {
+                            (d = {
                                 style: "display:flex;align-items:center;flex-wrap:wrap;gap:10px",
                                 children: [
-                                    (l = {
+                                    (s = {
                                         htmlFor: "hl202-device",
                                         style: "display:flex;align-items:center;gap:8px",
                                         children: [
-                                            s("strong", {
+                                            l("strong", {
                                                 children: [
                                                     _("HL202 device"),
                                                     ":"
@@ -2371,18 +2370,18 @@ let main = Reflect.apply(tu.extend, tu, [
                                             }),
                                             v
                                         ]
-                                    }, s("label", l)),
+                                    }, l("label", s)),
                                     w
                                 ]
-                            }, s("div", c)),
+                            }, l("div", d)),
                             x,
                             O
                         ]
-                    }, s("div", d)),
+                    }, l("div", c)),
                     U,
                     V
                 ]
-            }, s("div", u)), G = async ()=>{
+            }, l("div", u)), G = async ()=>{
                 X.isConnected && (await B(), X.isConnected && window.setTimeout(()=>void G(), 5000));
             };
             return window.setTimeout(()=>void G(), 5000), X;

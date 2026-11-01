@@ -16,7 +16,8 @@
 					"hl202_report",
 					"hl202_job_result",
 					"get_calibration",
-					"optical_status"
+					"optical_status",
+					"npu_status"
 				],
 				"luci-rpc": ["getNetworkDevices"]
 			}
@@ -33,7 +34,8 @@
 					"hl202_account_update",
 					"save_calibration",
 					"apply_calibration",
-					"optical_set"
+					"optical_set",
+					"npu_set"
 				]
 			}
 		}

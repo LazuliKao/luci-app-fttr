@@ -72,7 +72,7 @@ fi
 
 case "$1" in
 	list)
-		printf '{"get_capabilities":{},"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{},"optical_status":{},"optical_set":{"enabled":false}}\n'
+		printf '{"get_capabilities":{},"get_status":{},"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"get_sync":{},"config_check":{},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"path":"","data":""},"apply_calibration":{},"optical_status":{},"optical_set":{"enabled":false},"npu_status":{},"npu_set":{"enabled":false}}\n'
 		exit 0
 		;;
 	call)
@@ -209,6 +209,34 @@ case "$1" in
 			case "$reply" in {*) ;; *) reply="";; esac
 			if [ -z "$reply" ]; then
 				printf '{"error":"Failed to change laser output"}\n'
+				exit 1
+			fi
+			printf '%s\n' "$reply"
+			exit 0
+			;;
+		npu_status)
+			status="$(/usr/sbin/fttrctl offload status --json 2>/dev/null)"
+			case "$status" in {*) ;; *) status="";; esac
+			if [ -z "$status" ]; then
+				printf '{"error":"NPU status is unavailable"}\n'
+				exit 1
+			fi
+			printf '%s\n' "$status"
+			exit 0
+			;;
+		npu_set)
+			read -r request
+			json_load "$request" || error 'Invalid JSON request'
+			json_get_var enabled enabled
+			case "$enabled" in 0|1) ;; *) error 'Invalid enabled option';; esac
+			if [ "$enabled" = 1 ]; then
+				reply="$(/usr/sbin/fttrctl offload on --json 2>/dev/null)"
+			else
+				reply="$(/usr/sbin/fttrctl offload off --json 2>/dev/null)"
+			fi
+			case "$reply" in {*) ;; *) reply="";; esac
+			if [ -z "$reply" ]; then
+				printf '{"error":"Failed to change NPU offload state"}\n'
 				exit 1
 			fi
 			printf '%s\n' "$reply"

@@ -1,7 +1,7 @@
 import * as z from "zod/mini";
 import { checked } from "./common";
 import { configCheck, syncStatus } from "./provisioning";
-import { networkDevices, status } from "./status";
+import { type NpuStatus, networkDevices, npuStatus, status } from "./status";
 
 const rawStatus = L.rpc.declare<unknown>({ object: "luci.fttr", method: "get_status", reject: true });
 const rawSync = L.rpc.declare<unknown>({ object: "luci.fttr", method: "get_sync", reject: true });
@@ -67,6 +67,31 @@ export const getOpticalStatus = async (): Promise<OpticalReply> => opticalReply.
 
 export const setOptical = async (enabled: boolean): Promise<OpticalReply> =>
 	opticalReply.parse(await rawOpticalSet(enabled));
+
+// NPU / PPE Hardware Offload control.
+export const npuReply = z.object({
+	status: z.enum(["success", "error"]),
+	enabled: z.optional(z.boolean()),
+	error: z.optional(z.string()),
+});
+export type NpuReply = z.infer<typeof npuReply>;
+
+const rawNpuStatus = L.rpc.declare<unknown>({
+	object: "luci.fttr",
+	method: "npu_status",
+	reject: true,
+});
+
+const rawNpuSet = L.rpc.declare<unknown, [boolean]>({
+	object: "luci.fttr",
+	method: "npu_set",
+	params: ["enabled"],
+	reject: true,
+});
+
+export const getNpuStatus = async (): Promise<NpuStatus> => npuStatus.parse(await rawNpuStatus());
+
+export const setNpu = async (enabled: boolean): Promise<NpuReply> => npuReply.parse(await rawNpuSet(enabled));
 
 export type SyncAction =
 	| "plan"

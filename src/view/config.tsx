@@ -6,7 +6,7 @@ import { openRecovery } from "./config/recovery";
 import { saveConfiguration } from "./config/save";
 import { addServices } from "./config/services";
 import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
-import { requirePage } from "./contracts/capabilities";
+import { type Capabilities, getCapabilities } from "./contracts/capabilities";
 import type { FttrStatus, SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -28,13 +28,22 @@ async function command<T>(
 	}
 }
 
-type InitialCheck = { error?: string; connectedDevices: SubGateway[]; pinning?: FttrStatus["onu_pinning"] };
+type InitialCheck = {
+	error?: string;
+	connectedDevices: SubGateway[];
+	pinning?: FttrStatus["onu_pinning"];
+	capabilities?: Capabilities;
+};
 const main = view.extend({
 	async load(): Promise<InitialCheck> {
-		await requirePage("config");
+		const capabilities = await getCapabilities().catch(() => undefined);
+		if (capabilities && !capabilities.pages.config) {
+			throw new Error(_("This page is not supported by the installed FTTR build."));
+		}
 		await uci.load("fttr");
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
+		if (!uci.sections("fttr", "offload").length) uci.add("fttr", "offload", "offload");
 		const [check, status] = await Promise.all([
 			checkConfig().catch((error: unknown) => ({ error: String(error) })),
 			getStatus().catch((error: unknown) => ({ error: String(error), sub_gateways: [] })),
@@ -43,6 +52,7 @@ const main = view.extend({
 			error: check.error || ("error" in status ? status.error : undefined),
 			connectedDevices: status.sub_gateways,
 			pinning: "onu_pinning" in status ? status.onu_pinning : undefined,
+			capabilities,
 		};
 	},
 	render(initialCheck: InitialCheck): Promise<Node> {
@@ -53,7 +63,7 @@ const main = view.extend({
 
 		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
 		addBasic(section, _("Basic"), globalId);
-		addDevices(section, initialCheck.connectedDevices ?? [], initialCheck.pinning);
+		addDevices(section, initialCheck.connectedDevices ?? [], initialCheck.pinning, initialCheck.capabilities);
 		addServices(section);
 		// The inherited Save & Apply handler calls this explicit page-save entry.
 		this.handleSave = () => saveConfiguration(map);

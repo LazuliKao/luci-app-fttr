@@ -1260,7 +1260,7 @@ const e2 = eP("state", [
         "delete"
     ]))
 });
-let e5 = ez({
+let e4 = ez({
     enabled: eH,
     mode: eU([
         "auto",
@@ -1273,7 +1273,7 @@ let e5 = ez({
     port: eV,
     path: eI,
     dhcp_enabled: eH
-}), e4 = ez({
+}), e5 = ez({
     state: eU([
         "discovering",
         "comparing",
@@ -1296,9 +1296,9 @@ let e5 = ez({
     applied_version: eZ(eI),
     next_retry_at: eV,
     attempts: eV,
-    desired: eZ(e5),
-    applied: eZ(e5),
-    previous: eZ(e5),
+    desired: eZ(e4),
+    applied: eZ(e4),
+    previous: eZ(e4),
     plan: ew(ez({
         operation: eI,
         key: eI,
@@ -1341,7 +1341,7 @@ const e8 = ez({
     }),
     error: eZ(eI),
     devices: ew(e8),
-    management_network: e4,
+    management_network: e5,
     omci_management: eF(),
     groups: ew(ez({
         id: eI,
@@ -1451,6 +1451,13 @@ const ts = ez({
         rx_bytes: te,
         current_tx_kbps: te,
         current_rx_kbps: te,
+        offload: eN(ez({
+            enabled: eN(eZ(e_())),
+            routed_enabled: eN(eZ(e_())),
+            bridge_enabled: eN(eZ(e_())),
+            engine_attached: eN(eZ(e_())),
+            forwarding_verified: eN(eZ(e_()))
+        })),
         measurements: tt
     }),
     wifi_mesh: ez({
@@ -1480,6 +1487,32 @@ let to = ez({
     onu_sn: eN(e7),
     link_state: e7
 });
+const tl = ez({
+    index: e7,
+    state: e7,
+    pkt_type: e7,
+    orig_tuple: e7,
+    new_tuple: e7,
+    eth: e7,
+    vlan: e7,
+    packets: e9,
+    bytes: e9
+}), td = ez({
+    supported: e_(),
+    engine_attached: e_(),
+    bridge_offload_enabled: e_(),
+    bridge_offload_mask: e9,
+    routed_offload_mask: e9,
+    bridge_offload_debug: e_(),
+    bridge: e7,
+    active_ports: ew(e7),
+    fw4_hooks_ready: e_(),
+    total_entries: e9,
+    bound_entries: e9,
+    total_packets: e9,
+    total_bytes: e9,
+    bound_flows: ew(tl)
+});
 ez({
     onu_pinning: eN(ez({
         desired: eA(e7, e9),
@@ -1498,7 +1531,8 @@ ez({
         id: e7,
         last_seen_sec_ago: e9,
         last_payload_bytes: e9
-    }))
+    })),
+    npu: eN(eZ(td))
 }), eA(e7, ez({
     carrier: eN(e_()),
     mac: eN(e7),
@@ -1582,6 +1616,24 @@ ez({
         "enabled"
     ],
     reject: !0
+}), ez({
+    status: eU([
+        "success",
+        "error"
+    ]),
+    enabled: eN(e_()),
+    error: eN(eu())
+}), L.rpc.declare({
+    object: "luci.fttr",
+    method: "npu_status",
+    reject: !0
+}), L.rpc.declare({
+    object: "luci.fttr",
+    method: "npu_set",
+    params: [
+        "enabled"
+    ],
+    reject: !0
 }), ej([
     ez({
         operation_ids: ew(eh()),
@@ -1608,11 +1660,11 @@ ez({
         retry: eN(e_())
     })
 ]);
-let tl = L.rpc.declare({
+let tc = L.rpc.declare({
     object: "luci.fttr",
     method: "get_calibration",
     reject: !0
-}), td = L.rpc.declare({
+}), tp = L.rpc.declare({
     object: "luci.fttr",
     method: "save_calibration",
     params: [
@@ -1620,12 +1672,12 @@ let tl = L.rpc.declare({
         "data"
     ],
     reject: !0
-}), tc = L.rpc.declare({
+}), tu = L.rpc.declare({
     object: "luci.fttr",
     method: "apply_calibration",
     reject: !0
 });
-const tp = ez({
+const tf = ez({
     source: eU([
         "factory",
         "firmware",
@@ -1650,26 +1702,26 @@ const tp = ez({
         data: eu()
     }),
     error: eN(eu())
-}), tu = ez({
+}), th = ez({
     success: e_(),
     path: eu(),
     size: eh(),
     sha256: eu(),
     error: eN(eu())
-}), tf = ez({
+}), tg = ez({
     success: e_(),
     output: eN(eu()),
     error: eN(eu())
-}), th = async ()=>tp.parse(eX(await tl())), tg = async (e)=>tu.parse(eX(await td("/lib/firmware/modified_UX3326.bin", e))), t_ = async ()=>tf.parse(eX(await tc()));
-async function tm(e) {
+}), t_ = async ()=>tf.parse(eX(await tc())), tm = async (e)=>th.parse(eX(await tp("/lib/firmware/modified_UX3326.bin", e))), ty = async ()=>tg.parse(eX(await tu()));
+async function tb(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : _("Unavailable");
 }
-function ty(e) {
+function tv(e) {
     let t = window.atob(e), r = t.length, i = new Uint8Array(r);
     for(let e = 0; e < r; e++)i[e] = t.charCodeAt(e);
     return i.buffer;
 }
-function tb(e, t) {
+function tw(e, t) {
     let r = new Uint8Array(e), i = r.byteLength;
     if (288 !== i && 56 !== i) return null;
     let n = new DataView(e), a = [];
@@ -1755,7 +1807,7 @@ function tb(e, t) {
         }(u)
     }, u;
 }
-function tv(e, t, r) {
+function tx(e, t, r) {
     var i, n, a, o, l, d, c, p, u, f, h, g, m, y, b, v, w, x, z, k, j, S, P, O, A, T, U, C, $, N, M, Z, D, F, R;
     let B = e.isStockHash ? s("span", {
         class: "fttr-badge fttr-badge-success",
@@ -2221,7 +2273,7 @@ function tv(e, t, r) {
     }, s("div", R);
 }
 let main = L.view.extend({
-    load: ()=>th(),
+    load: ()=>t_(),
     render: (e)=>(function(e) {
             var t, r, i, n, a, o, l, d, c, p, u;
             let f = document.createElement("div");
@@ -2277,13 +2329,13 @@ let main = L.view.extend({
                 }, s("div", i)));
                 let P = null;
                 if (e.data) try {
-                    let t = ty(e.data);
-                    P = tb(t, e.sha256);
+                    let t = tv(e.data);
+                    P = tw(t, e.sha256);
                 } catch  {}
                 let O = null;
                 if (e.factory.has_data && e.factory.data) try {
-                    let t = ty(e.factory.data);
-                    O = tb(t, e.factory.sha256);
+                    let t = tv(e.factory.data);
+                    O = tw(t, e.factory.sha256);
                 } catch  {}
                 y.appendChild((S = {
                     class: "cbi-section",
@@ -2496,11 +2548,11 @@ let main = L.view.extend({
                         }, s("div", j)),
                         e.factory.has_data && O && s("div", {
                             style: "margin-top:16px",
-                            children: tv(O, _("Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)").format("0x2200"), "factory" === e.source ? _("Device: %s, length %s bytes (currently in use by the system)").format(e.factory.device, "288") : _("Device: %s, length %s bytes").format(e.factory.device, "288"))
+                            children: tx(O, _("Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)").format("0x2200"), "factory" === e.source ? _("Device: %s, length %s bytes (currently in use by the system)").format(e.factory.device, "288") : _("Device: %s, length %s bytes").format(e.factory.device, "288"))
                         }),
                         (!e.factory.has_data || "factory" !== e.source) && P && s("div", {
                             style: "margin-top:16px",
-                            children: tv(P, _("Currently active system calibration parameters (%s)").format(e.active_path), _("Active data size: %s bytes").format(String(e.size)))
+                            children: tx(P, _("Currently active system calibration parameters (%s)").format(e.active_path), _("Active data size: %s bytes").format(String(e.size)))
                         })
                     ]
                 }, s("div", S)));
@@ -2591,7 +2643,7 @@ let main = L.view.extend({
                 try {
                     let t = await e.arrayBuffer();
                     h = t;
-                    let r = await tm(t), f = tb(t, r);
+                    let r = await tb(t), f = tw(t, r);
                     if (!f) return void v.appendChild((a = {
                         class: "alert-message danger",
                         children: [
@@ -2631,7 +2683,7 @@ let main = L.view.extend({
                                 ]
                             }, s("p", p))
                         ]
-                    }, s("div", u))), b.appendChild(tv(f, _("Parameter preview for upload: %s").format(e.name)));
+                    }, s("div", u))), b.appendChild(tx(f, _("Parameter preview for upload: %s").format(e.name)));
                 } catch (e) {
                     v.appendChild((f = {
                         class: "alert-message danger",
@@ -2659,12 +2711,12 @@ let main = L.view.extend({
                             let t = "", r = new Uint8Array(e), i = r.byteLength;
                             for(let e = 0; e < i; e++)t += String.fromCharCode(r[e]);
                             return window.btoa(t);
-                        }(h), o = x.checked, l = await tg(a);
+                        }(h), o = x.checked, l = await tm(a);
                         if (!l.success) throw Error(l.error || _("Failed to save calibration file"));
                         let d = "";
                         if (o) {
                             z.textContent = _("Configuring BOSA optical transceiver hardware...");
-                            let e = await t_();
+                            let e = await ty();
                             d = e.success ? _(", and the optical transceiver hardware was reset and the register table was latched successfully (%s succeeded)").format("bosa-init") : _(", but optical transceiver hardware initialization reported a warning: %s").format(e.error || _("Unknown error"));
                         }
                         v.appendChild((n = {
@@ -2695,7 +2747,7 @@ let main = L.view.extend({
                                 }, s("p", i))
                             ]
                         }, s("div", n)));
-                        let c = await th();
+                        let c = await t_();
                         w(c);
                     } catch (e) {
                         v.appendChild((a = {
