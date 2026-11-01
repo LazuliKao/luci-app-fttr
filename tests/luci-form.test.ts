@@ -136,6 +136,7 @@ const NativeElement = new Function(
 	`${uiSource.slice(uiSource.indexOf("const UIElement ="), uiSource.indexOf("const UITextfield ="))}; return UIElement;`,
 )(baseclass);
 const { addServices } = await import("../src/view/config/services");
+const { addDevices } = await import("../src/view/config/devices");
 const { saveConfiguration } = await import("../src/view/config/save");
 const { openRecovery } = await import("../src/view/config/recovery");
 const { reference } = await import("../src/view/config/form");
@@ -393,4 +394,37 @@ test("read-only users can inspect recovery but cannot edit or delete", async () 
 	await click("Edit to repair");
 	assert.deepEqual([...rows], before);
 	assert.equal(transports, 0);
+});
+
+test("device editor modal configures general, cwmp, and advanced tabs", () => {
+	const map = new L.form.Map("fttr");
+	const root = map.section(L.form.NamedSection, "main", "main");
+	addDevices(root, []);
+	const deviceGrid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
+	assert.ok(deviceGrid instanceof L.form.GridSection);
+	assert.deepEqual(
+		deviceGrid.tabs.map((t: any) => t.name),
+		["general", "cwmp", "advanced"],
+	);
+
+	const general = deviceGrid.children.filter((opt: any) => opt.tab === "general").map((opt: any) => opt.option);
+	const cwmp = deviceGrid.children.filter((opt: any) => opt.tab === "cwmp").map((opt: any) => opt.option);
+	const advanced = deviceGrid.children.filter((opt: any) => opt.tab === "advanced").map((opt: any) => opt.option);
+
+	assert.ok(general.includes("optical_sn"));
+	assert.ok(general.includes("adapter"));
+	assert.ok(general.includes("provisioning_method"));
+	assert.ok(general.includes("group"));
+	assert.ok(general.includes("onu_id"));
+	assert.ok(general.includes("_pin_current"));
+
+	assert.ok(cwmp.includes("cwmp_contract"));
+	assert.ok(cwmp.includes("connection_request"));
+	assert.ok(cwmp.includes("connection_request_defaults"));
+	assert.ok(cwmp.includes("connection_request_username"));
+	assert.ok(cwmp.includes("connection_request_password"));
+	assert.ok(cwmp.includes("connection_request_port"));
+
+	assert.ok(advanced.includes("omci_management"));
+	assert.ok(advanced.includes("wifi_cleanup"));
 });

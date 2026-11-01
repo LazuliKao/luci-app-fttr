@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { FttrStatus } from "../contracts/status";
-import { choice, field, grid, guardRemoval, preview, reference } from "./form";
+import { field, grid, guardRemoval, preview, reference, tabchoice, tabfield, tabreference } from "./form";
 import { removeGroup } from "./operations";
 
 interface ConnectedDevice {
@@ -39,7 +39,26 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 			const serial = String(L.uci.get("fttr", id, "optical_sn") || "");
 			return serial ? label(serial) : _("New device");
 		});
-		const serial = field(s, L.form.ListValue, "optical_sn", _("Connected device"));
+		preview(s, "_active_pin", _("Active allocation"), (id) => {
+			const sn = String(L.uci.get("fttr", id, "optical_sn") || "");
+			const active = pinning?.active[sn.toUpperCase()];
+			const actual = connected.find((device) => device.serial_number.toUpperCase() === sn.toUpperCase())?.onu_id;
+			const desired = L.uci.get("fttr", id, "onu_id");
+			const pending = (desired == null || desired === "" ? undefined : Number(desired)) !== active;
+			return [
+				actual != null ? `fttr${actual + 1}` : _("Not registered"),
+				active != null ? `${_("Reserved")}: fttr${active + 1}` : _("Automatic allocation"),
+				pending ? _("Pending restart") : "",
+			]
+				.filter(Boolean)
+				.join(" · ");
+		});
+
+		s.tab("general", _("General Settings"));
+		s.tab("cwmp", _("CWMP Settings"));
+		s.tab("advanced", _("Advanced Settings"));
+
+		const serial = tabfield(s, "general", L.form.ListValue, "optical_sn", _("Connected device"));
 		serial.modalonly = true;
 		serial.rmempty = false;
 		serial.description = _(
@@ -74,7 +93,7 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 			const adapter = adapterFor(bySerial.get(value));
 			if (adapter && !L.uci.get("fttr", id, "adapter")) L.uci.set("fttr", id, "adapter", adapter);
 		};
-		const adapterField = choice(s, "adapter", _("Device adapter"), [
+		const adapterField = tabchoice(s, "general", "adapter", _("Device adapter"), [
 			["hl202", "H3C HL202"],
 			["hwtc", "Huawei HWTC"],
 			["generic", _("Generic G.988 Bridge")],
@@ -82,9 +101,21 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		adapterField.modalonly = true;
 		adapterField.default = "generic";
 		adapterField.rmempty = false;
-		reference(s, "group", _("Group"), "group").modalonly = true;
-		const pin = choice(
+		const method = tabchoice(s, "general", "provisioning_method", _("Provisioning method"), [
+			["", _("Automatic (HL202 command, otherwise ACS)")],
+			["command", _("Command (MQTT / tcapi)")],
+			["acs", _("ACS (CWMP)")],
+		]);
+		method.modalonly = true;
+		method.retain = true;
+		method.depends("adapter", "hl202");
+		method.description = _(
+			"HL202 defaults to native command provisioning with readback verification. Builds without MQTT use ACS. Transport failures require reconciliation and do not switch to ACS automatically.",
+		);
+		tabreference(s, "general", "group", _("Group"), "group").modalonly = true;
+		const pin = tabchoice(
 			s,
+			"general",
 			"onu_id",
 			_("Fixed interface"),
 			[
@@ -100,7 +131,8 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		pin.description = _(
 			"Reserves this interface by optical serial number, even while offline. Changes take effect after restarting FTTR; Reload does not move registered devices.",
 		);
-		const pinCurrent: InstanceType<typeof L.form.Button> = s.option(
+		const pinCurrent: InstanceType<typeof L.form.Button> = s.taboption(
+			"general",
 			L.form.Button,
 			"_pin_current",
 			_("Use current interface"),
@@ -128,21 +160,7 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 				? _("Interface already reserved by another device.")
 				: true;
 		};
-		preview(s, "_active_pin", _("Active allocation"), (id) => {
-			const sn = String(L.uci.get("fttr", id, "optical_sn") || "");
-			const active = pinning?.active[sn.toUpperCase()];
-			const actual = connected.find((device) => device.serial_number.toUpperCase() === sn.toUpperCase())?.onu_id;
-			const desired = L.uci.get("fttr", id, "onu_id");
-			const pending = (desired == null || desired === "" ? undefined : Number(desired)) !== active;
-			return [
-				actual != null ? `fttr${actual + 1}` : _("Not registered"),
-				active != null ? `${_("Reserved")}: fttr${active + 1}` : _("Automatic allocation"),
-				pending ? _("Pending restart") : "",
-			]
-				.filter(Boolean)
-				.join(" · ");
-		});
-		const contract = choice(s, "cwmp_contract", _("CWMP contract"), [
+		const contract = tabchoice(s, "cwmp", "cwmp_contract", _("CWMP contract"), [
 			["auto", _("Automatic (read-only capability discovery)")],
 			["hl202-cu", "HL202 · CU"],
 			["hwtc-hw", "HWTC · HW"],
@@ -157,15 +175,22 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		contract.description = _(
 			"Independent of the optical adapter. Parameter paths, types and writable evidence are discovered before synchronization. Unverified candidates do not authorize writes.",
 		);
-		const connectionRequest = field(s, L.form.Flag, "connection_request", _("Supports Connection Request"));
+		const connectionRequest = tabfield(
+			s,
+			"cwmp",
+			L.form.Flag,
+			"connection_request",
+			_("Supports Connection Request"),
+		);
 		connectionRequest.modalonly = true;
 		connectionRequest.default = "1";
 		connectionRequest.rmempty = false;
 		connectionRequest.description = _(
 			"Independent per device; enabled by default for all adapters. Enabled: on-demand sessions with periodic Inform enabled and an interval of at most 12 hours (backend default: 43200 seconds). Disabled: manually set PeriodicInformEnable to true and PeriodicInformInterval to at most 180 seconds; no interval is written automatically. Requires reachable CWMP, verified standard parameters, HTTP Digest support, a prior Inform with a ConnectionRequestURL and valid CPE credentials. Firmware support is not guaranteed. Acceptance is not proof of a session or completed RPCs.",
 		);
-		const requestDefaults = field(
+		const requestDefaults = tabfield(
 			s,
+			"cwmp",
 			L.form.Flag,
 			"connection_request_defaults",
 			_("Use backend Connection Request defaults"),
@@ -186,8 +211,9 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		requestDefaults.description = _(
 			"Uses a backend-reserved profile; factory credentials are not yet verified. Disable to enter this CPE's existing credentials and port. Saved custom values are retained while hidden.",
 		);
-		const requestUsername = field(
+		const requestUsername = tabfield(
 			s,
+			"cwmp",
 			L.form.Value,
 			"connection_request_username",
 			_("CPE Connection Request username"),
@@ -200,8 +226,9 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		requestUsername.description = _(
 			"Enter this CPE's existing Connection Request credentials, not the ACS inbound HTTP Basic credentials. No custom credential defaults are assumed.",
 		);
-		const requestPassword = field(
+		const requestPassword = tabfield(
 			s,
+			"cwmp",
 			L.form.Value,
 			"connection_request_password",
 			_("CPE Connection Request password"),
@@ -215,20 +242,33 @@ export function addDevices(section: any, connected: ConnectedDevice[], pinning?:
 		requestPassword.description = _(
 			"Saved custom values are retained when Connection Requests are disabled or backend defaults are selected. Leave these fields unchanged to preserve their saved values.",
 		);
-		const requestPort = field(s, L.form.Value, "connection_request_port", _("CPE Connection Request port"), "port");
+		const requestPort = tabfield(
+			s,
+			"cwmp",
+			L.form.Value,
+			"connection_request_port",
+			_("CPE Connection Request port"),
+			"port",
+		);
 		requestPort.modalonly = true;
 		requestPort.default = "7547";
 		requestPort.rmempty = false;
 		requestPort.retain = true;
 		requestPort.depends({ connection_request: "1", connection_request_defaults: "0" });
-		const omci = field(s, L.form.Flag, "omci_management", _("Provision management VLAN and ACS via OMCI"));
+		const omci = tabfield(
+			s,
+			"advanced",
+			L.form.Flag,
+			"omci_management",
+			_("Provision management VLAN and ACS via OMCI"),
+		);
 		omci.modalonly = true;
 		omci.default = "0";
 		omci.rmempty = false;
 		omci.description = _(
 			"Disabled by default. Uses the global management VLAN, priority and ACS URL for this device only, subject to management application authorization. Disabling skips future OMCI management writes and retains existing ONU settings. ME readback does not prove WAN creation or successful Inform; K155 may clear its local ACS URL when enabled.",
 		);
-		const cleanup = choice(s, "wifi_cleanup", _("Unconfigured WLANs"), [
+		const cleanup = tabchoice(s, "advanced", "wifi_cleanup", _("Unconfigured WLANs"), [
 			["disable", _("Disable (keep the WLAN object)")],
 			["preserve", _("Leave unchanged")],
 			["delete", _("Delete the WLAN object")],

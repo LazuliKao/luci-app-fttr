@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-01 17:16+0800\n"
+"POT-Creation-Date: 2026-11-01 18:10+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -127,6 +127,9 @@ msgstr ""
 msgid "Account data is unavailable."
 msgstr ""
 
+msgid "ACS (CWMP)"
+msgstr ""
+
 msgid "ACS bootstrap"
 msgstr ""
 
@@ -158,6 +161,9 @@ msgid "Address"
 msgstr ""
 
 msgid "Advanced diagnostics / Raw configuration (JSON)"
+msgstr ""
+
+msgid "Advanced Settings"
 msgstr ""
 
 msgid "All devices"
@@ -219,6 +225,9 @@ msgid "Authorize and apply management settings"
 msgstr ""
 
 msgid "Automatic"
+msgstr ""
+
+msgid "Automatic (HL202 command, otherwise ACS)"
 msgstr ""
 
 msgid "Automatic (read-only capability discovery)"
@@ -345,6 +354,9 @@ msgid "Collecting VLAN tables"
 msgstr ""
 
 msgid "Collecting VLAN tables queries extended filter tables and takes longer."
+msgstr ""
+
+msgid "Command (MQTT / tcapi)"
 msgstr ""
 
 msgid "Command in progress"
@@ -484,6 +496,9 @@ msgid "CWMP interface references"
 msgstr ""
 
 msgid "CWMP path"
+msgstr ""
+
+msgid "CWMP Settings"
 msgstr ""
 
 msgid "Data interface"
@@ -837,6 +852,9 @@ msgstr ""
 msgid "G.988 encoded field values"
 msgstr ""
 
+msgid "General Settings"
+msgstr ""
+
 msgid "Generated ACS URL"
 msgstr ""
 
@@ -865,6 +883,12 @@ msgid "Hardware status"
 msgstr ""
 
 msgid "Hardware version"
+msgstr ""
+
+msgid ""
+"HL202 defaults to native command provisioning with readback verification. "
+"Builds without MQTT use ACS. Transport failures require reconciliation and "
+"do not switch to ACS automatically."
 msgstr ""
 
 msgid "HL202 device"
@@ -1491,6 +1515,9 @@ msgstr ""
 msgid "Provisioning is disabled"
 msgstr ""
 
+msgid "Provisioning method"
+msgstr ""
+
 msgid "Provisioning status unavailable"
 msgstr ""
 
@@ -1745,9 +1772,6 @@ msgid "Select an existing template."
 msgstr ""
 
 msgid "Select an interface from fttr1 to fttr16."
-msgstr ""
-
-msgid "Select an item"
 msgstr ""
 
 msgid ""

@@ -8,6 +8,12 @@ export function field(section: any, type: any, name: string, title: string, data
 	return option;
 }
 
+export function tabfield(section: any, tab: string, type: any, name: string, title: string, datatype?: string): any {
+	const option = section.taboption(tab, type, name, title);
+	if (datatype) option.datatype = datatype.startsWith("range(") ? `and(uinteger,${datatype})` : datatype;
+	return option;
+}
+
 export function choice(
 	section: any,
 	name: string,
@@ -21,10 +27,52 @@ export function choice(
 	return option;
 }
 
+export function tabchoice(
+	section: any,
+	tab: string,
+	name: string,
+	title: string,
+	values: Array<[string, string]>,
+	optional = false,
+): any {
+	const option = tabfield(section, tab, form.ListValue, name, title);
+	for (const [value, label] of values) option.value(value, label);
+	option.rmempty = optional;
+	return option;
+}
+
 export function reference(section: any, name: string, title: string, kind: string, optional = false): any {
 	// Keep validation and presentation in the same LuCI widget. Themes may
 	// replace native selects and strand validation messages behind the proxy.
 	const option = field(section, form.RichListValue, name, title);
+	option.rmempty = optional;
+	option.optional = optional;
+	option.default = "";
+	dynamicChoices(option, () => [
+		...(optional ? [["", _("None")] as [string, string]] : []),
+		...L.uci
+			.sections("fttr", kind)
+			.map((item): [string, string] => [
+				item[".name"],
+				String(item.name || item.ssid || item.optical_sn || item[".name"]),
+			]),
+	]);
+	option.validate = (_id: string, value: string) =>
+		(optional && !value) || L.uci.sections("fttr", kind).some((item) => item[".name"] === value)
+			? true
+			: _("Select an existing item.");
+	return option;
+}
+
+export function tabreference(
+	section: any,
+	tab: string,
+	name: string,
+	title: string,
+	kind: string,
+	optional = false,
+): any {
+	const option = tabfield(section, tab, form.RichListValue, name, title);
 	option.rmempty = optional;
 	option.optional = optional;
 	option.default = "";

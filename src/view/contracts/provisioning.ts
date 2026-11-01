@@ -60,7 +60,7 @@ const lifecycle = z.object({
 });
 export const management = z.object({
 	cwmp_id: str,
-	state: z.enum(["online", "waiting_inform", "offline_or_stale"]),
+	state: z.enum(["online", "waiting_inform", "offline_or_stale", "waiting_transport"]),
 	optical_online: bool,
 	last_inform: z.nullable(num),
 	age_seconds: z.nullable(num),
@@ -110,6 +110,7 @@ export const acsBootstrap = z.discriminatedUnion("state", [
 	z.extend(z.partial(bootstrapSnapshot), { state: z.enum(["pending", "unavailable"]), reason: str }),
 ]);
 export const provisioning = z.object({
+	backend: z.optional(z.object({ configured: str, effective: str, available: z.array(str), reason: str })),
 	state: operationPhase,
 	operation_id: optNumber,
 	device: optString,

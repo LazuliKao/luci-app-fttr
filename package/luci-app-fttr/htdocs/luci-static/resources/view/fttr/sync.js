@@ -1090,7 +1090,8 @@ const e3 = eS({
     state: eI([
         "online",
         "waiting_inform",
-        "offline_or_stale"
+        "offline_or_stale",
+        "waiting_transport"
     ]),
     optical_online: eQ,
     last_inform: eW(eH),
@@ -1198,6 +1199,12 @@ const e6 = eC("state", [
         reason: eG
     })
 ]), e7 = eS({
+    backend: eD(eS({
+        configured: eG,
+        effective: eG,
+        available: ej(eG),
+        reason: eG
+    })),
     state: e1,
     operation_id: eY,
     device: eX,
@@ -4472,6 +4479,17 @@ let main = L.view.extend({
                                         (h = {
                                             class: "fttr-card-meta-tags",
                                             children: [
+                                                ek.backend ? s("span", {
+                                                    class: "fttr-badge fttr-badge-info",
+                                                    title: ek.backend.reason,
+                                                    children: [
+                                                        _("Provisioning method"),
+                                                        ": ",
+                                                        ek.backend.configured,
+                                                        " \u2192 ",
+                                                        ek.backend.effective
+                                                    ]
+                                                }) : null,
                                                 t.group_name ? s("span", {
                                                     class: "fttr-badge fttr-badge-neutral",
                                                     title: _("Group"),
@@ -4753,7 +4771,7 @@ let main = L.view.extend({
                                 }, s("div", J))
                             ]
                         }, s("div", K)) : null,
-                        (u = t.acs_bootstrap) ? (e_ = {
+                        ek.backend?.effective === "command" ? null : (u = t.acs_bootstrap) ? (e_ = {
                             style: "margin-top:1.2em",
                             children: [
                                 (H = {

@@ -340,6 +340,11 @@ function deviceCard(
 						<small style="font-size:75%;font-weight:normal;color:#888">({device.adapter})</small>
 					</h3>
 					<div class="fttr-card-meta-tags">
+						{op.backend ? (
+							<span class="fttr-badge fttr-badge-info" title={op.backend.reason}>
+								{_("Provisioning method")}: {op.backend.configured} → {op.backend.effective}
+							</span>
+						) : null}
 						{device.group_name ? (
 							<span class="fttr-badge fttr-badge-neutral" title={_("Group")}>
 								{device.group_name}
@@ -502,7 +507,9 @@ function deviceCard(
 				</div>
 			) : null}
 
-			{bootstrapCard(device.acs_bootstrap, applyManagement, managementApplyDisabled)}
+			{op.backend?.effective === "command"
+				? null
+				: bootstrapCard(device.acs_bootstrap, applyManagement, managementApplyDisabled)}
 
 			{lifecycle.length ? (
 				<div style="margin-top:1.2em">

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-01 17:16+0800\n"
+"POT-Creation-Date: 2026-11-01 18:10+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -127,6 +127,9 @@ msgstr "关于 FTTR"
 msgid "Account data is unavailable."
 msgstr "账户数据不可用。"
 
+msgid "ACS (CWMP)"
+msgstr "ACS（CWMP）"
+
 msgid "ACS bootstrap"
 msgstr "ACS 引导配置"
 
@@ -159,6 +162,9 @@ msgstr "地址"
 
 msgid "Advanced diagnostics / Raw configuration (JSON)"
 msgstr "高级诊断 / 原始配置（JSON）"
+
+msgid "Advanced Settings"
+msgstr "高级设置"
 
 msgid "All devices"
 msgstr "所有设备"
@@ -220,6 +226,9 @@ msgstr "授权并应用管理设置"
 
 msgid "Automatic"
 msgstr "自动"
+
+msgid "Automatic (HL202 command, otherwise ACS)"
+msgstr "自动（HL202 命令，其它设备使用 ACS）"
 
 msgid "Automatic (read-only capability discovery)"
 msgstr "自动（只读能力发现）"
@@ -346,6 +355,9 @@ msgstr "收集 VLAN 表"
 
 msgid "Collecting VLAN tables queries extended filter tables and takes longer."
 msgstr "收集 VLAN 表会查询扩展过滤表，需要更长时间。"
+
+msgid "Command (MQTT / tcapi)"
+msgstr "命令（MQTT / tcapi）"
 
 msgid "Command in progress"
 msgstr "命令执行中"
@@ -485,6 +497,9 @@ msgstr "CWMP 接口引用"
 
 msgid "CWMP path"
 msgstr "CWMP 路径"
+
+msgid "CWMP Settings"
+msgstr "CWMP 设置"
 
 msgid "Data interface"
 msgstr "数据接口"
@@ -839,6 +854,9 @@ msgstr "FTTR 配置同步"
 msgid "G.988 encoded field values"
 msgstr "G.988 编码字段值"
 
+msgid "General Settings"
+msgstr "通用设置"
+
 msgid "Generated ACS URL"
 msgstr "生成的 ACS URL"
 
@@ -868,6 +886,12 @@ msgstr "硬件状态"
 
 msgid "Hardware version"
 msgstr "硬件版本"
+
+msgid ""
+"HL202 defaults to native command provisioning with readback verification. "
+"Builds without MQTT use ACS. Transport failures require reconciliation and "
+"do not switch to ACS automatically."
+msgstr "HL202 默认使用原生命令进行配置下发并执行回读验证。未集成 MQTT 的固件使用 ACS。传输失败需人工调和，不会自动切换为 ACS。"
 
 msgid "HL202 device"
 msgstr "HL202 设备"
@@ -1499,7 +1523,10 @@ msgid "Provisioning"
 msgstr "配置下发"
 
 msgid "Provisioning is disabled"
-msgstr ""
+msgstr "配置下发已禁用"
+
+msgid "Provisioning method"
+msgstr "配置下发方式"
 
 msgid "Provisioning status unavailable"
 msgstr "配置下发状态不可用"
@@ -1756,9 +1783,6 @@ msgstr "请选择已存在的模板。"
 
 msgid "Select an interface from fttr1 to fttr16."
 msgstr "请选择 fttr1 到 fttr16 范围内的接口。"
-
-msgid "Select an item"
-msgstr "请选择"
 
 msgid ""
 "Select at least one of INTERNET, OTHER, IPTV, and VOIP for each custom VLAN. "

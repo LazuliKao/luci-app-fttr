@@ -1032,7 +1032,8 @@ const eH = ez({
     state: eP([
         "online",
         "waiting_inform",
-        "offline_or_stale"
+        "offline_or_stale",
+        "waiting_transport"
     ]),
     optical_online: eF,
     last_inform: eR(eB),
@@ -1140,6 +1141,12 @@ const eY = eO("state", [
         reason: eZ
     })
 ]), e0 = ez({
+    backend: eN(ez({
+        configured: eZ,
+        effective: eZ,
+        available: ew(eZ),
+        reason: eZ
+    })),
     state: eJ,
     operation_id: eV,
     device: eq,
