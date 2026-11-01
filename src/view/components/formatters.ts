@@ -4,6 +4,13 @@ export const text = (value: unknown): string =>
 	value === null || value === undefined || value === "" ? "—" : String(value);
 
 /**
+ * Format timestamp (in epoch seconds) to local date-time string.
+ */
+export function formatDate(value?: number | null): string {
+	return value ? new Date(value * 1000).toLocaleString() : "—";
+}
+
+/**
  * Format optical power in dBm.
  */
 export function formatPower(power: number | null | undefined, precision = 3): string {

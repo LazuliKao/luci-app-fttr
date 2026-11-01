@@ -1,36 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { getOpticalStatus, getStatus, type OpticalReply, setOptical } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 
 const view = L.view;
-
-const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
-
-function formatFirmware(raw?: string): { display: string; full?: string } {
-	if (!raw) return { display: "—" };
-	const match = raw.match(/image\s*\d+:\s*([^;,\s]+)/i);
-	if (match?.[1]) {
-		return { display: match[1], full: raw.replace(/;\s*/g, "\n") };
-	}
-	return { display: raw };
-}
-
-function formatAge(seconds: number | null): string {
-	if (seconds === null || !Number.isFinite(seconds) || seconds < 0) return "—";
-	if (seconds < 60) return _("%d seconds ago").replace("%d", String(seconds));
-	const minutes = Math.floor(seconds / 60);
-	if (minutes < 60) return _("%d minutes ago").replace("%d", String(minutes));
-	const hours = Math.floor(minutes / 60);
-	const remMin = minutes % 60;
-	return _("%d hours %d minutes ago").replace("%d", String(hours)).replace("%d", String(remMin));
-}
-
-function formatPower(power: number | null): string {
-	if (power === null || !Number.isFinite(power)) return "—";
-	return `${power.toFixed(2)} dBm`;
-}
 
 function renderStateBadge(stateVal?: string): HTMLElement {
 	if (!stateVal) return <span class="fttr-badge fttr-badge-neutral">—</span>;
@@ -327,7 +302,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 								</div>
 								<div class="fttr-kv-row">
 									<span class="fttr-kv-label">{_("Identity age")}</span>
-									<span>{formatAge(onu.identity_age_seconds)}</span>
+									<span>{formatAge(onu.identity_age_seconds) ?? "—"}</span>
 								</div>
 							</div>
 

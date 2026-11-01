@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { formatDate as date, formatAge, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { checkConfig, getStatus, getSync, type SyncAction, sync } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
@@ -29,26 +30,6 @@ const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | 
 	error: { label: _("Error"), type: "danger" },
 	deleted: { label: _("Deleted"), type: "neutral" },
 };
-
-const text = (value: unknown): string => (value === null || value === undefined || value === "" ? "—" : String(value));
-const date = (value?: number | null): string => (value ? new Date(value * 1000).toLocaleString() : "—");
-
-function formatAge(seconds: number | null | undefined): string | null {
-	if (seconds == null || seconds < 0) return null;
-	if (seconds < 60) {
-		return (seconds === 1 ? _("%d second ago") : _("%d seconds ago")).replace("%d", String(seconds));
-	}
-	const mins = Math.floor(seconds / 60);
-	if (mins < 60) {
-		return (mins === 1 ? _("%d minute ago") : _("%d minutes ago")).replace("%d", String(mins));
-	}
-	const hours = Math.floor(seconds / 3600);
-	if (hours < 24) {
-		return (hours === 1 ? _("%d hour ago") : _("%d hours ago")).replace("%d", String(hours));
-	}
-	const days = Math.floor(seconds / 86400);
-	return (days === 1 ? _("%d day ago") : _("%d days ago")).replace("%d", String(days));
-}
 
 function renderStateBadge(value?: string, customTitle?: string): HTMLElement {
 	if (!value) return <span class="fttr-badge fttr-badge-neutral">—</span>;
