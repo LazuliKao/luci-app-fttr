@@ -46,6 +46,11 @@
 			"path": "fttr/hardware"
 		}
 	},
+	"admin/network/fttr/npu": {
+		"title": "NPU",
+		"order": 31,
+		"action": { "type": "view", "path": "fttr/npu" }
+	},
 	"admin/network/fttr/calibration": {
 		"title": "Optical calibration",
 		"order": 32,

@@ -831,11 +831,11 @@ function eh(e) {
         ...j(e)
     });
 }
-const eg = o("ZodMiniBoolean", (e, t)=>{
+const e_ = o("ZodMiniBoolean", (e, t)=>{
     H.init(e, t), ec.init(e, t);
 });
-function e_(e) {
-    return new eg({
+function eg(e) {
+    return new e_({
         type: "boolean",
         ...j(e)
     });
@@ -957,7 +957,7 @@ function eF() {
         getter: ()=>ej([
                 eu(),
                 eh(),
-                e_(),
+                eg(),
                 new em({
                     type: "null",
                     ...j(void 0)
@@ -1006,7 +1006,7 @@ ez({
         data: eu()
     })
 ]);
-let eI = eu(), eV = eh(), eH = e_(), eq = eN(eI), eW = eN(eV), eJ = eN(eH);
+let eI = eu(), eV = eh(), eH = eg(), eq = eN(eI), eW = eN(eV), eJ = eN(eH);
 const eK = eU([
     "waiting",
     "wan_reconciling",
@@ -1405,8 +1405,8 @@ let tn = ez({
     laser_bias_current_ma: te,
     temperature_celsius: te,
     vcc_voltage: te,
-    cdr_locked: eZ(e_()),
-    tx_enabled: eZ(e_()),
+    cdr_locked: eZ(eg()),
+    tx_enabled: eZ(eg()),
     measurements: tt
 }), ta = ez({
     equipment_id: eZ(e7),
@@ -1430,7 +1430,7 @@ const ts = ez({
     acs_bootstrap: eN(e2),
     identity: eZ(ta),
     identity_age_seconds: te,
-    identity_current: e_(),
+    identity_current: eg(),
     fiber_distance_m: te,
     ranging_delay_rtd_ns: te,
     equalization_delay_bits: new eL({
@@ -1452,11 +1452,11 @@ const ts = ez({
         current_tx_kbps: te,
         current_rx_kbps: te,
         offload: eN(ez({
-            enabled: eN(eZ(e_())),
-            routed_enabled: eN(eZ(e_())),
-            bridge_enabled: eN(eZ(e_())),
-            engine_attached: eN(eZ(e_())),
-            forwarding_verified: eN(eZ(e_()))
+            enabled: eN(eZ(eg())),
+            routed_enabled: eN(eZ(eg())),
+            bridge_enabled: eN(eZ(eg())),
+            engine_attached: eN(eZ(eg())),
+            forwarding_verified: eN(eZ(eg()))
         })),
         measurements: tt
     }),
@@ -1481,13 +1481,16 @@ let to = ez({
     reserved_sn: eN(e7),
     port: e9,
     interface: e7,
-    carrier: e_(),
+    carrier: eg(),
     status: e7,
     onu_id: eN(e9),
     onu_sn: eN(e7),
     link_state: e7
 });
 const tl = ez({
+    counters_valid: eN(eg()),
+    packets_exact: eN(e7),
+    bytes_exact: eN(e7),
     index: e7,
     state: e7,
     pkt_type: e7,
@@ -1498,15 +1501,28 @@ const tl = ez({
     packets: e9,
     bytes: e9
 }), td = ez({
-    supported: e_(),
-    engine_attached: e_(),
-    bridge_offload_enabled: e_(),
+    sampled_at_ms: eN(e9),
+    errors: eN(ew(e7)),
+    config_valid: eN(eg()),
+    engine_valid: eN(eg()),
+    mask_valid: eN(eg()),
+    routed_mask_valid: eN(eg()),
+    debug_valid: eN(eg()),
+    flows_valid: eN(eg()),
+    entries_valid: eN(eg()),
+    counters_valid: eN(eg()),
+    hooks_valid: eN(eg()),
+    total_packets_exact: eN(e7),
+    total_bytes_exact: eN(e7),
+    supported: eg(),
+    engine_attached: eg(),
+    bridge_offload_enabled: eg(),
     bridge_offload_mask: e9,
     routed_offload_mask: e9,
-    bridge_offload_debug: e_(),
+    bridge_offload_debug: eg(),
     bridge: e7,
     active_ports: ew(e7),
-    fw4_hooks_ready: e_(),
+    fw4_hooks_ready: eg(),
     total_entries: e9,
     bound_entries: e9,
     total_packets: e9,
@@ -1517,8 +1533,8 @@ ez({
     onu_pinning: eN(ez({
         desired: eA(e7, e9),
         active: eA(e7, e9),
-        pending_restart: e_(),
-        allocation_blocked: e_(),
+        pending_restart: eg(),
+        allocation_blocked: eg(),
         startup_error: eZ(e7),
         config_error: eZ(e7)
     })),
@@ -1534,12 +1550,12 @@ ez({
     })),
     npu: eN(eZ(td))
 }), eA(e7, ez({
-    carrier: eN(e_()),
+    carrier: eN(eg()),
     mac: eN(e7),
     link: eN(ez({
         speed: eN(e9),
         duplex: eN(e7),
-        autoneg: eN(e_())
+        autoneg: eN(eg())
     })),
     stats: eN(eA(e7, e9))
 })), _("Not started"), _("Collecting identity"), _("Retrying identity"), _("Unsupported"), _("Configuring"), _("Verifying"), _("WAN pending"), _("Verified"), _("Retrying"), _("Offline"), L.rpc.declare({
@@ -1591,16 +1607,16 @@ ez({
         "optical_reinitialize",
         "optical_shutdown"
     ]),
-    desired_enabled: eZ(e_()),
-    tx_enabled: eZ(e_()),
+    desired_enabled: eZ(eg()),
+    tx_enabled: eZ(eg()),
     actor_state: eU([
         "enabled",
         "disabled",
         "unknown"
     ]),
-    hardware_ready: e_(),
-    discovery_active: e_(),
-    cleanup_pending: e_(),
+    hardware_ready: eg(),
+    discovery_active: eg(),
+    cleanup_pending: eg(),
     error: eZ(ez({
         code: eu(),
         message: eu()
@@ -1621,7 +1637,7 @@ ez({
         "success",
         "error"
     ]),
-    enabled: eN(e_()),
+    enabled: eN(eg()),
     error: eN(eu())
 }), L.rpc.declare({
     object: "luci.fttr",
@@ -1631,7 +1647,8 @@ ez({
     object: "luci.fttr",
     method: "npu_set",
     params: [
-        "enabled"
+        "enabled",
+        "bridge"
     ],
     reject: !0
 }), ej([
@@ -1656,8 +1673,8 @@ ez({
             "apply",
             "plan"
         ]),
-        reconcile: eN(e_()),
-        retry: eN(e_())
+        reconcile: eN(eg()),
+        retry: eN(eg())
     })
 ]);
 let tc = L.rpc.declare({
@@ -1688,14 +1705,14 @@ const tf = ez({
     sha256: eu(),
     data: eN(eu()),
     factory: ez({
-        detected: e_(),
+        detected: eg(),
         device: eu(),
-        has_data: e_(),
+        has_data: eg(),
         sha256: eu(),
         data: eu()
     }),
     firmware: ez({
-        exists: e_(),
+        exists: eg(),
         path: eu(),
         size: eh(),
         sha256: eu(),
@@ -1703,16 +1720,16 @@ const tf = ez({
     }),
     error: eN(eu())
 }), th = ez({
-    success: e_(),
+    success: eg(),
     path: eu(),
     size: eh(),
     sha256: eu(),
     error: eN(eu())
-}), tg = ez({
-    success: e_(),
+}), t_ = ez({
+    success: eg(),
     output: eN(eu()),
     error: eN(eu())
-}), t_ = async ()=>tf.parse(eX(await tc())), tm = async (e)=>th.parse(eX(await tp("/lib/firmware/modified_UX3326.bin", e))), ty = async ()=>tg.parse(eX(await tu()));
+}), tg = async ()=>tf.parse(eX(await tc())), tm = async (e)=>th.parse(eX(await tp("/lib/firmware/modified_UX3326.bin", e))), ty = async ()=>t_.parse(eX(await tu()));
 async function tb(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : _("Unavailable");
 }
@@ -2273,7 +2290,7 @@ function tx(e, t, r) {
     }, s("div", R);
 }
 let main = L.view.extend({
-    load: ()=>t_(),
+    load: ()=>tg(),
     render: (e)=>(function(e) {
             var t, r, i, n, a, o, l, d, c, p, u;
             let f = document.createElement("div");
@@ -2747,7 +2764,7 @@ let main = L.view.extend({
                                 }, s("p", i))
                             ]
                         }, s("div", n)));
-                        let c = await t_();
+                        let c = await tg();
                         w(c);
                     } catch (e) {
                         v.appendChild((a = {

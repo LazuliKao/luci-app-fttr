@@ -821,11 +821,11 @@ function ep(e) {
         ...$(e)
     });
 }
-const ef = s("ZodMiniNumber", (e, t)=>{
+const e_ = s("ZodMiniNumber", (e, t)=>{
     V.init(e, t), ec.init(e, t);
 });
-function e_(e) {
-    return new ef({
+function ef(e) {
+    return new e_({
         type: "number",
         checks: [],
         ...$(e)
@@ -956,7 +956,7 @@ function eU() {
         type: "lazy",
         getter: ()=>e$([
                 ep(),
-                e_(),
+                ef(),
                 eb(),
                 new eg({
                     type: "null",
@@ -968,7 +968,7 @@ function eU() {
     });
     return e;
 }
-let eZ = ep(), eB = e_(), eF = eb(), eq = eN(eZ), eV = eN(eB), eW = eN(eF);
+let eZ = ep(), eB = ef(), eF = eb(), eq = eN(eZ), eV = eN(eB), eW = eN(eF);
 const eJ = eP([
     "waiting",
     "wan_reconciling",
@@ -1295,7 +1295,7 @@ const e5 = ez({
     method: eL("diff"),
     revision: eZ,
     triggers: ew(eZ),
-    interval_minutes: new ef({
+    interval_minutes: new e_({
         type: "number",
         coerce: !0,
         checks: [],
@@ -1326,7 +1326,7 @@ e$([
         devices: eN(ev())
     })
 ]);
-let e4 = ep(), e8 = e_(), e6 = eR(e8), e7 = eS(e4, ez({
+let e4 = ep(), e8 = ef(), e6 = eR(e8), e7 = eS(e4, ez({
     source: e4,
     unit: e4,
     reason: eR(e4),
@@ -1450,6 +1450,9 @@ let tn = ez({
     link_state: e4
 });
 const ta = ez({
+    counters_valid: eN(eb()),
+    packets_exact: eN(e4),
+    bytes_exact: eN(e4),
     index: e4,
     state: e4,
     pkt_type: e4,
@@ -1460,6 +1463,19 @@ const ta = ez({
     packets: e8,
     bytes: e8
 }), to = ez({
+    sampled_at_ms: eN(e8),
+    errors: eN(ew(e4)),
+    config_valid: eN(eb()),
+    engine_valid: eN(eb()),
+    mask_valid: eN(eb()),
+    routed_mask_valid: eN(eb()),
+    debug_valid: eN(eb()),
+    flows_valid: eN(eb()),
+    entries_valid: eN(eb()),
+    counters_valid: eN(eb()),
+    hooks_valid: eN(eb()),
+    total_packets_exact: eN(e4),
+    total_bytes_exact: eN(e4),
     supported: eb(),
     engine_attached: eb(),
     bridge_offload_enabled: eb(),
@@ -1531,10 +1547,10 @@ function tp(e) {
     for(; r >= 1024 && i < t.length - 1;)r /= 1024, i++;
     return `${r.toFixed(1)} ${t[i]}`;
 }
-function tf(e) {
+function t_(e) {
     return void 0 === e || !Number.isFinite(e) || e < 0 ? "\u2014" : e < 1000 ? `${e} Pkts.` : `${(e / 1000).toFixed(2)} KPkts.`;
 }
-function t_(e) {
+function tf(e) {
     let t = "none" === e.tone ? "" : `fttr-badge fttr-badge-${e.tone}`, r = e.class ? ` ${e.class}` : "", i = o("span", {
         class: `${t}${r}`.trim(),
         children: e.children
@@ -1569,7 +1585,7 @@ function tg(e) {
 }
 function tm(e) {
     let t = tg(e.state);
-    return o(t_, {
+    return o(tf, {
         tone: t.tone,
         title: t.title,
         children: t.label
@@ -1587,7 +1603,7 @@ function tv(e) {
 }
 function ty(e) {
     let t = tv(e.status);
-    return o(t_, {
+    return o(tf, {
         tone: t.tone,
         title: t.title,
         children: t.label
@@ -1618,7 +1634,7 @@ function tx(e) {
 }
 function tz(e) {
     let t = tx(e.management);
-    return o(t_, {
+    return o(tf, {
         tone: t.tone,
         title: t.title,
         children: t.label
@@ -1677,7 +1693,7 @@ function t$(e, t) {
 }
 function tj(e) {
     let t = t$(e.provisioning, e.title);
-    return o(t_, {
+    return o(tf, {
         tone: t.tone,
         title: t.title,
         children: t.label
@@ -1720,7 +1736,7 @@ function tC(e) {
 }
 function tS(e) {
     let t = tC(e.state);
-    return o(t_, {
+    return o(tf, {
         tone: t.tone,
         title: t.title,
         children: t.label
@@ -1840,9 +1856,9 @@ eO("status", [
     }),
     ez({
         status: eL("ready"),
-        chunk: e_(),
-        chunks: e_(),
-        bytes: e_(),
+        chunk: ef(),
+        chunks: ef(),
+        bytes: ef(),
         data: ep()
     })
 ]);
@@ -1938,12 +1954,13 @@ ez({
     object: "luci.fttr",
     method: "npu_set",
     params: [
-        "enabled"
+        "enabled",
+        "bridge"
     ],
     reject: !0
 }), e$([
     ez({
-        operation_ids: ew(e_()),
+        operation_ids: ew(ef()),
         revision: ep()
     }),
     ez({
@@ -1958,7 +1975,7 @@ ez({
         device: ep()
     }),
     ez({
-        operation_ids: ew(e_()),
+        operation_ids: ew(ef()),
         mode: eP([
             "apply",
             "plan"
@@ -1989,7 +2006,7 @@ ez({
         "builtin"
     ]),
     active_path: ep(),
-    size: e_(),
+    size: ef(),
     sha256: ep(),
     data: eN(ep()),
     factory: ez({
@@ -2002,7 +2019,7 @@ ez({
     firmware: ez({
         exists: eb(),
         path: ep(),
-        size: e_(),
+        size: ef(),
         sha256: ep(),
         data: ep()
     }),
@@ -2010,7 +2027,7 @@ ez({
 }), ez({
     success: eb(),
     path: ep(),
-    size: e_(),
+    size: ef(),
     sha256: ep(),
     error: eN(ep())
 }), ez({
@@ -2018,7 +2035,7 @@ ez({
     output: eN(ep()),
     error: eN(ep())
 });
-let tZ = ep(), tB = e_(), tF = eb(), tq = ez({
+let tZ = ep(), tB = ef(), tF = eb(), tq = ez({
     id: tZ,
     url: tZ
 }), tV = ez({
@@ -4041,7 +4058,7 @@ const main = ro.extend({
                 update (e, t) {
                     var i;
                     let n = (e.switch_ports ?? []).find((e)=>e.port === r), a = n?.interface ?? `fttr${r}`, o = t[a], s = o?.stats, l = n?.carrier ?? o?.carrier ?? (o?.link?.speed !== void 0 || void 0), d = (e.sub_gateways ?? []).find((e)=>e.onu_id === n?.onu_id), c = !0 === l, u = s?.rx_bytes, p = s?.tx_bytes;
-                    n?.onu_id !== void 0 ? B.setAttribute("data-active-onu-id", String(n.onu_id)) : B.removeAttribute("data-active-onu-id"), c ? (B.classList.add("port-up"), B.classList.remove("port-down")) : (B.classList.add("port-down"), B.classList.remove("port-up")), x.textContent = a, k.setAttribute("src", `/luci-static/resources/icons/${c ? "port_up.svg" : "port_down.svg"}`), z.textContent = c ? o?.link?.speed !== void 0 ? void 0 === (i = o.link.speed) || !Number.isFinite(i) || i <= 0 ? _("Unknown") : i >= 1000 ? `${i / 1000}\u{202F}GbE` : `${i}\u{202F}MbE` : _("Connected") : !1 === l ? _("Disconnected") : _("Unknown"), z.setAttribute("title", _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(tc(o?.link?.speed), tc(o?.link?.duplex))), $.style.opacity = c ? "1" : "0.25", $.style.backgroundColor = c ? "rgb(46, 204, 113)" : "rgba(200, 200, 200, 0.4)", j.textContent = tc((n?.reserved_sn && void 0 === n.onu_id ? _("Reserved (offline)") : n?.link_state) ?? n?.status ?? (o ? l ? _("Link up") : _("Link down") : _("Unavailable"))), n?.reserved_sn && void 0 !== n.onu_id && (j.textContent += ` \xb7 ${_("Fixed interface")}`), O.textContent = tc(n?.onu_sn ?? d?.serial_number ?? n?.reserved_sn ?? n?.onu_id), B.title = n?.reserved_sn ? `${_("Reserved")}: ${n.reserved_sn}` : "", C.textContent = tc(o?.mac), S.textContent = c || p ? tp(p) : "\u2014", M.textContent = c || u ? tp(u) : "\u2014", P.textContent = tp(u), T.textContent = tf(s?.rx_packets), N.textContent = tf(s?.rx_multicast ?? s?.multicast), I.textContent = tf(s?.rx_errors), R.textContent = tf(s?.rx_dropped), A.textContent = tp(p), D.textContent = tf(s?.tx_packets), U.textContent = tf(s?.tx_errors), Z.textContent = tf(s?.tx_dropped);
+                    n?.onu_id !== void 0 ? B.setAttribute("data-active-onu-id", String(n.onu_id)) : B.removeAttribute("data-active-onu-id"), c ? (B.classList.add("port-up"), B.classList.remove("port-down")) : (B.classList.add("port-down"), B.classList.remove("port-up")), x.textContent = a, k.setAttribute("src", `/luci-static/resources/icons/${c ? "port_up.svg" : "port_down.svg"}`), z.textContent = c ? o?.link?.speed !== void 0 ? void 0 === (i = o.link.speed) || !Number.isFinite(i) || i <= 0 ? _("Unknown") : i >= 1000 ? `${i / 1000}\u{202F}GbE` : `${i}\u{202F}MbE` : _("Connected") : !1 === l ? _("Disconnected") : _("Unknown"), z.setAttribute("title", _("\u901F\u5EA6\uFF1A%s Mbit/s\uFF0C\u53CC\u5DE5\uFF1A%s").format(tc(o?.link?.speed), tc(o?.link?.duplex))), $.style.opacity = c ? "1" : "0.25", $.style.backgroundColor = c ? "rgb(46, 204, 113)" : "rgba(200, 200, 200, 0.4)", j.textContent = tc((n?.reserved_sn && void 0 === n.onu_id ? _("Reserved (offline)") : n?.link_state) ?? n?.status ?? (o ? l ? _("Link up") : _("Link down") : _("Unavailable"))), n?.reserved_sn && void 0 !== n.onu_id && (j.textContent += ` \xb7 ${_("Fixed interface")}`), O.textContent = tc(n?.onu_sn ?? d?.serial_number ?? n?.reserved_sn ?? n?.onu_id), B.title = n?.reserved_sn ? `${_("Reserved")}: ${n.reserved_sn}` : "", C.textContent = tc(o?.mac), S.textContent = c || p ? tp(p) : "\u2014", M.textContent = c || u ? tp(u) : "\u2014", P.textContent = tp(u), T.textContent = t_(s?.rx_packets), N.textContent = t_(s?.rx_multicast ?? s?.multicast), I.textContent = t_(s?.rx_errors), R.textContent = t_(s?.rx_dropped), A.textContent = tp(p), D.textContent = t_(s?.tx_packets), U.textContent = t_(s?.tx_errors), Z.textContent = t_(s?.tx_dropped);
                 }
             };
         }), w = o("span", {

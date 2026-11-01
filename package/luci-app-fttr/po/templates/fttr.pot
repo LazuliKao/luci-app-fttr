@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-01 18:10+0800\n"
+"POT-Creation-Date: 2026-11-01 21:21+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -151,6 +151,9 @@ msgstr ""
 msgid "Active data source:"
 msgstr ""
 
+msgid "Active hardware offload flows (PPE FOE Bound)"
+msgstr ""
+
 msgid "ADC diagnostic polynomial conversion coefficients (offsets %s)"
 msgstr ""
 
@@ -158,6 +161,18 @@ msgid "Add this device on the configuration page before fixing its interface."
 msgstr ""
 
 msgid "Address"
+msgstr ""
+
+msgid ""
+"Admission allows eligible traffic to bind; it does not prove that packets "
+"are currently hardware-forwarded. The switch controls FTTR bridge admission, "
+"not the entire NPU or global routed offload policy."
+msgstr ""
+
+msgid "Admitted"
+msgstr ""
+
+msgid "Admitted ports"
 msgstr ""
 
 msgid "Advanced diagnostics / Raw configuration (JSON)"
@@ -212,6 +227,9 @@ msgstr ""
 msgid "Are you sure you want to reset the synchronization state for %s?"
 msgstr ""
 
+msgid "Attached"
+msgstr ""
+
 msgid "Attempts"
 msgstr ""
 
@@ -248,6 +266,11 @@ msgid "Awaiting Apply"
 msgstr ""
 
 msgid "Backend"
+msgstr ""
+
+msgid ""
+"Backend reliability metadata is unavailable. Update fttrctl before trusting "
+"these readings."
 msgstr ""
 
 msgid "Band"
@@ -289,6 +312,15 @@ msgstr ""
 msgid "BOSA hardware register initialization table (first %s bytes, %s)"
 msgstr ""
 
+msgid "Bound hardware flows"
+msgstr ""
+
+msgid "Bridge interface"
+msgstr ""
+
+msgid "Bridge offload mask"
+msgstr ""
+
 msgid "Built-in static defaults (fallback)"
 msgstr ""
 
@@ -298,6 +330,9 @@ msgstr ""
 msgid ""
 "By default, extra WLANs are disabled and retained. Deleting objects is "
 "destructive and should only be selected deliberately."
+msgstr ""
+
+msgid "Bytes"
 msgstr ""
 
 msgid "Cache"
@@ -391,6 +426,11 @@ msgstr ""
 msgid "Configuration item"
 msgstr ""
 
+msgid ""
+"Configuration saved. Waiting for driver admission readback; enabling may "
+"take several seconds and requires eligible ports and firewall policy."
+msgstr ""
+
 msgid "Configuring"
 msgstr ""
 
@@ -436,6 +476,12 @@ msgstr ""
 msgid "Correct the invalid fields before saving."
 msgstr ""
 
+msgid ""
+"Counters cover only currently bound flows and may decrease when flows "
+"expire. Driver-exported zeroes are not proof of no traffic. AN7581 native "
+"L2B counters are unavailable; — means unavailable, not zero."
+msgstr ""
+
 msgid "CPE Connection Request password"
 msgstr ""
 
@@ -456,7 +502,16 @@ msgid ""
 "one template."
 msgstr ""
 
+msgid "Current bound-flow bytes"
+msgstr ""
+
+msgid "Current bound-flow packets"
+msgstr ""
+
 msgid "Current configuration"
+msgstr ""
+
+msgid "Current non-empty FOE entries"
 msgstr ""
 
 msgid "Current registration"
@@ -535,6 +590,9 @@ msgid "Denominator D"
 msgstr ""
 
 msgid "Desired version"
+msgstr ""
+
+msgid "Detached"
 msgstr ""
 
 msgid "Details"
@@ -657,6 +715,9 @@ msgstr ""
 msgid "Downstream ports"
 msgstr ""
 
+msgid "Driver debug logging"
+msgstr ""
+
 msgid "Duplicate VLAN IDs are not allowed."
 msgstr ""
 
@@ -677,6 +738,9 @@ msgstr ""
 msgid "Enable ACS"
 msgstr ""
 
+msgid "Enable FTTR bridge hardware offload"
+msgstr ""
+
 msgid "Enable management DHCP"
 msgstr ""
 
@@ -687,6 +751,9 @@ msgid "Enable provisioning"
 msgstr ""
 
 msgid "Enabled"
+msgstr ""
+
+msgid "Engine and admission status"
 msgstr ""
 
 msgid ""
@@ -724,6 +791,9 @@ msgid "Error"
 msgstr ""
 
 msgid "Error reading file: %s"
+msgstr ""
+
+msgid "Ethernet / MAC"
 msgstr ""
 
 msgid "EtherType code"
@@ -781,6 +851,9 @@ msgstr ""
 msgid "Failed to save interface setting:"
 msgstr ""
 
+msgid "Failed to save NPU configuration"
+msgstr ""
+
 msgid "Field"
 msgstr ""
 
@@ -794,6 +867,9 @@ msgid "File validation succeeded: %s (%s bytes)"
 msgstr ""
 
 msgid "File written to"
+msgstr ""
+
+msgid "Firewall hooks"
 msgstr ""
 
 msgid "Firmware"
@@ -812,6 +888,11 @@ msgid "Fixed interface"
 msgstr ""
 
 msgid "Fixed interface changes pending FTTR restart."
+msgstr ""
+
+msgid ""
+"Flow table is unavailable. A failed read must not be interpreted as an empty "
+"table."
 msgstr ""
 
 msgid "FPGA identifier"
@@ -955,6 +1036,9 @@ msgid ""
 "guaranteed. Acceptance is not proof of a session or completed RPCs."
 msgstr ""
 
+msgid "Index"
+msgstr ""
+
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr ""
 
@@ -1040,6 +1124,9 @@ msgstr ""
 msgid "Last received"
 msgstr ""
 
+msgid "Last successful sample"
+msgstr ""
+
 msgid "Last telemetry"
 msgstr ""
 
@@ -1065,6 +1152,9 @@ msgid ""
 "Lists supported devices registered on the optical link, including devices "
 "that have not sent an ACS Inform. Devices already configured are omitted "
 "when adding a new device."
+msgstr ""
+
+msgid "Live NPU data is unavailable. Previous readings are stale."
 msgstr ""
 
 msgid "Load"
@@ -1097,6 +1187,9 @@ msgid ""
 "Manage calibration data for the Semtech UX3326 BOSA optical transceiver "
 "attached to the HM2004-DU Micro-OLT FPGA subsystem. Calibration data is read "
 "in priority order from"
+msgstr ""
+
+msgid "Managed bridge"
 msgstr ""
 
 msgid "Managed objects and lifecycle intent"
@@ -1227,6 +1320,9 @@ msgstr ""
 msgid "Next self-healing retry in %d seconds"
 msgstr ""
 
+msgid "No bound hardware flows in this snapshot."
+msgstr ""
+
 msgid "No desired items configured."
 msgstr ""
 
@@ -1274,6 +1370,9 @@ msgstr ""
 msgid "None (Open)"
 msgstr ""
 
+msgid "Not admitted"
+msgstr ""
+
 msgid "Not collected"
 msgstr ""
 
@@ -1296,6 +1395,24 @@ msgid "Not Started"
 msgstr ""
 
 msgid "Note: Register"
+msgstr ""
+
+msgid "NPU configuration"
+msgstr ""
+
+msgid "NPU configuration failed"
+msgstr ""
+
+msgid "NPU engine"
+msgstr ""
+
+msgid "NPU hardware acceleration"
+msgstr ""
+
+msgid "NPU hardware acceleration is not compiled or unsupported on this target."
+msgstr ""
+
+msgid "NPU status request timed out"
 msgstr ""
 
 msgid "Numerator N"
@@ -1411,6 +1528,9 @@ msgid ""
 "listed. Changing the template clears the SSID selection."
 msgstr ""
 
+msgid "Original endpoints"
+msgstr ""
+
 msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr ""
 
@@ -1418,6 +1538,9 @@ msgid "Outer treatment (priority / VID / TPID-DEI)"
 msgstr ""
 
 msgid "Output was truncated at the byte limit."
+msgstr ""
+
+msgid "Packets"
 msgstr ""
 
 msgid "Parameter preview for upload: %s"
@@ -1473,6 +1596,9 @@ msgstr ""
 msgid "PONWrt Firmware"
 msgstr ""
 
+msgid "Port admission"
+msgstr ""
+
 msgid "Port bindings"
 msgstr ""
 
@@ -1480,6 +1606,9 @@ msgid "Port status"
 msgstr ""
 
 msgid "Ports"
+msgstr ""
+
+msgid "PPE flow snapshot"
 msgstr ""
 
 msgid "Preparing JSON download…"
@@ -1621,7 +1750,16 @@ msgstr ""
 msgid "Recovering"
 msgstr ""
 
+msgid "Refresh"
+msgstr ""
+
 msgid "Refresh devices"
+msgstr ""
+
+msgid "Refresh failed"
+msgstr ""
+
+msgid "Refresh interval: 3 seconds"
 msgstr ""
 
 msgid "Refresh users to read the current state."
@@ -1702,6 +1840,9 @@ msgstr ""
 msgid "Revision"
 msgstr ""
 
+msgid "Routed offload mask"
+msgstr ""
+
 msgid "rows"
 msgstr ""
 
@@ -1709,6 +1850,17 @@ msgid "Running"
 msgstr ""
 
 msgid "RX wavelength"
+msgstr ""
+
+msgid "Save NPU configuration"
+msgstr ""
+
+msgid ""
+"Save returned success, but configuration readback could not be confirmed. "
+"Refresh before retrying."
+msgstr ""
+
+msgid "Saved configuration"
 msgstr ""
 
 msgid ""
@@ -1739,6 +1891,9 @@ msgid ""
 "Saving in manual mode does not create interfaces, change firewall rules or "
 "configure child devices. Apply explicitly to authorize the current "
 "management configuration."
+msgstr ""
+
+msgid "Saving…"
 msgstr ""
 
 msgid "Schema"
@@ -1820,7 +1975,16 @@ msgstr ""
 msgid "Software images"
 msgstr ""
 
+msgid "Some data sources are unavailable"
+msgstr ""
+
 msgid "Source member"
+msgstr ""
+
+msgid ""
+"Source: PPE debugfs bind/entries and driver sysfs. These are global PPE "
+"snapshots, not FTTR-only totals or table capacity. Reads are sequential, not "
+"atomic."
 msgstr ""
 
 msgid "SSID"
@@ -2012,6 +2176,9 @@ msgstr ""
 msgid "TR069 VLANs"
 msgstr ""
 
+msgid "Translated endpoints"
+msgstr ""
+
 msgid "Transmit dropped"
 msgstr ""
 
@@ -2149,6 +2316,11 @@ msgid "Usage status"
 msgstr ""
 
 msgid "Use 0 to disable, or 1–1440 minutes."
+msgstr ""
+
+msgid ""
+"Use a bridge interface name of 1–15 letters, digits, dots, underscores or "
+"hyphens."
 msgstr ""
 
 msgid "Use alternate parameters when the calculated temperature is ≤ %s °C"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-01 18:10+0800\n"
+"POT-Creation-Date: 2026-11-01 21:21+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -151,6 +151,9 @@ msgstr "当前生效数据大小：%s 字节"
 msgid "Active data source:"
 msgstr "当前生效数据来源："
 
+msgid "Active hardware offload flows (PPE FOE Bound)"
+msgstr "硬件绑定流明细（PPE FOE BND）"
+
 msgid "ADC diagnostic polynomial conversion coefficients (offsets %s)"
 msgstr "ADC 诊断多项式转换系数（偏移 %s）"
 
@@ -159,6 +162,18 @@ msgstr "请先在配置页添加此设备，再固定接口。"
 
 msgid "Address"
 msgstr "地址"
+
+msgid ""
+"Admission allows eligible traffic to bind; it does not prove that packets "
+"are currently hardware-forwarded. The switch controls FTTR bridge admission, "
+"not the entire NPU or global routed offload policy."
+msgstr "准入仅允许合格流量建立绑定，并不证明此刻正由硬件转发。开关控制 FTTR 桥接准入，不控制整个 NPU 或全局路由卸载策略。"
+
+msgid "Admitted"
+msgstr "已准入"
+
+msgid "Admitted ports"
+msgstr "已准入端口"
 
 msgid "Advanced diagnostics / Raw configuration (JSON)"
 msgstr "高级诊断 / 原始配置（JSON）"
@@ -212,6 +227,9 @@ msgstr "立即应用到硬件"
 msgid "Are you sure you want to reset the synchronization state for %s?"
 msgstr "确定要重置 %s 的同步状态吗？"
 
+msgid "Attached"
+msgstr "已挂接"
+
 msgid "Attempts"
 msgstr "尝试次数"
 
@@ -249,6 +267,11 @@ msgstr "等待应用"
 
 msgid "Backend"
 msgstr "后端"
+
+msgid ""
+"Backend reliability metadata is unavailable. Update fttrctl before trusting "
+"these readings."
+msgstr "后端缺少数据可靠性标记。请更新 fttrctl 后再使用这些读数。"
 
 msgid "Band"
 msgstr "频段"
@@ -289,6 +312,15 @@ msgstr "BOSA 下行光路校准管理（UX3326）"
 msgid "BOSA hardware register initialization table (first %s bytes, %s)"
 msgstr "BOSA 硬件寄存器初始化表（前 %s 字节，%s）"
 
+msgid "Bound hardware flows"
+msgstr "硬件绑定流数"
+
+msgid "Bridge interface"
+msgstr "桥接接口"
+
+msgid "Bridge offload mask"
+msgstr "桥接卸载掩码"
+
 msgid "Built-in static defaults (fallback)"
 msgstr "内置静态默认值（回退）"
 
@@ -299,6 +331,9 @@ msgid ""
 "By default, extra WLANs are disabled and retained. Deleting objects is "
 "destructive and should only be selected deliberately."
 msgstr "默认情况下，多余的 WLAN 仅被禁用并保留。删除对象属于破坏性操作，请谨慎选择。"
+
+msgid "Bytes"
+msgstr "字节数"
 
 msgid "Cache"
 msgstr "缓存"
@@ -391,6 +426,11 @@ msgstr "无法打开此配置的编辑器。"
 msgid "Configuration item"
 msgstr "配置项"
 
+msgid ""
+"Configuration saved. Waiting for driver admission readback; enabling may "
+"take several seconds and requires eligible ports and firewall policy."
+msgstr "配置已保存。请查看驱动准入回读；启用可能需要数秒，且须满足端口及防火墙策略条件。"
+
 msgid "Configuring"
 msgstr "配置中"
 
@@ -436,6 +476,12 @@ msgstr "为 FTTR 系统提供支持的核心组件与开源代码仓库。"
 msgid "Correct the invalid fields before saving."
 msgstr "请先修正无效字段，再保存。"
 
+msgid ""
+"Counters cover only currently bound flows and may decrease when flows "
+"expire. Driver-exported zeroes are not proof of no traffic. AN7581 native "
+"L2B counters are unavailable; — means unavailable, not zero."
+msgstr "计数仅涵盖当前绑定流，流老化后可能下降。驱动返回零值不代表没有流量。AN7581 原生 L2B 计数不可用；— 表示不可用，并非零。"
+
 msgid "CPE Connection Request password"
 msgstr "CPE 连接请求密码"
 
@@ -456,8 +502,17 @@ msgid ""
 "one template."
 msgstr "请先在这里创建 SSID，再到网络配置中选择。每个 SSID 只属于一个模板。"
 
+msgid "Current bound-flow bytes"
+msgstr "当前绑定流字节合计"
+
+msgid "Current bound-flow packets"
+msgstr "当前绑定流包数合计"
+
 msgid "Current configuration"
 msgstr "当前配置"
+
+msgid "Current non-empty FOE entries"
+msgstr "当前非空 FOE 表项数"
 
 msgid "Current registration"
 msgstr "当前注册状态"
@@ -536,6 +591,9 @@ msgstr "分母 D"
 
 msgid "Desired version"
 msgstr "目标版本"
+
+msgid "Detached"
+msgstr "未挂接"
 
 msgid "Details"
 msgstr "详情"
@@ -659,6 +717,9 @@ msgstr "从 1MB Factory 分区提取的下行光路校准参数（偏移 %s）"
 msgid "Downstream ports"
 msgstr "下联端口"
 
+msgid "Driver debug logging"
+msgstr "驱动调试日志"
+
 msgid "Duplicate VLAN IDs are not allowed."
 msgstr "不允许存在重复的 VLAN ID。"
 
@@ -679,6 +740,9 @@ msgstr "启用"
 msgid "Enable ACS"
 msgstr "启用 ACS"
 
+msgid "Enable FTTR bridge hardware offload"
+msgstr "启用 FTTR 桥接硬件卸载"
+
 msgid "Enable management DHCP"
 msgstr "启用管理 DHCP"
 
@@ -690,6 +754,9 @@ msgstr "启用配置下发"
 
 msgid "Enabled"
 msgstr "已启用"
+
+msgid "Engine and admission status"
+msgstr "引擎与准入状态"
 
 msgid ""
 "Enter a complete LANDevice.1 interface reference, without trailing dot or "
@@ -727,6 +794,9 @@ msgstr "错误"
 
 msgid "Error reading file: %s"
 msgstr "读取文件出错：%s"
+
+msgid "Ethernet / MAC"
+msgstr "以太网 / MAC"
 
 msgid "EtherType code"
 msgstr "以太网类型码 (EtherType)"
@@ -783,6 +853,9 @@ msgstr "校准文件保存失败"
 msgid "Failed to save interface setting:"
 msgstr "保存接口设置失败："
 
+msgid "Failed to save NPU configuration"
+msgstr "保存 NPU 配置失败"
+
 msgid "Field"
 msgstr "字段"
 
@@ -797,6 +870,9 @@ msgstr "文件校验成功：%s（%s 字节）"
 
 msgid "File written to"
 msgstr "文件已写入"
+
+msgid "Firewall hooks"
+msgstr "防火墙钩子"
 
 msgid "Firmware"
 msgstr "固件"
@@ -815,6 +891,11 @@ msgstr "固定接口"
 
 msgid "Fixed interface changes pending FTTR restart."
 msgstr "固定接口修改将在重启 FTTR 后生效。"
+
+msgid ""
+"Flow table is unavailable. A failed read must not be interpreted as an empty "
+"table."
+msgstr "流表不可用。读取失败不应被视为空表。"
 
 msgid "FPGA identifier"
 msgstr "FPGA 标识"
@@ -961,6 +1042,9 @@ msgstr ""
 "秒；系统不会自动写入间隔。需要 CWMP 可达、标准参数已校验、支持 HTTP Digest、此前已收到包含 ConnectionRequestURL "
 "的 Inform，以及有效的 CPE 凭据。不保证固件支持。请求被接受不代表已建立会话或完成 RPC。"
 
+msgid "Index"
+msgstr "索引"
+
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr "内层过滤（优先级 / VID / TPID-DEI）"
 
@@ -1046,6 +1130,9 @@ msgstr "最后通知：%s"
 msgid "Last received"
 msgstr "最后接收时间"
 
+msgid "Last successful sample"
+msgstr "最近成功采样"
+
 msgid "Last telemetry"
 msgstr "最后遥测时间"
 
@@ -1072,6 +1159,9 @@ msgid ""
 "that have not sent an ACS Inform. Devices already configured are omitted "
 "when adding a new device."
 msgstr "列出在光纤链路上注册的受支持设备，包括尚未发送 ACS Inform 的设备。添加新设备时会自动忽略已配置的设备。"
+
+msgid "Live NPU data is unavailable. Previous readings are stale."
+msgstr "无法获取 NPU 实时数据，先前读数已失效。"
 
 msgid "Load"
 msgstr "负载"
@@ -1106,6 +1196,9 @@ msgid ""
 msgstr ""
 "管理 HM2004-DU Micro-OLT FPGA 子系统所连接的 Semtech UX3326 BOSA "
 "光收发器校准数据。校准数据按优先级依次读取自"
+
+msgid "Managed bridge"
+msgstr "管理桥接接口"
 
 msgid "Managed objects and lifecycle intent"
 msgstr "受管对象与生命周期意图"
@@ -1235,6 +1328,9 @@ msgstr "下次重试"
 msgid "Next self-healing retry in %d seconds"
 msgstr "%d 秒后进行下次自愈重试"
 
+msgid "No bound hardware flows in this snapshot."
+msgstr "本次快照中没有硬件绑定流。"
+
 msgid "No desired items configured."
 msgstr "尚未配置目标项目。"
 
@@ -1282,6 +1378,9 @@ msgstr "无"
 msgid "None (Open)"
 msgstr "无（开放网络）"
 
+msgid "Not admitted"
+msgstr "未准入"
+
 msgid "Not collected"
 msgstr "未采集"
 
@@ -1305,6 +1404,24 @@ msgstr "未开始"
 
 msgid "Note: Register"
 msgstr "注意：寄存器"
+
+msgid "NPU configuration"
+msgstr "NPU 配置"
+
+msgid "NPU configuration failed"
+msgstr "NPU 配置失败"
+
+msgid "NPU engine"
+msgstr "NPU 引擎"
+
+msgid "NPU hardware acceleration"
+msgstr "NPU 硬件加速"
+
+msgid "NPU hardware acceleration is not compiled or unsupported on this target."
+msgstr "当前固件未编译 NPU 硬件加速功能，或此设备不支持。"
+
+msgid "NPU status request timed out"
+msgstr "NPU 状态请求超时"
 
 msgid "Numerator N"
 msgstr "分子 N"
@@ -1421,6 +1538,9 @@ msgid ""
 "listed. Changing the template clears the SSID selection."
 msgstr "仅使用有线端口的网络可留空。这里只列出所选模板中的 SSID。切换模板会清空已选的 SSID。"
 
+msgid "Original endpoints"
+msgstr "原始端点"
+
 msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr "外层过滤（优先级 / VID / TPID-DEI）"
 
@@ -1429,6 +1549,9 @@ msgstr "外层处理（优先级 / VID / TPID-DEI）"
 
 msgid "Output was truncated at the byte limit."
 msgstr "输出已因达到字节上限而截断。"
+
+msgid "Packets"
+msgstr "包数"
 
 msgid "Parameter preview for upload: %s"
 msgstr "待上传参数预览：%s"
@@ -1483,6 +1606,9 @@ msgstr "固定接口"
 msgid "PONWrt Firmware"
 msgstr "PONWrt 固件"
 
+msgid "Port admission"
+msgstr "端口准入"
+
 msgid "Port bindings"
 msgstr "端口绑定"
 
@@ -1491,6 +1617,9 @@ msgstr "端口状态"
 
 msgid "Ports"
 msgstr "端口"
+
+msgid "PPE flow snapshot"
+msgstr "PPE 流表快照"
 
 msgid "Preparing JSON download…"
 msgstr "准备 JSON 下载…"
@@ -1631,8 +1760,17 @@ msgstr "记录 / 诊断信息"
 msgid "Recovering"
 msgstr "恢复中"
 
+msgid "Refresh"
+msgstr "刷新"
+
 msgid "Refresh devices"
 msgstr "刷新设备列表"
+
+msgid "Refresh failed"
+msgstr "刷新失败"
+
+msgid "Refresh interval: 3 seconds"
+msgstr "刷新间隔：3 秒"
 
 msgid "Refresh users to read the current state."
 msgstr "请刷新用户列表以读取当前状态。"
@@ -1712,6 +1850,9 @@ msgstr "检查并修复配置"
 msgid "Revision"
 msgstr "版本"
 
+msgid "Routed offload mask"
+msgstr "路由卸载掩码"
+
 msgid "rows"
 msgstr "行"
 
@@ -1720,6 +1861,17 @@ msgstr "运行中"
 
 msgid "RX wavelength"
 msgstr "接收波长"
+
+msgid "Save NPU configuration"
+msgstr "保存 NPU 配置"
+
+msgid ""
+"Save returned success, but configuration readback could not be confirmed. "
+"Refresh before retrying."
+msgstr "保存操作返回成功，但配置回读未能确认。请刷新后再重试。"
+
+msgid "Saved configuration"
+msgstr "已保存配置"
 
 msgid ""
 "Saved custom values are retained when Connection Requests are disabled or "
@@ -1750,6 +1902,9 @@ msgid ""
 "configure child devices. Apply explicitly to authorize the current "
 "management configuration."
 msgstr "手动模式下保存配置不会创建接口、更改防火墙规则或配置子设备。请显式应用以授权当前管理配置。"
+
+msgid "Saving…"
+msgstr ""
 
 msgid "Schema"
 msgstr "数据模式"
@@ -1830,8 +1985,17 @@ msgstr "大小："
 msgid "Software images"
 msgstr "固件镜像列表"
 
+msgid "Some data sources are unavailable"
+msgstr "部分数据源不可用"
+
 msgid "Source member"
 msgstr "来源成员"
+
+msgid ""
+"Source: PPE debugfs bind/entries and driver sysfs. These are global PPE "
+"snapshots, not FTTR-only totals or table capacity. Reads are sequential, not "
+"atomic."
+msgstr "来源：PPE debugfs 的 bind/entries 与驱动 sysfs。这是全局 PPE 快照，并非仅 FTTR 流量合计或表容量。各数据源依次读取，并非原子快照。"
 
 msgid "SSID"
 msgstr "SSID"
@@ -2022,6 +2186,9 @@ msgstr "结果分片过多"
 msgid "TR069 VLANs"
 msgstr "TR069 VLAN 列表"
 
+msgid "Translated endpoints"
+msgstr "转换后端点"
+
 msgid "Transmit dropped"
 msgstr "发送丢包数"
 
@@ -2160,6 +2327,11 @@ msgstr "使用状态"
 
 msgid "Use 0 to disable, or 1–1440 minutes."
 msgstr "设为 0 表示禁用，或输入 1–1440 分钟。"
+
+msgid ""
+"Use a bridge interface name of 1–15 letters, digits, dots, underscores or "
+"hyphens."
+msgstr "桥接接口名须为 1–15 个字母、数字、点、下划线或连字符。"
 
 msgid "Use alternate parameters when the calculated temperature is ≤ %s °C"
 msgstr "计算温度 ≤ %s °C 时使用备用参数"

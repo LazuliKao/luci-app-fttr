@@ -149,24 +149,4 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 			: _("Use 0 to disable, or 1–1440 minutes.");
 	option = field(p, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)");
 	option.default = "180";
-
-	const offload = section.taboption(
-		"basic",
-		L.form.SectionValue,
-		"_offload",
-		L.form.NamedSection,
-		"offload",
-		"offload",
-	);
-	const o = offload.subsection;
-	o.addremove = false;
-	o.anonymous = false;
-	option = field(o, L.form.Flag, "enabled", _("Enable NPU hardware offload"));
-	option.default = "1";
-	option.rmempty = false;
-	option.description = _("Enable Airoha PPE/NPU hardware flow offloading for FTTR bridge and router traffic.");
-	option = field(o, L.form.Value, "bridge", _("Bridge interface"));
-	option.default = "br-lan";
-	option.rmempty = false;
-	option.description = _("The bridge device containing downstream FTTR ports (fttr1~16) to offload.");
 }

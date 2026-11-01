@@ -125,16 +125,16 @@ function m(e) {
         }
     };
 }
-function y(e) {
+function v(e) {
     let t = +!!e.startsWith("^"), r = e.endsWith("$") ? e.length - 1 : e.length;
     return e.slice(t, r);
 }
-const v = Symbol("evaluating");
+const y = Symbol("evaluating");
 function w(e, t, r) {
     let n;
     Object.defineProperty(e, t, {
         get () {
-            if (n !== v) return void 0 === n && (n = v, n = r()), n;
+            if (n !== y) return void 0 === n && (n = y, n = r()), n;
         },
         set (r) {
             Object.defineProperty(e, t, {
@@ -563,7 +563,7 @@ const ea = u("$ZodUnion", (e, t)=>{
     }), w(e._zod, "pattern", ()=>{
         if (t.options.every((e)=>e._zod.pattern)) {
             let e = t.options.map((e)=>e._zod.pattern);
-            return RegExp(`^(${e.map((e)=>y(e.source)).join("|")})$`);
+            return RegExp(`^(${e.map((e)=>v(e.source)).join("|")})$`);
         }
     });
     let r = 1 === t.options.length, n = t.options[0]._zod.run;
@@ -736,7 +736,7 @@ const ep = u("$ZodOptional", (e, t)=>{
             void 0
         ]) : void 0), w(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
-        return e ? RegExp(`^(${y(e.source)})?$`) : void 0;
+        return e ? RegExp(`^(${v(e.source)})?$`) : void 0;
     }), e._zod.parse = (e, r)=>{
         if ("optional" === t.innerType._zod.optin) {
             let n = t.innerType._zod.run(e, r);
@@ -747,7 +747,7 @@ const ep = u("$ZodOptional", (e, t)=>{
 }), eu = u("$ZodNullable", (e, t)=>{
     K.init(e, t), w(e._zod, "optin", ()=>t.innerType._zod.optin), w(e._zod, "optout", ()=>t.innerType._zod.optout), w(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
-        return e ? RegExp(`^(${y(e.source)}|null)$`) : void 0;
+        return e ? RegExp(`^(${v(e.source)}|null)$`) : void 0;
     }), w(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             null
@@ -843,18 +843,18 @@ function eb(e) {
 const em = u("ZodMiniNumber", (e, t)=>{
     H.init(e, t), e_.init(e, t);
 });
-function ey(e) {
+function ev(e) {
     return new em({
         type: "number",
         checks: [],
         ...P(e)
     });
 }
-const ev = u("ZodMiniBoolean", (e, t)=>{
+const ey = u("ZodMiniBoolean", (e, t)=>{
     Q.init(e, t), e_.init(e, t);
 });
 function ew(e) {
-    return new ev({
+    return new ey({
         type: "boolean",
         ...P(e)
     });
@@ -975,7 +975,7 @@ function eU() {
         type: "lazy",
         getter: ()=>eP([
                 eb(),
-                ey(),
+                ev(),
                 ew(),
                 new ex({
                     type: "null",
@@ -1020,13 +1020,13 @@ eE("status", [
     }),
     eO({
         status: eR("ready"),
-        chunk: ey(),
-        chunks: ey(),
-        bytes: ey(),
+        chunk: ev(),
+        chunks: ev(),
+        bytes: ev(),
         data: eb()
     })
 ]);
-let eH = eb(), eQ = ey(), eX = ew(), eY = eZ(eH), e0 = eZ(eQ), e1 = eZ(eX);
+let eH = eb(), eQ = ev(), eX = ew(), eY = eZ(eH), e0 = eZ(eQ), e1 = eZ(eX);
 const e2 = eT([
     "waiting",
     "wan_reconciling",
@@ -1383,7 +1383,7 @@ const tr = eO({
         devices: eZ(ek())
     })
 ]);
-let ta = eb(), ts = ey(), to = eB(ts), tl = eA(ta, eO({
+let ta = eb(), ts = ev(), to = eB(ts), tl = eA(ta, eO({
     source: ta,
     unit: ta,
     reason: eB(ta),
@@ -1507,6 +1507,9 @@ let tg = eO({
     link_state: ta
 });
 const t_ = eO({
+    counters_valid: eZ(ew()),
+    packets_exact: eZ(ta),
+    bytes_exact: eZ(ta),
     index: ta,
     state: ta,
     pkt_type: ta,
@@ -1517,6 +1520,19 @@ const t_ = eO({
     packets: ts,
     bytes: ts
 }), th = eO({
+    sampled_at_ms: eZ(ts),
+    errors: eZ(e$(ta)),
+    config_valid: eZ(ew()),
+    engine_valid: eZ(ew()),
+    mask_valid: eZ(ew()),
+    routed_mask_valid: eZ(ew()),
+    debug_valid: eZ(ew()),
+    flows_valid: eZ(ew()),
+    entries_valid: eZ(ew()),
+    counters_valid: eZ(ew()),
+    hooks_valid: eZ(ew()),
+    total_packets_exact: eZ(ta),
+    total_bytes_exact: eZ(ta),
     supported: ew(),
     engine_attached: ew(),
     bridge_offload_enabled: ew(),
@@ -1574,11 +1590,11 @@ const tm = {
     retrying: _("Retrying"),
     offline: _("Offline")
 };
-let ty = L.rpc.declare({
+let tv = L.rpc.declare({
     object: "luci.fttr",
     method: "get_status",
     reject: !0
-}), tv = L.rpc.declare({
+}), ty = L.rpc.declare({
     object: "luci.fttr",
     method: "get_sync",
     reject: !0
@@ -1610,7 +1626,7 @@ let ty = L.rpc.declare({
     ],
     reject: !0
 }));
-const tz = async ()=>tb.parse(eK(await ty())), tk = async ()=>tn.parse(eK(await tv())), tj = async ()=>ti.parse(await tw());
+const tz = async ()=>tb.parse(eK(await tv())), tk = async ()=>tn.parse(eK(await ty())), tj = async ()=>ti.parse(await tw());
 eO({
     schema_version: eR(1),
     status: eT([
@@ -1665,13 +1681,14 @@ eO({
     object: "luci.fttr",
     method: "npu_set",
     params: [
-        "enabled"
+        "enabled",
+        "bridge"
     ],
     reject: !0
 });
 let t$ = eP([
     eO({
-        operation_ids: e$(ey()),
+        operation_ids: e$(ev()),
         revision: eb()
     }),
     eO({
@@ -1686,7 +1703,7 @@ let t$ = eP([
         device: eb()
     }),
     eO({
-        operation_ids: e$(ey()),
+        operation_ids: e$(ev()),
         mode: eT([
             "apply",
             "plan"
@@ -1719,7 +1736,7 @@ L.rpc.declare({
         "builtin"
     ]),
     active_path: eb(),
-    size: ey(),
+    size: ev(),
     sha256: eb(),
     data: eZ(eb()),
     factory: eO({
@@ -1732,7 +1749,7 @@ L.rpc.declare({
     firmware: eO({
         exists: ew(),
         path: eb(),
-        size: ey(),
+        size: ev(),
         sha256: eb(),
         data: eb()
     }),
@@ -1740,7 +1757,7 @@ L.rpc.declare({
 }), eO({
     success: ew(),
     path: eb(),
-    size: ey(),
+    size: ev(),
     sha256: eb(),
     error: eZ(eb())
 }), eO({
@@ -1748,7 +1765,7 @@ L.rpc.declare({
     output: eZ(eb()),
     error: eZ(eb())
 });
-let tO = eb(), tM = ey(), tP = ew(), tC = eO({
+let tO = eb(), tM = ev(), tP = ew(), tC = eO({
     id: tO,
     url: tO
 }), tE = eO({
@@ -2519,7 +2536,7 @@ let main = L.view.extend({
             class: "fttr-sync-result",
             "aria-live": "polite",
             style: "margin:10px 0"
-        }), y = (t = {
+        }), v = (t = {
             class: "cbi-input-select",
             children: [
                 o("option", {
@@ -2531,7 +2548,7 @@ let main = L.view.extend({
                         children: e.name || e.device
                     }))
             ]
-        }, o("select", t)), v = o("div", {}), w = o("div", {}), x = f, z = g, k = !1, j = !1, $ = [], S = async (e)=>{
+        }, o("select", t)), y = o("div", {}), w = o("div", {}), x = f, z = g, k = !1, j = !1, $ = [], S = async (e)=>{
             if (!k) {
                 k = !0, B(x);
                 try {
@@ -2574,7 +2591,7 @@ let main = L.view.extend({
                 if (!t) throw Error(_("Device is offline or no longer registered; refresh status and retry."));
                 !function(e) {
                     var t, r, n, i, a, d, p, u, f, g, h, b;
-                    let m = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "basic", y = !1, v = !1, w = null, x = null, z = (t = {
+                    let m = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "basic", v = !1, y = !1, w = null, x = null, z = (t = {
                         class: "onu-basic-container",
                         children: [
                             {
@@ -2764,11 +2781,11 @@ let main = L.view.extend({
                         class: "cbi-button cbi-button-action",
                         disabled: !0,
                         onclick: async ()=>{
-                            if (w && !y) {
+                            if (w && !v) {
                                 P.disabled = !0, O.textContent = _("Preparing JSON download\u2026");
                                 try {
                                     let t = await t4(w);
-                                    if (y) return;
+                                    if (v) return;
                                     M && URL.revokeObjectURL(M), M = URL.createObjectURL(t);
                                     let r = document.createElement("a");
                                     r.href = M, r.download = `mib-${e.serial_number}.json`, r.click(), O.textContent = _("JSON download started"), window.setTimeout(()=>{
@@ -2777,7 +2794,7 @@ let main = L.view.extend({
                                 } catch (e) {
                                     O.textContent = String(e);
                                 } finally{
-                                    P.disabled = !w || y;
+                                    P.disabled = !w || v;
                                 }
                             }
                         },
@@ -3294,21 +3311,21 @@ let main = L.view.extend({
                                     type: "button",
                                     class: "cbi-button",
                                     onclick: ()=>{
-                                        y = !0, M && URL.revokeObjectURL(M), M = null, w = null, S.textContent = "", $.replaceChildren(), L.ui.hideModal();
+                                        v = !0, M && URL.revokeObjectURL(M), M = null, w = null, S.textContent = "", $.replaceChildren(), L.ui.hideModal();
                                     },
                                     children: _("Close")
                                 })
                             }, o("div", h))
                         ]
-                    }, o(s, b)), B = ()=>!y && W.isConnected && W.getClientRects().length > 0;
+                    }, o(s, b)), B = ()=>!v && W.isConnected && W.getClientRects().length > 0;
                     async function V(t) {
-                        if (!v) {
-                            v = !0, N.disabled = A.disabled = !0, j.style.display = "", j.title = "0%", j.firstElementChild.style.width = "0%", k.textContent = _("Reading MIB\u2026");
+                        if (!y) {
+                            y = !0, N.disabled = A.disabled = !0, j.style.display = "", j.title = "0%", j.firstElementChild.style.width = "0%", k.textContent = _("Reading MIB\u2026");
                             try {
-                                let y = await tz(), v = y.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
-                                if (v?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
+                                let v = await tz(), y = v.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
+                                if (y?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
                                 if (!B()) return;
-                                let z = await tq(v.onu_id, v.serial_number, t);
+                                let z = await tq(y.onu_id, y.serial_number, t);
                                 x = z.job;
                                 let O = Date.now() + 140000;
                                 for(; B();){
@@ -3317,21 +3334,21 @@ let main = L.view.extend({
                                     if ("ready" === e.status) {
                                         var r, n, i, a, s, d, c, p, u, f, g, h, b, m;
                                         if (!e.chunks || e.chunks > 1024 || !e.bytes || e.bytes > 33554432 || 0 !== e.chunk || !e.data) throw Error(_("Invalid MIB snapshot"));
-                                        let t = new Uint8Array(e.bytes), y = 0;
+                                        let t = new Uint8Array(e.bytes), v = 0;
                                         for(let r = 0; r < e.chunks; r++){
                                             let n = 0 === r ? e : await tU(z.job, r);
                                             if (!B()) return;
                                             if ("ready" !== n.status || n.chunk !== r || n.chunks !== e.chunks || n.bytes !== e.bytes || !n.data) throw Error(_("Invalid MIB snapshot chunk"));
                                             let i = atob(n.data);
-                                            if (i.length > 32768 || y + i.length > t.length) throw Error(_("Invalid MIB snapshot size"));
-                                            for(let e = 0; e < i.length; e++)t[y++] = i.charCodeAt(e);
+                                            if (i.length > 32768 || v + i.length > t.length) throw Error(_("Invalid MIB snapshot size"));
+                                            for(let e = 0; e < i.length; e++)t[v++] = i.charCodeAt(e);
                                             let a = Math.min(100, Math.round((r + 1) / e.chunks * 100));
                                             j.title = `${a}%`, j.firstElementChild.style.width = `${a}%`, k.textContent = `${_("Downloading MIB snapshot")}: ${r + 1}/${e.chunks}`;
                                         }
-                                        if (y !== t.length) throw Error(_("Incomplete MIB snapshot"));
+                                        if (v !== t.length) throw Error(_("Incomplete MIB snapshot"));
                                         if (await q(), w = tR.parse(eK(JSON.parse(new TextDecoder("utf-8", {
                                             fatal: !0
-                                        }).decode(t)))).report, 1 !== w.schema_version || w.onu_id !== v.onu_id) throw Error(_("Unexpected MIB response"));
+                                        }).decode(t)))).report, 1 !== w.schema_version || w.onu_id !== y.onu_id) throw Error(_("Unexpected MIB response"));
                                         j.style.display = "none", k.replaceChildren((r = w, g = {
                                             class: "mib-chips",
                                             children: [
@@ -3404,7 +3421,7 @@ let main = L.view.extend({
                                                 for (let [e, r] of (d = t, f))e === t ? r.classList.add("active") : r.classList.remove("active");
                                                 let i = e.entities.filter((e)=>e.class_id === t);
                                                 i.length ? c.replaceChildren(...i.map((r, n)=>{
-                                                    var i, a, s, d, c, p, u, f, g, h, b, m, y, v, w, x, z, k, j;
+                                                    var i, a, s, d, c, p, u, f, g, h, b, m, v, y, w, x, z, k, j;
                                                     return j = {
                                                         open: 0 === n,
                                                         class: "mib-entity-details",
@@ -3440,7 +3457,7 @@ let main = L.view.extend({
                                                             (k = {
                                                                 class: "mib-entity-body",
                                                                 children: [
-                                                                    r.attributes.length ? (y = {
+                                                                    r.attributes.length ? (v = {
                                                                         class: "table mib-attributes-table",
                                                                         children: [
                                                                             (b = {
@@ -3524,12 +3541,12 @@ let main = L.view.extend({
                                                                                 })
                                                                             }, o("tbody", m))
                                                                         ]
-                                                                    }, o("table", y)) : (v = {
+                                                                    }, o("table", v)) : (y = {
                                                                         children: _("Basic display only; raw records are preserved.")
-                                                                    }, o("p", v)),
+                                                                    }, o("p", y)),
                                                                     e.tables.filter((e)=>e.class_id === t && e.entity_id === r.entity_id).map((e)=>{
-                                                                        var t, r, n, i, a, s, d, c, p, u, f, g, h, b, m, y;
-                                                                        return y = {
+                                                                        var t, r, n, i, a, s, d, c, p, u, f, g, h, b, m, v;
+                                                                        return v = {
                                                                             class: "mib-table-details",
                                                                             children: [
                                                                                 (t = {
@@ -3618,7 +3635,7 @@ let main = L.view.extend({
                                                                                     children: t5(e.vlan_rules.length ? e.vlan_rules : e.rows)
                                                                                 }, o("pre", m))
                                                                             ]
-                                                                        }, o("details", y);
+                                                                        }, o("details", v);
                                                                     }),
                                                                     (z = {
                                                                         class: "mib-diag-details",
@@ -3747,7 +3764,7 @@ let main = L.view.extend({
                                     ]
                                 })));
                             } finally{
-                                await q(), v = !1, N.disabled = A.disabled = !1;
+                                await q(), y = !1, N.disabled = A.disabled = !1;
                             }
                         }
                     }
@@ -3775,7 +3792,7 @@ let main = L.view.extend({
                 B(x);
                 try {
                     var t;
-                    let r = await tS(e, y.value), n = e.startsWith("management_") ? _("Management operation started; status is refreshed below.") : _("Started: %s").replace("%s", "operation_ids" in r ? r.operation_ids.join(", ") : "\u2014");
+                    let r = await tS(e, v.value), n = e.startsWith("management_") ? _("Management operation started; status is refreshed below.") : _("Started: %s").replace("%s", "operation_ids" in r ? r.operation_ids.join(", ") : "\u2014");
                     m.replaceChildren((t = {
                         class: "alert-message info",
                         children: n
@@ -3859,7 +3876,7 @@ let main = L.view.extend({
                                         ":"
                                     ]
                                 }),
-                                y
+                                v
                             ]
                         }, o("label", n)),
                         o("div", {
@@ -4102,7 +4119,7 @@ let main = L.view.extend({
                 D,
                 Z,
                 m,
-                v
+                y
             ]
         }, o("div", u));
         function B(e) {
@@ -4195,15 +4212,15 @@ let main = L.view.extend({
                 ...Array.from(new Set((e.devices ?? []).map((e)=>e.group).filter(Boolean))).map((e)=>`group:${e}`),
                 ...(e.devices ?? []).map((e)=>e.device)
             ];
-            if (Array.from(y.options).map((e)=>e.value).join("\n") !== ei.join("\n")) {
-                let t = y.value;
-                y.replaceChildren(...ei.map((t)=>o("option", {
+            if (Array.from(v.options).map((e)=>e.value).join("\n") !== ei.join("\n")) {
+                let t = v.value;
+                v.replaceChildren(...ei.map((t)=>o("option", {
                         value: t,
                         children: "all" === t ? _("All devices") : t.startsWith("group:") ? (e.devices ?? []).find((e)=>`group:${e.group}` === t)?.group_name || t : (e.devices ?? []).find((e)=>e.device === t)?.name || t
-                    }))), y.value = ei.includes(t) ? t : "all";
+                    }))), v.value = ei.includes(t) ? t : "all";
             }
             Z.hidden = "manual" !== e.mode || !L.hasViewPermission();
-            let ea = (e.devices ?? []).filter((e)=>"all" === y.value || e.device === y.value || `group:${e.group}` === y.value).some((e)=>![
+            let ea = (e.devices ?? []).filter((e)=>"all" === v.value || e.device === v.value || `group:${e.group}` === v.value).some((e)=>![
                     "completed",
                     "not_started",
                     "interrupted"
@@ -4475,9 +4492,9 @@ let main = L.view.extend({
                     }, o("details", et))
                 ]
             }, o("div", er)));
-            let ec = new Set(Array.from(v.querySelectorAll("details[open]")).map((e)=>e.getAttribute("data-device")));
-            v.replaceChildren(...(e.devices ?? []).map((t)=>{
-                var r, n, i, a, c, u, f, g, h, b, m, y, v, w, x, z, j, $, C, N, A, I, T, D, Z, W, B, V, q, U, F, J, K, G, H, Q, X, Y, ee, et, er, en, ei, ea, es, eo, el, ed, ep, eu, ef, eg, e_, eh, eb, em, ey, ev, ew, ex, ez;
+            let ec = new Set(Array.from(y.querySelectorAll("details[open]")).map((e)=>e.getAttribute("data-device")));
+            y.replaceChildren(...(e.devices ?? []).map((t)=>{
+                var r, n, i, a, c, u, f, g, h, b, m, v, y, w, x, z, j, $, C, N, A, I, T, D, Z, W, B, V, q, U, F, J, K, G, H, Q, X, Y, ee, et, er, en, ei, ea, es, eo, el, ed, ep, eu, ef, eg, e_, eh, eb, em, ev, ey, ew, ex, ez;
                 let ek, ej, e$;
                 return r = ec.has(t.device), n = ()=>P("management_apply"), i = R.disabled, a = e.enabled, c = k, ej = ![
                     "completed",
@@ -4505,7 +4522,7 @@ let main = L.view.extend({
                 ], ez = {
                     class: "cbi-section fttr-device-card",
                     children: [
-                        (y = {
+                        (v = {
                             class: "fttr-card-header",
                             children: [
                                 (b = {
@@ -4601,14 +4618,14 @@ let main = L.view.extend({
                                     ]
                                 }, o("div", m)) : null
                             ]
-                        }, o("div", y)),
+                        }, o("div", v)),
                         (T = {
                             class: "fttr-device-status-strip",
                             children: [
                                 (z = {
                                     class: "fttr-status-pill-group",
                                     children: [
-                                        (v = {
+                                        (y = {
                                             children: [
                                                 o("span", {
                                                     class: "fttr-pill-label",
@@ -4617,7 +4634,7 @@ let main = L.view.extend({
                                                 " ",
                                                 rr(t.management?.state, t.management?.last_inform ? `${_("Last Inform: %s").replace("%s", d(t.management.last_inform))}${null != t.management.age_seconds ? ` (${p(t.management.age_seconds)})` : ""}` : void 0)
                                             ]
-                                        }, o("span", v)),
+                                        }, o("span", y)),
                                         (w = {
                                             children: [
                                                 o("span", {
@@ -5070,7 +5087,7 @@ let main = L.view.extend({
                                 (ew = {
                                     style: "padding:8px 0",
                                     children: [
-                                        (ev = {
+                                        (ey = {
                                             style: "display:flex;gap:16px;flex-wrap:wrap;font-size:90%;margin-bottom:6px",
                                             children: [
                                                 (em = {
@@ -5086,7 +5103,7 @@ let main = L.view.extend({
                                                         l(ek.wifi_cleanup)
                                                     ]
                                                 }, o("span", em)),
-                                                (ey = {
+                                                (ev = {
                                                     children: [
                                                         o("span", {
                                                             style: "color:#888",
@@ -5098,9 +5115,9 @@ let main = L.view.extend({
                                                         " ",
                                                         l(ek.wifi_stage)
                                                     ]
-                                                }, o("span", ey))
+                                                }, o("span", ev))
                                             ]
-                                        }, o("div", ev)),
+                                        }, o("div", ey)),
                                         o("pre", {
                                             style: "white-space:pre-wrap;overflow-wrap:anywhere;font-size:85%;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;max-height:240px;overflow-y:auto",
                                             children: JSON.stringify({
@@ -5116,7 +5133,7 @@ let main = L.view.extend({
                 }, o("div", ez);
             }));
         }
-        return y.addEventListener("change", ()=>B(x)), B(f), L.Poll.add(async ()=>{
+        return v.addEventListener("change", ()=>B(x)), B(f), L.Poll.add(async ()=>{
             if (W.isConnected && !j) {
                 j = !0;
                 try {

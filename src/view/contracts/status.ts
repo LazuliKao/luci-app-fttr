@@ -130,6 +130,9 @@ const switchPort = z.object({
 	link_state: str,
 });
 export const ppeFlowEntry = z.object({
+	counters_valid: z.optional(z.boolean()),
+	packets_exact: z.optional(str),
+	bytes_exact: z.optional(str),
 	index: str,
 	state: str,
 	pkt_type: str,
@@ -143,6 +146,19 @@ export const ppeFlowEntry = z.object({
 export type PpeFlowEntry = z.infer<typeof ppeFlowEntry>;
 
 export const npuStatus = z.object({
+	sampled_at_ms: z.optional(num),
+	errors: z.optional(z.array(str)),
+	config_valid: z.optional(z.boolean()),
+	engine_valid: z.optional(z.boolean()),
+	mask_valid: z.optional(z.boolean()),
+	routed_mask_valid: z.optional(z.boolean()),
+	debug_valid: z.optional(z.boolean()),
+	flows_valid: z.optional(z.boolean()),
+	entries_valid: z.optional(z.boolean()),
+	counters_valid: z.optional(z.boolean()),
+	hooks_valid: z.optional(z.boolean()),
+	total_packets_exact: z.optional(str),
+	total_bytes_exact: z.optional(str),
 	supported: z.boolean(),
 	engine_attached: z.boolean(),
 	bridge_offload_enabled: z.boolean(),

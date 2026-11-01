@@ -6,6 +6,7 @@ export default defineConfig({
 			index: "./src/view/index.tsx",
 			config: "./src/view/config.tsx",
 			hardware: "./src/view/hardware.tsx",
+			npu: "./src/view/npu.tsx",
 			calibration: "./src/view/calibration.tsx",
 			sync: "./src/view/sync.tsx",
 			hl202: "./src/view/hl202.tsx",

@@ -43,7 +43,6 @@ const main = view.extend({
 		await uci.load("fttr");
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
-		if (!uci.sections("fttr", "offload").length) uci.add("fttr", "offload", "offload");
 		const [check, status] = await Promise.all([
 			checkConfig().catch((error: unknown) => ({ error: String(error) })),
 			getStatus().catch((error: unknown) => ({ error: String(error), sub_gateways: [] })),

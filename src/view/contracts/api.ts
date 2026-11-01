@@ -82,16 +82,17 @@ const rawNpuStatus = L.rpc.declare<unknown>({
 	reject: true,
 });
 
-const rawNpuSet = L.rpc.declare<unknown, [boolean]>({
+const rawNpuSet = L.rpc.declare<unknown, [boolean, string]>({
 	object: "luci.fttr",
 	method: "npu_set",
-	params: ["enabled"],
+	params: ["enabled", "bridge"],
 	reject: true,
 });
 
 export const getNpuStatus = async (): Promise<NpuStatus> => npuStatus.parse(await rawNpuStatus());
 
-export const setNpu = async (enabled: boolean): Promise<NpuReply> => npuReply.parse(await rawNpuSet(enabled));
+export const setNpu = async (enabled: boolean, bridge = ""): Promise<NpuReply> =>
+	npuReply.parse(await rawNpuSet(enabled, bridge));
 
 export type SyncAction =
 	| "plan"
