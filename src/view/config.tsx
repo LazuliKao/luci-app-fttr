@@ -32,12 +32,12 @@ type InitialCheck = {
 	error?: string;
 	connectedDevices: SubGateway[];
 	pinning?: FttrStatus["onu_pinning"];
-	capabilities?: Capabilities;
+	capabilities: Capabilities;
 };
 const main = view.extend({
 	async load(): Promise<InitialCheck> {
-		const capabilities = await getCapabilities().catch(() => undefined);
-		if (capabilities && !capabilities.pages.config) {
+		const capabilities = await getCapabilities();
+		if (!capabilities.pages.config) {
 			throw new Error(_("This page is not supported by the installed FTTR build."));
 		}
 		await uci.load("fttr");

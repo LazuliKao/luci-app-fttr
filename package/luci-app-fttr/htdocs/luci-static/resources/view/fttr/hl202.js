@@ -977,7 +977,7 @@ let eq = ev({
         calibration: eh(),
         about: eh()
     }),
-    adapters: eN(ey(eq))
+    adapters: ey(eq)
 });
 const eQ = async ()=>eI.parse(eA(await (!t && (t = L.rpc.declare({
         object: "luci.fttr",

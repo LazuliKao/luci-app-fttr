@@ -28,24 +28,16 @@ const capabilities = z.object({
 		calibration: z.boolean(),
 		about: z.boolean(),
 	}),
-	adapters: z.optional(z.array(adapterCapability)),
+	adapters: z.array(adapterCapability),
 });
 
 export type Capabilities = z.infer<typeof capabilities>;
 
 export function adaptersFromCapabilities(capabilities?: Capabilities): Array<[string, string]> {
-	if (capabilities?.adapters && capabilities.adapters.length > 0) {
-		return capabilities.adapters.map((item) => [
-			item.id,
-			item.id === "generic" ? _("Generic G.988 Bridge") : item.name,
-		]);
-	}
-	const list: Array<[string, string]> = [];
-	if (capabilities?.features?.["device-hl202"] !== false) list.push(["hl202", "H3C HL202"]);
-	if (capabilities?.features?.["device-hwtc"] !== false) list.push(["hwtc", "Huawei HWTC"]);
-	if (capabilities?.features?.["device-star"] !== false) list.push(["star", "STAR SG631"]);
-	list.push(["generic", _("Generic G.988 Bridge")]);
-	return list;
+	return (capabilities?.adapters ?? []).map((item) => [
+		item.id,
+		item.id === "generic" ? _("Generic G.988 Bridge") : item.name,
+	]);
 }
 
 let rawCapabilitiesRpc: (() => Promise<unknown>) | undefined;

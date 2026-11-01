@@ -247,7 +247,7 @@ function D(e, t, n) {
     let i = new e._zod.constr(t ?? e._zod.def);
     return (!t || n?.parent) && (i._zod.parent = e), i;
 }
-function R(e) {
+function M(e) {
     if (!e) return {};
     if ("string" == typeof e) return {
         error: ()=>e
@@ -261,7 +261,7 @@ function R(e) {
         error: ()=>e.error
     } : e;
 }
-function M(e, t = 0) {
+function R(e, t = 0) {
     if (!0 === e.aborted) return !0;
     for(let n = t; n < e.issues.length; n++)if (e.issues[n]?.continue !== !0) return !0;
     return !1;
@@ -290,9 +290,9 @@ const q = (e, t)=>{
         value: ()=>e.message,
         enumerable: !1
     });
-}, H = b("$ZodError", q), G = b("$ZodError", q, {
+}, H = b("$ZodError", q), F = b("$ZodError", q, {
     Parent: Error
-}), F = (n = G, (e, t, i, r)=>{
+}), G = (n = F, (e, t, i, r)=>{
     let a = i ? Object.assign(i, {
         async: !1
     }) : {
@@ -307,7 +307,7 @@ const q = (e, t)=>{
         throw x(e, r?.callee), e;
     }
     return o.value;
-}), B = (i = G, async (e, t, n, r)=>{
+}), B = (i = F, async (e, t, n, r)=>{
     let a = n ? Object.assign(n, {
         async: !0
     }) : {
@@ -321,7 +321,7 @@ const q = (e, t)=>{
         throw x(e, r?.callee), e;
     }
     return o.value;
-}), K = (r = G, (e, t, n)=>{
+}), K = (r = F, (e, t, n)=>{
     let i = n ? {
         ...n,
         async: !1
@@ -339,7 +339,7 @@ const q = (e, t)=>{
         success: !0,
         data: a.value
     };
-}), J = (a = G, async (e, t, n)=>{
+}), J = (a = F, async (e, t, n)=>{
     let i = n ? Object.assign(n, {
         async: !0
     }) : {
@@ -371,7 +371,7 @@ const q = (e, t)=>{
     });
     else {
         let t = (e, t, n)=>{
-            let i, r = M(e);
+            let i, r = R(e);
             for (let a of t){
                 if (a._zod.def.when) {
                     if (!a._zod.def.when(e)) continue;
@@ -379,16 +379,16 @@ const q = (e, t)=>{
                 let t = e.issues.length, o = a._zod.check(e);
                 if (o instanceof Promise && n?.async === !1) throw new w();
                 if (i || o instanceof Promise) i = (i ?? Promise.resolve()).then(async ()=>{
-                    await o, e.issues.length !== t && (r || (r = M(e, t)));
+                    await o, e.issues.length !== t && (r || (r = R(e, t)));
                 });
                 else {
                     if (e.issues.length === t) continue;
-                    r || (r = M(e, t));
+                    r || (r = R(e, t));
                 }
             }
             return i ? i.then(()=>e) : e;
         }, n = (n, r, a)=>{
-            if (M(n)) return n.aborted = !0, n;
+            if (R(n)) return n.aborted = !0, n;
             let o = t(r, i, a);
             if (o instanceof Promise) {
                 if (!1 === a.async) throw new w();
@@ -616,7 +616,7 @@ const ec = b("$ZodObject", (e, t)=>{
 });
 function eu(e, t, n, i) {
     for (let n of e)if (0 === n.issues.length) return t.value = n.value, t;
-    let r = e.filter((e)=>!M(e));
+    let r = e.filter((e)=>!R(e));
     return 1 === r.length ? (t.value = r[0].value, r[0]) : (t.issues.push({
         code: "invalid_union",
         input: t.value,
@@ -877,7 +877,7 @@ Symbol("ZodOutput"), Symbol("ZodInput");
 }());
 const eS = b("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
-    et.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>F(e, t, n, {
+    et.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>G(e, t, n, {
             callee: e.parse
         }), e.safeParse = (t, n)=>K(e, t, n), e.parseAsync = async (t, n)=>B(e, t, n, {
             callee: e.parseAsync
@@ -904,7 +904,7 @@ const eS = b("ZodMiniType", (e, t)=>{
 function ez(e) {
     return new ek({
         type: "string",
-        ...R(e)
+        ...M(e)
     });
 }
 const eL = b("ZodMiniNumber", (e, t)=>{
@@ -914,7 +914,7 @@ function eP(e) {
     return new eL({
         type: "number",
         checks: [],
-        ...R(e)
+        ...M(e)
     });
 }
 const eT = b("ZodMiniBoolean", (e, t)=>{
@@ -923,7 +923,7 @@ const eT = b("ZodMiniBoolean", (e, t)=>{
 function eA(e) {
     return new eT({
         type: "boolean",
-        ...R(e)
+        ...M(e)
     });
 }
 const ej = b("ZodMiniNull", (e, t)=>{
@@ -934,7 +934,7 @@ const ej = b("ZodMiniNull", (e, t)=>{
 function eC(e) {
     return new eN({
         type: "never",
-        ...R(e)
+        ...M(e)
     });
 }
 const eE = b("ZodMiniArray", (e, t)=>{
@@ -944,7 +944,7 @@ function ex(e, t) {
     return new eE({
         type: "array",
         element: e,
-        ...R(t)
+        ...M(t)
     });
 }
 const eO = b("ZodMiniObject", (e, t)=>{
@@ -954,7 +954,7 @@ function eV(e, t) {
     return new eO({
         type: "object",
         shape: e ?? {},
-        ...R(t)
+        ...M(t)
     });
 }
 const e$ = b("ZodMiniUnion", (e, t)=>{
@@ -964,29 +964,29 @@ function eI(e, t) {
     return new e$({
         type: "union",
         options: e,
-        ...R(t)
+        ...M(t)
     });
 }
 const eD = b("ZodMiniDiscriminatedUnion", (e, t)=>{
     e_.init(e, t), eS.init(e, t);
 });
-function eR(e, t, n) {
+function eM(e, t, n) {
     return new eD({
         type: "union",
         options: t,
         discriminator: e,
-        ...R(n)
+        ...M(n)
     });
 }
-const eM = b("ZodMiniRecord", (e, t)=>{
+const eR = b("ZodMiniRecord", (e, t)=>{
     ef.init(e, t), eS.init(e, t);
 });
 function eW(e, t, n) {
-    return new eM({
+    return new eR({
         type: "record",
         keyType: e,
         valueType: t,
-        ...R(n)
+        ...M(n)
     });
 }
 const eU = b("ZodMiniEnum", (e, t)=>{
@@ -999,7 +999,7 @@ function eZ(e, t) {
                 e,
                 e
             ])) : e,
-        ...R(t)
+        ...M(t)
     });
 }
 const eq = b("ZodMiniLiteral", (e, t)=>{
@@ -1011,14 +1011,14 @@ function eH(e, t) {
         values: Array.isArray(e) ? e : [
             e
         ],
-        ...R(t)
+        ...M(t)
     });
 }
-const eG = b("ZodMiniOptional", (e, t)=>{
+const eF = b("ZodMiniOptional", (e, t)=>{
     ev.init(e, t), eS.init(e, t);
 });
-function eF(e) {
-    return new eG({
+function eG(e) {
+    return new eF({
         type: "optional",
         innerType: e
     });
@@ -1046,7 +1046,7 @@ function eX() {
                 eA(),
                 new ej({
                     type: "null",
-                    ...R(void 0)
+                    ...M(void 0)
                 }),
                 ex(e),
                 eW(ez(), e)
@@ -1080,7 +1080,7 @@ function e1(e) {
 eV({
     status: eH("pending"),
     job: ez()
-}), eR("status", [
+}), eM("status", [
     eV({
         status: eH("pending")
     }),
@@ -1115,7 +1115,7 @@ let e2 = eV({
         calibration: eA(),
         about: eA()
     }),
-    adapters: eF(ex(e2))
+    adapters: ex(e2)
 });
 const e5 = async ()=>e4.parse(e1(await (!t && (t = L.rpc.declare({
         object: "luci.fttr",
@@ -1454,7 +1454,7 @@ function td(e, t) {
         ]
     }, s("div", r)));
 }
-let tc = ez(), tu = eP(), tp = eA(), t_ = eF(tc), tf = eF(tu), tm = eF(tp);
+let tc = ez(), tu = eP(), tp = eA(), t_ = eG(tc), tf = eG(tu), tm = eG(tp);
 const tg = eZ([
     "waiting",
     "wan_reconciling",
@@ -1486,7 +1486,7 @@ const tg = eZ([
     "waiting_management"
 ]), tv = eV({
     id: tc,
-    name: eF(eK(tc)),
+    name: eG(eK(tc)),
     kind: eZ([
         "device_service",
         "ssid",
@@ -1500,9 +1500,9 @@ const tg = eZ([
     current_revision: tm,
     management_fresh: tm,
     operation_id: tf,
-    task_id: eF(eK(tu)),
+    task_id: eG(eK(tu)),
     updated_at: tf,
-    changes: eF(ex(eV({
+    changes: eG(ex(eV({
         name: tc,
         desired: tc
     })))
@@ -1510,7 +1510,7 @@ const tg = eZ([
 let ty = eV({
     state: tc,
     reason: t_,
-    task_id: eF(eK(tu)),
+    task_id: eG(eK(tu)),
     instance: tf
 });
 const tb = eV({
@@ -1558,24 +1558,24 @@ let tw = eV({
     updated_at: tf,
     settings_verified_at: eK(tu),
     last_inform: eK(tu),
-    last_error: eF(eK(tc)),
-    persistence_error: eF(eK(tc)),
-    desired: eF(eK(eV({
+    last_error: eG(eK(tc)),
+    persistence_error: eG(eK(tc)),
+    desired: eG(eK(eV({
         vlan: tu,
         vlans: ex(tu),
         priority: tu,
         acs_url: tc
     }))),
-    listener: eF(eV({
+    listener: eG(eV({
         enabled: tp,
         listen: tc,
         path: tc,
         error: eK(tc)
     })),
     endpoint_notice: t_,
-    manual_steps: eF(ex(tc))
+    manual_steps: eG(ex(tc))
 });
-const tS = eR("state", [
+const tS = eM("state", [
     tw,
     function(e, t) {
         if (!V(t)) throw Error("Invalid input to extend: expected a plain object");
@@ -1605,12 +1605,12 @@ const tS = eR("state", [
                 };
                 if (t) for(let e in t){
                     if (!(e in n)) throw Error(`Unrecognized key: "${e}"`);
-                    t[e] && (i[e] = eG ? new eG({
+                    t[e] && (i[e] = eF ? new eF({
                         type: "optional",
                         innerType: n[e]
                     }) : n[e]);
                 }
-                else for(let e in n)i[e] = eG ? new eG({
+                else for(let e in n)i[e] = eF ? new eF({
                     type: "optional",
                     innerType: n[e]
                 }) : n[e];
@@ -1627,7 +1627,7 @@ const tS = eR("state", [
         reason: tc
     })
 ]), tk = eV({
-    backend: eF(eV({
+    backend: eG(eV({
         configured: tc,
         effective: tc,
         available: ex(tc),
@@ -1639,7 +1639,7 @@ const tS = eR("state", [
     optical_sn: t_,
     cwmp_id: t_,
     revision: t_,
-    mode: eF(eZ([
+    mode: eG(eZ([
         "apply",
         "plan"
     ])),
@@ -1652,7 +1652,7 @@ const tS = eR("state", [
     next_retry_at: tf,
     reconcile_reason: t_,
     items: ex(tv),
-    cwmp_contract: eF(eV({
+    cwmp_contract: eG(eV({
         state: tc,
         requested: tc,
         contract: eK(tc),
@@ -1665,9 +1665,9 @@ const tS = eR("state", [
             binding: tc
         }))
     })),
-    wan_objects: eF(eW(tc, eX())),
-    wan_lifecycle: eF(eW(tc, ty)),
-    wan_stage: eF(eZ([
+    wan_objects: eG(eW(tc, eX())),
+    wan_lifecycle: eG(eW(tc, ty)),
+    wan_stage: eG(eZ([
         "waiting",
         "inventory",
         "classifying",
@@ -1683,13 +1683,13 @@ const tS = eR("state", [
         "next",
         "done"
     ])),
-    wifi_objects: eF(eV({
+    wifi_objects: eG(eV({
         owned: ex(tu),
         pending: eK(tc),
         pending_instance: eK(tu)
     })),
-    wifi_lifecycle: eF(eW(tc, ty)),
-    wifi_stage: eF(eZ([
+    wifi_lifecycle: eG(eW(tc, ty)),
+    wifi_stage: eG(eZ([
         "waiting",
         "inventory",
         "adding",
@@ -1702,7 +1702,7 @@ const tS = eR("state", [
         "next",
         "done"
     ])),
-    wifi_cleanup: eF(eZ([
+    wifi_cleanup: eG(eZ([
         "disable",
         "preserve",
         "delete"
@@ -1764,7 +1764,7 @@ const tP = eV({
     adapter: tc,
     omci_management: eV({
         state: tc,
-        reason: eF(eK(tc))
+        reason: eG(eK(tc))
     }),
     management: eK(tb),
     acs_bootstrap: tS,
@@ -1785,7 +1785,7 @@ const tP = eV({
         type: "number",
         coerce: !0,
         checks: [],
-        ...R(void 0)
+        ...M(void 0)
     }),
     error: eK(tc),
     devices: ex(tP),
@@ -1802,13 +1802,13 @@ const tP = eV({
         valid: eH(!0),
         revision: tc,
         devices: tu,
-        error: eF(eC())
+        error: eG(eC())
     }),
     eV({
         error: tc,
-        valid: eF(eC()),
-        revision: eF(eC()),
-        devices: eF(eC())
+        valid: eG(eC()),
+        revision: eG(eC()),
+        devices: eG(eC())
     })
 ]);
 let tj = ez(), tN = eP(), tC = eK(tN), tE = eW(tj, eV({
@@ -1874,7 +1874,7 @@ const tI = eV({
     services: ex(tv),
     ssids: ex(tv),
     wifi_sync: th,
-    acs_bootstrap: eF(tS),
+    acs_bootstrap: eG(tS),
     identity: eK(t$),
     identity_age_seconds: tC,
     identity_current: eA(),
@@ -1898,12 +1898,12 @@ const tI = eV({
         rx_bytes: tC,
         current_tx_kbps: tC,
         current_rx_kbps: tC,
-        offload: eF(eV({
-            enabled: eF(eK(eA())),
-            routed_enabled: eF(eK(eA())),
-            bridge_enabled: eF(eK(eA())),
-            engine_attached: eF(eK(eA())),
-            forwarding_verified: eF(eK(eA()))
+        offload: eG(eV({
+            enabled: eG(eK(eA())),
+            routed_enabled: eG(eK(eA())),
+            bridge_enabled: eG(eK(eA())),
+            engine_attached: eG(eK(eA())),
+            forwarding_verified: eG(eK(eA()))
         })),
         measurements: tE
     }),
@@ -1925,19 +1925,19 @@ const tI = eV({
     measurements: tE
 });
 let tD = eV({
-    reserved_sn: eF(tj),
+    reserved_sn: eG(tj),
     port: tN,
     interface: tj,
     carrier: eA(),
     status: tj,
-    onu_id: eF(tN),
-    onu_sn: eF(tj),
+    onu_id: eG(tN),
+    onu_sn: eG(tj),
     link_state: tj
 });
-const tR = eV({
-    counters_valid: eF(eA()),
-    packets_exact: eF(tj),
-    bytes_exact: eF(tj),
+const tM = eV({
+    counters_valid: eG(eA()),
+    packets_exact: eG(tj),
+    bytes_exact: eG(tj),
     index: tj,
     state: tj,
     pkt_type: tj,
@@ -1947,20 +1947,20 @@ const tR = eV({
     vlan: tj,
     packets: tN,
     bytes: tN
-}), tM = eV({
-    sampled_at_ms: eF(tN),
-    errors: eF(ex(tj)),
-    config_valid: eF(eA()),
-    engine_valid: eF(eA()),
-    mask_valid: eF(eA()),
-    routed_mask_valid: eF(eA()),
-    debug_valid: eF(eA()),
-    flows_valid: eF(eA()),
-    entries_valid: eF(eA()),
-    counters_valid: eF(eA()),
-    hooks_valid: eF(eA()),
-    total_packets_exact: eF(tj),
-    total_bytes_exact: eF(tj),
+}), tR = eV({
+    sampled_at_ms: eG(tN),
+    errors: eG(ex(tj)),
+    config_valid: eG(eA()),
+    engine_valid: eG(eA()),
+    mask_valid: eG(eA()),
+    routed_mask_valid: eG(eA()),
+    debug_valid: eG(eA()),
+    flows_valid: eG(eA()),
+    entries_valid: eG(eA()),
+    counters_valid: eG(eA()),
+    hooks_valid: eG(eA()),
+    total_packets_exact: eG(tj),
+    total_bytes_exact: eG(tj),
     supported: eA(),
     engine_attached: eA(),
     bridge_offload_enabled: eA(),
@@ -1974,9 +1974,9 @@ const tR = eV({
     bound_entries: tN,
     total_packets: tN,
     total_bytes: tN,
-    bound_flows: ex(tR)
+    bound_flows: ex(tM)
 }), tW = eV({
-    onu_pinning: eF(eV({
+    onu_pinning: eG(eV({
         desired: eW(tj, tN),
         active: eW(tj, tN),
         pending_restart: eA(),
@@ -1994,17 +1994,17 @@ const tR = eV({
         last_seen_sec_ago: tN,
         last_payload_bytes: tN
     })),
-    npu: eF(eK(tM))
+    npu: eG(eK(tR))
 });
 eW(tj, eV({
-    carrier: eF(eA()),
-    mac: eF(tj),
-    link: eF(eV({
-        speed: eF(tN),
-        duplex: eF(tj),
-        autoneg: eF(eA())
+    carrier: eG(eA()),
+    mac: eG(tj),
+    link: eG(eV({
+        speed: eG(tN),
+        duplex: eG(tj),
+        autoneg: eG(eA())
     })),
-    stats: eF(eW(tj, tN))
+    stats: eG(eW(tj, tN))
 })), _("Not started"), _("Collecting identity"), _("Retrying identity"), _("Unsupported"), _("Configuring"), _("Verifying"), _("WAN pending"), _("Verified"), _("Retrying"), _("Offline");
 let tU = L.rpc.declare({
     object: "luci.fttr",
@@ -2043,7 +2043,7 @@ L.rpc.declare({
     ],
     reject: !0
 });
-const tG = async ()=>tW.parse(e1(await tU())), tF = async ()=>tA.parse(await tZ()), tB = async ()=>tT.parse(e1(await tq())), tK = async ()=>eV({
+const tF = async ()=>tW.parse(e1(await tU())), tG = async ()=>tA.parse(await tZ()), tB = async ()=>tT.parse(e1(await tq())), tK = async ()=>eV({
         restarting: eH(!0)
     }).parse(e1(await tH()));
 eV({
@@ -2090,8 +2090,8 @@ eV({
         "success",
         "error"
     ]),
-    enabled: eF(eA()),
-    error: eF(ez())
+    enabled: eG(eA()),
+    error: eG(ez())
 }), L.rpc.declare({
     object: "luci.fttr",
     method: "npu_status",
@@ -2126,8 +2126,8 @@ eV({
             "apply",
             "plan"
         ]),
-        reconcile: eF(eA()),
-        retry: eF(eA())
+        reconcile: eG(eA()),
+        retry: eG(eA())
     })
 ]), L.rpc.declare({
     object: "luci.fttr",
@@ -2154,7 +2154,7 @@ eV({
     active_path: ez(),
     size: eP(),
     sha256: ez(),
-    data: eF(ez()),
+    data: eG(ez()),
     factory: eV({
         detected: eA(),
         device: ez(),
@@ -2169,17 +2169,17 @@ eV({
         sha256: ez(),
         data: ez()
     }),
-    error: eF(ez())
+    error: eG(ez())
 }), eV({
     success: eA(),
     path: ez(),
     size: eP(),
     sha256: ez(),
-    error: eF(ez())
+    error: eG(ez())
 }), eV({
     success: eA(),
-    output: eF(ez()),
-    error: eF(ez())
+    output: eG(ez()),
+    error: eG(ez())
 });
 let tJ = L.view, tQ = L.uci, tX = L.form;
 async function tY(e, t, n) {
@@ -2194,14 +2194,14 @@ async function tY(e, t, n) {
 }
 let main = tJ.extend({
     async load () {
-        let e = await e5().catch(()=>void 0);
-        if (e && !e.pages.config) throw Error(_("This page is not supported by the installed FTTR build."));
+        let e = await e5();
+        if (!e.pages.config) throw Error(_("This page is not supported by the installed FTTR build."));
         await tQ.load("fttr"), tQ.sections("fttr", "provisioning").length || tQ.add("fttr", "provisioning", "provisioning"), tQ.sections("fttr", "management").length || tQ.add("fttr", "management", "management");
         let [t, n] = await Promise.all([
-            tF().catch((e)=>({
+            tG().catch((e)=>({
                     error: String(e)
                 })),
-            tG().catch((e)=>({
+            tF().catch((e)=>({
                     error: String(e),
                     sub_gateways: []
                 }))
@@ -2303,26 +2303,10 @@ let main = tJ.extend({
         })(P, _("Basic"), T), t = e.connectedDevices ?? [], n = e.pinning, i = e.capabilities, o = new Map(t.map((e)=>[
                 e.serial_number,
                 e
-            ])), w = new Set((b = function(e) {
-            if (e?.adapters && e.adapters.length > 0) return e.adapters.map((e)=>[
-                    e.id,
-                    "generic" === e.id ? _("Generic G.988 Bridge") : e.name
-                ]);
-            let t = [];
-            return e?.features?.["device-hl202"] !== !1 && t.push([
-                "hl202",
-                "H3C HL202"
-            ]), e?.features?.["device-hwtc"] !== !1 && t.push([
-                "hwtc",
-                "Huawei HWTC"
-            ]), e?.features?.["device-star"] !== !1 && t.push([
-                "star",
-                "STAR SG631"
-            ]), t.push([
-                "generic",
-                _("Generic G.988 Bridge")
-            ]), t;
-        }(i)).map((e)=>{
+            ])), w = new Set((b = (i?.adapters ?? []).map((e)=>[
+                e.id,
+                "generic" === e.id ? _("Generic G.988 Bridge") : e.name
+            ])).map((e)=>{
             let [t] = e;
             return t;
         })), S = (e)=>{
@@ -2668,7 +2652,7 @@ let main = tJ.extend({
                 s("button", {
                     class: "cbi-button cbi-button-action",
                     type: "button",
-                    onclick: ()=>tY(tF, A, N),
+                    onclick: ()=>tY(tG, A, N),
                     children: _("Check")
                 }),
                 " ",
@@ -2676,7 +2660,7 @@ let main = tJ.extend({
                     class: "cbi-button cbi-button-action",
                     type: "button",
                     disabled: !L.hasViewPermission(),
-                    onclick: ()=>tY(async ()=>(await tB(), await tF()), A, N),
+                    onclick: ()=>tY(async ()=>(await tB(), await tG()), A, N),
                     children: _("Reload")
                 }),
                 " ",

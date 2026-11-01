@@ -2260,7 +2260,7 @@ let t6 = eO({
         calibration: ew(),
         about: ew()
     }),
-    adapters: eZ(e$(t6))
+    adapters: e$(t6)
 });
 const t9 = async ()=>t7.parse(eK(await (!t && (t = L.rpc.declare({
         object: "luci.fttr",
