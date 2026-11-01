@@ -78,8 +78,9 @@ case "$1" in
 	call)
 		case "$2" in
 			get_capabilities)
-				# Query the installed daemon binary, even while its service is stopped.
-				result="$(/usr/sbin/fttrd --capabilities 2>/dev/null)" || error 'FTTR build capabilities are unavailable'
+				# Query native ubus fttr first, fallback to binary
+				result="$(ubus call fttr get_capabilities 2>/dev/null)" || \
+					result="$(/usr/sbin/fttrd --capabilities 2>/dev/null)" || error 'FTTR build capabilities are unavailable'
 				[ -n "$result" ] || error 'FTTR build capabilities are unavailable'
 				printf '%s\n' "$result"
 				exit 0
@@ -159,9 +160,30 @@ case "$1" in
 				else printf '{"status":"pending"}\n'; fi
 				exit 0
 				;;
-			get_sync) set -- sync status ;;
-			config_check) set -- config check ;;
-			config_reload) set -- config reload ;;
+			get_sync)
+				status="$(ubus call fttr get_sync 2>/dev/null)"
+				if [ -n "$status" ]; then
+					printf '%s\n' "$status"
+					exit 0
+				fi
+				set -- sync status
+				;;
+			config_check)
+				status="$(ubus call fttr config_check 2>/dev/null)"
+				if [ -n "$status" ]; then
+					printf '%s\n' "$status"
+					exit 0
+				fi
+				set -- config check
+				;;
+			config_reload)
+				status="$(ubus call fttr config_reload 2>/dev/null)"
+				if [ -n "$status" ]; then
+					printf '%s\n' "$status"
+					exit 0
+				fi
+				set -- config reload
+				;;
 			sync)
 				read -r request
 				json_load "$request" || error 'Invalid JSON request'
@@ -177,12 +199,8 @@ case "$1" in
 				exit 0
 				;;
 		optical_status)
-			# Laser/TX state via fttrd: OPTICAL STATUS IPC -> daemon JSON.
-			# The daemon reply is passed through verbatim (it carries its own
-			# status/error); only a missing or non-JSON reply is a transport
-			# failure. fttrctl exits 1 on daemon-side errors, so the exit code
-			# alone must not be treated as failure here.
-			status="$(/usr/sbin/fttrctl optical status --json 2>/dev/null)"
+			status="$(ubus call fttr optical_status 2>/dev/null)" || \
+				status="$(/usr/sbin/fttrctl optical status --json 2>/dev/null)"
 			case "$status" in {*) ;; *) status="";; esac
 			if [ -z "$status" ]; then
 				printf '{"error":"Optical status is unavailable"}\n'
@@ -197,15 +215,12 @@ case "$1" in
 			json_get_var enabled enabled
 			case "$enabled" in 0|1) ;; *) error 'Invalid laser option';; esac
 			if [ "$enabled" = 1 ]; then
-				reply="$(/usr/sbin/fttrctl optical on --json 2>/dev/null)"
+				reply="$(ubus call fttr optical_set '{"enabled":true}' 2>/dev/null)" || \
+					reply="$(/usr/sbin/fttrctl optical on --json 2>/dev/null)"
 			else
-				reply="$(/usr/sbin/fttrctl optical off --json 2>/dev/null)"
+				reply="$(ubus call fttr optical_set '{"enabled":false}' 2>/dev/null)" || \
+					reply="$(/usr/sbin/fttrctl optical off --json 2>/dev/null)"
 			fi
-			# Pass the daemon JSON through untouched: a handled daemon error
-			# ("status":"error" plus a structured message) exits 1 but is a
-			# meaningful reply, and verbatim passthrough avoids quoting issues.
-			# Only an empty or non-JSON stdout means the call never reached the
-			# daemon.
 			case "$reply" in {*) ;; *) reply="";; esac
 			if [ -z "$reply" ]; then
 				printf '{"error":"Failed to change laser output"}\n'
@@ -215,7 +230,8 @@ case "$1" in
 			exit 0
 			;;
 		npu_status)
-			status="$(/usr/sbin/fttrctl offload status --json 2>/dev/null)"
+			status="$(ubus call fttr npu_status 2>/dev/null)" || \
+				status="$(/usr/sbin/fttrctl offload status --json 2>/dev/null)"
 			case "$status" in {*) ;; *) status="";; esac
 			if [ -z "$status" ]; then
 				printf '{"error":"NPU status is unavailable"}\n'
@@ -246,7 +262,8 @@ case "$1" in
 			exit 0
 			;;
 			get_status)
-				status="$(/usr/sbin/fttrctl status --json 2>/dev/null)"
+				status="$(ubus call fttr status 2>/dev/null)" || \
+					status="$(/usr/sbin/fttrctl status --json 2>/dev/null)"
 				rc=$?
 				if [ "$rc" -ne 0 ] || [ -z "$status" ]; then
 					printf '{"error":"FTTR status is unavailable"}\n'
