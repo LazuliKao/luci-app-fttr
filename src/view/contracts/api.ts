@@ -2,14 +2,11 @@ import * as z from "zod/mini";
 import { getFttrClient } from "../../api/client";
 import type { opticalReply } from "../../api/validators";
 import { checked } from "./common";
-import { configCheck, syncStatus } from "./provisioning";
-import { type NpuStatus, networkDevices, npuStatus, status } from "./status";
+import { syncStatus } from "./provisioning";
+import { type NpuStatus, networkDevices } from "./status";
 
 export { opticalReply } from "../../api/validators";
 
-const rawStatus = L.rpc.declare<unknown>({ object: "luci.fttr", method: "get_status", reject: true });
-const rawSync = L.rpc.declare<unknown>({ object: "luci.fttr", method: "get_sync", reject: true });
-const rawCheck = L.rpc.declare<unknown>({ object: "luci.fttr", method: "config_check", reject: true });
 const rawReload = L.rpc.declare<unknown>({ object: "luci.fttr", method: "config_reload", reject: true });
 const rawRestart = L.rpc.declare<unknown>({ object: "luci.fttr", method: "restart_service", reject: true });
 const rawNetwork = L.rpc.declare<unknown>({
@@ -24,9 +21,9 @@ const rawSyncAction = L.rpc.declare<unknown, [string, string]>({
 	params: ["action", "target"],
 	reject: true,
 });
-export const getStatus = async () => status.parse(checked(await rawStatus()));
-export const getSync = async () => syncStatus.parse(checked(await rawSync()));
-export const checkConfig = async () => configCheck.parse(await rawCheck());
+export const getStatus = async () => getFttrClient().getStatus();
+export const getSync = async () => getFttrClient().getSync();
+export const checkConfig = async () => getFttrClient().configCheck();
 export const reloadConfig = async () => syncStatus.parse(checked(await rawReload()));
 export const restartService = async () => z.object({ restarting: z.literal(true) }).parse(checked(await rawRestart()));
 export const getNetworkDevices = async () => networkDevices.parse(checked(await rawNetwork()));
@@ -46,12 +43,6 @@ export const npuReply = z.object({
 });
 export type NpuReply = z.infer<typeof npuReply>;
 
-const rawNpuStatus = L.rpc.declare<unknown>({
-	object: "luci.fttr",
-	method: "npu_status",
-	reject: true,
-});
-
 const rawNpuSet = L.rpc.declare<unknown, [boolean, string]>({
 	object: "luci.fttr",
 	method: "npu_set",
@@ -59,7 +50,7 @@ const rawNpuSet = L.rpc.declare<unknown, [boolean, string]>({
 	reject: true,
 });
 
-export const getNpuStatus = async (): Promise<NpuStatus> => npuStatus.parse(await rawNpuStatus());
+export const getNpuStatus = async (): Promise<NpuStatus> => getFttrClient().npuStatus();
 
 export const setNpu = async (enabled: boolean, bridge = ""): Promise<NpuReply> =>
 	npuReply.parse(await rawNpuSet(enabled, bridge));

@@ -176,6 +176,27 @@ export const npuStatus = z.object({
 });
 export type NpuStatus = z.infer<typeof npuStatus>;
 
+// Native replies always include validity and exact-counter fields. The legacy
+// schema above stays permissive for saved fixtures and embedded status views.
+export const nativeNpuStatus = z.extend(npuStatus, {
+	sampled_at_ms: num,
+	errors: z.array(str),
+	config_valid: z.boolean(),
+	engine_valid: z.boolean(),
+	mask_valid: z.boolean(),
+	routed_mask_valid: z.boolean(),
+	debug_valid: z.boolean(),
+	flows_valid: z.boolean(),
+	entries_valid: z.boolean(),
+	counters_valid: z.boolean(),
+	hooks_valid: z.boolean(),
+	total_packets_exact: str,
+	total_bytes_exact: str,
+	bound_ipv4_entries: num,
+	bound_ipv6_entries: num,
+	bound_flows: z.array(z.extend(ppeFlowEntry, { counters_valid: z.boolean(), packets_exact: str, bytes_exact: str })),
+});
+
 export const status = z.object({
 	onu_pinning: z.optional(
 		z.object({
@@ -213,21 +234,22 @@ export type NetworkDevice = z.infer<typeof networkDevices>[string];
 export type NetworkDevices = z.infer<typeof networkDevices>;
 export type BusinessStatus = z.infer<typeof businessStatus>;
 
-export const businessLabels = {
-	not_started: _("Not started"),
-	collecting_identity: _("Collecting identity"),
-	retrying_identity: _("Retrying identity"),
-	unsupported: _("Unsupported"),
-	configuring: _("Configuring"),
-	verifying: _("Verifying"),
-	wan_bootstrap_pending: _("WAN pending"),
-	verified: _("Verified"),
-	retrying: _("Retrying"),
-	offline: _("Offline"),
-} satisfies Record<BusinessStatus["phase"], string>;
+export const businessLabels = () =>
+	({
+		not_started: _("Not started"),
+		collecting_identity: _("Collecting identity"),
+		retrying_identity: _("Retrying identity"),
+		unsupported: _("Unsupported"),
+		configuring: _("Configuring"),
+		verifying: _("Verifying"),
+		wan_bootstrap_pending: _("WAN pending"),
+		verified: _("Verified"),
+		retrying: _("Retrying"),
+		offline: _("Offline"),
+	}) satisfies Record<BusinessStatus["phase"], string>;
 
 export function businessText(value: BusinessStatus): string {
-	return `${businessLabels[value.phase]} · ${value.generation}${value.error ? ` · ${value.error}` : ""}`;
+	return `${businessLabels()[value.phase]} · ${value.generation}${value.error ? ` · ${value.error}` : ""}`;
 }
 
 export function eqdText(value: SubGateway["equalization_delay_bits"]): string {

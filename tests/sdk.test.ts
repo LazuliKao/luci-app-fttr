@@ -4,6 +4,8 @@ import test from "node:test";
 import { createFttrClient, fttrMethods } from "../src/api/generated/luci-client";
 import { capabilities, opticalReply } from "../src/api/validators";
 import { checked } from "../src/view/contracts/common";
+import { configCheck, syncStatus } from "../src/view/contracts/provisioning";
+import { nativeNpuStatus, status } from "../src/view/contracts/status";
 
 const optical = {
 	schema_version: 1,
@@ -36,6 +38,10 @@ function setup(response: unknown, failure?: Error) {
 			getCapabilities: { parse: (value: unknown) => capabilities.parse(checked(value)) },
 			opticalStatus: opticalReply,
 			opticalSet: opticalReply,
+			getStatus: { parse: (value: unknown) => status.parse(checked(value)) },
+			getSync: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
+			configCheck,
+			npuStatus: nativeNpuStatus,
 		}),
 		declarations,
 		calls,
@@ -69,6 +75,23 @@ test("capabilities retain checked RPC error handling", async () => {
 		setup({ error: { code: "unavailable", message: "not ready" } }).client.getCapabilities(),
 		/not ready/,
 	);
+});
+
+test("read queries use native declarations and retain per-method error semantics", async () => {
+	const error = { error: "invalid configuration" };
+	const { client, declarations, calls } = setup(error);
+	for (const method of ["get_status", "get_sync", "config_check", "npu_status"]) {
+		assert.ok(declarations.some((item) => item.object === "fttr" && item.method === method && !item.params));
+	}
+	assert.deepEqual(await client.configCheck(), error);
+	await assert.rejects(client.getStatus(), /invalid configuration/);
+	await assert.rejects(client.getSync(), /invalid configuration/);
+	await assert.rejects(client.npuStatus());
+	assert.deepEqual(
+		calls.map((call) => call.method),
+		["config_check", "get_status", "get_sync", "npu_status"],
+	);
+	assert.equal(fttrMethods.find((method) => method.method === "npu_status")?.feature, "npu");
 });
 
 test("capability helpers import without a LuCI global", async () => {

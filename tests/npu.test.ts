@@ -40,7 +40,8 @@ test("NPU page preserves edits, invalidates pre-save polls, rejects failed opera
 		counters_valid: true, hooks_valid: true, total_packets_exact: "9007199254740993", total_bytes_exact: "1000",
 		engine_attached: true, bridge_offload_enabled: true, bridge: "br-lan", bridge_offload_mask: 14,
 		routed_offload_mask: 0, bridge_offload_debug: false, active_ports: ["fttr2", "fttr3", "fttr4"],
-		fw4_hooks_ready: true, total_entries: 3, bound_entries: 0, total_packets: 9007199254740992, total_bytes: 1000, bound_flows: [],
+		fw4_hooks_ready: true, total_entries: 3, bound_entries: 0, bound_ipv4_entries: 0, bound_ipv6_entries: 0,
+		total_packets: 9007199254740992, total_bytes: 1000, bound_flows: [],
 	};
 	let get: () => Promise<unknown> = async () => snapshot;
 	let set: (...args: any[]) => Promise<unknown> = async () => ({ status: "success", enabled: true });

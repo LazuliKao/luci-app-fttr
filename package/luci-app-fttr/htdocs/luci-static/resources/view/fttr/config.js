@@ -211,7 +211,7 @@ function j(e, t, n) {
         configurable: !0
     });
 }
-function N(e, t, n) {
+function C(e, t, n) {
     Object.defineProperty(e, t, {
         value: n,
         writable: !0,
@@ -219,7 +219,7 @@ function N(e, t, n) {
         configurable: !0
     });
 }
-function C(...e) {
+function N(...e) {
     let t = {};
     for (let n of e)Object.assign(t, Object.getOwnPropertyDescriptors(n));
     return Object.defineProperties({}, t);
@@ -228,19 +228,19 @@ const x = "captureStackTrace" in Error ? Error.captureStackTrace : (...e)=>{};
 function O(e) {
     return "object" == typeof e && null !== e && !Array.isArray(e);
 }
-function V(e) {
+function $(e) {
     if (!1 === O(e)) return !1;
     let t = e.constructor;
     if (void 0 === t || "function" != typeof t) return !0;
     let n = t.prototype;
     return !1 !== O(n) && !1 !== Object.prototype.hasOwnProperty.call(n, "isPrototypeOf");
 }
-const $ = new Set([
+const I = new Set([
     "string",
     "number",
     "symbol"
 ]);
-function I(e) {
+function V(e) {
     return e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function D(e, t, n) {
@@ -698,7 +698,7 @@ const ep = b("$ZodUnion", (e, t)=>{
 }), ef = b("$ZodRecord", (e, t)=>{
     et.init(e, t), e._zod.parse = (n, i)=>{
         let r = n.value;
-        if (!V(r)) return n.issues.push({
+        if (!$(r)) return n.issues.push({
             expected: "record",
             code: "invalid_type",
             input: r,
@@ -769,7 +769,7 @@ const ep = b("$ZodUnion", (e, t)=>{
     let i;
     et.init(e, t);
     let r = (i = Object.values(n = t.entries).filter((e)=>"number" == typeof e), Object.entries(n).filter(([e, t])=>-1 === i.indexOf(+e)).map(([e, t])=>t)), a = new Set(r);
-    e._zod.values = a, e._zod.pattern = RegExp(`^(${r.filter((e)=>$.has(typeof e)).map((e)=>"string" == typeof e ? I(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
+    e._zod.values = a, e._zod.pattern = RegExp(`^(${r.filter((e)=>I.has(typeof e)).map((e)=>"string" == typeof e ? V(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
         let i = t.value;
         return a.has(i) || t.issues.push({
             code: "invalid_value",
@@ -781,7 +781,7 @@ const ep = b("$ZodUnion", (e, t)=>{
 }), eg = b("$ZodLiteral", (e, t)=>{
     if (et.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let n = new Set(t.values);
-    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? I(e) : e ? I(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (i, r)=>{
+    e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? V(e) : e ? V(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (i, r)=>{
         let a = i.value;
         return n.has(a) || i.issues.push({
             code: "invalid_value",
@@ -928,11 +928,11 @@ function eA(e) {
 }
 const ej = b("ZodMiniNull", (e, t)=>{
     ea.init(e, t), eS.init(e, t);
-}), eN = b("ZodMiniNever", (e, t)=>{
+}), eC = b("ZodMiniNever", (e, t)=>{
     eo.init(e, t), eS.init(e, t);
 });
-function eC(e) {
-    return new eN({
+function eN(e) {
+    return new eC({
         type: "never",
         ...M(e)
     });
@@ -950,50 +950,68 @@ function ex(e, t) {
 const eO = b("ZodMiniObject", (e, t)=>{
     ec.init(e, t), eS.init(e, t), j(e, "shape", ()=>t.shape);
 });
-function eV(e, t) {
+function e$(e, t) {
     return new eO({
         type: "object",
         shape: e ?? {},
         ...M(t)
     });
 }
-const e$ = b("ZodMiniUnion", (e, t)=>{
+function eI(e, t) {
+    if (!$(t)) throw Error("Invalid input to extend: expected a plain object");
+    let n = e._zod.def.checks;
+    if (n && n.length > 0) {
+        let n = e._zod.def.shape;
+        for(let e in t)if (void 0 !== Object.getOwnPropertyDescriptor(n, e)) throw Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
+    }
+    let i = N(e._zod.def, {
+        get shape () {
+            let n = {
+                ...e._zod.def.shape,
+                ...t
+            };
+            return C(this, "shape", n), n;
+        }
+    });
+    return D(e, i);
+}
+const eV = b("ZodMiniUnion", (e, t)=>{
     ep.init(e, t), eS.init(e, t);
 });
-function eI(e, t) {
-    return new e$({
+function eD(e, t) {
+    return new eV({
         type: "union",
         options: e,
         ...M(t)
     });
 }
-const eD = b("ZodMiniDiscriminatedUnion", (e, t)=>{
+const eM = b("ZodMiniDiscriminatedUnion", (e, t)=>{
     e_.init(e, t), eS.init(e, t);
 });
-function eM(e, t, n) {
-    return new eD({
+function eR(e, t, n) {
+    return new eM({
         type: "union",
         options: t,
         discriminator: e,
         ...M(n)
     });
 }
-const eR = b("ZodMiniRecord", (e, t)=>{
+const eW = b("ZodMiniRecord", (e, t)=>{
     ef.init(e, t), eS.init(e, t);
 });
-function eW(e, t, n) {
-    return new eR({
+function eU(e, t, n) {
+    return new eW({
         type: "record",
         keyType: e,
         valueType: t,
         ...M(n)
     });
 }
-const eU = b("ZodMiniEnum", (e, t)=>{
+const eZ = b("ZodMiniEnum", (e, t)=>{
     em.init(e, t), eS.init(e, t), e.options = Object.values(t.entries);
 });
-function eZ(e, t) {
-    return new eU({
+function eq(e, t) {
+    return new eZ({
         type: "enum",
         entries: Array.isArray(e) ? Object.fromEntries(e.map((e)=>[
                 e,
@@ -1002,11 +1020,11 @@ function eZ(e, t) {
         ...M(t)
     });
 }
-const eq = b("ZodMiniLiteral", (e, t)=>{
+const eH = b("ZodMiniLiteral", (e, t)=>{
     eg.init(e, t), eS.init(e, t);
 });
-function eH(e, t) {
-    return new eq({
+function eF(e, t) {
+    return new eH({
         type: "literal",
         values: Array.isArray(e) ? e : [
             e
@@ -1014,33 +1032,33 @@ function eH(e, t) {
         ...M(t)
     });
 }
-const eF = b("ZodMiniOptional", (e, t)=>{
+const eG = b("ZodMiniOptional", (e, t)=>{
     ev.init(e, t), eS.init(e, t);
 });
-function eG(e) {
-    return new eF({
+function eB(e) {
+    return new eG({
         type: "optional",
         innerType: e
     });
 }
-const eB = b("ZodMiniNullable", (e, t)=>{
+const eK = b("ZodMiniNullable", (e, t)=>{
     ey.init(e, t), eS.init(e, t);
 });
-function eK(e) {
-    return new eB({
+function eJ(e) {
+    return new eK({
         type: "nullable",
         innerType: e
     });
 }
-const eJ = b("ZodMiniCatch", (e, t)=>{
+const eQ = b("ZodMiniCatch", (e, t)=>{
     eb.init(e, t), eS.init(e, t);
-}), eQ = b("ZodMiniLazy", (e, t)=>{
+}), eX = b("ZodMiniLazy", (e, t)=>{
     ew.init(e, t), eS.init(e, t);
 });
-function eX() {
-    let e = new eQ({
+function eY() {
+    let e = new eX({
         type: "lazy",
-        getter: ()=>eI([
+        getter: ()=>eD([
                 ez(),
                 eP(),
                 eA(),
@@ -1049,56 +1067,612 @@ function eX() {
                     ...M(void 0)
                 }),
                 ex(e),
-                eW(ez(), e)
+                eU(ez(), e)
             ])
     });
     return e;
 }
-let eY = eV({
-    error: eI([
+let e0 = e$({
+    error: eD([
         ez(),
-        eV({
+        e$({
             code: ez(),
             message: ez()
         })
     ])
 });
-class e0 extends Error {
+class e1 extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function e1(e) {
-    let t = eY.safeParse(e);
+function e2(e) {
+    let t = e0.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new e0("rpc", e) : new e0(e.code, e.message);
+        throw "string" == typeof e ? new e1("rpc", e) : new e1(e.code, e.message);
     }
     return e;
 }
-eV({
-    status: eH("pending"),
+e$({
+    status: eF("pending"),
     job: ez()
-}), eM("status", [
-    eV({
-        status: eH("pending")
+}), eR("status", [
+    e$({
+        status: eF("pending")
     }),
-    eV({
-        status: eH("ready"),
+    e$({
+        status: eF("ready"),
         chunk: eP(),
         chunks: eP(),
         bytes: eP(),
         data: ez()
     })
 ]);
-const e2 = eV({
-    schema_version: eH(1),
-    status: eZ([
+let e4 = ez(), e5 = eP(), e6 = eA(), e3 = eB(e4), e7 = eB(e5), e9 = eB(e6);
+const e8 = eq([
+    "waiting",
+    "wan_reconciling",
+    "wan_verifying",
+    "wifi_reconciling",
+    "discovering",
+    "reading",
+    "disabling",
+    "disabling_read",
+    "writing",
+    "verifying",
+    "settling",
+    "completed",
+    "not_started",
+    "reset_pending",
+    "interrupted",
+    "recovering",
+    "waiting_management",
+    "waiting_task"
+]), te = eq([
+    "not_configured",
+    "stale_revision",
+    "stale_management",
+    "verified",
+    "attention_required",
+    "accepted_unverified",
+    "pending",
+    "recovering",
+    "waiting_management"
+]), tt = e$({
+    id: e4,
+    name: eB(eJ(e4)),
+    kind: eq([
+        "device_service",
+        "ssid",
+        "port_binding",
+        "wan_activation"
+    ]),
+    service_type: e4,
+    state: e4,
+    reason: e3,
+    revision: e3,
+    current_revision: e9,
+    management_fresh: e9,
+    operation_id: e7,
+    task_id: eB(eJ(e5)),
+    updated_at: e7,
+    changes: eB(ex(e$({
+        name: e4,
+        desired: e4
+    })))
+});
+let tn = e$({
+    state: e4,
+    reason: e3,
+    task_id: eB(eJ(e5)),
+    instance: e7
+});
+const ti = e$({
+    cwmp_id: e4,
+    state: eq([
+        "online",
+        "waiting_inform",
+        "offline_or_stale",
+        "waiting_transport"
+    ]),
+    optical_online: e6,
+    last_inform: eJ(e5),
+    age_seconds: eJ(e5)
+});
+let tr = e$({
+    state: eq([
+        "waiting_transport",
+        "waiting_identity",
+        "reading",
+        "configuring",
+        "verifying",
+        "waiting_inform",
+        "ready",
+        "retry_wait",
+        "manual_required",
+        "not_configured",
+        "waiting_acs",
+        "awaiting_apply",
+        "discovering_management_wan",
+        "configuring_management_wan",
+        "verifying_management_wan"
+    ]),
+    method: e3,
+    reason: e3,
+    mqtt_target: eJ(e4),
+    binding_source: e3,
+    link_identity_error: eJ(e4),
+    mqtt_last_seen: eJ(e5),
+    cwmp_id: e3,
+    desired_version: e3,
+    generation: e7,
+    inflight: e9,
+    attempts: e7,
+    next_retry_at: e7,
+    updated_at: e7,
+    settings_verified_at: eJ(e5),
+    last_inform: eJ(e5),
+    last_error: eB(eJ(e4)),
+    persistence_error: eB(eJ(e4)),
+    desired: eB(eJ(e$({
+        vlan: e5,
+        vlans: ex(e5),
+        priority: e5,
+        acs_url: e4
+    }))),
+    listener: eB(e$({
+        enabled: e6,
+        listen: e4,
+        path: e4,
+        error: eJ(e4)
+    })),
+    endpoint_notice: e3,
+    manual_steps: eB(ex(e4))
+});
+const ta = eR("state", [
+    tr,
+    eI(function(e) {
+        var t = void 0;
+        let n = e._zod.def.checks;
+        if (n && n.length > 0) throw Error(".partial() cannot be used on object schemas containing refinements");
+        let i = N(e._zod.def, {
+            get shape () {
+                let n = e._zod.def.shape, i = {
+                    ...n
+                };
+                if (t) for(let e in t){
+                    if (!(e in n)) throw Error(`Unrecognized key: "${e}"`);
+                    t[e] && (i[e] = eG ? new eG({
+                        type: "optional",
+                        innerType: n[e]
+                    }) : n[e]);
+                }
+                else for(let e in n)i[e] = eG ? new eG({
+                    type: "optional",
+                    innerType: n[e]
+                }) : n[e];
+                return C(this, "shape", i), i;
+            },
+            checks: []
+        });
+        return D(e, i);
+    }(tr), {
+        state: eq([
+            "pending",
+            "unavailable"
+        ]),
+        reason: e4
+    })
+]), to = e$({
+    backend: eB(e$({
+        configured: e4,
+        effective: e4,
+        available: ex(e4),
+        reason: e4
+    })),
+    state: e8,
+    operation_id: e7,
+    device: e3,
+    optical_sn: e3,
+    cwmp_id: e3,
+    revision: e3,
+    mode: eB(eq([
+        "apply",
+        "plan"
+    ])),
+    started_at: e7,
+    current_revision: e9,
+    management_fresh: e9,
+    reason: e3,
+    error: e3,
+    attempts: e7,
+    next_retry_at: e7,
+    reconcile_reason: e3,
+    items: ex(tt),
+    cwmp_contract: eB(e$({
+        state: e4,
+        requested: e4,
+        contract: eJ(e4),
+        reason: e4,
+        cache_hit: e6,
+        schema: e4,
+        capabilities: eJ(e$({
+            wan: e4,
+            wlan: e4,
+            binding: e4
+        }))
+    })),
+    wan_objects: eB(eU(e4, eY())),
+    wan_lifecycle: eB(eU(e4, tn)),
+    wan_stage: eB(eq([
+        "waiting",
+        "inventory",
+        "classifying",
+        "adding_parent",
+        "child_names",
+        "adding_child",
+        "delete_guard",
+        "deleting",
+        "verify_delete",
+        "empty_parent",
+        "deleting_parent",
+        "verify_parent_delete",
+        "next",
+        "done"
+    ])),
+    wifi_objects: eB(e$({
+        owned: ex(e5),
+        pending: eJ(e4),
+        pending_instance: eJ(e5)
+    })),
+    wifi_lifecycle: eB(eU(e4, tn)),
+    wifi_stage: eB(eq([
+        "waiting",
+        "inventory",
+        "adding",
+        "verify_add",
+        "deleting",
+        "verify_delete",
+        "reading_disable",
+        "disabling",
+        "verifying_disable",
+        "next",
+        "done"
+    ])),
+    wifi_cleanup: eB(eq([
+        "disable",
+        "preserve",
+        "delete"
+    ]))
+});
+let ts = e$({
+    enabled: e6,
+    mode: eq([
+        "auto",
+        "manual"
+    ]),
+    vlan: ex(e5),
+    priority: e5,
+    address: e4,
+    acs_url: e4,
+    port: e5,
+    path: e4,
+    dhcp_enabled: e6
+}), tl = e$({
+    state: eq([
+        "discovering",
+        "comparing",
+        "planning",
+        "applying",
+        "verifying",
+        "configuring_listener",
+        "cleaning_previous",
+        "waiting_devices",
+        "ready",
+        "awaiting_apply",
+        "verified",
+        "blocked",
+        "retry_wait"
+    ]),
+    error: eJ(e4),
+    inflight: e6,
+    ready: e6,
+    desired_version: eJ(e4),
+    applied_version: eJ(e4),
+    next_retry_at: e5,
+    attempts: e5,
+    desired: eJ(ts),
+    applied: eJ(ts),
+    previous: eJ(ts),
+    plan: ex(e$({
+        operation: e4,
+        key: e4,
+        value: ex(e4)
+    }))
+});
+const td = e$({
+    device: e4,
+    name: eJ(e4),
+    group: eJ(e4),
+    group_name: eJ(e4),
+    template: eJ(e4),
+    template_name: eJ(e4),
+    optical_sn: e4,
+    adapter: e4,
+    omci_management: e$({
+        state: e4,
+        reason: eB(eJ(e4))
+    }),
+    management: eJ(ti),
+    acs_bootstrap: ta,
+    provisioning: to,
+    services: ex(tt),
+    ssids: ex(tt),
+    wifi_sync: te
+}), tc = e$({
+    enabled: e6,
+    mode: eq([
+        "auto",
+        "manual"
+    ]),
+    method: eF("diff"),
+    revision: e4,
+    triggers: ex(e4),
+    interval_minutes: new eL({
+        type: "number",
+        coerce: !0,
+        checks: [],
+        ...M(void 0)
+    }),
+    error: eJ(e4),
+    devices: ex(td),
+    management_network: tl,
+    omci_management: eY(),
+    groups: ex(e$({
+        id: e4,
+        name: eJ(e4),
+        template: e4
+    })),
+    pending_devices: ex(e4)
+}), tu = eD([
+    e$({
+        valid: eF(!0),
+        revision: e4,
+        devices: e5,
+        error: eB(eN())
+    }),
+    e$({
+        error: e4,
+        valid: eB(eN()),
+        revision: eB(eN()),
+        devices: eB(eN())
+    })
+]);
+let tp = ez(), t_ = eP(), tf = eJ(t_), tm = eU(tp, e$({
+    source: tp,
+    unit: tp,
+    reason: eJ(tp),
+    raw: eJ(tp),
+    age_seconds: tf
+}));
+const tg = e$({
+    phase: eq([
+        "not_started",
+        "collecting_identity",
+        "retrying_identity",
+        "unsupported",
+        "configuring",
+        "verifying",
+        "wan_bootstrap_pending",
+        "verified",
+        "retrying",
+        "offline"
+    ]),
+    generation: t_,
+    error: eJ(tp)
+}), th = eq([
+    "o1_initial",
+    "o2_standby",
+    "o3_serial_number",
+    "o4_ranging",
+    "o5_operation",
+    "o6_intermittent_lods",
+    "o7_emergency_stop"
+]);
+let tv = e$({
+    model: tp,
+    wavelength_tx_nm: t_,
+    wavelength_rx_nm: t_,
+    phy_rate_downlink_gbps: t_,
+    phy_rate_uplink_gbps: t_,
+    tx_power_dbm: tf,
+    laser_bias_current_ma: tf,
+    temperature_celsius: tf,
+    vcc_voltage: tf,
+    cdr_locked: eJ(eA()),
+    tx_enabled: eJ(eA()),
+    measurements: tm
+}), ty = e$({
+    equipment_id: eJ(tp),
+    hardware_version: eJ(tp),
+    software_images: ex(tp),
+    omcc_version: tf,
+    errors: ex(tp)
+});
+const tb = e$({
+    onu_id: t_,
+    vendor: tp,
+    model: tp,
+    serial_number: tp,
+    state: th,
+    business_status: tg,
+    management: eJ(ti),
+    provisioning: eJ(to),
+    services: ex(tt),
+    ssids: ex(tt),
+    wifi_sync: te,
+    acs_bootstrap: eB(ta),
+    identity: eJ(ty),
+    identity_age_seconds: tf,
+    identity_current: eA(),
+    fiber_distance_m: tf,
+    ranging_delay_rtd_ns: tf,
+    equalization_delay_bits: new eQ({
+        type: "catch",
+        innerType: tf,
+        catchValue: ()=>null
+    }),
+    optical_rx_power_dbm: tf,
+    optical_tx_power_dbm: tf,
+    firmware_version: tp,
+    hardware_version: tp,
+    uptime_seconds: tf,
+    data_path: e$({
+        interface: tp,
+        gem_ports: eJ(ex(t_)),
+        vlan_id: tf,
+        tx_bytes: tf,
+        rx_bytes: tf,
+        current_tx_kbps: tf,
+        current_rx_kbps: tf,
+        offload: eB(e$({
+            enabled: eB(eJ(eA())),
+            routed_enabled: eB(eJ(eA())),
+            bridge_enabled: eB(eJ(eA())),
+            engine_attached: eB(eJ(eA())),
+            forwarding_verified: eB(eJ(eA()))
+        })),
+        measurements: tm
+    }),
+    wifi_mesh: e$({
+        channel_2g: tf,
+        channel_5g: tf,
+        bandwidth_5g: eJ(tp),
+        tx_power_pct: tf,
+        measurements: tm
+    }),
+    connected_clients: eJ(ex(e$({
+        mac: tp,
+        ip: tp,
+        band: tp,
+        rssi_dbm: tf,
+        rx_rate_mbps: tf,
+        tx_rate_mbps: tf
+    }))),
+    measurements: tm
+});
+let tw = e$({
+    reserved_sn: eB(tp),
+    port: t_,
+    interface: tp,
+    carrier: eA(),
+    status: tp,
+    onu_id: eB(t_),
+    onu_sn: eB(tp),
+    link_state: tp
+});
+const tS = e$({
+    counters_valid: eB(eA()),
+    packets_exact: eB(tp),
+    bytes_exact: eB(tp),
+    index: tp,
+    state: tp,
+    pkt_type: tp,
+    orig_tuple: tp,
+    new_tuple: tp,
+    eth: tp,
+    vlan: tp,
+    packets: t_,
+    bytes: t_
+}), tk = e$({
+    sampled_at_ms: eB(t_),
+    errors: eB(ex(tp)),
+    config_valid: eB(eA()),
+    engine_valid: eB(eA()),
+    mask_valid: eB(eA()),
+    routed_mask_valid: eB(eA()),
+    debug_valid: eB(eA()),
+    flows_valid: eB(eA()),
+    entries_valid: eB(eA()),
+    counters_valid: eB(eA()),
+    hooks_valid: eB(eA()),
+    total_packets_exact: eB(tp),
+    total_bytes_exact: eB(tp),
+    supported: eA(),
+    engine_attached: eA(),
+    bridge_offload_enabled: eA(),
+    bridge_offload_mask: t_,
+    routed_offload_mask: t_,
+    bridge_offload_debug: eA(),
+    bridge: tp,
+    active_ports: ex(tp),
+    fw4_hooks_ready: eA(),
+    total_entries: t_,
+    bound_entries: t_,
+    total_packets: t_,
+    total_bytes: t_,
+    bound_flows: ex(tS)
+}), tz = eI(tk, {
+    sampled_at_ms: t_,
+    errors: ex(tp),
+    config_valid: eA(),
+    engine_valid: eA(),
+    mask_valid: eA(),
+    routed_mask_valid: eA(),
+    debug_valid: eA(),
+    flows_valid: eA(),
+    entries_valid: eA(),
+    counters_valid: eA(),
+    hooks_valid: eA(),
+    total_packets_exact: tp,
+    total_bytes_exact: tp,
+    bound_ipv4_entries: t_,
+    bound_ipv6_entries: t_,
+    bound_flows: ex(eI(tS, {
+        counters_valid: eA(),
+        packets_exact: tp,
+        bytes_exact: tp
+    }))
+}), tL = e$({
+    onu_pinning: eB(e$({
+        desired: eU(tp, t_),
+        active: eU(tp, t_),
+        pending_restart: eA(),
+        allocation_blocked: eA(),
+        startup_error: eJ(tp),
+        config_error: eJ(tp)
+    })),
+    fpga_status: tp,
+    provisioning: eJ(tc),
+    optical_transceiver: tv,
+    switch_ports: ex(tw),
+    sub_gateways: ex(tb),
+    telemetry_gateways: ex(e$({
+        id: tp,
+        last_seen_sec_ago: t_,
+        last_payload_bytes: t_
+    })),
+    npu: eB(eJ(tk))
+});
+eU(tp, e$({
+    carrier: eB(eA()),
+    mac: eB(tp),
+    link: eB(e$({
+        speed: eB(t_),
+        duplex: eB(tp),
+        autoneg: eB(eA())
+    })),
+    stats: eB(eU(tp, t_))
+}));
+const tP = e$({
+    schema_version: eF(1),
+    status: eq([
         "success",
         "error"
     ]),
-    action: eZ([
+    action: eq([
         "optical_on",
         "optical_off",
         "optical_status",
@@ -1106,9 +1680,9 @@ const e2 = eV({
         "optical_reinitialize",
         "optical_shutdown"
     ]),
-    desired_enabled: eK(eA()),
-    tx_enabled: eK(eA()),
-    actor_state: eZ([
+    desired_enabled: eJ(eA()),
+    tx_enabled: eJ(eA()),
+    actor_state: eq([
         "enabled",
         "disabled",
         "unknown"
@@ -1116,22 +1690,22 @@ const e2 = eV({
     hardware_ready: eA(),
     discovery_active: eA(),
     cleanup_pending: eA(),
-    error: eK(eV({
+    error: eJ(e$({
         code: ez(),
         message: ez()
     }))
-}), e4 = eV({
-    schema_version: eH(1),
+}), tT = e$({
+    schema_version: eF(1),
     version: ez(),
-    features: eW(ez(), eA()),
-    functions: eV({
+    features: eU(ez(), eA()),
+    functions: e$({
         optical: eA(),
         omci_mib: eA(),
         mqtt_telemetry: eA(),
         hl202_management: eA(),
         cwmp: eA()
     }),
-    pages: eV({
+    pages: e$({
         status: eA(),
         config: eA(),
         sync: eA(),
@@ -1140,19 +1714,28 @@ const e2 = eV({
         calibration: eA(),
         about: eA()
     }),
-    adapters: ex(eV({
+    adapters: ex(e$({
         id: ez(),
         name: ez()
     }))
-}), e5 = async ()=>{
+});
+function tA() {
     var e, n;
-    let i, r, a;
-    return (t ??= (e = L.rpc, n = {
+    let i, r, a, o, s, l, d;
+    return t ??= (e = L.rpc, n = {
         getCapabilities: {
-            parse: (e)=>e4.parse(e1(e))
+            parse: (e)=>tT.parse(e2(e))
         },
-        opticalStatus: e2,
-        opticalSet: e2
+        opticalStatus: tP,
+        opticalSet: tP,
+        getStatus: {
+            parse: (e)=>tL.parse(e2(e))
+        },
+        getSync: {
+            parse: (e)=>tc.parse(e2(e))
+        },
+        configCheck: tu,
+        npuStatus: tz
     }, i = e.declare({
         object: "fttr",
         method: "get_capabilities",
@@ -1168,21 +1751,42 @@ const e2 = eV({
             "enabled"
         ],
         reject: !0
+    }), o = e.declare({
+        object: "fttr",
+        method: "get_status",
+        reject: !0
+    }), s = e.declare({
+        object: "fttr",
+        method: "get_sync",
+        reject: !0
+    }), l = e.declare({
+        object: "fttr",
+        method: "config_check",
+        reject: !0
+    }), d = e.declare({
+        object: "fttr",
+        method: "npu_status",
+        reject: !0
     }), {
         getCapabilities: async ()=>n.getCapabilities.parse(await i()),
         opticalStatus: async ()=>n.opticalStatus.parse(await r()),
-        opticalSet: async (e)=>n.opticalSet.parse(await a(e.enabled))
-    })).getCapabilities();
-}, e3 = [
+        opticalSet: async (e)=>n.opticalSet.parse(await a(e.enabled)),
+        getStatus: async ()=>n.getStatus.parse(await o()),
+        getSync: async ()=>n.getSync.parse(await s()),
+        configCheck: async ()=>n.configCheck.parse(await l()),
+        npuStatus: async ()=>n.npuStatus.parse(await d())
+    });
+}
+const tj = async ()=>tA().getCapabilities(), tC = [
     "INTERNET",
     "OTHER",
     "IPTV",
     "VOIP"
 ];
-function e6(e) {
+function tN(e) {
     return Array.isArray(e) ? e.map(String) : String(e ?? "").split(/\s+/).filter(Boolean);
 }
-function e7() {
+function tE() {
     let e = (e)=>L.uci.sections("fttr", e).map((e)=>Object.fromEntries(Object.entries(e).map((e)=>{
                 let [t, n] = e;
                 return [
@@ -1200,45 +1804,45 @@ function e7() {
         device: e("device")
     };
 }
-function e9(e) {
+function tx(e) {
     return String(e.name || e.ssid || e.optical_sn || e[".name"]);
 }
-function e8(e, t) {
+function tO(e, t) {
     return e.wifi.filter((e)=>e.template === t).map((e)=>[
             e[".name"],
-            e9(e)
+            tx(e)
         ]);
 }
-function te(e) {
-    let t = e7();
+function t$(e) {
+    let t = tE();
     if (t.group.some((t)=>t.template === e)) throw Error(_("Template is in use."));
-    for (let n of t.wifi)n.template === e && tn(n[".name"]);
+    for (let n of t.wifi)n.template === e && tV(n[".name"]);
     for (let n of [
         ...t.network,
         ...t.wifi
     ])n.template === e && L.uci.remove("fttr", n[".name"]);
 }
-function tt(e) {
-    if (e7().device.some((t)=>t.group === e)) throw Error(_("Group is used by devices. Reassign those devices before deleting it."));
+function tI(e) {
+    if (tE().device.some((t)=>t.group === e)) throw Error(_("Group is used by devices. Reassign those devices before deleting it."));
 }
-function tn(e) {
-    for (let t of e7().network){
-        let n = e6(t.ssid);
+function tV(e) {
+    for (let t of tE().network){
+        let n = tN(t.ssid);
         if (n.includes(e)) {
             let i = n.filter((t)=>t !== e);
             i.length ? L.uci.set("fttr", t[".name"], "ssid", i) : L.uci.unset("fttr", t[".name"], "ssid");
         }
     }
 }
-function ti(e, t) {
+function tD(e, t) {
     let n = e?.vendor || e?.serial_number.slice(0, 4);
     return "HWTC" === n && (!t || t.has("hwtc")) ? "hwtc" : e?.model?.startsWith("HL202") && (!t || t.has("hl202")) ? "hl202" : ("STAR" === n || e?.model?.includes("SG631") || e?.serial_number.startsWith("STAR")) && (!t || t.has("star")) ? "star" : "generic";
 }
-function tr(e) {
-    let t = e6(e);
-    return t.length ? !!t.every((e)=>e3.includes(e)) || _("WAN Service List may only contain INTERNET, OTHER, IPTV, and VOIP.") : _("Select at least one WAN Service List label.");
+function tM(e) {
+    let t = tN(e);
+    return t.length ? !!t.every((e)=>tC.includes(e)) || _("WAN Service List may only contain INTERNET, OTHER, IPTV, and VOIP.") : _("Select at least one WAN Service List label.");
 }
-function ta(e) {
+function tR(e) {
     let t = [], n = new Set(e.template.map((e)=>e[".name"])), i = new Set(e.group.map((e)=>e[".name"])), r = new Map(e.wifi.map((e)=>[
             e[".name"],
             e
@@ -1270,7 +1874,7 @@ function ta(e) {
     }
     for (let t of e.network){
         String(t.name || "").trim() || a("network", t, "name", _("Name is required."));
-        let e = tr(t.service_list);
+        let e = tM(t.service_list);
         for (let [n, i] of (!0 !== e && a("network", t, "service_list", e), [
             [
                 "vlan",
@@ -1284,7 +1888,7 @@ function ta(e) {
             let e = String(t[n] ?? "0");
             (!/^\d+$/.test(e) || Number(e) > i) && a("network", t, n, _("Value is outside the allowed range."));
         }
-        for (let e of e6(t.ssid)){
+        for (let e of tN(t.ssid)){
             let n = r.get(e);
             n && n.template === t.template || a("network", t, "ssid", _("Select SSIDs belonging to this network's template."));
         }
@@ -1292,10 +1896,10 @@ function ta(e) {
     for (let t of e.device)i.has(String(t.group || "")) || a("device", t, "group", _("Select an existing group."));
     return t;
 }
-function to(e, t) {
+function tW(e, t) {
     return e.children.find((e)=>e.subsection?.sectiontype === t)?.subsection;
 }
-function ts(e) {
+function tU(e) {
     return ({
         device: _("Device"),
         group: _("Group"),
@@ -1304,7 +1908,7 @@ function ts(e) {
         network: _("Network")
     })[e];
 }
-async function tl(e, t) {
+async function tZ(e, t) {
     let n = e.currentTarget;
     n.disabled = !0;
     try {
@@ -1317,11 +1921,11 @@ async function tl(e, t) {
         n.disabled = !L.hasViewPermission();
     }
 }
-function td(e, t) {
+function tq(e, t) {
     var n, i, r;
     let a = function(e) {
         let t = new Map();
-        for (let n of ta(e)){
+        for (let n of tR(e)){
             let i = `${n.kind}/${n.sectionId}`, r = t.get(i);
             if (!r) {
                 let a = e[n.kind].find((e)=>e[".name"] === n.sectionId);
@@ -1338,7 +1942,7 @@ function td(e, t) {
         return [
             ...t.values()
         ];
-    }(e7());
+    }(tE());
     L.ui.showModal(_("Review and repair configuration"), (r = {
         children: [
             s("p", {
@@ -1357,9 +1961,9 @@ function td(e, t) {
                     children: [
                         (r = {
                             children: [
-                                ts(n.kind),
+                                tU(n.kind),
                                 ": ",
-                                e9(n.row),
+                                tx(n.row),
                                 " ",
                                 (i = {
                                     children: s("code", {
@@ -1394,11 +1998,11 @@ function td(e, t) {
                                             "group",
                                             "template",
                                             "ssid"
-                                        ].includes(e.field) && e6(n.row[e.field]).length ? (i = {
+                                        ].includes(e.field) && tN(n.row[e.field]).length ? (i = {
                                             children: [
                                                 " ",
                                                 s("code", {
-                                                    children: e6(n.row[e.field]).join(", ")
+                                                    children: tN(n.row[e.field]).join(", ")
                                                 })
                                             ]
                                         }, s(o, i)) : null
@@ -1410,9 +2014,9 @@ function td(e, t) {
                             class: "cbi-button cbi-button-action",
                             type: "button",
                             disabled: !L.hasViewPermission(),
-                            onclick: (t)=>tl(t, async ()=>{
+                            onclick: (t)=>tZ(t, async ()=>{
                                     if (!L.hasViewPermission()) return;
-                                    let t = to(e, n.kind);
+                                    let t = tW(e, n.kind);
                                     if (!t) throw Error(_("Configuration editor is unavailable."));
                                     L.ui.hideModal(), await t.renderMoreOptionsModal(n.sectionId);
                                 }),
@@ -1431,9 +2035,9 @@ function td(e, t) {
                                             children: [
                                                 s("strong", {
                                                     children: [
-                                                        ts(n.kind),
+                                                        tU(n.kind),
                                                         ": ",
-                                                        e9(n.row)
+                                                        tx(n.row)
                                                     ]
                                                 }),
                                                 " ",
@@ -1451,7 +2055,7 @@ function td(e, t) {
                                                 s("button", {
                                                     class: "cbi-button",
                                                     type: "button",
-                                                    onclick: ()=>td(e, t),
+                                                    onclick: ()=>tq(e, t),
                                                     children: _("Cancel")
                                                 }),
                                                 " ",
@@ -1459,11 +2063,11 @@ function td(e, t) {
                                                     class: "cbi-button cbi-button-negative",
                                                     type: "button",
                                                     disabled: !L.hasViewPermission(),
-                                                    onclick: (i)=>tl(i, async ()=>{
+                                                    onclick: (i)=>tZ(i, async ()=>{
                                                             if (!L.hasViewPermission()) return;
-                                                            let r = to(e, n.kind);
+                                                            let r = tW(e, n.kind);
                                                             if (!r) throw Error(_("Configuration editor is unavailable."));
-                                                            await r.handleRemove(n.sectionId, i), td(e, t);
+                                                            await r.handleRemove(n.sectionId, i), tq(e, t);
                                                         }),
                                                     children: _("Delete this configuration")
                                                 })
@@ -1506,575 +2110,11 @@ function td(e, t) {
         ]
     }, s("div", r)));
 }
-let tc = ez(), tu = eP(), tp = eA(), t_ = eG(tc), tf = eG(tu), tm = eG(tp);
-const tg = eZ([
-    "waiting",
-    "wan_reconciling",
-    "wan_verifying",
-    "wifi_reconciling",
-    "discovering",
-    "reading",
-    "disabling",
-    "disabling_read",
-    "writing",
-    "verifying",
-    "settling",
-    "completed",
-    "not_started",
-    "reset_pending",
-    "interrupted",
-    "recovering",
-    "waiting_management",
-    "waiting_task"
-]), th = eZ([
-    "not_configured",
-    "stale_revision",
-    "stale_management",
-    "verified",
-    "attention_required",
-    "accepted_unverified",
-    "pending",
-    "recovering",
-    "waiting_management"
-]), tv = eV({
-    id: tc,
-    name: eG(eK(tc)),
-    kind: eZ([
-        "device_service",
-        "ssid",
-        "port_binding",
-        "wan_activation"
-    ]),
-    service_type: tc,
-    state: tc,
-    reason: t_,
-    revision: t_,
-    current_revision: tm,
-    management_fresh: tm,
-    operation_id: tf,
-    task_id: eG(eK(tu)),
-    updated_at: tf,
-    changes: eG(ex(eV({
-        name: tc,
-        desired: tc
-    })))
-});
-let ty = eV({
-    state: tc,
-    reason: t_,
-    task_id: eG(eK(tu)),
-    instance: tf
-});
-const tb = eV({
-    cwmp_id: tc,
-    state: eZ([
-        "online",
-        "waiting_inform",
-        "offline_or_stale",
-        "waiting_transport"
-    ]),
-    optical_online: tp,
-    last_inform: eK(tu),
-    age_seconds: eK(tu)
-});
-let tw = eV({
-    state: eZ([
-        "waiting_transport",
-        "waiting_identity",
-        "reading",
-        "configuring",
-        "verifying",
-        "waiting_inform",
-        "ready",
-        "retry_wait",
-        "manual_required",
-        "not_configured",
-        "waiting_acs",
-        "awaiting_apply",
-        "discovering_management_wan",
-        "configuring_management_wan",
-        "verifying_management_wan"
-    ]),
-    method: t_,
-    reason: t_,
-    mqtt_target: eK(tc),
-    binding_source: t_,
-    link_identity_error: eK(tc),
-    mqtt_last_seen: eK(tu),
-    cwmp_id: t_,
-    desired_version: t_,
-    generation: tf,
-    inflight: tm,
-    attempts: tf,
-    next_retry_at: tf,
-    updated_at: tf,
-    settings_verified_at: eK(tu),
-    last_inform: eK(tu),
-    last_error: eG(eK(tc)),
-    persistence_error: eG(eK(tc)),
-    desired: eG(eK(eV({
-        vlan: tu,
-        vlans: ex(tu),
-        priority: tu,
-        acs_url: tc
-    }))),
-    listener: eG(eV({
-        enabled: tp,
-        listen: tc,
-        path: tc,
-        error: eK(tc)
-    })),
-    endpoint_notice: t_,
-    manual_steps: eG(ex(tc))
-});
-const tS = eM("state", [
-    tw,
-    function(e, t) {
-        if (!V(t)) throw Error("Invalid input to extend: expected a plain object");
-        let n = e._zod.def.checks;
-        if (n && n.length > 0) {
-            let n = e._zod.def.shape;
-            for(let e in t)if (void 0 !== Object.getOwnPropertyDescriptor(n, e)) throw Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
-        }
-        let i = C(e._zod.def, {
-            get shape () {
-                let n = {
-                    ...e._zod.def.shape,
-                    ...t
-                };
-                return N(this, "shape", n), n;
-            }
-        });
-        return D(e, i);
-    }(function(e) {
-        var t = void 0;
-        let n = e._zod.def.checks;
-        if (n && n.length > 0) throw Error(".partial() cannot be used on object schemas containing refinements");
-        let i = C(e._zod.def, {
-            get shape () {
-                let n = e._zod.def.shape, i = {
-                    ...n
-                };
-                if (t) for(let e in t){
-                    if (!(e in n)) throw Error(`Unrecognized key: "${e}"`);
-                    t[e] && (i[e] = eF ? new eF({
-                        type: "optional",
-                        innerType: n[e]
-                    }) : n[e]);
-                }
-                else for(let e in n)i[e] = eF ? new eF({
-                    type: "optional",
-                    innerType: n[e]
-                }) : n[e];
-                return N(this, "shape", i), i;
-            },
-            checks: []
-        });
-        return D(e, i);
-    }(tw), {
-        state: eZ([
-            "pending",
-            "unavailable"
-        ]),
-        reason: tc
-    })
-]), tk = eV({
-    backend: eG(eV({
-        configured: tc,
-        effective: tc,
-        available: ex(tc),
-        reason: tc
-    })),
-    state: tg,
-    operation_id: tf,
-    device: t_,
-    optical_sn: t_,
-    cwmp_id: t_,
-    revision: t_,
-    mode: eG(eZ([
-        "apply",
-        "plan"
-    ])),
-    started_at: tf,
-    current_revision: tm,
-    management_fresh: tm,
-    reason: t_,
-    error: t_,
-    attempts: tf,
-    next_retry_at: tf,
-    reconcile_reason: t_,
-    items: ex(tv),
-    cwmp_contract: eG(eV({
-        state: tc,
-        requested: tc,
-        contract: eK(tc),
-        reason: tc,
-        cache_hit: tp,
-        schema: tc,
-        capabilities: eK(eV({
-            wan: tc,
-            wlan: tc,
-            binding: tc
-        }))
-    })),
-    wan_objects: eG(eW(tc, eX())),
-    wan_lifecycle: eG(eW(tc, ty)),
-    wan_stage: eG(eZ([
-        "waiting",
-        "inventory",
-        "classifying",
-        "adding_parent",
-        "child_names",
-        "adding_child",
-        "delete_guard",
-        "deleting",
-        "verify_delete",
-        "empty_parent",
-        "deleting_parent",
-        "verify_parent_delete",
-        "next",
-        "done"
-    ])),
-    wifi_objects: eG(eV({
-        owned: ex(tu),
-        pending: eK(tc),
-        pending_instance: eK(tu)
-    })),
-    wifi_lifecycle: eG(eW(tc, ty)),
-    wifi_stage: eG(eZ([
-        "waiting",
-        "inventory",
-        "adding",
-        "verify_add",
-        "deleting",
-        "verify_delete",
-        "reading_disable",
-        "disabling",
-        "verifying_disable",
-        "next",
-        "done"
-    ])),
-    wifi_cleanup: eG(eZ([
-        "disable",
-        "preserve",
-        "delete"
-    ]))
-});
-let tz = eV({
-    enabled: tp,
-    mode: eZ([
-        "auto",
-        "manual"
-    ]),
-    vlan: ex(tu),
-    priority: tu,
-    address: tc,
-    acs_url: tc,
-    port: tu,
-    path: tc,
-    dhcp_enabled: tp
-}), tL = eV({
-    state: eZ([
-        "discovering",
-        "comparing",
-        "planning",
-        "applying",
-        "verifying",
-        "configuring_listener",
-        "cleaning_previous",
-        "waiting_devices",
-        "ready",
-        "awaiting_apply",
-        "verified",
-        "blocked",
-        "retry_wait"
-    ]),
-    error: eK(tc),
-    inflight: tp,
-    ready: tp,
-    desired_version: eK(tc),
-    applied_version: eK(tc),
-    next_retry_at: tu,
-    attempts: tu,
-    desired: eK(tz),
-    applied: eK(tz),
-    previous: eK(tz),
-    plan: ex(eV({
-        operation: tc,
-        key: tc,
-        value: ex(tc)
-    }))
-});
-const tP = eV({
-    device: tc,
-    name: eK(tc),
-    group: eK(tc),
-    group_name: eK(tc),
-    template: eK(tc),
-    template_name: eK(tc),
-    optical_sn: tc,
-    adapter: tc,
-    omci_management: eV({
-        state: tc,
-        reason: eG(eK(tc))
-    }),
-    management: eK(tb),
-    acs_bootstrap: tS,
-    provisioning: tk,
-    services: ex(tv),
-    ssids: ex(tv),
-    wifi_sync: th
-}), tT = eV({
-    enabled: tp,
-    mode: eZ([
-        "auto",
-        "manual"
-    ]),
-    method: eH("diff"),
-    revision: tc,
-    triggers: ex(tc),
-    interval_minutes: new eL({
-        type: "number",
-        coerce: !0,
-        checks: [],
-        ...M(void 0)
-    }),
-    error: eK(tc),
-    devices: ex(tP),
-    management_network: tL,
-    omci_management: eX(),
-    groups: ex(eV({
-        id: tc,
-        name: eK(tc),
-        template: tc
-    })),
-    pending_devices: ex(tc)
-}), tA = eI([
-    eV({
-        valid: eH(!0),
-        revision: tc,
-        devices: tu,
-        error: eG(eC())
-    }),
-    eV({
-        error: tc,
-        valid: eG(eC()),
-        revision: eG(eC()),
-        devices: eG(eC())
-    })
-]);
-let tj = ez(), tN = eP(), tC = eK(tN), tE = eW(tj, eV({
-    source: tj,
-    unit: tj,
-    reason: eK(tj),
-    raw: eK(tj),
-    age_seconds: tC
-}));
-const tx = eV({
-    phase: eZ([
-        "not_started",
-        "collecting_identity",
-        "retrying_identity",
-        "unsupported",
-        "configuring",
-        "verifying",
-        "wan_bootstrap_pending",
-        "verified",
-        "retrying",
-        "offline"
-    ]),
-    generation: tN,
-    error: eK(tj)
-}), tO = eZ([
-    "o1_initial",
-    "o2_standby",
-    "o3_serial_number",
-    "o4_ranging",
-    "o5_operation",
-    "o6_intermittent_lods",
-    "o7_emergency_stop"
-]);
-let tV = eV({
-    model: tj,
-    wavelength_tx_nm: tN,
-    wavelength_rx_nm: tN,
-    phy_rate_downlink_gbps: tN,
-    phy_rate_uplink_gbps: tN,
-    tx_power_dbm: tC,
-    laser_bias_current_ma: tC,
-    temperature_celsius: tC,
-    vcc_voltage: tC,
-    cdr_locked: eK(eA()),
-    tx_enabled: eK(eA()),
-    measurements: tE
-}), t$ = eV({
-    equipment_id: eK(tj),
-    hardware_version: eK(tj),
-    software_images: ex(tj),
-    omcc_version: tC,
-    errors: ex(tj)
-});
-const tI = eV({
-    onu_id: tN,
-    vendor: tj,
-    model: tj,
-    serial_number: tj,
-    state: tO,
-    business_status: tx,
-    management: eK(tb),
-    provisioning: eK(tk),
-    services: ex(tv),
-    ssids: ex(tv),
-    wifi_sync: th,
-    acs_bootstrap: eG(tS),
-    identity: eK(t$),
-    identity_age_seconds: tC,
-    identity_current: eA(),
-    fiber_distance_m: tC,
-    ranging_delay_rtd_ns: tC,
-    equalization_delay_bits: new eJ({
-        type: "catch",
-        innerType: tC,
-        catchValue: ()=>null
-    }),
-    optical_rx_power_dbm: tC,
-    optical_tx_power_dbm: tC,
-    firmware_version: tj,
-    hardware_version: tj,
-    uptime_seconds: tC,
-    data_path: eV({
-        interface: tj,
-        gem_ports: eK(ex(tN)),
-        vlan_id: tC,
-        tx_bytes: tC,
-        rx_bytes: tC,
-        current_tx_kbps: tC,
-        current_rx_kbps: tC,
-        offload: eG(eV({
-            enabled: eG(eK(eA())),
-            routed_enabled: eG(eK(eA())),
-            bridge_enabled: eG(eK(eA())),
-            engine_attached: eG(eK(eA())),
-            forwarding_verified: eG(eK(eA()))
-        })),
-        measurements: tE
-    }),
-    wifi_mesh: eV({
-        channel_2g: tC,
-        channel_5g: tC,
-        bandwidth_5g: eK(tj),
-        tx_power_pct: tC,
-        measurements: tE
-    }),
-    connected_clients: eK(ex(eV({
-        mac: tj,
-        ip: tj,
-        band: tj,
-        rssi_dbm: tC,
-        rx_rate_mbps: tC,
-        tx_rate_mbps: tC
-    }))),
-    measurements: tE
-});
-let tD = eV({
-    reserved_sn: eG(tj),
-    port: tN,
-    interface: tj,
-    carrier: eA(),
-    status: tj,
-    onu_id: eG(tN),
-    onu_sn: eG(tj),
-    link_state: tj
-});
-const tM = eV({
-    counters_valid: eG(eA()),
-    packets_exact: eG(tj),
-    bytes_exact: eG(tj),
-    index: tj,
-    state: tj,
-    pkt_type: tj,
-    orig_tuple: tj,
-    new_tuple: tj,
-    eth: tj,
-    vlan: tj,
-    packets: tN,
-    bytes: tN
-}), tR = eV({
-    sampled_at_ms: eG(tN),
-    errors: eG(ex(tj)),
-    config_valid: eG(eA()),
-    engine_valid: eG(eA()),
-    mask_valid: eG(eA()),
-    routed_mask_valid: eG(eA()),
-    debug_valid: eG(eA()),
-    flows_valid: eG(eA()),
-    entries_valid: eG(eA()),
-    counters_valid: eG(eA()),
-    hooks_valid: eG(eA()),
-    total_packets_exact: eG(tj),
-    total_bytes_exact: eG(tj),
-    supported: eA(),
-    engine_attached: eA(),
-    bridge_offload_enabled: eA(),
-    bridge_offload_mask: tN,
-    routed_offload_mask: tN,
-    bridge_offload_debug: eA(),
-    bridge: tj,
-    active_ports: ex(tj),
-    fw4_hooks_ready: eA(),
-    total_entries: tN,
-    bound_entries: tN,
-    total_packets: tN,
-    total_bytes: tN,
-    bound_flows: ex(tM)
-}), tW = eV({
-    onu_pinning: eG(eV({
-        desired: eW(tj, tN),
-        active: eW(tj, tN),
-        pending_restart: eA(),
-        allocation_blocked: eA(),
-        startup_error: eK(tj),
-        config_error: eK(tj)
-    })),
-    fpga_status: tj,
-    provisioning: eK(tT),
-    optical_transceiver: tV,
-    switch_ports: ex(tD),
-    sub_gateways: ex(tI),
-    telemetry_gateways: ex(eV({
-        id: tj,
-        last_seen_sec_ago: tN,
-        last_payload_bytes: tN
-    })),
-    npu: eG(eK(tR))
-});
-eW(tj, eV({
-    carrier: eG(eA()),
-    mac: eG(tj),
-    link: eG(eV({
-        speed: eG(tN),
-        duplex: eG(tj),
-        autoneg: eG(eA())
-    })),
-    stats: eG(eW(tj, tN))
-})), _("Not started"), _("Collecting identity"), _("Retrying identity"), _("Unsupported"), _("Configuring"), _("Verifying"), _("WAN pending"), _("Verified"), _("Retrying"), _("Offline");
-let tU = L.rpc.declare({
-    object: "luci.fttr",
-    method: "get_status",
-    reject: !0
-}), tZ = (L.rpc.declare({
-    object: "luci.fttr",
-    method: "get_sync",
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "config_check",
-    reject: !0
-})), tq = L.rpc.declare({
+let tH = L.rpc.declare({
     object: "luci.fttr",
     method: "config_reload",
     reject: !0
-}), tH = L.rpc.declare({
+}), tF = L.rpc.declare({
     object: "luci.fttr",
     method: "restart_service",
     reject: !0
@@ -2095,20 +2135,16 @@ L.rpc.declare({
     ],
     reject: !0
 });
-const tF = async ()=>tW.parse(e1(await tU())), tG = async ()=>tA.parse(await tZ()), tB = async ()=>tT.parse(e1(await tq())), tK = async ()=>eV({
-        restarting: eH(!0)
-    }).parse(e1(await tH()));
-eV({
-    status: eZ([
+const tG = async ()=>tA().getStatus(), tB = async ()=>tA().configCheck(), tK = async ()=>tc.parse(e2(await tH())), tJ = async ()=>e$({
+        restarting: eF(!0)
+    }).parse(e2(await tF()));
+e$({
+    status: eq([
         "success",
         "error"
     ]),
-    enabled: eG(eA()),
-    error: eG(ez())
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "npu_status",
-    reject: !0
+    enabled: eB(eA()),
+    error: eB(ez())
 }), L.rpc.declare({
     object: "luci.fttr",
     method: "npu_set",
@@ -2117,30 +2153,30 @@ eV({
         "bridge"
     ],
     reject: !0
-}), eI([
-    eV({
+}), eD([
+    e$({
         operation_ids: ex(eP()),
         revision: ez()
     }),
-    eV({
-        started: eH(!0),
-        mode: eZ([
+    e$({
+        started: eF(!0),
+        mode: eq([
             "apply",
             "plan"
         ])
     }),
-    eV({
-        reset: eH(!0),
+    e$({
+        reset: eF(!0),
         device: ez()
     }),
-    eV({
+    e$({
         operation_ids: ex(eP()),
-        mode: eZ([
+        mode: eq([
             "apply",
             "plan"
         ]),
-        reconcile: eG(eA()),
-        retry: eG(eA())
+        reconcile: eB(eA()),
+        retry: eB(eA())
     })
 ]), L.rpc.declare({
     object: "luci.fttr",
@@ -2158,8 +2194,8 @@ eV({
     object: "luci.fttr",
     method: "apply_calibration",
     reject: !0
-}), eV({
-    source: eZ([
+}), e$({
+    source: eq([
         "factory",
         "firmware",
         "builtin"
@@ -2167,35 +2203,35 @@ eV({
     active_path: ez(),
     size: eP(),
     sha256: ez(),
-    data: eG(ez()),
-    factory: eV({
+    data: eB(ez()),
+    factory: e$({
         detected: eA(),
         device: ez(),
         has_data: eA(),
         sha256: ez(),
         data: ez()
     }),
-    firmware: eV({
+    firmware: e$({
         exists: eA(),
         path: ez(),
         size: eP(),
         sha256: ez(),
         data: ez()
     }),
-    error: eG(ez())
-}), eV({
+    error: eB(ez())
+}), e$({
     success: eA(),
     path: ez(),
     size: eP(),
     sha256: ez(),
-    error: eG(ez())
-}), eV({
+    error: eB(ez())
+}), e$({
     success: eA(),
-    output: eG(ez()),
-    error: eG(ez())
+    output: eB(ez()),
+    error: eB(ez())
 });
-let tJ = L.view, tQ = L.uci, tX = L.form;
-async function tY(e, t, n) {
+let tQ = L.view, tX = L.uci, tY = L.form;
+async function t0(e, t, n) {
     try {
         let i = await e();
         t.textContent = JSON.stringify(i, null, 2), n?.(i);
@@ -2205,16 +2241,16 @@ async function tY(e, t, n) {
         });
     }
 }
-let main = tJ.extend({
+let main = tQ.extend({
     async load () {
-        let e = await e5();
+        let e = await tj();
         if (!e.pages.config) throw Error(_("This page is not supported by the installed FTTR build."));
-        await tQ.load("fttr"), tQ.sections("fttr", "provisioning").length || tQ.add("fttr", "provisioning", "provisioning"), tQ.sections("fttr", "management").length || tQ.add("fttr", "management", "management");
+        await tX.load("fttr"), tX.sections("fttr", "provisioning").length || tX.add("fttr", "provisioning", "provisioning"), tX.sections("fttr", "management").length || tX.add("fttr", "management", "management");
         let [t, n] = await Promise.all([
-            tG().catch((e)=>({
+            tB().catch((e)=>({
                     error: String(e)
                 })),
-            tF().catch((e)=>({
+            tG().catch((e)=>({
                     error: String(e),
                     sub_gateways: []
                 }))
@@ -2228,9 +2264,9 @@ let main = tJ.extend({
     },
     render (e) {
         var t, n, i, r, a;
-        let o, b, w, S, k, z = new tX.Map("fttr", _("FTTR configuration")), P = z.section(tX.NamedSection, "acs", "acs");
+        let o, b, w, S, k, z = new tY.Map("fttr", _("FTTR configuration")), P = z.section(tY.NamedSection, "acs", "acs");
         P.addremove = !1, P.anonymous = !1;
-        let T = tQ.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
+        let T = tX.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
         (function(e, t, n) {
             e.tab("basic", t);
             let i = e.taboption("basic", L.form.SectionValue, "_acs", L.form.NamedSection, "acs", "acs").subsection;
@@ -2327,7 +2363,7 @@ let main = tJ.extend({
             return `${i} \xb7 ${e} \xb7 ${t?.state === "o5_operation" ? _("Connected") : _("Offline")}${t?.onu_id != null ? ` \xb7 ONU ${t.onu_id}` : ""}`;
         }, P.tab("devices", _("Devices & groups")), y(g(P, "devices", "_groups", "group", _("Groups"), (e)=>{
             h(e, "_name", _("Group"), (e)=>String(L.uci.get("fttr", e, "name") || e)), d(e, L.form.Value, "name", _("Name")).modalonly = !0, f(e, "template", _("Template"), "template").modalonly = !0;
-        }), tt), g(P, "devices", "_devices", "device", _("Devices"), (e)=>{
+        }), tI), g(P, "devices", "_devices", "device", _("Devices"), (e)=>{
             h(e, "_device", _("Device"), (e)=>{
                 let t = String(L.uci.get("fttr", e, "optical_sn") || "");
                 return t ? S(t) : _("New device");
@@ -2345,26 +2381,26 @@ let main = tJ.extend({
             i.renderWidget = function(e, n, i) {
                 this.keylist = [], this.vallist = [];
                 let a = String(L.uci.get("fttr", e, "optical_sn") || ""), o = new Set(L.uci.sections("fttr", "device").filter((t)=>t[".name"] !== e).map((e)=>e.optical_sn));
-                for (let e of t)"o5_operation" === e.state && ti(e, w) && !o.has(e.serial_number) && this.value(e.serial_number, S(e.serial_number));
+                for (let e of t)"o5_operation" === e.state && tD(e, w) && !o.has(e.serial_number) && this.value(e.serial_number, S(e.serial_number));
                 a && !this.keylist.includes(a) && this.value(a, S(a));
                 let s = i || a || this.keylist[0] || "";
                 return r.call(this, e, n, s);
             }, i.onchange = (e, t, n)=>{
-                let i = ti(o.get(n), w);
+                let i = tD(o.get(n), w);
                 a.getUIElement(t)?.setValue(i);
             }, i.validate = (e, t)=>t ? !L.uci.sections("fttr", "device").some((n)=>n[".name"] !== e && n.optical_sn === t) || _("Device already configured.") : _("Select device."), i.write = (e, t)=>{
                 L.uci.set("fttr", e, "optical_sn", t);
-                let n = ti(o.get(t), w);
+                let n = tD(o.get(t), w);
                 L.uci.get("fttr", e, "adapter") || L.uci.set("fttr", e, "adapter", n);
             };
             let a = p(e, "general", "adapter", _("Device adapter"), b);
             a.modalonly = !0, a.default = "generic", a.rmempty = !1;
             let d = a.renderWidget;
             a.renderWidget = function(e, t, n) {
-                let i = String(L.uci.get("fttr", e, "optical_sn") || ""), r = ti(o.get(i), w), a = n || L.uci.get("fttr", e, "adapter") || r;
+                let i = String(L.uci.get("fttr", e, "optical_sn") || ""), r = tD(o.get(i), w), a = n || L.uci.get("fttr", e, "adapter") || r;
                 return a && !this.keylist.includes(a) && this.value(a, a), d.call(this, e, t, a);
             }, a.write = (e, t)=>{
-                let n = String(L.uci.get("fttr", e, "optical_sn") || ""), i = ti(o.get(n), w);
+                let n = String(L.uci.get("fttr", e, "optical_sn") || ""), i = tD(o.get(n), w);
                 L.uci.set("fttr", e, "adapter", t || i || "generic");
             };
             let u = p(e, "general", "provisioning_method", _("Provisioning method"), [
@@ -2507,12 +2543,12 @@ let main = tJ.extend({
             ]))h(e, `_${t}_count`, n, (e)=>String(L.uci.sections("fttr", t).filter((t)=>t.template === e).length));
             let t = d(e, L.form.Value, "name", _("Name"));
             t.modalonly = !0, t.rmempty = !1;
-        }), te), P.tab("wifi", _("SSIDs")), y(g(P, "wifi", "_wifi", "wifi", _("SSIDs"), (e)=>{
+        }), t$), P.tab("wifi", _("SSIDs")), y(g(P, "wifi", "_wifi", "wifi", _("SSIDs"), (e)=>{
             e.description = _("Create SSIDs here before selecting them in a network. Every SSID belongs to one template.");
             let t = v(e), n = t.validate;
             t.validate = function(e, t) {
                 let i = n.call(this, e, t);
-                return !0 !== i ? i : !e7().network.some((n)=>e6(n.ssid).includes(e) && n.template !== t) || _("This SSID is bound to a network. Remove its network bindings before changing the template.");
+                return !0 !== i ? i : !tE().network.some((n)=>tN(n.ssid).includes(e) && n.template !== t) || _("This SSID is bound to a network. Remove its network bindings before changing the template.");
             }, h(e, "_ssid", _("SSID"), (e)=>String(L.uci.get("fttr", e, "ssid") || e)), h(e, "_radio", _("Band"), (e)=>"2g" === L.uci.get("fttr", e, "radio") ? "2.4 GHz" : "5 GHz"), h(e, "_security", _("Security"), (e)=>{
                 let t = String(L.uci.get("fttr", e, "security") || "");
                 return "none" === t ? _("None (Open)") : t || _("Keep current key");
@@ -2560,17 +2596,17 @@ let main = tJ.extend({
                 let n = new TextEncoder().encode(t).length;
                 return n >= 8 && n <= 63 || _("Password must be 8\u201363 bytes.");
             };
-        }), tn), P.tab("networks", _("Networks")), g(P, "networks", "_networks", "network", _("Networks"), (e)=>{
+        }), tV), P.tab("networks", _("Networks")), g(P, "networks", "_networks", "network", _("Networks"), (e)=>{
             e.description = _("Networks bind VLAN services to wired ports and optional SSIDs within one template.");
             let t = v(e);
-            h(e, "_name", _("Network"), (e)=>String(L.uci.get("fttr", e, "name") || _("New network"))), h(e, "_vlan", _("VLAN"), (e)=>String(L.uci.get("fttr", e, "vlan") || "0")), h(e, "_services", _("WAN Service List (multi-select)"), (e)=>e6(L.uci.get("fttr", e, "service_list")).join(", ")), h(e, "_bindings", _("LAN / WLAN port bindings"), (e)=>[
-                    ...e6(L.uci.get("fttr", e, "port")).map((e)=>e.toUpperCase()),
-                    ...e6(L.uci.get("fttr", e, "ssid")).map((e)=>String(L.uci.get("fttr", e, "ssid") || e))
+            h(e, "_name", _("Network"), (e)=>String(L.uci.get("fttr", e, "name") || _("New network"))), h(e, "_vlan", _("VLAN"), (e)=>String(L.uci.get("fttr", e, "vlan") || "0")), h(e, "_services", _("WAN Service List (multi-select)"), (e)=>tN(L.uci.get("fttr", e, "service_list")).join(", ")), h(e, "_bindings", _("LAN / WLAN port bindings"), (e)=>[
+                    ...tN(L.uci.get("fttr", e, "port")).map((e)=>e.toUpperCase()),
+                    ...tN(L.uci.get("fttr", e, "ssid")).map((e)=>String(L.uci.get("fttr", e, "ssid") || e))
                 ].join(", "));
             let n = d(e, L.form.Value, "name", _("Name"));
             n.modalonly = !0, n.rmempty = !1;
             let i = d(e, L.form.MultiValue, "service_list", _("WAN Service List (multi-select)"));
-            for (let e of (i.modalonly = !0, i.rmempty = !1, i.validate = (e, t)=>tr(t), i.description = _("Select at least one of INTERNET, OTHER, IPTV, and VOIP for each custom VLAN. TR069 is reserved for OMCI."), e3))i.value(e, e);
+            for (let e of (i.modalonly = !0, i.rmempty = !1, i.validate = (e, t)=>tM(t), i.description = _("Select at least one of INTERNET, OTHER, IPTV, and VOIP for each custom VLAN. TR069 is reserved for OMCI."), tC))i.value(e, e);
             for (let [t, n, i] of [
                 [
                     "vlan",
@@ -2589,17 +2625,17 @@ let main = tJ.extend({
             let r = d(e, L.form.MultiValue, "ssid", _("SSIDs"));
             r.modalonly = !0, r.rmempty = !0, r.placeholder = _("No SSIDs selected"), r.description = _("Optional for wired-only networks. Only SSIDs from the selected template are listed. Changing the template clears the SSID selection."), m(r, function(e) {
                 let t = this.section.getOption("template");
-                return e8(e7(), String(t?.formvalue(e) ?? L.uci.get("fttr", e, "template") ?? ""));
+                return tO(tE(), String(t?.formvalue(e) ?? L.uci.get("fttr", e, "template") ?? ""));
             }), r.validate = function(e, t) {
-                let n = String(this.section.getOption("template").formvalue(e) ?? L.uci.get("fttr", e, "template") ?? ""), i = new Set(e8(e7(), n).map((e)=>{
+                let n = String(this.section.getOption("template").formvalue(e) ?? L.uci.get("fttr", e, "template") ?? ""), i = new Set(tO(tE(), n).map((e)=>{
                     let [t] = e;
                     return t;
                 }));
-                return !!e6(t).every((e)=>i.has(e)) || _("Select SSIDs belonging to this network's template.");
+                return !!tN(t).every((e)=>i.has(e)) || _("Select SSIDs belonging to this network's template.");
             }, t.onchange = function(e, t, n) {
                 let i = this.section.getOption("ssid").getUIElement(t);
                 if (!i) return;
-                let r = e8(e7(), n);
+                let r = tO(tE(), n);
                 i.clearChoices(!0), i.addChoices(r.map((e)=>{
                     let [t] = e;
                     return t;
@@ -2609,11 +2645,11 @@ let main = tJ.extend({
             a.modalonly = !0;
             for(let e = 1; e <= 4; e++)a.value(`lan${e}`, `LAN${e}`);
         }), this.handleSave = ()=>z.save(()=>{
-                let e = e7(), t = ta(e);
+                let e = tE(), t = tR(e);
                 if (t.length) throw Error(t.map((t)=>{
                     let n = e[t.kind].find((e)=>e[".name"] === t.sectionId), i = e.template.find((e)=>e[".name"] === n?.template), r = [
-                        i && e9(i),
-                        n ? e9(n) : t.sectionId
+                        i && tx(i),
+                        n ? tx(n) : t.sectionId
                     ].filter(Boolean).join(" / ");
                     return `${r} [${t.sectionId}.${t.field}]: ${t.message}`;
                 }).join("\n"));
@@ -2622,7 +2658,7 @@ let main = tJ.extend({
         let A = s("pre", {
             style: "white-space:pre-wrap;overflow-wrap:anywhere",
             "aria-live": "polite"
-        }), j = null, N = (e)=>{
+        }), j = null, C = (e)=>{
             var t;
             k = e?.error, j?.parentNode?.removeChild(j), j = null, e?.error && (j = L.ui.addNotification(_("FTTR configuration check failed"), (t = {
                 children: [
@@ -2632,14 +2668,14 @@ let main = tJ.extend({
                     s("button", {
                         class: "cbi-button cbi-button-action",
                         type: "button",
-                        onclick: ()=>td(P, k),
+                        onclick: ()=>tq(P, k),
                         children: _("Review and repair configuration")
                     })
                 ]
             }, s("div", t)), "error"));
         };
-        N(e);
-        let C = (a = {
+        C(e);
+        let N = (a = {
             class: "cbi-section",
             children: [
                 (r = {
@@ -2658,14 +2694,14 @@ let main = tJ.extend({
                 s("button", {
                     class: "cbi-button cbi-button-action",
                     type: "button",
-                    onclick: ()=>td(P, k),
+                    onclick: ()=>tq(P, k),
                     children: _("Review and repair configuration")
                 }),
                 " ",
                 s("button", {
                     class: "cbi-button cbi-button-action",
                     type: "button",
-                    onclick: ()=>tY(tG, A, N),
+                    onclick: ()=>t0(tB, A, C),
                     children: _("Check")
                 }),
                 " ",
@@ -2673,7 +2709,7 @@ let main = tJ.extend({
                     class: "cbi-button cbi-button-action",
                     type: "button",
                     disabled: !L.hasViewPermission(),
-                    onclick: ()=>tY(async ()=>(await tB(), await tG()), A, N),
+                    onclick: ()=>t0(async ()=>(await tK(), await tB()), A, C),
                     children: _("Reload")
                 }),
                 " ",
@@ -2681,13 +2717,13 @@ let main = tJ.extend({
                     class: "cbi-button cbi-button-negative",
                     type: "button",
                     disabled: !L.hasViewPermission(),
-                    onclick: ()=>tY(tK, A),
+                    onclick: ()=>t0(tJ, A),
                     children: _("Restart")
                 }),
                 A
             ]
         }, s("div", a));
-        return P.tab("diagnostics", _("Configuration diagnostics")), P.taboption("diagnostics", tX.DummyValue, "_diagnostics", "").render = ()=>Promise.resolve(C), z.render();
+        return P.tab("diagnostics", _("Configuration diagnostics")), P.taboption("diagnostics", tY.DummyValue, "_diagnostics", "").render = ()=>Promise.resolve(N), z.render();
     }
 });
 
