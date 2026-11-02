@@ -258,6 +258,13 @@ export const configCheck = z.union([
 		devices: z.optional(z.never()),
 	}),
 ]);
+export const restartReply = z.object({ restarting: z.literal(true) });
+export const actionResult = z.union([
+	z.object({ operation_ids: z.array(num), revision: str }),
+	z.object({ started: z.literal(true), mode: z.enum(["apply", "plan"]) }),
+	z.object({ reset: z.literal(true), device: str }),
+	z.object({ operation_ids: z.array(num), mode: z.enum(["apply", "plan"]), reconcile: optBool, retry: optBool }),
+]);
 export type SyncItem = z.infer<typeof syncItem>;
 export type AcsBootstrap = z.infer<typeof acsBootstrap>;
 export type DeviceSync = z.infer<typeof deviceSync>;

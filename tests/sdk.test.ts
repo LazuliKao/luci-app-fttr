@@ -4,7 +4,7 @@ import test from "node:test";
 import { createFttrClient, fttrMethods } from "../src/api/generated/luci-client";
 import { capabilities, opticalReply } from "../src/api/validators";
 import { checked } from "../src/view/contracts/common";
-import { configCheck, syncStatus } from "../src/view/contracts/provisioning";
+import { actionResult, configCheck, restartReply, syncStatus } from "../src/view/contracts/provisioning";
 import { nativeNpuStatus, status } from "../src/view/contracts/status";
 
 const optical = {
@@ -42,6 +42,9 @@ function setup(response: unknown, failure?: Error) {
 			getSync: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
 			configCheck,
 			npuStatus: nativeNpuStatus,
+			configReload: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
+			restartService: { parse: (value: unknown) => restartReply.parse(checked(value)) },
+			sync: { parse: (value: unknown) => actionResult.parse(checked(value)) },
 		}),
 		declarations,
 		calls,
@@ -98,6 +101,54 @@ test("capability helpers import without a LuCI global", async () => {
 	assert.equal("L" in globalThis, false);
 	const helpers = await import("../src/view/contracts/capabilities");
 	assert.deepEqual(helpers.adaptersFromCapabilities(), []);
+});
+
+test("native writes preserve synchronization selectors, errors and single-attempt transport", async () => {
+	const { client, declarations, calls } = setup({ operation_ids: [1], revision: "revision_a" });
+	assert.deepEqual(declarations.find((item) => item.method === "sync")?.params, [
+		"action",
+		"target",
+		"management",
+		"item",
+	]);
+	await client.sync({ action: "apply", target: "group:group_a", management: false, item: "ssid_a" });
+	assert.deepEqual(calls, [{ method: "sync", args: ["apply", "group:group_a", false, "ssid_a"] }]);
+	const defaults = setup({ operation_ids: [], revision: "revision_a" });
+	await defaults.client.sync({ action: "plan", target: "all" });
+	assert.deepEqual(defaults.calls[0].args, ["plan", "all", undefined, undefined]);
+	assert.deepEqual(await setup({ restarting: true }).client.restartService(), { restarting: true });
+	await assert.rejects(setup({ restarting: false }).client.restartService());
+	for (const method of ["configReload", "restartService"] as const) {
+		await assert.rejects(setup({ error: "configuration rejected" }).client[method](), /configuration rejected/);
+		const transport = new Error("connection lost; outcome unknown");
+		const failed = setup(undefined, transport);
+		await assert.rejects(failed.client[method](), (error) => error === transport);
+		assert.equal(failed.calls.length, 1);
+	}
+	await assert.rejects(
+		setup({ error: "unknown device" }).client.sync({ action: "retry", target: "device_a" }),
+		/unknown device/,
+	);
+});
+
+test("migrated native methods have no legacy RPCD declarations or ACL grants", () => {
+	const shell = readFileSync(
+		new URL("../package/luci-app-fttr/root/usr/libexec/rpcd/luci.fttr", import.meta.url),
+		"utf8",
+	);
+	const list = JSON.parse(shell.match(/list\)\s+printf '(\{[^\n]+\})\\n'/)?.[1] ?? "null");
+	const acl = JSON.parse(
+		readFileSync(
+			new URL("../package/luci-app-fttr/root/usr/share/rpcd/acl.d/luci-app-fttr.json", import.meta.url),
+			"utf8",
+		),
+	)["luci-app-fttr"];
+	const legacy = new Set([...acl.read.ubus["luci.fttr"], ...acl.write.ubus["luci.fttr"]]);
+	assert.deepEqual([...legacy].sort(), Object.keys(list).sort());
+	for (const method of fttrMethods) {
+		assert.ok(!(method.method in list), method.method);
+		assert.ok(!legacy.has(method.method), method.method);
+	}
 });
 
 test("all generated methods have matching native rpcd ACL access", () => {

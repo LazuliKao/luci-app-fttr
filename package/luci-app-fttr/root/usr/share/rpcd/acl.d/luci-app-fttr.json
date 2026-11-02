@@ -22,9 +22,6 @@
 			"ubus": {
 				"fttr": ["config_reload", "sync", "restart_service", "optical_set"],
 				"luci.fttr": [
-					"config_reload",
-					"sync",
-					"restart_service",
 					"hl202_exec_start",
 					"hl202_accounts_start",
 					"hl202_account_update",

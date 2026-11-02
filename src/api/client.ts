@@ -1,5 +1,5 @@
 import { checked } from "../view/contracts/common";
-import { configCheck, syncStatus } from "../view/contracts/provisioning";
+import { actionResult, configCheck, restartReply, syncStatus } from "../view/contracts/provisioning";
 import { nativeNpuStatus, status } from "../view/contracts/status";
 import { createFttrClient } from "./generated/luci-client";
 import { capabilities, opticalReply } from "./validators";
@@ -13,6 +13,9 @@ function createClient() {
 		getSync: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
 		configCheck,
 		npuStatus: nativeNpuStatus,
+		configReload: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
+		restartService: { parse: (value: unknown) => restartReply.parse(checked(value)) },
+		sync: { parse: (value: unknown) => actionResult.parse(checked(value)) },
 	});
 }
 

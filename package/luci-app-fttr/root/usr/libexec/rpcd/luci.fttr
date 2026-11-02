@@ -72,7 +72,7 @@ fi
 
 case "$1" in
 	list)
-		printf '{"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"config_reload":{},"sync":{"action":"","target":""},"restart_service":{},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"data":""},"apply_calibration":{},"npu_set":{"enabled":false,"bridge":""}}\n'
+		printf '{"mib_start":{"onu_id":0,"optical_sn":"","tables":false},"mib_result":{"job":"","chunk":0},"mib_release":{"job":""},"hl202_list":{},"hl202_report":{"target":{}},"hl202_exec_start":{"target":{},"script":"","timeout_seconds":20},"hl202_accounts_start":{},"hl202_account_update":{"target":{},"kind":"","entry":0,"password":"","active":false},"hl202_job_result":{"job":"","chunk":0},"get_calibration":{},"save_calibration":{"data":""},"apply_calibration":{},"npu_set":{"enabled":false,"bridge":""}}\n'
 		exit 0
 		;;
 	call)
@@ -150,22 +150,6 @@ case "$1" in
 					cat "$dir/progress"
 					printf '}\n'
 				else printf '{"status":"pending"}\n'; fi
-				exit 0
-				;;
-			config_reload)
-				exec ubus call fttr config_reload ;;
-			sync)
-				read -r request
-				json_load "$request" || error 'Invalid JSON request'
-				json_get_var action action
-				json_get_var target target
-                case "$action" in plan|apply|management_plan|management_apply|reset_state|reconcile|retry) ;; *) error 'Invalid synchronization action';; esac
-				case "$target" in group:*) identifier "${target#group:}" || error 'Invalid group';; *) identifier "$target" || error 'Invalid device';; esac
-				set -- sync "$action" "$target"
-				;;
-			restart_service)
-				/etc/init.d/fttr restart >/dev/null 2>&1 </dev/null &
-				printf '{"restarting":true}\n'
 				exit 0
 				;;
 		npu_set)
@@ -334,12 +318,6 @@ case "$1" in
 				;;
 			*) exit 1 ;;
 		esac
-		# These commands return sanitized provisioning JSON, including backend errors.
-		# Never wait for CWMP here: rpcd starts the asynchronous job and returns its IDs.
-		result="$(/usr/sbin/fttrctl "$@" 2>/dev/null)"
-		[ -n "$result" ] || error 'FTTR provisioning is unavailable'
-		printf '%s\n' "$result"
-		exit 0
 		;;
 esac
 

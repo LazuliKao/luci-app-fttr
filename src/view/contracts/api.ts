@@ -1,29 +1,21 @@
 import * as z from "zod/mini";
 import { getFttrClient } from "../../api/client";
+import type { SyncAction } from "../../api/generated/types";
 import type { opticalReply } from "../../api/validators";
 import { checked } from "./common";
-import { syncStatus } from "./provisioning";
 import { type NpuStatus, networkDevices } from "./status";
 
-const rawReload = L.rpc.declare<unknown>({ object: "luci.fttr", method: "config_reload", reject: true });
-const rawRestart = L.rpc.declare<unknown>({ object: "luci.fttr", method: "restart_service", reject: true });
 const rawNetwork = L.rpc.declare<unknown>({
 	object: "luci-rpc",
 	method: "getNetworkDevices",
 	expect: { "": {} },
 	reject: true,
 });
-const rawSyncAction = L.rpc.declare<unknown, [string, string]>({
-	object: "luci.fttr",
-	method: "sync",
-	params: ["action", "target"],
-	reject: true,
-});
 export const getStatus = async () => getFttrClient().getStatus();
 export const getSync = async () => getFttrClient().getSync();
 export const checkConfig = async () => getFttrClient().configCheck();
-export const reloadConfig = async () => syncStatus.parse(checked(await rawReload()));
-export const restartService = async () => z.object({ restarting: z.literal(true) }).parse(checked(await rawRestart()));
+export const reloadConfig = async () => getFttrClient().configReload();
+export const restartService = async () => getFttrClient().restartService();
 export const getNetworkDevices = async () => networkDevices.parse(checked(await rawNetwork()));
 
 // Native optical TX control; fttrd owns persistence, quiesce, FPGA reset and readback.
@@ -53,27 +45,8 @@ export const getNpuStatus = async (): Promise<NpuStatus> => getFttrClient().npuS
 export const setNpu = async (enabled: boolean, bridge = ""): Promise<NpuReply> =>
 	npuReply.parse(await rawNpuSet(enabled, bridge));
 
-export type SyncAction =
-	| "plan"
-	| "apply"
-	| "management_plan"
-	| "management_apply"
-	| "reset_state"
-	| "reconcile"
-	| "retry";
-const actionResult = z.union([
-	z.object({ operation_ids: z.array(z.number()), revision: z.string() }),
-	z.object({ started: z.literal(true), mode: z.enum(["apply", "plan"]) }),
-	z.object({ reset: z.literal(true), device: z.string() }),
-	z.object({
-		operation_ids: z.array(z.number()),
-		mode: z.enum(["apply", "plan"]),
-		reconcile: z.optional(z.boolean()),
-		retry: z.optional(z.boolean()),
-	}),
-]);
-export const sync = async (action: SyncAction, target: string) =>
-	actionResult.parse(checked(await rawSyncAction(action, target)));
+export type { SyncAction } from "../../api/generated/types";
+export const sync = async (action: SyncAction, target: string) => getFttrClient().sync({ action, target });
 
 const rawGetCalibration = L.rpc.declare<unknown>({
 	object: "luci.fttr",

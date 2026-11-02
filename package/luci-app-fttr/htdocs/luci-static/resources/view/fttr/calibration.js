@@ -958,19 +958,19 @@ function eN(e) {
 const eZ = o("ZodMiniNullable", (e, t)=>{
     eo.init(e, t), ec.init(e, t);
 });
-function eL(e) {
+function eD(e) {
     return new eZ({
         type: "nullable",
         innerType: e
     });
 }
-const eD = o("ZodMiniCatch", (e, t)=>{
+const eF = o("ZodMiniCatch", (e, t)=>{
     el.init(e, t), ec.init(e, t);
-}), eF = o("ZodMiniLazy", (e, t)=>{
+}), eL = o("ZodMiniLazy", (e, t)=>{
     ed.init(e, t), ec.init(e, t);
 });
 function eB() {
-    let e = new eF({
+    let e = new eL({
         type: "lazy",
         getter: ()=>ej([
                 eu(),
@@ -1056,7 +1056,7 @@ const eG = eC([
     "waiting_management"
 ]), eY = ez({
     id: eV,
-    name: eN(eL(eV)),
+    name: eN(eD(eV)),
     kind: eC([
         "device_service",
         "ssid",
@@ -1070,7 +1070,7 @@ const eG = eC([
     current_revision: eK,
     management_fresh: eK,
     operation_id: eJ,
-    task_id: eN(eL(eH)),
+    task_id: eN(eD(eH)),
     updated_at: eJ,
     changes: eN(ew(ez({
         name: eV,
@@ -1080,7 +1080,7 @@ const eG = eC([
 let e0 = ez({
     state: eV,
     reason: eW,
-    task_id: eN(eL(eH)),
+    task_id: eN(eD(eH)),
     instance: eJ
 });
 const e1 = ez({
@@ -1092,8 +1092,8 @@ const e1 = ez({
         "waiting_transport"
     ]),
     optical_online: eq,
-    last_inform: eL(eH),
-    age_seconds: eL(eH)
+    last_inform: eD(eH),
+    age_seconds: eD(eH)
 });
 let e2 = ez({
     state: eC([
@@ -1115,10 +1115,10 @@ let e2 = ez({
     ]),
     method: eW,
     reason: eW,
-    mqtt_target: eL(eV),
+    mqtt_target: eD(eV),
     binding_source: eW,
-    link_identity_error: eL(eV),
-    mqtt_last_seen: eL(eH),
+    link_identity_error: eD(eV),
+    mqtt_last_seen: eD(eH),
     cwmp_id: eW,
     desired_version: eW,
     generation: eJ,
@@ -1126,11 +1126,11 @@ let e2 = ez({
     attempts: eJ,
     next_retry_at: eJ,
     updated_at: eJ,
-    settings_verified_at: eL(eH),
-    last_inform: eL(eH),
-    last_error: eN(eL(eV)),
-    persistence_error: eN(eL(eV)),
-    desired: eN(eL(ez({
+    settings_verified_at: eD(eH),
+    last_inform: eD(eH),
+    last_error: eN(eD(eV)),
+    persistence_error: eN(eD(eV)),
+    desired: eN(eD(ez({
         vlan: eH,
         vlans: ew(eH),
         priority: eH,
@@ -1140,7 +1140,7 @@ let e2 = ez({
         enabled: eq,
         listen: eV,
         path: eV,
-        error: eL(eV)
+        error: eD(eV)
     })),
     endpoint_notice: eW,
     manual_steps: eN(ew(eV))
@@ -1208,11 +1208,11 @@ const e6 = eO("state", [
     cwmp_contract: eN(ez({
         state: eV,
         requested: eV,
-        contract: eL(eV),
+        contract: eD(eV),
         reason: eV,
         cache_hit: eq,
         schema: eV,
-        capabilities: eL(ez({
+        capabilities: eD(ez({
             wan: eV,
             wlan: eV,
             binding: eV
@@ -1238,8 +1238,8 @@ const e6 = eO("state", [
     ])),
     wifi_objects: eN(ez({
         owned: ew(eH),
-        pending: eL(eV),
-        pending_instance: eL(eH)
+        pending: eD(eV),
+        pending_instance: eD(eH)
     })),
     wifi_lifecycle: eN(eT(eV, e0)),
     wifi_stage: eN(eC([
@@ -1290,16 +1290,16 @@ let e5 = ez({
         "blocked",
         "retry_wait"
     ]),
-    error: eL(eV),
+    error: eD(eV),
     inflight: eq,
     ready: eq,
-    desired_version: eL(eV),
-    applied_version: eL(eV),
+    desired_version: eD(eV),
+    applied_version: eD(eV),
     next_retry_at: eH,
     attempts: eH,
-    desired: eL(e5),
-    applied: eL(e5),
-    previous: eL(e5),
+    desired: eD(e5),
+    applied: eD(e5),
+    previous: eD(e5),
     plan: ew(ez({
         operation: eV,
         key: eV,
@@ -1308,18 +1308,18 @@ let e5 = ez({
 });
 const e3 = ez({
     device: eV,
-    name: eL(eV),
-    group: eL(eV),
-    group_name: eL(eV),
-    template: eL(eV),
-    template_name: eL(eV),
+    name: eD(eV),
+    group: eD(eV),
+    group_name: eD(eV),
+    template: eD(eV),
+    template_name: eD(eV),
     optical_sn: eV,
     adapter: eV,
     omci_management: ez({
         state: eV,
-        reason: eN(eL(eV))
+        reason: eN(eD(eV))
     }),
-    management: eL(e1),
+    management: eD(e1),
     acs_bootstrap: e6,
     provisioning: e4,
     services: ew(eY),
@@ -1340,13 +1340,13 @@ const e3 = ez({
         checks: [],
         ...S(void 0)
     }),
-    error: eL(eV),
+    error: eD(eV),
     devices: ew(e3),
     management_network: e8,
     omci_management: eB(),
     groups: ew(ez({
         id: eV,
-        name: eL(eV),
+        name: eD(eV),
         template: eV
     })),
     pending_devices: ew(eV)
@@ -1364,12 +1364,39 @@ ej([
         revision: eN(eb()),
         devices: eN(eb())
     })
+]), ez({
+    restarting: e$(!0)
+}), ej([
+    ez({
+        operation_ids: ew(eH),
+        revision: eV
+    }),
+    ez({
+        started: e$(!0),
+        mode: eC([
+            "apply",
+            "plan"
+        ])
+    }),
+    ez({
+        reset: e$(!0),
+        device: eV
+    }),
+    ez({
+        operation_ids: ew(eH),
+        mode: eC([
+            "apply",
+            "plan"
+        ]),
+        reconcile: eK,
+        retry: eK
+    })
 ]);
-let e9 = eu(), te = eh(), tt = eL(te), tr = eT(e9, ez({
+let e9 = eu(), te = eh(), tt = eD(te), tr = eT(e9, ez({
     source: e9,
     unit: e9,
-    reason: eL(e9),
-    raw: eL(e9),
+    reason: eD(e9),
+    raw: eD(e9),
     age_seconds: tt
 }));
 const ti = ez({
@@ -1386,7 +1413,7 @@ const ti = ez({
         "offline"
     ]),
     generation: te,
-    error: eL(e9)
+    error: eD(e9)
 }), tn = eC([
     "o1_initial",
     "o2_standby",
@@ -1406,12 +1433,12 @@ let ta = ez({
     laser_bias_current_ma: tt,
     temperature_celsius: tt,
     vcc_voltage: tt,
-    cdr_locked: eL(eg()),
-    tx_enabled: eL(eg()),
+    cdr_locked: eD(eg()),
+    tx_enabled: eD(eg()),
     measurements: tr
 }), ts = ez({
-    equipment_id: eL(e9),
-    hardware_version: eL(e9),
+    equipment_id: eD(e9),
+    hardware_version: eD(e9),
     software_images: ew(e9),
     omcc_version: tt,
     errors: ew(e9)
@@ -1423,18 +1450,18 @@ const to = ez({
     serial_number: e9,
     state: tn,
     business_status: ti,
-    management: eL(e1),
-    provisioning: eL(e4),
+    management: eD(e1),
+    provisioning: eD(e4),
     services: ew(eY),
     ssids: ew(eY),
     wifi_sync: eQ,
     acs_bootstrap: eN(e6),
-    identity: eL(ts),
+    identity: eD(ts),
     identity_age_seconds: tt,
     identity_current: eg(),
     fiber_distance_m: tt,
     ranging_delay_rtd_ns: tt,
-    equalization_delay_bits: new eD({
+    equalization_delay_bits: new eF({
         type: "catch",
         innerType: tt,
         catchValue: ()=>null
@@ -1446,29 +1473,29 @@ const to = ez({
     uptime_seconds: tt,
     data_path: ez({
         interface: e9,
-        gem_ports: eL(ew(te)),
+        gem_ports: eD(ew(te)),
         vlan_id: tt,
         tx_bytes: tt,
         rx_bytes: tt,
         current_tx_kbps: tt,
         current_rx_kbps: tt,
         offload: eN(ez({
-            enabled: eN(eL(eg())),
-            routed_enabled: eN(eL(eg())),
-            bridge_enabled: eN(eL(eg())),
-            engine_attached: eN(eL(eg())),
-            forwarding_verified: eN(eL(eg()))
+            enabled: eN(eD(eg())),
+            routed_enabled: eN(eD(eg())),
+            bridge_enabled: eN(eD(eg())),
+            engine_attached: eN(eD(eg())),
+            forwarding_verified: eN(eD(eg()))
         })),
         measurements: tr
     }),
     wifi_mesh: ez({
         channel_2g: tt,
         channel_5g: tt,
-        bandwidth_5g: eL(e9),
+        bandwidth_5g: eD(e9),
         tx_power_pct: tt,
         measurements: tr
     }),
-    connected_clients: eL(ew(ez({
+    connected_clients: eD(ew(ez({
         mac: e9,
         ip: e9,
         band: e9,
@@ -1557,11 +1584,11 @@ ek(tc, {
         active: eT(e9, te),
         pending_restart: eg(),
         allocation_blocked: eg(),
-        startup_error: eL(e9),
-        config_error: eL(e9)
+        startup_error: eD(e9),
+        config_error: eD(e9)
     })),
     fpga_status: e9,
-    provisioning: eL(e7),
+    provisioning: eD(e7),
     optical_transceiver: ta,
     switch_ports: ew(tl),
     sub_gateways: ew(to),
@@ -1570,7 +1597,7 @@ ek(tc, {
         last_seen_sec_ago: te,
         last_payload_bytes: te
     })),
-    npu: eN(eL(tc))
+    npu: eN(eD(tc))
 }), eT(e9, ez({
     carrier: eN(eg()),
     mac: eN(e9),
@@ -1594,8 +1621,8 @@ ek(tc, {
         "optical_reinitialize",
         "optical_shutdown"
     ]),
-    desired_enabled: eL(eg()),
-    tx_enabled: eL(eg()),
+    desired_enabled: eD(eg()),
+    tx_enabled: eD(eg()),
     actor_state: eC([
         "enabled",
         "disabled",
@@ -1604,7 +1631,7 @@ ek(tc, {
     hardware_ready: eg(),
     discovery_active: eg(),
     cleanup_pending: eg(),
-    error: eL(ez({
+    error: eD(ez({
         code: eu(),
         message: eu()
     }))
@@ -1633,27 +1660,11 @@ ek(tc, {
         name: eu()
     }))
 }), L.rpc.declare({
-    object: "luci.fttr",
-    method: "config_reload",
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "restart_service",
-    reject: !0
-}), L.rpc.declare({
     object: "luci-rpc",
     method: "getNetworkDevices",
     expect: {
         "": {}
     },
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "sync",
-    params: [
-        "action",
-        "target"
-    ],
     reject: !0
 }), ez({
     status: eC([
@@ -1670,32 +1681,7 @@ ek(tc, {
         "bridge"
     ],
     reject: !0
-}), ej([
-    ez({
-        operation_ids: ew(eh()),
-        revision: eu()
-    }),
-    ez({
-        started: e$(!0),
-        mode: eC([
-            "apply",
-            "plan"
-        ])
-    }),
-    ez({
-        reset: e$(!0),
-        device: eu()
-    }),
-    ez({
-        operation_ids: ew(eh()),
-        mode: eC([
-            "apply",
-            "plan"
-        ]),
-        reconcile: eN(eg()),
-        retry: eN(eg())
-    })
-]);
+});
 let tp = L.rpc.declare({
     object: "luci.fttr",
     method: "get_calibration",
