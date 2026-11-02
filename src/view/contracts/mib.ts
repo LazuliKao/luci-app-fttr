@@ -1,5 +1,5 @@
 import * as z from "zod/mini";
-import { checked, jobStart } from "./common";
+import { getFttrClient } from "../../api/client";
 
 const str = z.string();
 const num = z.number();
@@ -117,43 +117,10 @@ const report = z.object({
 	diagnostics: z.array(diagnostic),
 });
 export const mibSnapshot = z.object({ status: z.literal("ready"), report });
-const progress = z.object({
-	phase: z.enum(["starting", "upload", "tables"]),
-	received: num,
-	expected: z.nullable(num),
-});
-const mibResult = z.discriminatedUnion("status", [
-	z.object({ status: z.literal("pending"), progress: z.optional(progress) }),
-	z.object({
-		status: z.literal("ready"),
-		chunk: num,
-		chunks: num,
-		bytes: num,
-		data: str,
-	}),
-]);
 export type Definition = z.infer<typeof definition>;
 export type Value = z.infer<typeof value>;
 export type MibReport = z.infer<typeof report>;
-const rawStart = L.rpc.declare<unknown, [number, string, boolean]>({
-	object: "luci.fttr",
-	method: "mib_start",
-	params: ["onu_id", "optical_sn", "tables"],
-	reject: true,
-});
-const rawResult = L.rpc.declare<unknown, [string, number]>({
-	object: "luci.fttr",
-	method: "mib_result",
-	params: ["job", "chunk"],
-	reject: true,
-});
-const rawRelease = L.rpc.declare<unknown, [string]>({
-	object: "luci.fttr",
-	method: "mib_release",
-	params: ["job"],
-	reject: true,
-});
 export const startMib = async (onu: number, serial: string, tables: boolean) =>
-	jobStart.parse(checked(await rawStart(onu, serial, tables)));
-export const getMib = async (job: string, chunk: number) => mibResult.parse(checked(await rawResult(job, chunk)));
-export const releaseMib = async (job: string) => z.object({ released: bool }).parse(checked(await rawRelease(job)));
+	getFttrClient().mibStart({ onu_id: onu, optical_sn: serial, tables });
+export const getMib = async (job: string, chunk: number) => getFttrClient().mibResult({ job, chunk });
+export const releaseMib = async (job: string) => getFttrClient().jobRelease({ job });

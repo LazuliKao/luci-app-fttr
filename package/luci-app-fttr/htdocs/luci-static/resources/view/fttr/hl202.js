@@ -8,8 +8,8 @@
 'require dom as __fttr_dom';
 var e;
 let t, n, r, i, a;
-const o = Symbol.for("jsx.fragment");
-function s(e, t) {
+const s = Symbol.for("jsx.fragment");
+function o(e, t) {
     let { children: n, ...r } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, i = function e(t) {
         let n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
         for (let r of t)null != r && "boolean" != typeof r && (Array.isArray(r) ? e(r, n) : n.push(r instanceof Node ? r : String(r)));
@@ -17,7 +17,7 @@ function s(e, t) {
     }(null == n ? [] : Array.isArray(n) ? n : [
         n
     ]);
-    if (e === o) {
+    if (e === s) {
         let e = document.createDocumentFragment();
         return e.append(...i), e;
     }
@@ -32,11 +32,11 @@ function s(e, t) {
         return t;
     }
     if ("string" != typeof e) throw TypeError("JSX element types must be tag names or component functions");
-    let a = {}, s = {
+    let a = {}, o = {
         ...r
     };
-    for (let [e, t] of Object.entries(s))e.startsWith("on") && "function" == typeof t ? (a[e] = t, delete s[e]) : "boolean" == typeof t && (t ? s[e] = e : delete s[e]);
-    let l = Object.keys(s).length > 0 ? i.length > 1 ? E(e, s, i) : E(e, s, i[0]) : i.length > 1 ? E(e, {}, i) : E(e, {}, i[0]);
+    for (let [e, t] of Object.entries(o))e.startsWith("on") && "function" == typeof t ? (a[e] = t, delete o[e]) : "boolean" == typeof t && (t ? o[e] = e : delete o[e]);
+    let l = Object.keys(o).length > 0 ? i.length > 1 ? E(e, o, i) : E(e, o, i[0]) : i.length > 1 ? E(e, {}, i) : E(e, {}, i[0]);
     for (let [e, t] of Object.entries(a)){
         let n = e.slice(2).toLowerCase();
         l.addEventListener(n, t);
@@ -48,13 +48,13 @@ function l(e, t, n) {
         if (n._zod || Object.defineProperty(n, "_zod", {
             value: {
                 def: r,
-                constr: o,
+                constr: s,
                 traits: new Set()
             },
             enumerable: !1
         }), n._zod.traits.has(e)) return;
         n._zod.traits.add(e), t(n, r);
-        let i = o.prototype, a = Object.keys(i);
+        let i = s.prototype, a = Object.keys(i);
         for(let e = 0; e < a.length; e++){
             let t = a[e];
             t in n || (n[t] = i[t].bind(n));
@@ -63,7 +63,7 @@ function l(e, t, n) {
     let i = n?.Parent ?? Object;
     class a extends i {
     }
-    function o(e) {
+    function s(e) {
         var t;
         let i = n?.Parent ? new a() : this;
         for (let n of (r(i, e), (t = i._zod).deferred ?? (t.deferred = []), i._zod.deferred))n();
@@ -71,30 +71,30 @@ function l(e, t, n) {
     }
     return Object.defineProperty(a, "name", {
         value: e
-    }), Object.defineProperty(o, "init", {
+    }), Object.defineProperty(s, "init", {
         value: r
-    }), Object.defineProperty(o, Symbol.hasInstance, {
+    }), Object.defineProperty(s, Symbol.hasInstance, {
         value: (t)=>!!n?.Parent && t instanceof n.Parent || t?._zod?.traits?.has(e)
-    }), Object.defineProperty(o, "name", {
+    }), Object.defineProperty(s, "name", {
         value: e
-    }), o;
+    }), s;
 }
 Object.freeze({
     status: "aborted"
 }), Symbol("zod_brand");
-class d extends Error {
+class c extends Error {
     constructor(){
         super("Encountered Promise during synchronous parse. Use .parseAsync() instead.");
     }
 }
-const c = {};
+const d = {};
 function p(e) {
-    return e && Object.assign(c, e), c;
+    return e && Object.assign(d, e), d;
 }
 function u(e, t) {
     return "bigint" == typeof t ? t.toString() : t;
 }
-function g(e) {
+function h(e) {
     return {
         get value () {
             {
@@ -106,7 +106,7 @@ function g(e) {
         }
     };
 }
-function h(e) {
+function g(e) {
     let t = +!!e.startsWith("^"), n = e.endsWith("$") ? e.length - 1 : e.length;
     return e.slice(t, n);
 }
@@ -157,7 +157,7 @@ const z = new Set([
 function k(e) {
     return e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-function T(e, t, n) {
+function j(e, t, n) {
     let r = new e._zod.constr(t ?? e._zod.def);
     return (!t || n?.parent) && (r._zod.parent = e), r;
 }
@@ -180,7 +180,7 @@ function S(e, t = 0) {
     for(let n = t; n < e.issues.length; n++)if (e.issues[n]?.continue !== !0) return !0;
     return !1;
 }
-function j(e, t) {
+function T(e, t) {
     return t.map((t)=>(t.path ?? (t.path = []), t.path.unshift(e), t));
 }
 function $(e) {
@@ -204,38 +204,38 @@ const N = (e, t)=>{
         value: ()=>e.message,
         enumerable: !1
     });
-}, P = l("$ZodError", N), M = l("$ZodError", N, {
+}, P = l("$ZodError", N), R = l("$ZodError", N, {
     Parent: Error
-}), R = (n = M, (e, t, r, i)=>{
+}), M = (n = R, (e, t, r, i)=>{
     let a = r ? Object.assign(r, {
         async: !1
     }) : {
         async: !1
-    }, o = e._zod.run({
+    }, s = e._zod.run({
         value: t,
         issues: []
     }, a);
-    if (o instanceof Promise) throw new d();
-    if (o.issues.length) {
-        let e = new (i?.Err ?? n)(o.issues.map((e)=>O(e, a, p())));
+    if (s instanceof Promise) throw new c();
+    if (s.issues.length) {
+        let e = new (i?.Err ?? n)(s.issues.map((e)=>O(e, a, p())));
         throw v(e, i?.callee), e;
     }
-    return o.value;
-}), Z = (r = M, async (e, t, n, i)=>{
+    return s.value;
+}), Z = (r = R, async (e, t, n, i)=>{
     let a = n ? Object.assign(n, {
         async: !0
     }) : {
         async: !0
-    }, o = e._zod.run({
+    }, s = e._zod.run({
         value: t,
         issues: []
     }, a);
-    if (o instanceof Promise && (o = await o), o.issues.length) {
-        let e = new (i?.Err ?? r)(o.issues.map((e)=>O(e, a, p())));
+    if (s instanceof Promise && (s = await s), s.issues.length) {
+        let e = new (i?.Err ?? r)(s.issues.map((e)=>O(e, a, p())));
         throw v(e, i?.callee), e;
     }
-    return o.value;
-}), q = (i = M, (e, t, n)=>{
+    return s.value;
+}), A = (i = R, (e, t, n)=>{
     let r = n ? {
         ...n,
         async: !1
@@ -245,7 +245,7 @@ const N = (e, t)=>{
         value: t,
         issues: []
     }, r);
-    if (a instanceof Promise) throw new d();
+    if (a instanceof Promise) throw new c();
     return a.issues.length ? {
         success: !1,
         error: new (i ?? P)(a.issues.map((e)=>O(e, r, p())))
@@ -253,7 +253,7 @@ const N = (e, t)=>{
         success: !0,
         data: a.value
     };
-}), A = (a = M, async (e, t, n)=>{
+}), q = (a = R, async (e, t, n)=>{
     let r = n ? Object.assign(n, {
         async: !0
     }) : {
@@ -290,10 +290,10 @@ const N = (e, t)=>{
                 if (a._zod.def.when) {
                     if (!a._zod.def.when(e)) continue;
                 } else if (i) continue;
-                let t = e.issues.length, o = a._zod.check(e);
-                if (o instanceof Promise && n?.async === !1) throw new d();
-                if (r || o instanceof Promise) r = (r ?? Promise.resolve()).then(async ()=>{
-                    await o, e.issues.length !== t && (i || (i = S(e, t)));
+                let t = e.issues.length, s = a._zod.check(e);
+                if (s instanceof Promise && n?.async === !1) throw new c();
+                if (r || s instanceof Promise) r = (r ?? Promise.resolve()).then(async ()=>{
+                    await s, e.issues.length !== t && (i || (i = S(e, t)));
                 });
                 else {
                     if (e.issues.length === t) continue;
@@ -303,12 +303,12 @@ const N = (e, t)=>{
             return r ? r.then(()=>e) : e;
         }, n = (n, i, a)=>{
             if (S(n)) return n.aborted = !0, n;
-            let o = t(i, r, a);
-            if (o instanceof Promise) {
-                if (!1 === a.async) throw new d();
-                return o.then((t)=>e._zod.parse(t, a));
+            let s = t(i, r, a);
+            if (s instanceof Promise) {
+                if (!1 === a.async) throw new c();
+                return s.then((t)=>e._zod.parse(t, a));
             }
-            return e._zod.parse(o, a);
+            return e._zod.parse(s, a);
         };
         e._zod.run = (i, a)=>{
             if (a.skipChecks) return e._zod.parse(i, a);
@@ -322,25 +322,25 @@ const N = (e, t)=>{
                 });
                 return t instanceof Promise ? t.then((e)=>n(e, i, a)) : n(t, i, a);
             }
-            let o = e._zod.parse(i, a);
-            if (o instanceof Promise) {
-                if (!1 === a.async) throw new d();
-                return o.then((e)=>t(e, r, a));
+            let s = e._zod.parse(i, a);
+            if (s instanceof Promise) {
+                if (!1 === a.async) throw new c();
+                return s.then((e)=>t(e, r, a));
             }
-            return t(o, r, a);
+            return t(s, r, a);
         };
     }
     f(e, "~standard", ()=>({
             validate: (t)=>{
                 try {
-                    let n = q(e, t);
+                    let n = A(e, t);
                     return n.success ? {
                         value: n.data
                     } : {
                         issues: n.error?.issues
                     };
                 } catch (n) {
-                    return A(e, t).then((e)=>e.success ? {
+                    return q(e, t).then((e)=>e.success ? {
                             value: e.data
                         } : {
                             issues: e.error?.issues
@@ -418,7 +418,7 @@ const N = (e, t)=>{
         }), t);
 });
 function B(e, t, n) {
-    e.issues.length && t.issues.push(...j(n, e.issues)), t.value[n] = e.value;
+    e.issues.length && t.issues.push(...T(n, e.issues)), t.value[n] = e.value;
 }
 const X = l("$ZodArray", (e, t)=>{
     Q.init(e, t), e._zod.parse = (n, r)=>{
@@ -432,11 +432,11 @@ const X = l("$ZodArray", (e, t)=>{
         n.value = Array(i.length);
         let a = [];
         for(let e = 0; e < i.length; e++){
-            let o = i[e], s = t.element._zod.run({
-                value: o,
+            let s = i[e], o = t.element._zod.run({
+                value: s,
                 issues: []
             }, r);
-            s instanceof Promise ? a.push(s.then((t)=>B(t, n, e))) : B(s, n, e);
+            o instanceof Promise ? a.push(o.then((t)=>B(t, n, e))) : B(o, n, e);
         }
         return a.length ? Promise.all(a).then(()=>n) : n;
     };
@@ -444,7 +444,7 @@ const X = l("$ZodArray", (e, t)=>{
 function G(e, t, n, r, i) {
     if (e.issues.length) {
         if (i && !(n in r)) return;
-        t.issues.push(...j(n, e.issues));
+        t.issues.push(...T(n, e.issues));
     }
     void 0 === e.value ? n in r && (t.value[n] = void 0) : t.value[n] = e.value;
 }
@@ -465,7 +465,7 @@ const Y = l("$ZodObject", (e, t)=>{
             }
         });
     }
-    let i = g(()=>(function(e) {
+    let i = h(()=>(function(e) {
             var t;
             let n = Object.keys(e.shape);
             for (let t of n)if (!e.shape?.[t]?._zod?.traits?.has("$ZodType")) throw Error(`Invalid element at key "${t}": expected a Zod schema`);
@@ -489,43 +489,43 @@ const Y = l("$ZodObject", (e, t)=>{
     let a = t.catchall;
     e._zod.parse = (t, r)=>{
         n ?? (n = i.value);
-        let o = t.value;
-        if (!w(o)) return t.issues.push({
+        let s = t.value;
+        if (!w(s)) return t.issues.push({
             expected: "object",
             code: "invalid_type",
-            input: o,
+            input: s,
             inst: e
         }), t;
         t.value = {};
-        let s = [], l = n.shape;
+        let o = [], l = n.shape;
         for (let e of n.keys){
             let n = l[e], i = "optional" === n._zod.optout, a = n._zod.run({
-                value: o[e],
+                value: s[e],
                 issues: []
             }, r);
-            a instanceof Promise ? s.push(a.then((n)=>G(n, t, e, o, i))) : G(a, t, e, o, i);
+            a instanceof Promise ? o.push(a.then((n)=>G(n, t, e, s, i))) : G(a, t, e, s, i);
         }
         return a ? function(e, t, n, r, i, a) {
-            let o = [], s = i.keySet, l = i.catchall._zod, d = l.def.type, c = "optional" === l.optout;
+            let s = [], o = i.keySet, l = i.catchall._zod, c = l.def.type, d = "optional" === l.optout;
             for(let i in t){
-                if (s.has(i)) continue;
-                if ("never" === d) {
-                    o.push(i);
+                if (o.has(i)) continue;
+                if ("never" === c) {
+                    s.push(i);
                     continue;
                 }
                 let a = l.run({
                     value: t[i],
                     issues: []
                 }, r);
-                a instanceof Promise ? e.push(a.then((e)=>G(e, n, i, t, c))) : G(a, n, i, t, c);
+                a instanceof Promise ? e.push(a.then((e)=>G(e, n, i, t, d))) : G(a, n, i, t, d);
             }
-            return (o.length && n.issues.push({
+            return (s.length && n.issues.push({
                 code: "unrecognized_keys",
-                keys: o,
+                keys: s,
                 input: t,
                 inst: a
             }), e.length) ? Promise.all(e).then(()=>n) : n;
-        }(s, o, t, r, i.value, e) : s.length ? Promise.all(s).then(()=>t) : t;
+        }(o, s, t, r, i.value, e) : o.length ? Promise.all(o).then(()=>t) : t;
     };
 });
 function ee(e, t, n, r) {
@@ -544,25 +544,25 @@ const et = l("$ZodUnion", (e, t)=>{
     }), f(e._zod, "pattern", ()=>{
         if (t.options.every((e)=>e._zod.pattern)) {
             let e = t.options.map((e)=>e._zod.pattern);
-            return RegExp(`^(${e.map((e)=>h(e.source)).join("|")})$`);
+            return RegExp(`^(${e.map((e)=>g(e.source)).join("|")})$`);
         }
     });
     let n = 1 === t.options.length, r = t.options[0]._zod.run;
     e._zod.parse = (i, a)=>{
         if (n) return r(i, a);
-        let o = !1, s = [];
+        let s = !1, o = [];
         for (let e of t.options){
             let t = e._zod.run({
                 value: i.value,
                 issues: []
             }, a);
-            if (t instanceof Promise) s.push(t), o = !0;
+            if (t instanceof Promise) o.push(t), s = !0;
             else {
                 if (0 === t.issues.length) return t;
-                s.push(t);
+                o.push(t);
             }
         }
-        return o ? Promise.all(s).then((t)=>ee(t, i, e, a)) : ee(s, i, e, a);
+        return s ? Promise.all(o).then((t)=>ee(t, i, e, a)) : ee(o, i, e, a);
     };
 }), en = l("$ZodDiscriminatedUnion", (e, t)=>{
     t.inclusive = !1, et.init(e, t);
@@ -576,7 +576,7 @@ const et = l("$ZodUnion", (e, t)=>{
         }
         return e;
     });
-    let r = g(()=>{
+    let r = h(()=>{
         let e = t.options, n = new Map();
         for (let r of e){
             let e = r._zod.propValues?.[t.discriminator];
@@ -589,20 +589,20 @@ const et = l("$ZodUnion", (e, t)=>{
         return n;
     });
     e._zod.parse = (i, a)=>{
-        let o = i.value;
-        if (!w(o)) return i.issues.push({
+        let s = i.value;
+        if (!w(s)) return i.issues.push({
             code: "invalid_type",
             expected: "object",
-            input: o,
+            input: s,
             inst: e
         }), i;
-        let s = r.value.get(o?.[t.discriminator]);
-        return s ? s._zod.run(i, a) : t.unionFallback ? n(i, a) : (i.issues.push({
+        let o = r.value.get(s?.[t.discriminator]);
+        return o ? o._zod.run(i, a) : t.unionFallback ? n(i, a) : (i.issues.push({
             code: "invalid_union",
             errors: [],
             note: "No matching discriminator",
             discriminator: t.discriminator,
-            input: o,
+            input: s,
             path: [
                 t.discriminator
             ],
@@ -618,63 +618,63 @@ const et = l("$ZodUnion", (e, t)=>{
             input: i,
             inst: e
         }), n;
-        let a = [], o = t.keyType._zod.values;
-        if (o) {
-            let s;
+        let a = [], s = t.keyType._zod.values;
+        if (s) {
+            let o;
             n.value = {};
             let l = new Set();
-            for (let e of o)if ("string" == typeof e || "number" == typeof e || "symbol" == typeof e) {
+            for (let e of s)if ("string" == typeof e || "number" == typeof e || "symbol" == typeof e) {
                 l.add("number" == typeof e ? e.toString() : e);
-                let o = t.valueType._zod.run({
+                let s = t.valueType._zod.run({
                     value: i[e],
                     issues: []
                 }, r);
-                o instanceof Promise ? a.push(o.then((t)=>{
-                    t.issues.length && n.issues.push(...j(e, t.issues)), n.value[e] = t.value;
-                })) : (o.issues.length && n.issues.push(...j(e, o.issues)), n.value[e] = o.value);
+                s instanceof Promise ? a.push(s.then((t)=>{
+                    t.issues.length && n.issues.push(...T(e, t.issues)), n.value[e] = t.value;
+                })) : (s.issues.length && n.issues.push(...T(e, s.issues)), n.value[e] = s.value);
             }
-            for(let e in i)l.has(e) || (s = s ?? []).push(e);
-            s && s.length > 0 && n.issues.push({
+            for(let e in i)l.has(e) || (o = o ?? []).push(e);
+            o && o.length > 0 && n.issues.push({
                 code: "unrecognized_keys",
                 input: i,
                 inst: e,
-                keys: s
+                keys: o
             });
-        } else for (let o of (n.value = {}, Reflect.ownKeys(i))){
-            if ("__proto__" === o) continue;
-            let s = t.keyType._zod.run({
-                value: o,
+        } else for (let s of (n.value = {}, Reflect.ownKeys(i))){
+            if ("__proto__" === s) continue;
+            let o = t.keyType._zod.run({
+                value: s,
                 issues: []
             }, r);
-            if (s instanceof Promise) throw Error("Async schemas not supported in object keys currently");
-            if ("string" == typeof o && D.test(o) && s.issues.length) {
+            if (o instanceof Promise) throw Error("Async schemas not supported in object keys currently");
+            if ("string" == typeof s && D.test(s) && o.issues.length) {
                 let e = t.keyType._zod.run({
-                    value: Number(o),
+                    value: Number(s),
                     issues: []
                 }, r);
                 if (e instanceof Promise) throw Error("Async schemas not supported in object keys currently");
-                0 === e.issues.length && (s = e);
+                0 === e.issues.length && (o = e);
             }
-            if (s.issues.length) {
-                "loose" === t.mode ? n.value[o] = i[o] : n.issues.push({
+            if (o.issues.length) {
+                "loose" === t.mode ? n.value[s] = i[s] : n.issues.push({
                     code: "invalid_key",
                     origin: "record",
-                    issues: s.issues.map((e)=>O(e, r, p())),
-                    input: o,
+                    issues: o.issues.map((e)=>O(e, r, p())),
+                    input: s,
                     path: [
-                        o
+                        s
                     ],
                     inst: e
                 });
                 continue;
             }
             let l = t.valueType._zod.run({
-                value: i[o],
+                value: i[s],
                 issues: []
             }, r);
             l instanceof Promise ? a.push(l.then((e)=>{
-                e.issues.length && n.issues.push(...j(o, e.issues)), n.value[s.value] = e.value;
-            })) : (l.issues.length && n.issues.push(...j(o, l.issues)), n.value[s.value] = l.value);
+                e.issues.length && n.issues.push(...T(s, e.issues)), n.value[o.value] = e.value;
+            })) : (l.issues.length && n.issues.push(...T(s, l.issues)), n.value[o.value] = l.value);
         }
         return a.length ? Promise.all(a).then(()=>n) : n;
     };
@@ -705,35 +705,35 @@ const et = l("$ZodUnion", (e, t)=>{
         }), r;
     };
 });
-function eo(e, t) {
+function es(e, t) {
     return e.issues.length && void 0 === t ? {
         issues: [],
         value: void 0
     } : e;
 }
-const es = l("$ZodOptional", (e, t)=>{
+const eo = l("$ZodOptional", (e, t)=>{
     Q.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", f(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             void 0
         ]) : void 0), f(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
-        return e ? RegExp(`^(${h(e.source)})?$`) : void 0;
+        return e ? RegExp(`^(${g(e.source)})?$`) : void 0;
     }), e._zod.parse = (e, n)=>{
         if ("optional" === t.innerType._zod.optin) {
             let r = t.innerType._zod.run(e, n);
-            return r instanceof Promise ? r.then((t)=>eo(t, e.value)) : eo(r, e.value);
+            return r instanceof Promise ? r.then((t)=>es(t, e.value)) : es(r, e.value);
         }
         return void 0 === e.value ? e : t.innerType._zod.run(e, n);
     };
 }), el = l("$ZodNullable", (e, t)=>{
     Q.init(e, t), f(e._zod, "optin", ()=>t.innerType._zod.optin), f(e._zod, "optout", ()=>t.innerType._zod.optout), f(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
-        return e ? RegExp(`^(${h(e.source)}|null)$`) : void 0;
+        return e ? RegExp(`^(${g(e.source)}|null)$`) : void 0;
     }), f(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             null
         ]) : void 0), e._zod.parse = (e, n)=>null === e.value ? e : t.innerType._zod.run(e, n);
-}), ed = l("$ZodCatch", (e, t)=>{
+}), ec = l("$ZodCatch", (e, t)=>{
     Q.init(e, t), f(e._zod, "optin", ()=>t.innerType._zod.optin), f(e._zod, "optout", ()=>t.innerType._zod.optout), f(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, n)=>{
         if ("backward" === n.direction) return t.innerType._zod.run(e, n);
         let r = t.innerType._zod.run(e, n);
@@ -751,7 +751,7 @@ const es = l("$ZodOptional", (e, t)=>{
             input: e.value
         }), e.issues = []), e);
     };
-}), ec = l("$ZodLazy", (e, t)=>{
+}), ed = l("$ZodLazy", (e, t)=>{
     Q.init(e, t), f(e._zod, "innerType", ()=>t.getter()), f(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), f(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), f(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), f(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, n)=>e._zod.innerType._zod.run(t, n);
 });
 Symbol("ZodOutput"), Symbol("ZodInput");
@@ -791,11 +791,11 @@ Symbol("ZodOutput"), Symbol("ZodInput");
 }());
 const ep = l("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
-    Q.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>R(e, t, n, {
+    Q.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>M(e, t, n, {
             callee: e.parse
-        }), e.safeParse = (t, n)=>q(e, t, n), e.parseAsync = async (t, n)=>Z(e, t, n, {
+        }), e.safeParse = (t, n)=>A(e, t, n), e.parseAsync = async (t, n)=>Z(e, t, n, {
             callee: e.parseAsync
-        }), e.safeParseAsync = async (t, n)=>A(e, t, n), e.check = (...n)=>e.clone({
+        }), e.safeParseAsync = async (t, n)=>q(e, t, n), e.check = (...n)=>e.clone({
             ...t,
             checks: [
                 ...t.checks ?? [],
@@ -811,21 +811,21 @@ const ep = l("ZodMiniType", (e, t)=>{
             ]
         }, {
             parent: !0
-        }), e.with = e.check, e.clone = (t, n)=>T(e, t, n), e.brand = ()=>e, e.register = (t, n)=>(t.add(e, n), e), e.apply = (t)=>t(e);
+        }), e.with = e.check, e.clone = (t, n)=>j(e, t, n), e.brand = ()=>e, e.register = (t, n)=>(t.add(e, n), e), e.apply = (t)=>t(e);
 }), eu = l("ZodMiniString", (e, t)=>{
     V.init(e, t), ep.init(e, t);
 });
-function e_(e) {
+function eh(e) {
     return new eu({
         type: "string",
         ...C(e)
     });
 }
-const eg = l("ZodMiniNumber", (e, t)=>{
+const e_ = l("ZodMiniNumber", (e, t)=>{
     F.init(e, t), ep.init(e, t);
 });
-function eh(e) {
-    return new eg({
+function eg(e) {
+    return new e_({
         type: "number",
         checks: [],
         ...C(e)
@@ -871,7 +871,7 @@ function ek(e, t) {
         ...C(t)
     });
 }
-function eT(e, t) {
+function ej(e, t) {
     if (!x(t)) throw Error("Invalid input to extend: expected a plain object");
     let n = e._zod.def.checks;
     if (n && n.length > 0) {
@@ -887,7 +887,7 @@ function eT(e, t) {
             return b(this, "shape", n), n;
         }
     });
-    return T(e, r);
+    return j(e, r);
 }
 const eC = l("ZodMiniUnion", (e, t)=>{
     et.init(e, t), ep.init(e, t);
@@ -899,11 +899,11 @@ function eS(e, t) {
         ...C(t)
     });
 }
-const ej = l("ZodMiniDiscriminatedUnion", (e, t)=>{
+const eT = l("ZodMiniDiscriminatedUnion", (e, t)=>{
     en.init(e, t), ep.init(e, t);
 });
 function e$(e, t, n) {
-    return new ej({
+    return new eT({
         type: "union",
         options: t,
         discriminator: e,
@@ -934,11 +934,11 @@ function eP(e, t) {
         ...C(t)
     });
 }
-const eM = l("ZodMiniLiteral", (e, t)=>{
+const eR = l("ZodMiniLiteral", (e, t)=>{
     ea.init(e, t), ep.init(e, t);
 });
-function eL(e, t) {
-    return new eM({
+function eM(e, t) {
+    return new eR({
         type: "literal",
         values: Array.isArray(e) ? e : [
             e
@@ -946,52 +946,52 @@ function eL(e, t) {
         ...C(t)
     });
 }
-const eR = l("ZodMiniOptional", (e, t)=>{
-    es.init(e, t), ep.init(e, t);
+const eL = l("ZodMiniOptional", (e, t)=>{
+    eo.init(e, t), ep.init(e, t);
 });
 function eZ(e) {
-    return new eR({
+    return new eL({
         type: "optional",
         innerType: e
     });
 }
-const eq = l("ZodMiniNullable", (e, t)=>{
+const eA = l("ZodMiniNullable", (e, t)=>{
     el.init(e, t), ep.init(e, t);
 });
-function eA(e) {
-    return new eq({
+function eq(e) {
+    return new eA({
         type: "nullable",
         innerType: e
     });
 }
 const eD = l("ZodMiniCatch", (e, t)=>{
-    ed.init(e, t), ep.init(e, t);
-}), eJ = l("ZodMiniLazy", (e, t)=>{
     ec.init(e, t), ep.init(e, t);
+}), eJ = l("ZodMiniLazy", (e, t)=>{
+    ed.init(e, t), ep.init(e, t);
 });
 function eU() {
     let e = new eJ({
         type: "lazy",
         getter: ()=>eS([
-                e_(),
                 eh(),
+                eg(),
                 ef(),
                 new eb({
                     type: "null",
                     ...C(void 0)
                 }),
                 ex(e),
-                eE(e_(), e)
+                eE(eh(), e)
             ])
     });
     return e;
 }
 let eI = ek({
     error: eS([
-        e_(),
+        eh(),
         ek({
-            code: e_(),
-            message: e_()
+            code: eh(),
+            message: eh()
         })
     ])
 });
@@ -1010,22 +1010,145 @@ function eV(e) {
     return e;
 }
 const eF = ek({
-    status: eL("pending"),
-    job: e_()
+    status: eM("pending"),
+    job: eh()
 }), eW = e$("status", [
     ek({
-        status: eL("pending")
+        status: eM("pending")
     }),
     ek({
-        status: eL("ready"),
-        chunk: eh(),
-        chunks: eh(),
-        bytes: eh(),
-        data: e_()
+        status: eM("ready"),
+        chunk: eg(),
+        chunks: eg(),
+        bytes: eg(),
+        data: eh()
     })
 ]);
-let eH = e_(), eK = eh(), eB = ef(), eX = eZ(eH), eG = eZ(eK), eY = eZ(eB);
-const e0 = eP([
+let eH = eh(), eK = eg(), eB = ef();
+ek({
+    optical_sn: eH,
+    onu_id: eK,
+    binding_generation: eH
+}), ek({
+    mqtt_mac: eH,
+    binding_generation: eH
+});
+let eX = ek({
+    mqtt_mac: eH,
+    optical_sn: eq(eH),
+    onu_id: eq(eK),
+    binding_generation: eH,
+    last_seen: eK,
+    reason: eH
+}), eG = {
+    target: eH,
+    request_id: eZ(eH),
+    output: eZ(eH),
+    output_truncated: eB,
+    error: eZ(eH)
+};
+const eY = e$("status", [
+    ek({
+        ...eG,
+        status: eM("executed"),
+        exit_code: eq(eK)
+    }),
+    ek({
+        ...eG,
+        status: eM("dispatched"),
+        exit_code: eZ(ev())
+    }),
+    ek({
+        ...eG,
+        status: eM("timeout"),
+        exit_code: eZ(ev())
+    }),
+    ek({
+        ...eG,
+        status: eM("error"),
+        exit_code: eZ(ev())
+    })
+]);
+let e0 = ek({
+    target: eX,
+    result: eY,
+    binding_current: eB
+}), e2 = ek({
+    schema_version: eK,
+    compressed_bytes: eK,
+    decompressed_bytes: eK,
+    fields: eE(eH, ek({
+        value: eU(),
+        member: eH,
+        unit: eq(eH)
+    })),
+    members: ex(ek({
+        name: eH,
+        bytes: eK,
+        encoding: eH,
+        text: eq(eH),
+        text_omitted: eB
+    })),
+    errors: ex(eH)
+}), e1 = ek({
+    revision: eK,
+    last_received: eK,
+    last_processed_receipt: eq(eK),
+    last_good: eq(eK),
+    error: eq(eH),
+    report: eq(e2)
+}), e8 = {
+    schema_version: eM(1),
+    target: eX,
+    report: eq(e1)
+};
+const e4 = eS([
+    ek({
+        ...e8,
+        state: eP([
+            "received",
+            "report_unavailable"
+        ])
+    }),
+    ek({
+        ...e8,
+        read_only: eM(!0)
+    })
+]), e5 = ek({
+    schema_version: eM(1),
+    devices: ex(ek({
+        optical_sn: eH,
+        onu_id: eK,
+        model: eH,
+        optical_online: eB,
+        can_execute: eB,
+        mqtt: eq(eX),
+        report_revision: eq(eK)
+    })),
+    sources: ex(eX)
+}), e3 = ek({
+    schema_version: eM(1),
+    operation: e0,
+    accounts: eq(ex(ek({
+        entry: eS([
+            eM(0),
+            eM(1),
+            eM(2)
+        ]),
+        username: eH,
+        active: eB
+    }))),
+    write_status: eP([
+        "not_applicable",
+        "accepted_and_saved",
+        "unconfirmed"
+    ])
+}), e6 = ek({
+    schema_version: eM(1),
+    operation: e0
+});
+let e7 = eh(), e9 = eg(), te = ef(), tt = eZ(e7), tn = eZ(e9), tr = eZ(te);
+const ti = eP([
     "waiting",
     "wan_reconciling",
     "wan_verifying",
@@ -1044,7 +1167,7 @@ const e0 = eP([
     "recovering",
     "waiting_management",
     "waiting_task"
-]), e2 = eP([
+]), ta = eP([
     "not_configured",
     "stale_revision",
     "stale_management",
@@ -1054,48 +1177,48 @@ const e0 = eP([
     "pending",
     "recovering",
     "waiting_management"
-]), e1 = ek({
-    id: eH,
-    name: eZ(eA(eH)),
+]), ts = ek({
+    id: e7,
+    name: eZ(eq(e7)),
     kind: eP([
         "device_service",
         "ssid",
         "port_binding",
         "wan_activation"
     ]),
-    service_type: eH,
-    state: eH,
-    reason: eX,
-    revision: eX,
-    current_revision: eY,
-    management_fresh: eY,
-    operation_id: eG,
-    task_id: eZ(eA(eK)),
-    updated_at: eG,
+    service_type: e7,
+    state: e7,
+    reason: tt,
+    revision: tt,
+    current_revision: tr,
+    management_fresh: tr,
+    operation_id: tn,
+    task_id: eZ(eq(e9)),
+    updated_at: tn,
     changes: eZ(ex(ek({
-        name: eH,
-        desired: eH
+        name: e7,
+        desired: e7
     })))
 });
-let e8 = ek({
-    state: eH,
-    reason: eX,
-    task_id: eZ(eA(eK)),
-    instance: eG
+let to = ek({
+    state: e7,
+    reason: tt,
+    task_id: eZ(eq(e9)),
+    instance: tn
 });
-const e4 = ek({
-    cwmp_id: eH,
+const tl = ek({
+    cwmp_id: e7,
     state: eP([
         "online",
         "waiting_inform",
         "offline_or_stale",
         "waiting_transport"
     ]),
-    optical_online: eB,
-    last_inform: eA(eK),
-    age_seconds: eA(eK)
+    optical_online: te,
+    last_inform: eq(e9),
+    age_seconds: eq(e9)
 });
-let e3 = ek({
+let tc = ek({
     state: eP([
         "waiting_transport",
         "waiting_identity",
@@ -1113,41 +1236,41 @@ let e3 = ek({
         "configuring_management_wan",
         "verifying_management_wan"
     ]),
-    method: eX,
-    reason: eX,
-    mqtt_target: eA(eH),
-    binding_source: eX,
-    link_identity_error: eA(eH),
-    mqtt_last_seen: eA(eK),
-    cwmp_id: eX,
-    desired_version: eX,
-    generation: eG,
-    inflight: eY,
-    attempts: eG,
-    next_retry_at: eG,
-    updated_at: eG,
-    settings_verified_at: eA(eK),
-    last_inform: eA(eK),
-    last_error: eZ(eA(eH)),
-    persistence_error: eZ(eA(eH)),
-    desired: eZ(eA(ek({
-        vlan: eK,
-        vlans: ex(eK),
-        priority: eK,
-        acs_url: eH
+    method: tt,
+    reason: tt,
+    mqtt_target: eq(e7),
+    binding_source: tt,
+    link_identity_error: eq(e7),
+    mqtt_last_seen: eq(e9),
+    cwmp_id: tt,
+    desired_version: tt,
+    generation: tn,
+    inflight: tr,
+    attempts: tn,
+    next_retry_at: tn,
+    updated_at: tn,
+    settings_verified_at: eq(e9),
+    last_inform: eq(e9),
+    last_error: eZ(eq(e7)),
+    persistence_error: eZ(eq(e7)),
+    desired: eZ(eq(ek({
+        vlan: e9,
+        vlans: ex(e9),
+        priority: e9,
+        acs_url: e7
     }))),
     listener: eZ(ek({
-        enabled: eB,
-        listen: eH,
-        path: eH,
-        error: eA(eH)
+        enabled: te,
+        listen: e7,
+        path: e7,
+        error: eq(e7)
     })),
-    endpoint_notice: eX,
-    manual_steps: eZ(ex(eH))
+    endpoint_notice: tt,
+    manual_steps: eZ(ex(e7))
 });
-const e5 = e$("state", [
-    e3,
-    eT(function(e) {
+const td = e$("state", [
+    tc,
+    ej(function(e) {
         var t = void 0;
         let n = e._zod.def.checks;
         if (n && n.length > 0) throw Error(".partial() cannot be used on object schemas containing refinements");
@@ -1158,12 +1281,12 @@ const e5 = e$("state", [
                 };
                 if (t) for(let e in t){
                     if (!(e in n)) throw Error(`Unrecognized key: "${e}"`);
-                    t[e] && (r[e] = eR ? new eR({
+                    t[e] && (r[e] = eL ? new eL({
                         type: "optional",
                         innerType: n[e]
                     }) : n[e]);
                 }
-                else for(let e in n)r[e] = eR ? new eR({
+                else for(let e in n)r[e] = eL ? new eL({
                     type: "optional",
                     innerType: n[e]
                 }) : n[e];
@@ -1171,55 +1294,55 @@ const e5 = e$("state", [
             },
             checks: []
         });
-        return T(e, r);
-    }(e3), {
+        return j(e, r);
+    }(tc), {
         state: eP([
             "pending",
             "unavailable"
         ]),
-        reason: eH
+        reason: e7
     })
-]), e6 = ek({
+]), tp = ek({
     backend: eZ(ek({
-        configured: eH,
-        effective: eH,
-        available: ex(eH),
-        reason: eH
+        configured: e7,
+        effective: e7,
+        available: ex(e7),
+        reason: e7
     })),
-    state: e0,
-    operation_id: eG,
-    device: eX,
-    optical_sn: eX,
-    cwmp_id: eX,
-    revision: eX,
+    state: ti,
+    operation_id: tn,
+    device: tt,
+    optical_sn: tt,
+    cwmp_id: tt,
+    revision: tt,
     mode: eZ(eP([
         "apply",
         "plan"
     ])),
-    started_at: eG,
-    current_revision: eY,
-    management_fresh: eY,
-    reason: eX,
-    error: eX,
-    attempts: eG,
-    next_retry_at: eG,
-    reconcile_reason: eX,
-    items: ex(e1),
+    started_at: tn,
+    current_revision: tr,
+    management_fresh: tr,
+    reason: tt,
+    error: tt,
+    attempts: tn,
+    next_retry_at: tn,
+    reconcile_reason: tt,
+    items: ex(ts),
     cwmp_contract: eZ(ek({
-        state: eH,
-        requested: eH,
-        contract: eA(eH),
-        reason: eH,
-        cache_hit: eB,
-        schema: eH,
-        capabilities: eA(ek({
-            wan: eH,
-            wlan: eH,
-            binding: eH
+        state: e7,
+        requested: e7,
+        contract: eq(e7),
+        reason: e7,
+        cache_hit: te,
+        schema: e7,
+        capabilities: eq(ek({
+            wan: e7,
+            wlan: e7,
+            binding: e7
         }))
     })),
-    wan_objects: eZ(eE(eH, eU())),
-    wan_lifecycle: eZ(eE(eH, e8)),
+    wan_objects: eZ(eE(e7, eU())),
+    wan_lifecycle: eZ(eE(e7, to)),
     wan_stage: eZ(eP([
         "waiting",
         "inventory",
@@ -1237,11 +1360,11 @@ const e5 = e$("state", [
         "done"
     ])),
     wifi_objects: eZ(ek({
-        owned: ex(eK),
-        pending: eA(eH),
-        pending_instance: eA(eK)
+        owned: ex(e9),
+        pending: eq(e7),
+        pending_instance: eq(e9)
     })),
-    wifi_lifecycle: eZ(eE(eH, e8)),
+    wifi_lifecycle: eZ(eE(e7, to)),
     wifi_stage: eZ(eP([
         "waiting",
         "inventory",
@@ -1261,20 +1384,20 @@ const e5 = e$("state", [
         "delete"
     ]))
 });
-let e7 = ek({
-    enabled: eB,
+let tu = ek({
+    enabled: te,
     mode: eP([
         "auto",
         "manual"
     ]),
-    vlan: ex(eK),
-    priority: eK,
-    address: eH,
-    acs_url: eH,
-    port: eK,
-    path: eH,
-    dhcp_enabled: eB
-}), e9 = ek({
+    vlan: ex(e9),
+    priority: e9,
+    address: e7,
+    acs_url: e7,
+    port: e9,
+    path: e7,
+    dhcp_enabled: te
+}), th = ek({
     state: eP([
         "discovering",
         "comparing",
@@ -1290,115 +1413,115 @@ let e7 = ek({
         "blocked",
         "retry_wait"
     ]),
-    error: eA(eH),
-    inflight: eB,
-    ready: eB,
-    desired_version: eA(eH),
-    applied_version: eA(eH),
-    next_retry_at: eK,
-    attempts: eK,
-    desired: eA(e7),
-    applied: eA(e7),
-    previous: eA(e7),
+    error: eq(e7),
+    inflight: te,
+    ready: te,
+    desired_version: eq(e7),
+    applied_version: eq(e7),
+    next_retry_at: e9,
+    attempts: e9,
+    desired: eq(tu),
+    applied: eq(tu),
+    previous: eq(tu),
     plan: ex(ek({
-        operation: eH,
-        key: eH,
-        value: ex(eH)
+        operation: e7,
+        key: e7,
+        value: ex(e7)
     }))
 });
-const te = ek({
-    device: eH,
-    name: eA(eH),
-    group: eA(eH),
-    group_name: eA(eH),
-    template: eA(eH),
-    template_name: eA(eH),
-    optical_sn: eH,
-    adapter: eH,
+const t_ = ek({
+    device: e7,
+    name: eq(e7),
+    group: eq(e7),
+    group_name: eq(e7),
+    template: eq(e7),
+    template_name: eq(e7),
+    optical_sn: e7,
+    adapter: e7,
     omci_management: ek({
-        state: eH,
-        reason: eZ(eA(eH))
+        state: e7,
+        reason: eZ(eq(e7))
     }),
-    management: eA(e4),
-    acs_bootstrap: e5,
-    provisioning: e6,
-    services: ex(e1),
-    ssids: ex(e1),
-    wifi_sync: e2
-}), tt = ek({
-    enabled: eB,
+    management: eq(tl),
+    acs_bootstrap: td,
+    provisioning: tp,
+    services: ex(ts),
+    ssids: ex(ts),
+    wifi_sync: ta
+}), tg = ek({
+    enabled: te,
     mode: eP([
         "auto",
         "manual"
     ]),
-    method: eL("diff"),
-    revision: eH,
-    triggers: ex(eH),
-    interval_minutes: new eg({
+    method: eM("diff"),
+    revision: e7,
+    triggers: ex(e7),
+    interval_minutes: new e_({
         type: "number",
         coerce: !0,
         checks: [],
         ...C(void 0)
     }),
-    error: eA(eH),
-    devices: ex(te),
-    management_network: e9,
+    error: eq(e7),
+    devices: ex(t_),
+    management_network: th,
     omci_management: eU(),
     groups: ex(ek({
-        id: eH,
-        name: eA(eH),
-        template: eH
+        id: e7,
+        name: eq(e7),
+        template: e7
     })),
-    pending_devices: ex(eH)
-}), tn = eS([
+    pending_devices: ex(e7)
+}), tm = eS([
     ek({
-        valid: eL(!0),
-        revision: eH,
-        devices: eK,
+        valid: eM(!0),
+        revision: e7,
+        devices: e9,
         error: eZ(ev())
     }),
     ek({
-        error: eH,
+        error: e7,
         valid: eZ(ev()),
         revision: eZ(ev()),
         devices: eZ(ev())
     })
-]), tr = ek({
-    restarting: eL(!0)
-}), ti = eS([
+]), tf = ek({
+    restarting: eM(!0)
+}), tb = eS([
     ek({
-        operation_ids: ex(eK),
-        revision: eH
+        operation_ids: ex(e9),
+        revision: e7
     }),
     ek({
-        started: eL(!0),
+        started: eM(!0),
         mode: eP([
             "apply",
             "plan"
         ])
     }),
     ek({
-        reset: eL(!0),
-        device: eH
+        reset: eM(!0),
+        device: e7
     }),
     ek({
-        operation_ids: ex(eK),
+        operation_ids: ex(e9),
         mode: eP([
             "apply",
             "plan"
         ]),
-        reconcile: eY,
-        retry: eY
+        reconcile: tr,
+        retry: tr
     })
 ]);
-let ta = e_(), to = eh(), ts = eA(to), tl = eE(ta, ek({
-    source: ta,
-    unit: ta,
-    reason: eA(ta),
-    raw: eA(ta),
-    age_seconds: ts
+let ty = eh(), tv = eg(), tw = eq(tv), tx = eE(ty, ek({
+    source: ty,
+    unit: ty,
+    reason: eq(ty),
+    raw: eq(ty),
+    age_seconds: tw
 }));
-const td = ek({
+const tz = ek({
     phase: eP([
         "not_started",
         "collecting_identity",
@@ -1411,9 +1534,9 @@ const td = ek({
         "retrying",
         "offline"
     ]),
-    generation: to,
-    error: eA(ta)
-}), tc = eP([
+    generation: tv,
+    error: eq(ty)
+}), tk = eP([
     "o1_initial",
     "o2_standby",
     "o3_serial_number",
@@ -1422,114 +1545,114 @@ const td = ek({
     "o6_intermittent_lods",
     "o7_emergency_stop"
 ]);
-let tp = ek({
-    model: ta,
-    wavelength_tx_nm: to,
-    wavelength_rx_nm: to,
-    phy_rate_downlink_gbps: to,
-    phy_rate_uplink_gbps: to,
-    tx_power_dbm: ts,
-    laser_bias_current_ma: ts,
-    temperature_celsius: ts,
-    vcc_voltage: ts,
-    cdr_locked: eA(ef()),
-    tx_enabled: eA(ef()),
-    measurements: tl
-}), tu = ek({
-    equipment_id: eA(ta),
-    hardware_version: eA(ta),
-    software_images: ex(ta),
-    omcc_version: ts,
-    errors: ex(ta)
+let tj = ek({
+    model: ty,
+    wavelength_tx_nm: tv,
+    wavelength_rx_nm: tv,
+    phy_rate_downlink_gbps: tv,
+    phy_rate_uplink_gbps: tv,
+    tx_power_dbm: tw,
+    laser_bias_current_ma: tw,
+    temperature_celsius: tw,
+    vcc_voltage: tw,
+    cdr_locked: eq(ef()),
+    tx_enabled: eq(ef()),
+    measurements: tx
+}), tC = ek({
+    equipment_id: eq(ty),
+    hardware_version: eq(ty),
+    software_images: ex(ty),
+    omcc_version: tw,
+    errors: ex(ty)
 });
-const t_ = ek({
-    onu_id: to,
-    vendor: ta,
-    model: ta,
-    serial_number: ta,
-    state: tc,
-    business_status: td,
-    management: eA(e4),
-    provisioning: eA(e6),
-    services: ex(e1),
-    ssids: ex(e1),
-    wifi_sync: e2,
-    acs_bootstrap: eZ(e5),
-    identity: eA(tu),
-    identity_age_seconds: ts,
+const tS = ek({
+    onu_id: tv,
+    vendor: ty,
+    model: ty,
+    serial_number: ty,
+    state: tk,
+    business_status: tz,
+    management: eq(tl),
+    provisioning: eq(tp),
+    services: ex(ts),
+    ssids: ex(ts),
+    wifi_sync: ta,
+    acs_bootstrap: eZ(td),
+    identity: eq(tC),
+    identity_age_seconds: tw,
     identity_current: ef(),
-    fiber_distance_m: ts,
-    ranging_delay_rtd_ns: ts,
+    fiber_distance_m: tw,
+    ranging_delay_rtd_ns: tw,
     equalization_delay_bits: new eD({
         type: "catch",
-        innerType: ts,
+        innerType: tw,
         catchValue: ()=>null
     }),
-    optical_rx_power_dbm: ts,
-    optical_tx_power_dbm: ts,
-    firmware_version: ta,
-    hardware_version: ta,
-    uptime_seconds: ts,
+    optical_rx_power_dbm: tw,
+    optical_tx_power_dbm: tw,
+    firmware_version: ty,
+    hardware_version: ty,
+    uptime_seconds: tw,
     data_path: ek({
-        interface: ta,
-        gem_ports: eA(ex(to)),
-        vlan_id: ts,
-        tx_bytes: ts,
-        rx_bytes: ts,
-        current_tx_kbps: ts,
-        current_rx_kbps: ts,
+        interface: ty,
+        gem_ports: eq(ex(tv)),
+        vlan_id: tw,
+        tx_bytes: tw,
+        rx_bytes: tw,
+        current_tx_kbps: tw,
+        current_rx_kbps: tw,
         offload: eZ(ek({
-            enabled: eZ(eA(ef())),
-            routed_enabled: eZ(eA(ef())),
-            bridge_enabled: eZ(eA(ef())),
-            engine_attached: eZ(eA(ef())),
-            forwarding_verified: eZ(eA(ef()))
+            enabled: eZ(eq(ef())),
+            routed_enabled: eZ(eq(ef())),
+            bridge_enabled: eZ(eq(ef())),
+            engine_attached: eZ(eq(ef())),
+            forwarding_verified: eZ(eq(ef()))
         })),
-        measurements: tl
+        measurements: tx
     }),
     wifi_mesh: ek({
-        channel_2g: ts,
-        channel_5g: ts,
-        bandwidth_5g: eA(ta),
-        tx_power_pct: ts,
-        measurements: tl
+        channel_2g: tw,
+        channel_5g: tw,
+        bandwidth_5g: eq(ty),
+        tx_power_pct: tw,
+        measurements: tx
     }),
-    connected_clients: eA(ex(ek({
-        mac: ta,
-        ip: ta,
-        band: ta,
-        rssi_dbm: ts,
-        rx_rate_mbps: ts,
-        tx_rate_mbps: ts
+    connected_clients: eq(ex(ek({
+        mac: ty,
+        ip: ty,
+        band: ty,
+        rssi_dbm: tw,
+        rx_rate_mbps: tw,
+        tx_rate_mbps: tw
     }))),
-    measurements: tl
+    measurements: tx
 });
-let tg = ek({
-    reserved_sn: eZ(ta),
-    port: to,
-    interface: ta,
+let tT = ek({
+    reserved_sn: eZ(ty),
+    port: tv,
+    interface: ty,
     carrier: ef(),
-    status: ta,
-    onu_id: eZ(to),
-    onu_sn: eZ(ta),
-    link_state: ta
+    status: ty,
+    onu_id: eZ(tv),
+    onu_sn: eZ(ty),
+    link_state: ty
 });
-const th = ek({
+const t$ = ek({
     counters_valid: eZ(ef()),
-    packets_exact: eZ(ta),
-    bytes_exact: eZ(ta),
-    index: ta,
-    state: ta,
-    pkt_type: ta,
-    orig_tuple: ta,
-    new_tuple: ta,
-    eth: ta,
-    vlan: ta,
-    packets: to,
-    bytes: to
-}), tm = ek({
-    sampled_at_ms: eZ(to),
-    errors: eZ(ex(ta)),
+    packets_exact: eZ(ty),
+    bytes_exact: eZ(ty),
+    index: ty,
+    state: ty,
+    pkt_type: ty,
+    orig_tuple: ty,
+    new_tuple: ty,
+    eth: ty,
+    vlan: ty,
+    packets: tv,
+    bytes: tv
+}), tO = ek({
+    sampled_at_ms: eZ(tv),
+    errors: eZ(ex(ty)),
     config_valid: eZ(ef()),
     engine_valid: eZ(ef()),
     mask_valid: eZ(ef()),
@@ -1539,25 +1662,25 @@ const th = ek({
     entries_valid: eZ(ef()),
     counters_valid: eZ(ef()),
     hooks_valid: eZ(ef()),
-    total_packets_exact: eZ(ta),
-    total_bytes_exact: eZ(ta),
+    total_packets_exact: eZ(ty),
+    total_bytes_exact: eZ(ty),
     supported: ef(),
     engine_attached: ef(),
     bridge_offload_enabled: ef(),
-    bridge_offload_mask: to,
-    routed_offload_mask: to,
+    bridge_offload_mask: tv,
+    routed_offload_mask: tv,
     bridge_offload_debug: ef(),
-    bridge: ta,
-    active_ports: ex(ta),
+    bridge: ty,
+    active_ports: ex(ty),
     fw4_hooks_ready: ef(),
-    total_entries: to,
-    bound_entries: to,
-    total_packets: to,
-    total_bytes: to,
-    bound_flows: ex(th)
-}), tf = eT(tm, {
-    sampled_at_ms: to,
-    errors: ex(ta),
+    total_entries: tv,
+    bound_entries: tv,
+    total_packets: tv,
+    total_bytes: tv,
+    bound_flows: ex(t$)
+}), tE = ej(tO, {
+    sampled_at_ms: tv,
+    errors: ex(ty),
     config_valid: ef(),
     engine_valid: ef(),
     mask_valid: ef(),
@@ -1567,48 +1690,116 @@ const th = ek({
     entries_valid: ef(),
     counters_valid: ef(),
     hooks_valid: ef(),
-    total_packets_exact: ta,
-    total_bytes_exact: ta,
-    bound_ipv4_entries: to,
-    bound_ipv6_entries: to,
-    bound_flows: ex(eT(th, {
+    total_packets_exact: ty,
+    total_bytes_exact: ty,
+    bound_ipv4_entries: tv,
+    bound_ipv6_entries: tv,
+    bound_flows: ex(ej(t$, {
         counters_valid: ef(),
-        packets_exact: ta,
-        bytes_exact: ta
+        packets_exact: ty,
+        bytes_exact: ty
     }))
-}), tb = ek({
+}), tN = ek({
     onu_pinning: eZ(ek({
-        desired: eE(ta, to),
-        active: eE(ta, to),
+        desired: eE(ty, tv),
+        active: eE(ty, tv),
         pending_restart: ef(),
         allocation_blocked: ef(),
-        startup_error: eA(ta),
-        config_error: eA(ta)
+        startup_error: eq(ty),
+        config_error: eq(ty)
     })),
-    fpga_status: ta,
-    provisioning: eA(tt),
-    optical_transceiver: tp,
-    switch_ports: ex(tg),
-    sub_gateways: ex(t_),
+    fpga_status: ty,
+    provisioning: eq(tg),
+    optical_transceiver: tj,
+    switch_ports: ex(tT),
+    sub_gateways: ex(tS),
     telemetry_gateways: ex(ek({
-        id: ta,
-        last_seen_sec_ago: to,
-        last_payload_bytes: to
+        id: ty,
+        last_seen_sec_ago: tv,
+        last_payload_bytes: tv
     })),
-    npu: eZ(eA(tm))
+    npu: eZ(eq(tO))
 });
-eE(ta, ek({
+eE(ty, ek({
     carrier: eZ(ef()),
-    mac: eZ(ta),
+    mac: eZ(ty),
     link: eZ(ek({
-        speed: eZ(to),
-        duplex: eZ(ta),
+        speed: eZ(tv),
+        duplex: eZ(ty),
         autoneg: eZ(ef())
     })),
-    stats: eZ(eE(ta, to))
+    stats: eZ(eE(ty, tv))
 }));
-const ty = ek({
-    schema_version: eL(1),
+const tP = e$("status", [
+    ek({
+        status: eM("success"),
+        enabled: ef()
+    }),
+    ek({
+        status: eM("error"),
+        error: eh()
+    })
+]), tR = ek({
+    source: eP([
+        "factory",
+        "firmware",
+        "builtin"
+    ]),
+    active_path: eh(),
+    size: eg(),
+    sha256: eh(),
+    data: eh(),
+    factory: ek({
+        detected: ef(),
+        device: eh(),
+        has_data: ef(),
+        sha256: eh(),
+        data: eh()
+    }),
+    firmware: ek({
+        exists: ef(),
+        path: eh(),
+        size: eg(),
+        sha256: eh(),
+        data: eh()
+    }),
+    error: eZ(eh())
+}), tM = ek({
+    success: ef(),
+    path: eh(),
+    size: eg(),
+    sha256: eh(),
+    error: eZ(eh())
+});
+ek({
+    success: ef(),
+    output: eZ(eh()),
+    error: eZ(eh())
+});
+const tL = e$("status", [
+    ek({
+        status: eM("pending"),
+        progress: eZ(ek({
+            phase: eP([
+                "starting",
+                "upload",
+                "tables"
+            ]),
+            received: eg(),
+            expected: eq(eg())
+        }))
+    }),
+    ek({
+        status: eM("ready"),
+        chunk: eg(),
+        chunks: eg(),
+        bytes: eg(),
+        data: eh()
+    })
+]), tZ = ek({
+    released: ef()
+}), tA = ek({
+    schema_version: eM(1),
     status: eP([
         "success",
         "error"
@@ -1621,8 +1812,8 @@ const ty = ek({
         "optical_reinitialize",
         "optical_shutdown"
     ]),
-    desired_enabled: eA(ef()),
-    tx_enabled: eA(ef()),
+    desired_enabled: eq(ef()),
+    tx_enabled: eq(ef()),
     actor_state: eP([
         "enabled",
         "disabled",
@@ -1631,14 +1822,14 @@ const ty = ek({
     hardware_ready: ef(),
     discovery_active: ef(),
     cleanup_pending: ef(),
-    error: eA(ek({
-        code: e_(),
-        message: e_()
+    error: eq(ek({
+        code: eh(),
+        message: eh()
     }))
-}), tv = ek({
-    schema_version: eL(1),
-    version: e_(),
-    features: eE(e_(), ef()),
+}), tq = ek({
+    schema_version: eM(1),
+    version: eh(),
+    features: eE(eh(), ef()),
     functions: ek({
         optical: ef(),
         omci_mib: ef(),
@@ -1656,51 +1847,89 @@ const ty = ek({
         about: ef()
     }),
     adapters: ex(ek({
-        id: e_(),
-        name: e_()
+        id: eh(),
+        name: eh()
     }))
-}), tw = async ()=>{
-    var e, n;
-    let r, i, a, o, s, l, d, c, p, u;
-    return (t ??= (e = L.rpc, n = {
-        getCapabilities: {
-            parse: (e)=>tv.parse(eV(e))
-        },
-        opticalStatus: ty,
-        opticalSet: ty,
-        getStatus: {
-            parse: (e)=>tb.parse(eV(e))
-        },
-        getSync: {
-            parse: (e)=>tt.parse(eV(e))
-        },
-        configCheck: tn,
-        npuStatus: tf,
-        configReload: {
-            parse: (e)=>tt.parse(eV(e))
-        },
-        restartService: {
-            parse: (e)=>tr.parse(eV(e))
-        },
-        sync: {
-            parse: (e)=>ti.parse(eV(e))
-        }
-    }, r = e.declare({
+}), tD = {
+    getCapabilities: {
+        parse: (e)=>tq.parse(eV(e))
+    },
+    opticalStatus: tA,
+    opticalSet: tA,
+    getStatus: {
+        parse: (e)=>tN.parse(eV(e))
+    },
+    getSync: {
+        parse: (e)=>tg.parse(eV(e))
+    },
+    configCheck: tm,
+    npuStatus: tE,
+    configReload: {
+        parse: (e)=>tg.parse(eV(e))
+    },
+    restartService: {
+        parse: (e)=>tf.parse(eV(e))
+    },
+    sync: {
+        parse: (e)=>tb.parse(eV(e))
+    },
+    npuSet: tP,
+    mibStart: {
+        parse: (e)=>eF.parse(eV(e))
+    },
+    mibResult: {
+        parse: (e)=>tL.parse(eV(e))
+    },
+    jobRelease: {
+        parse: (e)=>tZ.parse(eV(e))
+    },
+    hl202List: {
+        parse: (e)=>e5.parse(eV(e))
+    },
+    hl202Report: {
+        parse: (e)=>eF.parse(eV(e))
+    },
+    hl202AccountsStart: {
+        parse: (e)=>eF.parse(eV(e))
+    },
+    hl202AccountUpdate: {
+        parse: (e)=>eF.parse(eV(e))
+    },
+    hl202ExecStart: {
+        parse: (e)=>eF.parse(eV(e))
+    },
+    jobResult: {
+        parse: (e)=>eW.parse(eV(e))
+    },
+    getCalibration: {
+        parse: (e)=>tR.parse(eV(e))
+    },
+    saveCalibration: {
+        parse: (e)=>tM.parse(eV(e))
+    },
+    applyCalibration: {
+        parse: (e)=>eF.parse(eV(e))
+    }
+};
+function tJ() {
+    var e;
+    let n, r, i, a, s, o, l, c, d, p, u, h, g, m, f, b, y, v, w, x, z, k, j;
+    return t ??= (e = L.rpc, n = e.declare({
         object: "fttr",
         method: "get_capabilities",
         reject: !0
-    }), i = e.declare({
+    }), r = e.declare({
         object: "fttr",
         method: "optical_status",
         reject: !0
-    }), a = e.declare({
+    }), i = e.declare({
         object: "fttr",
         method: "optical_set",
         params: [
             "enabled"
         ],
         reject: !0
-    }), o = e.declare({
+    }), a = e.declare({
         object: "fttr",
         method: "get_status",
         reject: !0
@@ -1708,11 +1937,11 @@ const ty = ek({
         object: "fttr",
         method: "get_sync",
         reject: !0
-    }), l = e.declare({
+    }), o = e.declare({
         object: "fttr",
         method: "config_check",
         reject: !0
-    }), d = e.declare({
+    }), l = e.declare({
         object: "fttr",
         method: "npu_status",
         reject: !0
@@ -1720,11 +1949,11 @@ const ty = ek({
         object: "fttr",
         method: "config_reload",
         reject: !0
-    }), p = e.declare({
+    }), d = e.declare({
         object: "fttr",
         method: "restart_service",
         reject: !0
-    }), u = e.declare({
+    }), p = e.declare({
         object: "fttr",
         method: "sync",
         params: [
@@ -1734,283 +1963,239 @@ const ty = ek({
             "item"
         ],
         reject: !0
+    }), u = e.declare({
+        object: "fttr",
+        method: "npu_set",
+        params: [
+            "enabled",
+            "bridge"
+        ],
+        reject: !0
+    }), h = e.declare({
+        object: "fttr",
+        method: "mib_start",
+        params: [
+            "onu_id",
+            "optical_sn",
+            "tables"
+        ],
+        reject: !0
+    }), g = e.declare({
+        object: "fttr",
+        method: "mib_result",
+        params: [
+            "job",
+            "chunk"
+        ],
+        reject: !0
+    }), m = e.declare({
+        object: "fttr",
+        method: "job_release",
+        params: [
+            "job"
+        ],
+        reject: !0
+    }), f = e.declare({
+        object: "fttr",
+        method: "hl202_list",
+        reject: !0
+    }), b = e.declare({
+        object: "fttr",
+        method: "hl202_report",
+        params: [
+            "target"
+        ],
+        reject: !0
+    }), y = e.declare({
+        object: "fttr",
+        method: "hl202_accounts_start",
+        params: [
+            "target"
+        ],
+        reject: !0
+    }), v = e.declare({
+        object: "fttr",
+        method: "hl202_account_update",
+        params: [
+            "target",
+            "kind",
+            "entry",
+            "password",
+            "active"
+        ],
+        reject: !0
+    }), w = e.declare({
+        object: "fttr",
+        method: "hl202_exec_start",
+        params: [
+            "target",
+            "script",
+            "timeout_seconds"
+        ],
+        reject: !0
+    }), x = e.declare({
+        object: "fttr",
+        method: "job_result",
+        params: [
+            "job",
+            "chunk"
+        ],
+        reject: !0
+    }), z = e.declare({
+        object: "fttr",
+        method: "get_calibration",
+        reject: !0
+    }), k = e.declare({
+        object: "fttr",
+        method: "save_calibration",
+        params: [
+            "data"
+        ],
+        reject: !0
+    }), j = e.declare({
+        object: "fttr",
+        method: "apply_calibration",
+        reject: !0
     }), {
-        getCapabilities: async ()=>n.getCapabilities.parse(await r()),
-        opticalStatus: async ()=>n.opticalStatus.parse(await i()),
-        opticalSet: async (e)=>n.opticalSet.parse(await a(e.enabled)),
-        getStatus: async ()=>n.getStatus.parse(await o()),
-        getSync: async ()=>n.getSync.parse(await s()),
-        configCheck: async ()=>n.configCheck.parse(await l()),
-        npuStatus: async ()=>n.npuStatus.parse(await d()),
-        configReload: async ()=>n.configReload.parse(await c()),
-        restartService: async ()=>n.restartService.parse(await p()),
-        sync: async (e)=>n.sync.parse(await u(e.action, e.target, e.management, e.item))
-    })).getCapabilities();
-};
-async function tx(e) {
-    if (!(await tw()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
+        getCapabilities: async ()=>tD.getCapabilities.parse(await n()),
+        opticalStatus: async ()=>tD.opticalStatus.parse(await r()),
+        opticalSet: async (e)=>tD.opticalSet.parse(await i(e.enabled)),
+        getStatus: async ()=>tD.getStatus.parse(await a()),
+        getSync: async ()=>tD.getSync.parse(await s()),
+        configCheck: async ()=>tD.configCheck.parse(await o()),
+        npuStatus: async ()=>tD.npuStatus.parse(await l()),
+        configReload: async ()=>tD.configReload.parse(await c()),
+        restartService: async ()=>tD.restartService.parse(await d()),
+        sync: async (e)=>tD.sync.parse(await p(e.action, e.target, e.management, e.item)),
+        npuSet: async (e)=>tD.npuSet.parse(await u(e.enabled, e.bridge)),
+        mibStart: async (e)=>tD.mibStart.parse(await h(e.onu_id, e.optical_sn, e.tables)),
+        mibResult: async (e)=>tD.mibResult.parse(await g(e.job, e.chunk)),
+        jobRelease: async (e)=>tD.jobRelease.parse(await m(e.job)),
+        hl202List: async ()=>tD.hl202List.parse(await f()),
+        hl202Report: async (e)=>tD.hl202Report.parse(await b(e.target)),
+        hl202AccountsStart: async (e)=>tD.hl202AccountsStart.parse(await y(e.target)),
+        hl202AccountUpdate: async (e)=>tD.hl202AccountUpdate.parse(await v(e.target, e.kind, e.entry, e.password, e.active)),
+        hl202ExecStart: async (e)=>tD.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
+        jobResult: async (e)=>tD.jobResult.parse(await x(e.job, e.chunk)),
+        getCalibration: async ()=>tD.getCalibration.parse(await z()),
+        saveCalibration: async (e)=>tD.saveCalibration.parse(await k(e.data)),
+        applyCalibration: async ()=>tD.applyCalibration.parse(await j())
+    });
+}
+const tU = async ()=>tJ().getCapabilities();
+async function tI(e) {
+    if (!(await tU()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
 }
 _("Ready"), _("Online"), _("Success"), _("Offline"), _("Error"), _("Failed"), _("Timeout"), _("Pending"), _("Running"), _("Unavailable"), _("Disabled"), _("Enabled");
-const tz = (e)=>null == e || "" === e ? "\u2014" : String(e), tk = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
-function tT(e, t, n) {
-    return s("span", {
+const tQ = (e)=>null == e || "" === e ? "\u2014" : String(e), tV = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
+function tF(e, t, n) {
+    return o("span", {
         class: `hl202-badge hl202-badge-${e}`,
         title: n,
         children: t
     });
 }
-let tC = e_(), tS = eh(), tj = ef();
-ek({
-    optical_sn: tC,
-    onu_id: tS,
-    binding_generation: tC
-}), ek({
-    mqtt_mac: tC,
-    binding_generation: tC
-});
-let t$ = ek({
-    mqtt_mac: tC,
-    optical_sn: eA(tC),
-    onu_id: eA(tS),
-    binding_generation: tC,
-    last_seen: tS,
-    reason: tC
-}), tO = {
-    target: tC,
-    request_id: eZ(tC),
-    output: eZ(tC),
-    output_truncated: tj,
-    error: eZ(tC)
-};
-const tE = e$("status", [
-    ek({
-        ...tO,
-        status: eL("executed"),
-        exit_code: eA(tS)
-    }),
-    ek({
-        ...tO,
-        status: eL("dispatched"),
-        exit_code: eZ(ev())
-    }),
-    ek({
-        ...tO,
-        status: eL("timeout"),
-        exit_code: eZ(ev())
-    }),
-    ek({
-        ...tO,
-        status: eL("error"),
-        exit_code: eZ(ev())
-    })
-]);
-let tN = ek({
-    target: t$,
-    result: tE,
-    binding_current: tj
-}), tP = ek({
-    schema_version: tS,
-    compressed_bytes: tS,
-    decompressed_bytes: tS,
-    fields: eE(tC, ek({
-        value: eU(),
-        member: tC,
-        unit: eA(tC)
-    })),
-    members: ex(ek({
-        name: tC,
-        bytes: tS,
-        encoding: tC,
-        text: eA(tC),
-        text_omitted: tj
-    })),
-    errors: ex(tC)
-}), tM = ek({
-    revision: tS,
-    last_received: tS,
-    last_processed_receipt: eA(tS),
-    last_good: eA(tS),
-    error: eA(tC),
-    report: eA(tP)
-}), tL = {
-    schema_version: eL(1),
-    target: t$,
-    report: eA(tM)
-};
-const tR = eS([
-    ek({
-        ...tL,
-        state: eP([
-            "received",
-            "report_unavailable"
-        ])
-    }),
-    ek({
-        ...tL,
-        read_only: eL(!0)
-    })
-]), tZ = ek({
-    schema_version: eL(1),
-    devices: ex(ek({
-        optical_sn: tC,
-        onu_id: tS,
-        model: tC,
-        optical_online: tj,
-        can_execute: tj,
-        mqtt: eA(t$),
-        report_revision: eA(tS)
-    })),
-    sources: ex(t$)
-}), tq = ek({
-    schema_version: eL(1),
-    operation: tN,
-    accounts: eA(ex(ek({
-        entry: eS([
-            eL(0),
-            eL(1),
-            eL(2)
-        ]),
-        username: tC,
-        active: tj
-    }))),
-    write_status: eP([
-        "not_applicable",
-        "accepted_and_saved",
-        "unconfirmed"
-    ])
-}), tA = ek({
-    schema_version: eL(1),
-    operation: tN
-});
-let tD = L.rpc.declare({
-    object: "luci.fttr",
-    method: "hl202_list",
-    reject: !0
-}), tJ = L.rpc.declare({
-    object: "luci.fttr",
-    method: "hl202_job_result",
-    params: [
-        "job",
-        "chunk"
-    ],
-    reject: !0
-}), tU = L.rpc.declare({
-    object: "luci.fttr",
-    method: "hl202_report",
-    params: [
-        "target"
-    ],
-    reject: !0
-}), tI = L.rpc.declare({
-    object: "luci.fttr",
-    method: "hl202_accounts_start",
-    params: [
-        "target"
-    ],
-    reject: !0
-}), tQ = L.rpc.declare({
-    object: "luci.fttr",
-    method: "hl202_account_update",
-    params: [
-        "target",
-        "kind",
-        "entry",
-        "password",
-        "active"
-    ],
-    reject: !0
-}), tV = L.rpc.declare({
-    object: "luci.fttr",
-    method: "hl202_exec_start",
-    params: [
-        "target",
-        "script",
-        "timeout_seconds"
-    ],
-    reject: !0
-});
-async function tF(e) {
-    let t = eF.parse(eV(e)), n = Date.now() + 330000, r = window.location.pathname, i = [], a = 0, o = null;
-    for(let e = 0; e < 128;){
-        if (window.location.pathname !== r) throw new eQ("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
-        if (Date.now() > n) throw new eQ("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
-        let s = eW.parse(eV(await tJ(t.job, e)));
-        switch(s.status){
-            case "pending":
+async function tW(e) {
+    let t, n = eF.parse(eV(e)), r = Date.now() + 330000, i = window.location.pathname, a = [], s = 0;
+    try {
+        for(let e = 0; e < 128;){
+            if (window.location.pathname !== i) throw new eQ("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
+            if (Date.now() > r) throw new eQ("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
+            let o = await tJ().jobResult({
+                job: n.job,
+                chunk: e
+            });
+            if ("pending" === o.status) {
                 await new Promise((e)=>window.setTimeout(e, 1000));
                 continue;
-            case "ready":
-                {
-                    if (!Number.isInteger(s.chunks) || s.chunks < 1 || s.chunks > 128 || s.chunk !== e || !Number.isInteger(s.bytes) || s.bytes < 1 || s.bytes > 4194304 || s.data.length > 43692) throw new eQ("transport", _("Invalid job result"));
-                    if (o && (s.chunks !== o.chunks || s.bytes !== o.bytes)) throw new eQ("transport", _("Inconsistent job result chunks"));
-                    o = {
-                        chunks: s.chunks,
-                        bytes: s.bytes
-                    };
-                    let t = Uint8Array.from(atob(s.data), (e)=>e.charCodeAt(0));
-                    if (t.length > 32768 || a + t.length > s.bytes) throw new eQ("transport", _("Job result exceeds the transport limit"));
-                    if (i.push(t), a += t.length, ++e === s.chunks) {
-                        if (a !== s.bytes) throw new eQ("transport", _("Incomplete job result"));
-                        let e = new Uint8Array(a), t = 0;
-                        for (let n of i)e.set(n, t), t += n.length;
-                        return eV(JSON.parse(new TextDecoder("utf-8", {
-                            fatal: !0
-                        }).decode(e)));
-                    }
-                }
+            }
+            if (!Number.isInteger(o.chunks) || o.chunks < 1 || o.chunks > 128 || o.chunk !== e || !Number.isInteger(o.bytes) || o.bytes < 1 || o.bytes > 4194304 || o.data.length > 43692) throw new eQ("transport", _("Invalid job result"));
+            if (t && (o.chunks !== t.chunks || o.bytes !== t.bytes)) throw new eQ("transport", _("Inconsistent job result chunks"));
+            t = {
+                chunks: o.chunks,
+                bytes: o.bytes
+            };
+            let l = Uint8Array.from(atob(o.data), (e)=>e.charCodeAt(0));
+            if (l.length > 32768 || s + l.length > o.bytes) throw new eQ("transport", _("Job result exceeds the transport limit"));
+            if (a.push(l), s += l.length, ++e === o.chunks) {
+                if (s !== o.bytes) throw new eQ("transport", _("Incomplete job result"));
+                let e = new Uint8Array(s), t = 0;
+                for (let n of a)e.set(n, t), t += n.length;
+                return eV(JSON.parse(new TextDecoder("utf-8", {
+                    fatal: !0
+                }).decode(e)));
+            }
         }
+        throw new eQ("transport", _("Too many result chunks"));
+    } finally{
+        await tJ().jobRelease({
+            job: n.job
+        }).catch(()=>{});
     }
-    throw new eQ("transport", _("Too many result chunks"));
 }
-const tW = async ()=>tZ.parse(eV(await tD())), tH = async (e)=>tR.parse(await tF(await tU(e))), tK = async (e)=>tq.parse(await tF(await tI(e))), tB = async (e, t)=>tq.parse(await tF(await tQ(e, `account_set_${t.kind}`, t.entry, t.password, t.active))), tX = async (e, t, n)=>tA.parse(await tF(await tV(e, t, n)));
-let tG = !1;
-function tY() {
+const tH = async ()=>tJ().hl202List(), tK = async (e)=>e4.parse(await tW(await tJ().hl202Report({
+        target: e
+    }))), tB = async (e)=>e3.parse(await tW(await tJ().hl202AccountsStart({
+        target: e
+    }))), tX = async (e, t)=>e3.parse(await tW(await tJ().hl202AccountUpdate({
+        target: e,
+        kind: "password" === t.kind ? "account_set_password" : "account_set_active",
+        entry: t.entry,
+        password: t.password,
+        active: t.active
+    }))), tG = async (e, t, n)=>e6.parse(await tW(await tJ().hl202ExecStart({
+        target: e,
+        script: t,
+        timeout_seconds: n
+    })));
+let tY = !1;
+function t0() {
     var e, t;
-    let n = null, r = s("div", {
+    let n = null, r = o("div", {
         style: "margin:8px 0;display:flex;align-items:center;flex-wrap:wrap;gap:10px"
-    }), i = s("div", {
+    }), i = o("div", {
         style: "overflow-x:auto;margin:8px 0"
-    }), a = s("div", {
+    }), a = o("div", {
         style: "margin-top:10px"
-    }), o = s("div", {
+    }), s = o("div", {
         style: "font-size:88%;color:#888;margin:6px 0",
         "aria-live": "polite"
-    }), l = s("button", {
+    }), l = o("button", {
         type: "button",
         class: "cbi-button cbi-button-action",
         children: _("Read MQTT report")
-    }), d = async (e)=>{
+    }), c = async (e)=>{
         let t = e || n;
         if (!t) {
-            o.textContent = _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.");
+            s.textContent = _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.");
             return;
         }
-        if (tG) {
-            o.textContent = _("Another operation is in progress.");
+        if (tY) {
+            s.textContent = _("Another operation is in progress.");
             return;
         }
-        tG = !0, l.disabled = !0, o.textContent = _("Waiting for device result\u2026");
+        tY = !0, l.disabled = !0, s.textContent = _("Waiting for device result\u2026");
         try {
-            var d, c, p, u, g, h, m, f, b, y, v, w, x, z, k, T, C, S, j, $, O, N;
-            let e = await tH(t);
+            var c, d, p, u, h, g, m, f, b, y, v, w, x, z, k, j, C, S, T, $, O, N;
+            let e = await tK(t);
             if (JSON.stringify(t) !== JSON.stringify(n)) return;
             if (!e.report) {
-                r.replaceChildren(), i.replaceChildren(), a.replaceChildren(), o.textContent = _("No MQTT report has been parsed yet.");
+                r.replaceChildren(), i.replaceChildren(), a.replaceChildren(), s.textContent = _("No MQTT report has been parsed yet.");
                 return;
             }
             let l = e.report;
-            if (r.replaceChildren((c = {
+            if (r.replaceChildren((d = {
                 children: [
-                    (d = {
+                    (c = {
                         style: "color:#888;margin-right:4px",
                         children: [
                             _("Revision"),
                             ":"
                         ]
-                    }, s("span", d)),
-                    tT("info", `#${String(l.revision)}`)
+                    }, o("span", c)),
+                    tF("info", `#${String(l.revision)}`)
                 ]
-            }, s("span", c)), (g = {
+            }, o("span", d)), (h = {
                 children: [
                     (p = {
                         style: "color:#888;margin-right:4px",
@@ -2018,25 +2203,25 @@ function tY() {
                             _("Last received"),
                             ":"
                         ]
-                    }, s("span", p)),
+                    }, o("span", p)),
                     (u = {
-                        children: tk("number" == typeof l.last_received ? l.last_received : void 0)
-                    }, s("strong", u))
+                        children: tV("number" == typeof l.last_received ? l.last_received : void 0)
+                    }, o("strong", u))
                 ]
-            }, s("span", g)), (f = {
+            }, o("span", h)), (f = {
                 children: [
-                    (h = {
+                    (g = {
                         style: "color:#888;margin-right:4px",
                         children: [
                             _("Last good report"),
                             ":"
                         ]
-                    }, s("span", h)),
+                    }, o("span", g)),
                     (m = {
-                        children: tk("number" == typeof l.last_good ? l.last_good : void 0)
-                    }, s("strong", m))
+                        children: tV("number" == typeof l.last_good ? l.last_good : void 0)
+                    }, o("strong", m))
                 ]
-            }, s("span", f))), "string" == typeof l.error && r.append((b = {
+            }, o("span", f))), "string" == typeof l.error && r.append((b = {
                 class: "alert-message warning",
                 style: "width:100%;margin-top:6px",
                 children: [
@@ -2044,9 +2229,9 @@ function tY() {
                     ": ",
                     l.error
                 ]
-            }, s("div", b))), l.report) {
+            }, o("div", b))), l.report) {
                 let e = l.report, t = e.fields;
-                i.replaceChildren((T = {
+                i.replaceChildren((j = {
                     class: "table",
                     style: "font-size:90%",
                     children: [
@@ -2055,21 +2240,21 @@ function tY() {
                                 children: [
                                     (y = {
                                         children: _("Field")
-                                    }, s("th", y)),
+                                    }, o("th", y)),
                                     (v = {
                                         children: _("Value")
-                                    }, s("th", v)),
+                                    }, o("th", v)),
                                     (w = {
                                         children: _("Source member")
-                                    }, s("th", w))
+                                    }, o("th", w))
                                 ]
-                            }, s("tr", x))
-                        }, s("thead", z)),
+                            }, o("tr", x))
+                        }, o("thead", z)),
                         (k = {
                             children: Object.entries(t).map((e)=>{
-                                var t, n, r, i, a, o, l;
-                                let [d, c] = e, p = c.value, u = null === p ? "\u2014" : `${"object" == typeof p ? JSON.stringify(p) : String(p)}${c.unit ? ` ${c.unit}` : ""}`;
-                                return "uptime_seconds" === d && "number" == typeof p && (u = function(e) {
+                                var t, n, r, i, a, s, l;
+                                let [c, d] = e, p = d.value, u = null === p ? "\u2014" : `${"object" == typeof p ? JSON.stringify(p) : String(p)}${d.unit ? ` ${d.unit}` : ""}`;
+                                return "uptime_seconds" === c && "number" == typeof p && (u = function(e) {
                                     if (void 0 === e || !Number.isFinite(e) || e < 0) return "\u2014";
                                     let t = Math.floor(e / 86400), n = Math.floor(e % 86400 / 3600), r = Math.floor(e % 3600 / 60), i = [];
                                     return t > 0 && i.push(_("%d days").replace("%d", String(t))), (n > 0 || t > 0) && i.push(_("%d hours").replace("%d", String(n))), (r > 0 || n > 0 || t > 0) && i.push(_("%d minutes").replace("%d", String(r))), i.push(_("%d seconds").replace("%d", String(e % 60))), `${i.join(" ")} (${e} s)`;
@@ -2077,26 +2262,26 @@ function tY() {
                                     children: [
                                         (n = {
                                             children: (t = {
-                                                children: d
-                                            }, s("code", t))
-                                        }, s("td", n)),
+                                                children: c
+                                            }, o("code", t))
+                                        }, o("td", n)),
                                         (i = {
                                             children: (r = {
                                                 children: u
-                                            }, s("strong", r))
-                                        }, s("td", i)),
-                                        (o = {
+                                            }, o("strong", r))
+                                        }, o("td", i)),
+                                        (s = {
                                             children: (a = {
                                                 class: "hl202-badge hl202-badge-neutral",
-                                                children: tz(c.member)
-                                            }, s("span", a))
-                                        }, s("td", o))
+                                                children: tQ(d.member)
+                                            }, o("span", a))
+                                        }, o("td", s))
                                     ]
-                                }, s("tr", l);
+                                }, o("tr", l);
                             })
-                        }, s("tbody", k))
+                        }, o("tbody", k))
                     ]
-                }, s("table", T)));
+                }, o("table", j)));
                 let n = [];
                 for (let t of e.members){
                     let e = (C = {
@@ -2109,7 +2294,7 @@ function tY() {
                             }, 1500));
                         },
                         children: _("Copy member text")
-                    }, s("button", C));
+                    }, o("button", C));
                     n.push((N = {
                         style: "margin:6px 0;border:1px solid rgba(127,140,141,0.15);border-radius:4px;padding:4px 8px",
                         children: [
@@ -2119,38 +2304,38 @@ function tY() {
                                     _("%s (%s bytes, %s)").format(String(t.name), String(t.bytes), String(t.encoding)),
                                     "string" == typeof t.text ? e : null
                                 ]
-                            }, s("summary", S)),
+                            }, o("summary", S)),
                             (O = {
                                 style: "margin-top:6px",
-                                children: "string" == typeof t.text ? (j = {
+                                children: "string" == typeof t.text ? (T = {
                                     class: "hl202-terminal-output",
                                     style: "max-height:16rem",
                                     children: t.text
-                                }, s("pre", j)) : ($ = {
+                                }, o("pre", T)) : ($ = {
                                     style: "font-size:85%;color:#888;margin:4px 0",
                                     children: t.text_omitted ? _("Text omitted at the shared byte limit.") : _("Binary member; text is unavailable.")
-                                }, s("p", $))
-                            }, s("div", O))
+                                }, o("p", $))
+                            }, o("div", O))
                         ]
-                    }, s("details", N)));
+                    }, o("details", N)));
                 }
                 a.replaceChildren(...e.errors.map((e)=>{
                     var t;
                     return t = {
                         class: "alert-message warning",
                         children: e
-                    }, s("div", t);
+                    }, o("div", t);
                 }), ...n);
             } else i.replaceChildren(), a.replaceChildren();
-            o.textContent = "";
+            s.textContent = "";
         } catch (e) {
-            o.textContent = e instanceof Error ? e.message : _("Request failed");
+            s.textContent = e instanceof Error ? e.message : _("Request failed");
         } finally{
-            tG = !1, l.disabled = !n;
+            tY = !1, l.disabled = !n;
         }
     };
     return l.addEventListener("click", ()=>{
-        d();
+        c();
     }), {
         element: (t = {
             class: "cbi-section hl202-panel-report",
@@ -2158,61 +2343,61 @@ function tY() {
                 (e = {
                     style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px",
                     children: [
-                        s("h3", {
+                        o("h3", {
                             style: "margin:0",
                             children: _("MQTT report")
                         }),
                         l
                     ]
-                }, s("div", e)),
-                o,
+                }, o("div", e)),
+                s,
                 r,
                 i,
                 a
             ]
-        }, s("div", t)),
+        }, o("div", t)),
         setTarget (e) {
-            JSON.stringify(e) !== JSON.stringify(n) && (r.replaceChildren(), i.replaceChildren(), a.replaceChildren(), o.textContent = ""), n = e, l.disabled = !e;
+            JSON.stringify(e) !== JSON.stringify(n) && (r.replaceChildren(), i.replaceChildren(), a.replaceChildren(), s.textContent = ""), n = e, l.disabled = !e;
         },
-        refresh: (e)=>d(e)
+        refresh: (e)=>c(e)
     };
 }
-let t0 = L.view;
-if (!("extend" in t0) || "function" != typeof t0.extend) throw Error("LuCI view extension is unavailable");
-let main = Reflect.apply(t0.extend, t0, [
+let t2 = L.view;
+if (!("extend" in t2) || "function" != typeof t2.extend) throw Error("LuCI view extension is unavailable");
+let main = Reflect.apply(t2.extend, t2, [
     {
-        load: ()=>tx("hl202"),
+        load: ()=>tI("hl202"),
         render: function() {
-            var e, t, n, r, i, a, o, l, d, c, p, u, g;
-            let h, m, f, b, y, v = s("select", {
+            var e, t, n, r, i, a, s, l, c, d, p, u, h;
+            let g, m, f, b, y, v = o("select", {
                 id: "hl202-device",
                 class: "cbi-input-select",
                 "aria-label": _("HL202 device"),
                 style: "min-width:320px"
-            }), w = s("button", {
+            }), w = o("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 children: _("Refresh devices")
-            }), x = s("div", {
+            }), x = o("div", {
                 style: "font-size:88%;color:#888;margin:6px 0",
                 "aria-live": "polite"
-            }), z = s("strong", {
+            }), z = o("strong", {
                 children: "\u2014"
-            }), k = s("span", {
+            }), k = o("span", {
                 class: "hl202-badge hl202-badge-neutral",
                 style: "font-size:80%",
                 children: "\u2014"
-            }), T = s("span", {
+            }), j = o("span", {
                 class: "hl202-badge hl202-badge-neutral",
                 children: "\u2014"
-            }), C = s("span", {
+            }), C = o("span", {
                 class: "hl202-badge hl202-badge-neutral",
                 children: "\u2014"
-            }), S = s("span", {
+            }), S = o("span", {
                 class: "hl202-badge hl202-badge-info",
                 style: "font-size:80%",
                 children: "\u2014"
-            }), j = s("div", {
+            }), T = o("div", {
                 class: "alert-message warning",
                 style: "margin-top:8px",
                 hidden: !0,
@@ -2224,24 +2409,24 @@ let main = Reflect.apply(t0.extend, t0, [
                     (t = {
                         class: "hl202-card-header",
                         children: [
-                            s("div", {
+                            o("div", {
                                 class: "hl202-device-title",
                                 children: [
                                     z,
                                     k
                                 ]
                             }),
-                            s("div", {
+                            o("div", {
                                 class: "hl202-device-badges",
                                 children: [
-                                    T,
+                                    j,
                                     C,
                                     S
                                 ]
                             }),
                             (e = {
                                 class: "hl202-device-links",
-                                children: s("a", {
+                                children: o("a", {
                                     href: L.url("admin", "network", "fttr", "hardware"),
                                     class: "fttr-btn-subtle",
                                     children: [
@@ -2249,99 +2434,99 @@ let main = Reflect.apply(t0.extend, t0, [
                                         " \u2192"
                                     ]
                                 })
-                            }, s("div", e))
+                            }, o("div", e))
                         ]
-                    }, s("div", t)),
-                    j
+                    }, o("div", t)),
+                    T
                 ]
-            }, s("div", n)), O = tY(), N = (h = null, m = s("div", {
+            }, o("div", n)), O = t0(), N = (g = null, m = o("div", {
                 style: "font-size:88%;color:#888;margin:6px 0",
                 "aria-live": "polite"
-            }), f = s("div", {
+            }), f = o("div", {
                 style: "margin-top:10px;display:flex;flex-direction:column;gap:10px"
-            }), (b = s("button", {
+            }), (b = o("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 children: _("Read users")
             })).disabled = !L.hasViewPermission(), y = async ()=>{
-                if (!h) {
+                if (!g) {
                     m.textContent = _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.");
                     return;
                 }
-                if (tG) {
+                if (tY) {
                     m.textContent = _("Another operation is in progress.");
                     return;
                 }
-                tG = !0, b.disabled = !0, m.textContent = _("Waiting for device result\u2026");
-                let e = h;
+                tY = !0, b.disabled = !0, m.textContent = _("Waiting for device result\u2026");
+                let e = g;
                 try {
-                    let g = await tK(e);
-                    if (JSON.stringify(e) !== JSON.stringify(h)) return;
+                    let h = await tB(e);
+                    if (JSON.stringify(e) !== JSON.stringify(g)) return;
                     f.replaceChildren();
-                    let b = g.operation, y = b.result;
-                    if ("timeout" === y.status ? m.textContent = _("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.") : m.textContent = b.binding_current ? y.error ?? (null === g.accounts ? _("Account data is unavailable.") : "") : _("Device binding changed; this result is stale."), g.accounts && b.binding_current) {
+                    let b = h.operation, y = b.result;
+                    if ("timeout" === y.status ? m.textContent = _("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.") : m.textContent = b.binding_current ? y.error ?? (null === h.accounts ? _("Account data is unavailable.") : "") : _("Device binding changed; this result is stale."), h.accounts && b.binding_current) {
                         let m = [];
-                        for (let f of g.accounts){
-                            var t, n, r, i, a, o, l, d, c, p, u;
-                            let g = f.entry, b = f.active, y = (t = {
+                        for (let f of h.accounts){
+                            var t, n, r, i, a, s, l, c, d, p, u;
+                            let h = f.entry, b = f.active, y = (t = {
                                 class: `hl202-badge ${b ? "hl202-badge-success" : "hl202-badge-neutral"}`,
                                 style: "font-size:80%",
                                 children: b ? _("Enabled") : _("Disabled")
-                            }, s("span", t)), v = (n = {
+                            }, o("span", t)), v = (n = {
                                 type: "password",
                                 class: "cbi-input-text",
                                 placeholder: _("New password"),
                                 autocomplete: "new-password",
                                 style: "width:180px"
-                            }, s("input", n)), w = (r = {
+                            }, o("input", n)), w = (r = {
                                 type: "button",
                                 class: "cbi-button cbi-button-action",
                                 children: _("Set password")
-                            }, s("button", r)), x = (i = {
+                            }, o("button", r)), x = (i = {
                                 type: "button",
                                 class: `cbi-button ${b ? "cbi-button-neutral" : "cbi-button-apply"}`,
                                 children: b ? _("Disable") : _("Enable")
-                            }, s("button", i));
+                            }, o("button", i));
                             w.disabled = x.disabled = !L.hasViewPermission();
                             let z = (a = {
                                 style: "font-size:82%;margin-top:4px",
                                 "aria-live": "polite"
-                            }, s("div", a));
+                            }, o("div", a));
                             w.addEventListener("click", async ()=>{
-                                if (!h || tG || JSON.stringify(e) !== JSON.stringify(h)) return;
+                                if (!g || tY || JSON.stringify(e) !== JSON.stringify(g)) return;
                                 let t = v.value;
                                 if (!t) {
                                     z.textContent = _("Enter a non-empty password.");
                                     return;
                                 }
-                                v.value = "", tG = !0, w.disabled = x.disabled = !0, z.textContent = _("Waiting for device result\u2026");
+                                v.value = "", tY = !0, w.disabled = x.disabled = !0, z.textContent = _("Waiting for device result\u2026");
                                 try {
-                                    let n = await tB(e, {
-                                        entry: g,
+                                    let n = await tX(e, {
+                                        entry: h,
                                         kind: "password",
                                         password: t,
                                         active: b
                                     });
-                                    if (JSON.stringify(e) !== JSON.stringify(h)) return;
+                                    if (JSON.stringify(e) !== JSON.stringify(g)) return;
                                     let r = n.operation, i = r.result;
                                     r.binding_current && "accepted_and_saved" === n.write_status ? z.textContent = _("Password accepted and saved; web login permission is not verified.") : z.textContent = i.error ?? _("Execution outcome is unknown. Do not automatically retry.");
                                 } catch (e) {
                                     z.textContent = e instanceof Error ? e.message : _("Request failed");
                                 } finally{
-                                    tG = !1, w.disabled = x.disabled = !L.hasViewPermission();
+                                    tY = !1, w.disabled = x.disabled = !L.hasViewPermission();
                                 }
                             }), x.addEventListener("click", async ()=>{
-                                if (h && !tG && JSON.stringify(e) === JSON.stringify(h)) {
-                                    tG = !0, w.disabled = x.disabled = !0, z.textContent = _("Waiting for device result\u2026");
+                                if (g && !tY && JSON.stringify(e) === JSON.stringify(g)) {
+                                    tY = !0, w.disabled = x.disabled = !0, z.textContent = _("Waiting for device result\u2026");
                                     try {
-                                        let t = !b, n = await tB(e, {
-                                            entry: g,
+                                        let t = !b, n = await tX(e, {
+                                            entry: h,
                                             kind: "active",
                                             password: "",
                                             active: t
                                         });
-                                        if (JSON.stringify(e) !== JSON.stringify(h)) return;
-                                        let r = n.accounts?.find((e)=>e.entry === g);
+                                        if (JSON.stringify(e) !== JSON.stringify(g)) return;
+                                        let r = n.accounts?.find((e)=>e.entry === h);
                                         if (!n.operation.binding_current || "accepted_and_saved" !== n.write_status || !r) {
                                             z.textContent = n.operation.result.error ?? _("Execution outcome is unknown. Refresh users before retrying.");
                                             return;
@@ -2350,7 +2535,7 @@ let main = Reflect.apply(t0.extend, t0, [
                                     } catch (e) {
                                         z.textContent = e instanceof Error ? e.message : _("Request failed");
                                     } finally{
-                                        tG = !1, w.disabled = x.disabled = !L.hasViewPermission();
+                                        tY = !1, w.disabled = x.disabled = !L.hasViewPermission();
                                     }
                                 }
                             }), m.push((u = {
@@ -2360,81 +2545,81 @@ let main = Reflect.apply(t0.extend, t0, [
                                     (p = {
                                         style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px",
                                         children: [
-                                            (d = {
+                                            (c = {
                                                 style: "display:flex;align-items:center;gap:8px",
                                                 children: [
-                                                    (o = {
+                                                    (s = {
                                                         style: "font-size:105%",
                                                         children: f.username
-                                                    }, s("strong", o)),
+                                                    }, o("strong", s)),
                                                     (l = {
                                                         style: "font-size:80%;color:#888",
-                                                        children: _("(Entry %s)").replace("%s", String(g))
-                                                    }, s("span", l)),
+                                                        children: _("(Entry %s)").replace("%s", String(h))
+                                                    }, o("span", l)),
                                                     y
                                                 ]
-                                            }, s("div", d)),
-                                            (c = {
+                                            }, o("div", c)),
+                                            (d = {
                                                 style: "display:flex;align-items:center;flex-wrap:wrap;gap:8px",
                                                 children: [
                                                     v,
                                                     w,
                                                     x
                                                 ]
-                                            }, s("div", c))
+                                            }, o("div", d))
                                         ]
-                                    }, s("div", p)),
+                                    }, o("div", p)),
                                     z
                                 ]
-                            }, s("div", u)));
+                            }, o("div", u)));
                         }
                         f.replaceChildren(...m);
                     }
                 } catch (e) {
                     m.textContent = e instanceof Error ? e.message : _("Request failed");
                 } finally{
-                    tG = !1, b.disabled = !h || !L.hasViewPermission();
+                    tY = !1, b.disabled = !g || !L.hasViewPermission();
                 }
             }, b.addEventListener("click", ()=>{
                 y();
             }), {
-                element: (g = {
+                element: (h = {
                     class: "cbi-section hl202-panel-accounts",
                     children: [
                         (u = {
                             style: "display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px",
                             children: [
-                                s("h3", {
+                                o("h3", {
                                     style: "margin:0",
                                     children: _("User management")
                                 }),
                                 b
                             ]
-                        }, s("div", u)),
-                        s("p", {
+                        }, o("div", u)),
+                        o("p", {
                             style: "font-size:85%;color:#888;margin:4px 0",
                             children: _("Password writes are accepted and saved by the device; this does not prove web login permission. Existing permission masks are preserved.")
                         }),
                         m,
                         f
                     ]
-                }, s("div", g)),
+                }, o("div", h)),
                 setTarget (e) {
-                    JSON.stringify(e) !== JSON.stringify(h) && (f.replaceChildren(), m.textContent = ""), h = e, b.disabled = !e || !L.hasViewPermission();
+                    JSON.stringify(e) !== JSON.stringify(g) && (f.replaceChildren(), m.textContent = ""), g = e, b.disabled = !e || !L.hasViewPermission();
                 },
                 refresh: ()=>y()
             }), P = function() {
                 var e, t, n, r;
-                let i = null, a = s("div", {
+                let i = null, a = o("div", {
                     style: "font-size:88%;color:#666;margin:4px 0"
-                }), o = s("textarea", {
+                }), s = o("textarea", {
                     id: "hl202-script",
                     rows: 8,
                     class: "hl202-terminal-textarea",
                     spellcheck: !1,
                     "aria-label": _("Remote shell command"),
                     placeholder: _("# Enter shell commands to execute on the selected sub-gateway (Ctrl + Enter to execute)...")
-                }), l = s("input", {
+                }), l = o("input", {
                     type: "number",
                     id: "hl202-timeout",
                     min: "1",
@@ -2443,20 +2628,20 @@ let main = Reflect.apply(t0.extend, t0, [
                     class: "cbi-input-text",
                     style: "width:70px;text-align:center",
                     "aria-label": _("Timeout in seconds")
-                }), d = s("button", {
+                }), c = o("button", {
                     type: "button",
                     class: "cbi-button cbi-button-apply",
                     style: "font-weight:600",
                     children: _("Execute on selected HL202")
                 });
-                d.disabled = !L.hasViewPermission();
-                let c = s("div", {
+                c.disabled = !L.hasViewPermission();
+                let d = o("div", {
                     style: "display:flex;align-items:center;flex-wrap:wrap;gap:8px"
-                }), p = s("pre", {
+                }), p = o("pre", {
                     class: "hl202-terminal-output",
                     style: "min-height:4rem;display:none",
                     children: _("# Waiting for commands...")
-                }), u = s("button", {
+                }), u = o("button", {
                     type: "button",
                     class: "fttr-btn-subtle",
                     onclick: ()=>{
@@ -2465,40 +2650,40 @@ let main = Reflect.apply(t0.extend, t0, [
                         }, 1500));
                     },
                     children: _("Copy output")
-                }), g = s("button", {
+                }), h = o("button", {
                     type: "button",
                     class: "fttr-btn-subtle",
                     onclick: ()=>{
-                        p.textContent = "", p.style.display = "none", c.replaceChildren();
+                        p.textContent = "", p.style.display = "none", d.replaceChildren();
                     },
                     children: _("Clear output")
-                }), h = async ()=>{
-                    var e, t, n, r, a, h, m, f, b, y, v;
-                    if (!i) return void c.replaceChildren(s("div", {
+                }), g = async ()=>{
+                    var e, t, n, r, a, g, m, f, b, y, v;
+                    if (!i) return void d.replaceChildren(o("div", {
                         class: "alert-message warning",
                         children: _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")
                     }));
-                    if (tG) return void c.replaceChildren(s("div", {
+                    if (tY) return void d.replaceChildren(o("div", {
                         class: "alert-message warning",
                         children: _("Another operation is in progress.")
                     }));
                     let w = Number(l.value);
-                    if (!Number.isInteger(w) || w < 1 || w > 300) return void c.replaceChildren(s("div", {
+                    if (!Number.isInteger(w) || w < 1 || w > 300) return void d.replaceChildren(o("div", {
                         class: "alert-message warning",
                         children: _("Timeout must be 1\u2013300 seconds.")
                     }));
-                    let x = o.value.trim();
-                    if (!x || x.includes("\0") || new TextEncoder().encode(x).length > 65536) return void c.replaceChildren(s("div", {
+                    let x = s.value.trim();
+                    if (!x || x.includes("\0") || new TextEncoder().encode(x).length > 65536) return void d.replaceChildren(o("div", {
                         class: "alert-message warning",
                         children: _("Enter a non-empty UTF-8 script up to 64 KiB without NUL characters.")
                     }));
-                    tG = !0, d.disabled = !0, p.style.display = "block", p.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(i.optical_sn, String(w))}\n`, c.replaceChildren(tT("info", _("Waiting for device result\u2026")));
+                    tY = !0, c.disabled = !0, p.style.display = "block", p.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(i.optical_sn, String(w))}\n`, d.replaceChildren(tF("info", _("Waiting for device result\u2026")));
                     let z = Date.now(), k = i;
                     try {
-                        let l = await tX(k, o.value, w);
+                        let l = await tG(k, s.value, w);
                         if (JSON.stringify(k) !== JSON.stringify(i)) return;
-                        let d = ((Date.now() - z) / 1000).toFixed(2), v = l.operation, x = v.result, T = x.status, C = x.exit_code, S = v.binding_current && !x.error && "executed" === T && 0 === C, j = tT(S ? "success" : "timeout" === T ? "warning" : "danger", S ? _("Success") : "timeout" === T ? _("Timeout") : `${_("Exit code")} ${String(C ?? T)}`);
-                        c.replaceChildren(j, (n = {
+                        let c = ((Date.now() - z) / 1000).toFixed(2), v = l.operation, x = v.result, j = x.status, C = x.exit_code, S = v.binding_current && !x.error && "executed" === j && 0 === C, T = tF(S ? "success" : "timeout" === j ? "warning" : "danger", S ? _("Success") : "timeout" === j ? _("Timeout") : `${_("Exit code")} ${String(C ?? j)}`);
+                        d.replaceChildren(T, (n = {
                             children: [
                                 (e = {
                                     style: "color:#888",
@@ -2506,13 +2691,13 @@ let main = Reflect.apply(t0.extend, t0, [
                                         _("Exit code"),
                                         ":"
                                     ]
-                                }, s("span", e)),
+                                }, o("span", e)),
                                 " ",
                                 (t = {
                                     children: String(C ?? "\u2014")
-                                }, s("code", t))
+                                }, o("code", t))
                             ]
-                        }, s("span", n)), (h = {
+                        }, o("span", n)), (g = {
                             children: [
                                 (r = {
                                     style: "color:#888",
@@ -2520,16 +2705,16 @@ let main = Reflect.apply(t0.extend, t0, [
                                         _("Duration"),
                                         ":"
                                     ]
-                                }, s("span", r)),
+                                }, o("span", r)),
                                 " ",
                                 (a = {
                                     children: [
-                                        d,
+                                        c,
                                         " s"
                                     ]
-                                }, s("strong", a))
+                                }, o("strong", a))
                             ]
-                        }, s("span", h)), (b = {
+                        }, o("span", g)), (b = {
                             children: [
                                 (m = {
                                     style: "color:#888",
@@ -2537,26 +2722,26 @@ let main = Reflect.apply(t0.extend, t0, [
                                         _("Request ID"),
                                         ":"
                                     ]
-                                }, s("span", m)),
+                                }, o("span", m)),
                                 " ",
                                 (f = {
                                     children: String(x.request_id ?? "\u2014")
-                                }, s("code", f))
+                                }, o("code", f))
                             ]
-                        }, s("span", b)), (y = {
+                        }, o("span", b)), (y = {
                             style: "margin-left:auto;display:flex;gap:6px",
                             children: [
                                 u,
-                                g
+                                h
                             ]
-                        }, s("div", y)));
+                        }, o("div", y)));
                         let $ = [];
-                        v.binding_current || $.push(_("Device binding changed; this result is stale.")), ("timeout" === T || "dispatched" === T) && $.push(_("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.")), "string" == typeof x.output && x.output.length && $.push(x.output), "string" == typeof x.error && x.error.length && $.push(`[STDERR]\n${x.error}`), !0 === x.output_truncated && $.push(`\n[!] ${_("Output was truncated at the byte limit.")}`), 0 === $.length && $.push(_("No output returned.")), p.textContent = $.join("\n");
+                        v.binding_current || $.push(_("Device binding changed; this result is stale.")), ("timeout" === j || "dispatched" === j) && $.push(_("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.")), "string" == typeof x.output && x.output.length && $.push(x.output), "string" == typeof x.error && x.error.length && $.push(`[STDERR]\n${x.error}`), !0 === x.output_truncated && $.push(`\n[!] ${_("Output was truncated at the byte limit.")}`), 0 === $.length && $.push(_("No output returned.")), p.textContent = $.join("\n");
                     } catch (t) {
                         let e = ((Date.now() - z) / 1000).toFixed(2);
-                        c.replaceChildren(tT("danger", _("Failed")), (v = {
+                        d.replaceChildren(tF("danger", _("Failed")), (v = {
                             children: [
-                                s("span", {
+                                o("span", {
                                     style: "color:#888",
                                     children: [
                                         _("Duration"),
@@ -2567,21 +2752,21 @@ let main = Reflect.apply(t0.extend, t0, [
                                 e,
                                 " s"
                             ]
-                        }, s("span", v)), s("div", {
+                        }, o("span", v)), o("div", {
                             style: "margin-left:auto;display:flex;gap:6px",
                             children: [
                                 u,
-                                g
+                                h
                             ]
                         })), p.textContent = `[ERROR] ${t instanceof Error ? t.message : _("Request failed")}`;
                     } finally{
-                        tG = !1, d.disabled = !i || !L.hasViewPermission();
+                        tY = !1, c.disabled = !i || !L.hasViewPermission();
                     }
                 };
-                d.addEventListener("click", ()=>{
-                    h();
-                }), o.addEventListener("keydown", (e)=>{
-                    (e.ctrlKey || e.metaKey) && "Enter" === e.key && (e.preventDefault(), h());
+                c.addEventListener("click", ()=>{
+                    g();
+                }), s.addEventListener("keydown", (e)=>{
+                    (e.ctrlKey || e.metaKey) && "Enter" === e.key && (e.preventDefault(), g());
                 });
                 let m = [
                     {
@@ -2611,41 +2796,41 @@ let main = Reflect.apply(t0.extend, t0, [
                 ], f = (e = {
                     class: "hl202-snippets",
                     children: [
-                        s("span", {
+                        o("span", {
                             style: "font-size:80%;color:#888;margin-right:2px",
                             children: [
                                 _("Quick diagnostic commands"),
                                 ":"
                             ]
                         }),
-                        m.map((e)=>s("button", {
+                        m.map((e)=>o("button", {
                                 type: "button",
                                 class: "hl202-snippet-tag",
                                 onclick: ()=>{
-                                    o.value = e.cmd, o.focus();
+                                    s.value = e.cmd, s.focus();
                                 },
                                 children: e.label
                             }))
                     ]
-                }, s("div", e));
+                }, o("div", e));
                 return {
                     element: (r = {
                         class: "cbi-section hl202-panel-console",
                         children: [
-                            s("h3", {
+                            o("h3", {
                                 style: "margin-bottom:4px",
                                 children: _("Raw command console")
                             }),
-                            s("p", {
+                            o("p", {
                                 style: "font-size:85%;color:#888;margin-top:0;margin-bottom:6px",
                                 children: _("Shell executes on the selected ONU. Timeout does not cancel execution. Raw output can contain secrets.")
                             }),
                             a,
                             f,
-                            s("div", {
+                            o("div", {
                                 class: "hl202-terminal",
                                 style: "margin-bottom:8px",
-                                children: o
+                                children: s
                             }),
                             (n = {
                                 style: "display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px",
@@ -2654,7 +2839,7 @@ let main = Reflect.apply(t0.extend, t0, [
                                         htmlFor: "hl202-timeout",
                                         style: "display:flex;align-items:center;gap:6px;font-size:90%",
                                         children: [
-                                            s("span", {
+                                            o("span", {
                                                 children: [
                                                     _("Timeout in seconds"),
                                                     ":"
@@ -2662,31 +2847,31 @@ let main = Reflect.apply(t0.extend, t0, [
                                             }),
                                             l
                                         ]
-                                    }, s("label", t)),
-                                    s("span", {
+                                    }, o("label", t)),
+                                    o("span", {
                                         style: "font-size:82%;color:#888",
                                         children: _("(Shortcut: %s)").replace("%s", "Ctrl + Enter")
                                     }),
-                                    s("div", {
+                                    o("div", {
                                         style: "margin-left:auto",
-                                        children: d
+                                        children: c
                                     })
                                 ]
-                            }, s("div", n)),
-                            s("div", {
+                            }, o("div", n)),
+                            o("div", {
                                 style: "margin-top:10px",
                                 children: [
-                                    c,
+                                    d,
                                     p
                                 ]
                             })
                         ]
-                    }, s("div", r)),
+                    }, o("div", r)),
                     setTarget (e) {
                         var t;
-                        JSON.stringify(e) !== JSON.stringify(i) && (c.replaceChildren(), p.textContent = "", p.style.display = "none"), i = e, d.disabled = !e || !L.hasViewPermission(), e ? a.replaceChildren((t = {
+                        JSON.stringify(e) !== JSON.stringify(i) && (d.replaceChildren(), p.textContent = "", p.style.display = "none"), i = e, c.disabled = !e || !L.hasViewPermission(), e ? a.replaceChildren((t = {
                             children: [
-                                s("span", {
+                                o("span", {
                                     style: "color:#888",
                                     children: [
                                         _("Target"),
@@ -2694,81 +2879,81 @@ let main = Reflect.apply(t0.extend, t0, [
                                     ]
                                 }),
                                 " ",
-                                s("strong", {
+                                o("strong", {
                                     children: e.optical_sn
                                 }),
                                 " (ONU",
                                 " ",
                                 e.onu_id,
                                 ") \xb7 ",
-                                s("code", {
+                                o("code", {
                                     children: [
                                         "gen: ",
                                         e.binding_generation
                                     ]
                                 })
                             ]
-                        }, s("span", t))) : a.replaceChildren(s("span", {
+                        }, o("span", t))) : a.replaceChildren(o("span", {
                             style: "color:#e74c3c",
                             children: _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")
                         }));
                     }
                 };
-            }(), M = s("select", {
+            }(), R = o("select", {
                 id: "hl202-source",
                 class: "cbi-input-select",
                 "aria-label": _("Read-only MQTT source"),
                 style: "min-width:240px"
-            }), R = s("button", {
+            }), M = o("button", {
                 type: "button",
                 class: "cbi-button cbi-button-action",
                 style: "margin-left:8px",
                 children: _("Inspect source report (read-only)")
-            }), Z = s("div", {
+            }), Z = o("div", {
                 style: "margin-top:10px"
-            }), q = [], A = s("pre", {
+            }), A = [], q = o("pre", {
                 style: "white-space:pre-wrap;overflow-wrap:anywhere;font-size:80%;max-height:200px;overflow-y:auto"
             }), D = (a = {
                 class: "cbi-section hl202-panel-sources",
                 children: [
-                    s("h3", {
+                    o("h3", {
                         style: "margin-bottom:4px",
                         children: _("MQTT source identity")
                     }),
-                    s("p", {
+                    o("p", {
                         style: "font-size:85%;color:#888;margin-top:0;margin-bottom:8px",
                         children: _("Inspect read-only MQTT source reports and diagnostics for unbound or unselected devices.")
                     }),
                     (r = {
                         style: "display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px",
                         children: [
-                            s("label", {
+                            o("label", {
                                 htmlFor: "hl202-source",
                                 children: [
                                     _("Read-only MQTT source"),
                                     ": ",
-                                    M
+                                    R
                                 ]
                             }),
-                            R
+                            M
                         ]
-                    }, s("div", r)),
+                    }, o("div", r)),
                     Z,
                     (i = {
                         style: "margin-top:10px",
                         children: [
-                            s("summary", {
+                            o("summary", {
                                 style: "cursor:pointer;font-size:85%;color:#888;font-weight:600",
                                 children: _("Raw source observations (JSON)")
                             }),
-                            s("div", {
+                            o("div", {
                                 style: "margin-top:6px",
-                                children: A
+                                children: q
                             })
                         ]
-                    }, s("details", i))
+                    }, o("details", i))
                 ]
-            }, s("div", a)), J = "report", U = [
+            }, o("div", a)), J = "report", U = [
                 {
                     id: "report",
                     label: _("MQTT report")
@@ -2785,7 +2970,7 @@ let main = Reflect.apply(t0.extend, t0, [
                     id: "sources",
                     label: _("MQTT source identity")
                 }
-            ], I = new Map(), Q = (o = {
+            ], I = new Map(), Q = (s = {
                 class: "cbi-tabmenu",
                 style: "margin-top:14px;margin-bottom:0",
                 children: U.map((e)=>{
@@ -2793,7 +2978,7 @@ let main = Reflect.apply(t0.extend, t0, [
                     let n = (t = {
                         class: J === e.id ? "cbi-tab" : "cbi-tab-disabled",
                         "data-tab": e.id,
-                        children: s("a", {
+                        children: o("a", {
                             href: `#tab-${e.id}`,
                             onclick: (t)=>{
                                 t.preventDefault();
@@ -2803,12 +2988,12 @@ let main = Reflect.apply(t0.extend, t0, [
                             },
                             children: e.label
                         })
-                    }, s("li", t));
+                    }, o("li", t));
                     return I.set(e.id, n), n;
                 })
-            }, s("ul", o));
+            }, o("ul", s));
             O.element.hidden = !1, N.element.hidden = !0, P.element.hidden = !0, D.hidden = !0;
-            let V = s("div", {
+            let V = o("div", {
                 id: "hl202-panels-container",
                 children: [
                     O.element,
@@ -2819,22 +3004,22 @@ let main = Reflect.apply(t0.extend, t0, [
             }), F = [], W = "", H = "", K = ()=>{
                 let e = v.value, t = F.find((t)=>t.optical_sn === e);
                 if (!t) {
-                    z.textContent = _("No HL202 optical devices were found."), k.textContent = "\u2014", T.textContent = "\u2014", C.textContent = "\u2014", S.textContent = "\u2014", j.hidden = !0, O.setTarget(null), N.setTarget(null), P.setTarget(null);
+                    z.textContent = _("No HL202 optical devices were found."), k.textContent = "\u2014", j.textContent = "\u2014", C.textContent = "\u2014", S.textContent = "\u2014", T.hidden = !0, O.setTarget(null), N.setTarget(null), P.setTarget(null);
                     return;
                 }
-                if (z.textContent = `${t.optical_sn} (ONU ${t.onu_id})`, k.textContent = t.model || "HL202", t.optical_online ? (T.className = "hl202-badge hl202-badge-success", T.textContent = _("Optical online")) : (T.className = "hl202-badge hl202-badge-danger", T.textContent = _("Optical offline")), t.can_execute && t.mqtt) {
-                    C.className = "hl202-badge hl202-badge-success", C.textContent = _("MQTT ready"), S.textContent = `gen: ${t.mqtt.binding_generation}`, S.hidden = !1, j.hidden = !0;
+                if (z.textContent = `${t.optical_sn} (ONU ${t.onu_id})`, k.textContent = t.model || "HL202", t.optical_online ? (j.className = "hl202-badge hl202-badge-success", j.textContent = _("Optical online")) : (j.className = "hl202-badge hl202-badge-danger", j.textContent = _("Optical offline")), t.can_execute && t.mqtt) {
+                    C.className = "hl202-badge hl202-badge-success", C.textContent = _("MQTT ready"), S.textContent = `gen: ${t.mqtt.binding_generation}`, S.hidden = !1, T.hidden = !0;
                     let e = {
                         optical_sn: t.optical_sn,
                         onu_id: t.onu_id,
                         binding_generation: t.mqtt.binding_generation
                     };
                     O.setTarget(e), N.setTarget(e), P.setTarget(e);
-                } else C.className = "hl202-badge hl202-badge-warning", C.textContent = _("MQTT unavailable"), S.hidden = !0, j.hidden = !1, O.setTarget(null), N.setTarget(null), P.setTarget(null);
+                } else C.className = "hl202-badge hl202-badge-warning", C.textContent = _("MQTT unavailable"), S.hidden = !0, T.hidden = !1, O.setTarget(null), N.setTarget(null), P.setTarget(null);
             }, B = async ()=>{
                 w.disabled = !0, x.textContent = _("Loading devices\u2026");
                 try {
-                    let t = await tW(), n = t.devices;
+                    let t = await tH(), n = t.devices;
                     F = n;
                     let r = n.map((e)=>`${e.optical_sn}:${e.onu_id}:${e.optical_online}:${e.can_execute}:${e.report_revision}:${e.mqtt?.binding_generation}`).join("|");
                     if (r !== W) {
@@ -2844,35 +3029,35 @@ let main = Reflect.apply(t0.extend, t0, [
                             var t;
                             return t = {
                                 value: e.optical_sn,
-                                children: tz(`${e.model} / ${e.optical_sn} / ONU ${e.onu_id} \u{2014} ${e.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${e.optical_online ? _("Optical online") : _("Optical offline")}`)
-                            }, s("option", t);
+                                children: tQ(`${e.model} / ${e.optical_sn} / ONU ${e.onu_id} \u{2014} ${e.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${e.optical_online ? _("Optical online") : _("Optical offline")}`)
+                            }, o("option", t);
                         })), n.some((t)=>t.optical_sn === e) && (v.value = e);
                     }
-                    x.textContent = n.length ? _("Select a device to inspect reports and run operations.") : _("No HL202 optical devices were found."), A.textContent = JSON.stringify(t.sources, null, 2);
-                    let i = M.value, a = [];
-                    for (let n of (M.replaceChildren(), t.sources)){
+                    x.textContent = n.length ? _("Select a device to inspect reports and run operations.") : _("No HL202 optical devices were found."), q.textContent = JSON.stringify(t.sources, null, 2);
+                    let i = R.value, a = [];
+                    for (let n of (R.replaceChildren(), t.sources)){
                         var e;
                         a.push({
                             mqtt_mac: n.mqtt_mac,
                             binding_generation: n.binding_generation
-                        }), M.append((e = {
+                        }), R.append((e = {
                             value: n.mqtt_mac,
-                            children: tz(`${n.mqtt_mac} \u{2014} ${String(n.reason)}`)
-                        }, s("option", e)));
+                            children: tQ(`${n.mqtt_mac} \u{2014} ${String(n.reason)}`)
+                        }, o("option", e)));
                     }
-                    q = a, a.some((e)=>e.mqtt_mac === i) && (M.value = i), R.disabled = 0 === a.length, K();
-                    let o = n.find((e)=>e.optical_sn === v.value);
-                    o?.can_execute && null !== o.report_revision && `${o.optical_sn}:${o.mqtt?.binding_generation}:${o.report_revision}` !== H && !tG && (H = `${o.optical_sn}:${o.mqtt?.binding_generation}:${o.report_revision}`, O.refresh());
+                    A = a, a.some((e)=>e.mqtt_mac === i) && (R.value = i), M.disabled = 0 === a.length, K();
+                    let s = n.find((e)=>e.optical_sn === v.value);
+                    s?.can_execute && null !== s.report_revision && `${s.optical_sn}:${s.mqtt?.binding_generation}:${s.report_revision}` !== H && !tY && (H = `${s.optical_sn}:${s.mqtt?.binding_generation}:${s.report_revision}`, O.refresh());
                 } catch (e) {
                     F = [], K(), x.textContent = e instanceof Error ? e.message : _("Request failed");
                 } finally{
                     w.disabled = !1;
                 }
             };
-            v.addEventListener("change", K), R.addEventListener("click", ()=>{
-                let e = q.find((e)=>e.mqtt_mac === M.value);
+            v.addEventListener("change", K), M.addEventListener("click", ()=>{
+                let e = A.find((e)=>e.mqtt_mac === R.value);
                 if (Z.replaceChildren(), e) {
-                    let t = tY();
+                    let t = t0();
                     t.setTarget(e), Z.append(t.element), t.refresh(e);
                 }
             }), w.addEventListener("click", ()=>{
@@ -2881,7 +3066,7 @@ let main = Reflect.apply(t0.extend, t0, [
             let X = (p = {
                 class: "cbi-map hl202-management",
                 children: [
-                    s("style", {
+                    o("style", {
                         children: `
 				.hl202-management {
 					--fttr-success-bg: rgba(46, 204, 113, 0.15);
@@ -3099,20 +3284,20 @@ let main = Reflect.apply(t0.extend, t0, [
 				}
 				`
                     }),
-                    s("h2", {
+                    o("h2", {
                         children: _("HL202 sub-gateway management")
                     }),
-                    (c = {
+                    (d = {
                         class: "cbi-section",
                         children: [
-                            (d = {
+                            (c = {
                                 style: "display:flex;align-items:center;flex-wrap:wrap;gap:10px",
                                 children: [
                                     (l = {
                                         htmlFor: "hl202-device",
                                         style: "display:flex;align-items:center;gap:8px",
                                         children: [
-                                            s("strong", {
+                                            o("strong", {
                                                 children: [
                                                     _("HL202 device"),
                                                     ":"
@@ -3120,18 +3305,18 @@ let main = Reflect.apply(t0.extend, t0, [
                                             }),
                                             v
                                         ]
-                                    }, s("label", l)),
+                                    }, o("label", l)),
                                     w
                                 ]
-                            }, s("div", d)),
+                            }, o("div", c)),
                             x,
                             $
                         ]
-                    }, s("div", c)),
+                    }, o("div", d)),
                     Q,
                     V
                 ]
-            }, s("div", p)), G = async ()=>{
+            }, o("div", p)), G = async ()=>{
                 X.isConnected && (await B(), X.isConnected && window.setTimeout(()=>void G(), 5000));
             };
             return window.setTimeout(()=>void G(), 5000), X;

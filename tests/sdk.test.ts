@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
+import { fttrValidators } from "../src/api/client";
 import { createFttrClient, fttrMethods } from "../src/api/generated/luci-client";
-import { capabilities, opticalReply } from "../src/api/validators";
-import { checked } from "../src/view/contracts/common";
-import { actionResult, configCheck, restartReply, syncStatus } from "../src/view/contracts/provisioning";
-import { nativeNpuStatus, status } from "../src/view/contracts/status";
 
 const optical = {
 	schema_version: 1,
@@ -34,18 +31,7 @@ function setup(response: unknown, failure?: Error) {
 		},
 	} as unknown as typeof L.rpc;
 	return {
-		client: createFttrClient(rpc, {
-			getCapabilities: { parse: (value: unknown) => capabilities.parse(checked(value)) },
-			opticalStatus: opticalReply,
-			opticalSet: opticalReply,
-			getStatus: { parse: (value: unknown) => status.parse(checked(value)) },
-			getSync: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
-			configCheck,
-			npuStatus: nativeNpuStatus,
-			configReload: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
-			restartService: { parse: (value: unknown) => restartReply.parse(checked(value)) },
-			sync: { parse: (value: unknown) => actionResult.parse(checked(value)) },
-		}),
+		client: createFttrClient(rpc, fttrValidators),
 		declarations,
 		calls,
 	};
@@ -132,23 +118,40 @@ test("native writes preserve synchronization selectors, errors and single-attemp
 });
 
 test("migrated native methods have no legacy RPCD declarations or ACL grants", () => {
-	const shell = readFileSync(
-		new URL("../package/luci-app-fttr/root/usr/libexec/rpcd/luci.fttr", import.meta.url),
-		"utf8",
-	);
-	const list = JSON.parse(shell.match(/list\)\s+printf '(\{[^\n]+\})\\n'/)?.[1] ?? "null");
+	for (const path of ["usr/libexec/rpcd/luci.fttr", "usr/libexec/fttr-hl202", "usr/share/fttr/hl202-request.uc"]) {
+		assert.equal(existsSync(new URL(`../package/luci-app-fttr/root/${path}`, import.meta.url)), false);
+	}
 	const acl = JSON.parse(
 		readFileSync(
 			new URL("../package/luci-app-fttr/root/usr/share/rpcd/acl.d/luci-app-fttr.json", import.meta.url),
 			"utf8",
 		),
 	)["luci-app-fttr"];
-	const legacy = new Set([...acl.read.ubus["luci.fttr"], ...acl.write.ubus["luci.fttr"]]);
-	assert.deepEqual([...legacy].sort(), Object.keys(list).sort());
-	for (const method of fttrMethods) {
-		assert.ok(!(method.method in list), method.method);
-		assert.ok(!legacy.has(method.method), method.method);
-	}
+	assert.equal(acl.read.ubus["luci.fttr"], undefined);
+	assert.equal(acl.write.ubus["luci.fttr"], undefined);
+});
+
+test("task, calibration and NPU calls preserve selectors and structured business results", async () => {
+	const start = setup({ status: "pending", job: "test-job" });
+	await start.client.mibStart({ onu_id: 0, optical_sn: "TEST00000000", tables: false });
+	await start.client.hl202AccountUpdate({
+		target: { optical_sn: "TEST00000000", onu_id: 0, binding_generation: "test-generation" },
+		kind: "account_set_active",
+		entry: 0,
+		password: "",
+		active: false,
+	});
+	assert.deepEqual(start.calls[0], { method: "mib_start", args: [0, "TEST00000000", false] });
+	assert.equal(start.calls[1]?.args[4], false);
+	assert.deepEqual(
+		await setup({ status: "error", error: "not admitted" }).client.npuSet({ enabled: false, bridge: "br-test" }),
+		{ status: "error", error: "not admitted" },
+	);
+	await assert.rejects(
+		setup({ error: "invalid calibration" }).client.saveCalibration({ data: "invalid" }),
+		/invalid calibration/,
+	);
+	await assert.rejects(setup({ error: "expired" }).client.jobResult({ job: "test-job", chunk: 0 }), /expired/);
 });
 
 test("all generated methods have matching native rpcd ACL access", () => {
@@ -161,4 +164,45 @@ test("all generated methods have matching native rpcd ACL access", () => {
 	for (const method of fttrMethods) {
 		assert.ok(acl[method.access].ubus.fttr.includes(method.method), `${method.access}: fttr.${method.method}`);
 	}
+});
+
+test("job polling assembles UTF-8 chunks, rejects changed metadata and never replays work", async () => {
+	let results: unknown[] = [];
+	const calls: string[] = [];
+	Object.defineProperty(globalThis, "_", { configurable: true, value: (text: string) => text });
+	Object.defineProperty(globalThis, "window", {
+		configurable: true,
+		value: { location: { pathname: "/jobs" }, setTimeout: (callback: () => void) => setTimeout(callback, 0) },
+	});
+	Object.defineProperty(globalThis, "L", {
+		configurable: true,
+		value: {
+			rpc: {
+				declare: (options: { method: string }) => async () => {
+					calls.push(options.method);
+					return options.method === "job_release" ? { released: true } : results.shift();
+				},
+			},
+		},
+	});
+	const { waitForJob } = await import("../src/api/jobs");
+	const payload = { text: `${"x".repeat(32750)}😀中文` };
+	const bytes = Buffer.from(JSON.stringify(payload));
+	const chunk = (index: number, total = bytes.length) => ({
+		status: "ready",
+		chunk: index,
+		chunks: 2,
+		bytes: total,
+		data: bytes.subarray(index * 32768, (index + 1) * 32768).toString("base64"),
+	});
+	results = [{ status: "pending" }, chunk(0), chunk(1)];
+	assert.deepEqual(await waitForJob({ status: "pending", job: "test-job" }), payload);
+	assert.deepEqual(calls, ["job_result", "job_result", "job_result", "job_release"]);
+	results = [chunk(0), chunk(1, bytes.length + 1)];
+	await assert.rejects(waitForJob({ status: "pending", job: "test-job" }), /Inconsistent/);
+	assert.equal(calls.at(-1), "job_release");
+	results = [{ status: "ready", chunk: 0, chunks: 1, bytes: 1, data: "/w==" }];
+	await assert.rejects(waitForJob({ status: "pending", job: "test-job" }));
+	assert.equal(calls.at(-1), "job_release");
+	assert.ok(calls.every((method) => method === "job_result" || method === "job_release"));
 });
