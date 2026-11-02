@@ -1788,7 +1788,6 @@ L.rpc.declare({
     object: "luci.fttr",
     method: "save_calibration",
     params: [
-        "path",
         "data"
     ],
     reject: !0

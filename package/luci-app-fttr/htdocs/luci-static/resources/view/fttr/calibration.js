@@ -273,7 +273,7 @@ const T = (e, t)=>{
     major: 4,
     minor: 3,
     patch: 6
-}, X = o("$ZodType", (e, t)=>{
+}, I = o("$ZodType", (e, t)=>{
     var r;
     e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = R;
     let i = [
@@ -350,10 +350,10 @@ const T = (e, t)=>{
             vendor: "zod",
             version: 1
         }));
-}), I = o("$ZodString", (e, t)=>{
+}), X = o("$ZodString", (e, t)=>{
     var r;
     let i;
-    X.init(e, t), e._zod.pattern = [
+    I.init(e, t), e._zod.pattern = [
         ...e?._zod.bag?.patterns ?? []
     ].pop() ?? (i = (r = e._zod.bag) ? `[\\s\\S]{${r?.minimum ?? 0},${r?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${i}$`)), e._zod.parse = (r, i)=>{
         if (t.coerce) try {
@@ -367,7 +367,7 @@ const T = (e, t)=>{
         }), r;
     };
 }), V = o("$ZodNumber", (e, t)=>{
-    X.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? D, e._zod.parse = (r, i)=>{
+    I.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? D, e._zod.parse = (r, i)=>{
         if (t.coerce) try {
             r.value = Number(r.value);
         } catch (e) {}
@@ -385,7 +385,7 @@ const T = (e, t)=>{
         }), r;
     };
 }), H = o("$ZodBoolean", (e, t)=>{
-    X.init(e, t), e._zod.pattern = F, e._zod.parse = (r, i)=>{
+    I.init(e, t), e._zod.pattern = F, e._zod.parse = (r, i)=>{
         if (t.coerce) try {
             r.value = !!r.value;
         } catch (e) {}
@@ -398,7 +398,7 @@ const T = (e, t)=>{
         }), r;
     };
 }), q = o("$ZodNull", (e, t)=>{
-    X.init(e, t), e._zod.pattern = B, e._zod.values = new Set([
+    I.init(e, t), e._zod.pattern = B, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, r)=>{
         let i = t.value;
@@ -410,7 +410,7 @@ const T = (e, t)=>{
         }), t;
     };
 }), W = o("$ZodNever", (e, t)=>{
-    X.init(e, t), e._zod.parse = (t, r)=>(t.issues.push({
+    I.init(e, t), e._zod.parse = (t, r)=>(t.issues.push({
             expected: "never",
             code: "invalid_type",
             input: t.value,
@@ -421,7 +421,7 @@ function J(e, t, r) {
     e.issues.length && t.issues.push(...P(r, e.issues)), t.value[r] = e.value;
 }
 const K = o("$ZodArray", (e, t)=>{
-    X.init(e, t), e._zod.parse = (r, i)=>{
+    I.init(e, t), e._zod.parse = (r, i)=>{
         let n = r.value;
         if (!Array.isArray(n)) return r.issues.push({
             expected: "array",
@@ -450,7 +450,7 @@ function G(e, t, r, i, n) {
 }
 const Q = o("$ZodObject", (e, t)=>{
     let r;
-    X.init(e, t);
+    I.init(e, t);
     let i = Object.getOwnPropertyDescriptor(t, "shape");
     if (!i?.get) {
         let e = t.shape;
@@ -539,7 +539,7 @@ function Y(e, t, r, i) {
     }), t);
 }
 const ee = o("$ZodUnion", (e, t)=>{
-    X.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
+    I.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
         if (t.options.every((e)=>e._zod.values)) return new Set(t.options.flatMap((e)=>Array.from(e._zod.values)));
     }), g(e._zod, "pattern", ()=>{
         if (t.options.every((e)=>e._zod.pattern)) {
@@ -610,7 +610,7 @@ const ee = o("$ZodUnion", (e, t)=>{
         }), n);
     };
 }), er = o("$ZodRecord", (e, t)=>{
-    X.init(e, t), e._zod.parse = (r, i)=>{
+    I.init(e, t), e._zod.parse = (r, i)=>{
         let n = r.value;
         if (!w(n)) return r.issues.push({
             expected: "record",
@@ -681,7 +681,7 @@ const ee = o("$ZodUnion", (e, t)=>{
 }), ei = o("$ZodEnum", (e, t)=>{
     var r;
     let i;
-    X.init(e, t);
+    I.init(e, t);
     let n = (i = Object.values(r = t.entries).filter((e)=>"number" == typeof e), Object.entries(r).filter(([e, t])=>-1 === i.indexOf(+e)).map(([e, t])=>t)), a = new Set(n);
     e._zod.values = a, e._zod.pattern = RegExp(`^(${n.filter((e)=>x.has(typeof e)).map((e)=>"string" == typeof e ? z(e) : e.toString()).join("|")})$`), e._zod.parse = (t, r)=>{
         let i = t.value;
@@ -693,7 +693,7 @@ const ee = o("$ZodUnion", (e, t)=>{
         }), t;
     };
 }), en = o("$ZodLiteral", (e, t)=>{
-    if (X.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
+    if (I.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let r = new Set(t.values);
     e._zod.values = r, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? z(e) : e ? z(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (i, n)=>{
         let a = i.value;
@@ -712,7 +712,7 @@ function ea(e, t) {
     } : e;
 }
 const es = o("$ZodOptional", (e, t)=>{
-    X.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+    I.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             void 0
         ]) : void 0), g(e._zod, "pattern", ()=>{
@@ -726,7 +726,7 @@ const es = o("$ZodOptional", (e, t)=>{
         return void 0 === e.value ? e : t.innerType._zod.run(e, r);
     };
 }), eo = o("$ZodNullable", (e, t)=>{
-    X.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
+    I.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
         return e ? RegExp(`^(${f(e.source)}|null)$`) : void 0;
     }), g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
@@ -734,7 +734,7 @@ const es = o("$ZodOptional", (e, t)=>{
             null
         ]) : void 0), e._zod.parse = (e, r)=>null === e.value ? e : t.innerType._zod.run(e, r);
 }), el = o("$ZodCatch", (e, t)=>{
-    X.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, r)=>{
+    I.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, r)=>{
         if ("backward" === r.direction) return t.innerType._zod.run(e, r);
         let i = t.innerType._zod.run(e, r);
         return i instanceof Promise ? i.then((i)=>(e.value = i.value, i.issues.length && (e.value = t.catchValue({
@@ -752,7 +752,7 @@ const es = o("$ZodOptional", (e, t)=>{
         }), e.issues = []), e);
     };
 }), ed = o("$ZodLazy", (e, t)=>{
-    X.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, r)=>e._zod.innerType._zod.run(t, r);
+    I.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, r)=>e._zod.innerType._zod.run(t, r);
 });
 Symbol("ZodOutput"), Symbol("ZodInput");
 (e = globalThis).__zod_globalRegistry ?? (e.__zod_globalRegistry = new class e {
@@ -791,7 +791,7 @@ Symbol("ZodOutput"), Symbol("ZodInput");
 }());
 const ec = o("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
-    X.init(e, t), e.def = t, e.type = t.type, e.parse = (t, r)=>$(e, t, r, {
+    I.init(e, t), e.def = t, e.type = t.type, e.parse = (t, r)=>$(e, t, r, {
             callee: e.parse
         }), e.safeParse = (t, r)=>N(e, t, r), e.parseAsync = async (t, r)=>M(e, t, r, {
             callee: e.parseAsync
@@ -813,7 +813,7 @@ const ec = o("ZodMiniType", (e, t)=>{
             parent: !0
         }), e.with = e.check, e.clone = (t, r)=>k(e, t, r), e.brand = ()=>e, e.register = (t, r)=>(t.add(e, r), e), e.apply = (t)=>t(e);
 }), ep = o("ZodMiniString", (e, t)=>{
-    I.init(e, t), ec.init(e, t);
+    X.init(e, t), ec.init(e, t);
 });
 function eu(e) {
     return new ep({
@@ -995,17 +995,17 @@ let eR = ez({
         })
     ])
 });
-class eX extends Error {
+class eI extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function eI(e) {
+function eX(e) {
     let t = eR.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new eX("rpc", e) : new eX(e.code, e.message);
+        throw "string" == typeof e ? new eI("rpc", e) : new eI(e.code, e.message);
     }
     return e;
 }
@@ -1704,7 +1704,6 @@ let tp = L.rpc.declare({
     object: "luci.fttr",
     method: "save_calibration",
     params: [
-        "path",
         "data"
     ],
     reject: !0
@@ -1748,7 +1747,7 @@ const th = ez({
     success: eg(),
     output: eN(eu()),
     error: eN(eu())
-}), tm = async ()=>th.parse(eI(await tp())), ty = async (e)=>t_.parse(eI(await tu("/lib/firmware/modified_UX3326.bin", e))), tb = async ()=>tg.parse(eI(await tf()));
+}), tm = async ()=>th.parse(eX(await tp())), ty = async (e)=>t_.parse(eX(await tu(e))), tb = async ()=>tg.parse(eX(await tf()));
 async function tv(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : _("Unavailable");
 }
@@ -1851,7 +1850,7 @@ function tz(e, t, r) {
     }) : s("span", {
         class: "fttr-badge fttr-badge-info",
         children: _("Custom calibration data")
-    }), X = 288 === e.size ? s("span", {
+    }), I = 288 === e.size ? s("span", {
         class: "fttr-badge fttr-badge-success",
         children: _("Standard %s bytes").format("288")
     }) : s("span", {
@@ -1880,7 +1879,7 @@ function tz(e, t, r) {
                     s("div", {
                         style: "display:flex;gap:6px",
                         children: [
-                            X,
+                            I,
                             R
                         ]
                     })

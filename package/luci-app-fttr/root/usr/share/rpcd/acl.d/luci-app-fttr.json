@@ -4,29 +4,15 @@
 		"read": {
 			"uci": ["fttr"],
 			"ubus": {
-				"fttr": [
-					"get_capabilities",
-					"get_status",
-					"status",
-					"get_sync",
-					"config_check",
-					"optical_status",
-					"npu_status"
-				],
+				"fttr": ["get_capabilities", "get_status", "get_sync", "config_check", "optical_status", "npu_status"],
 				"luci.fttr": [
-					"get_capabilities",
-					"get_status",
-					"get_sync",
-					"config_check",
 					"mib_start",
 					"mib_result",
 					"mib_release",
 					"hl202_list",
 					"hl202_report",
 					"hl202_job_result",
-					"get_calibration",
-					"optical_status",
-					"npu_status"
+					"get_calibration"
 				],
 				"luci-rpc": ["getNetworkDevices"]
 			}
@@ -34,13 +20,7 @@
 		"write": {
 			"uci": ["fttr"],
 			"ubus": {
-				"fttr": [
-					"config_reload",
-					"sync",
-					"restart_service",
-					"optical_set",
-					"npu_set"
-				],
+				"fttr": ["config_reload", "sync", "restart_service", "optical_set"],
 				"luci.fttr": [
 					"config_reload",
 					"sync",
@@ -50,7 +30,6 @@
 					"hl202_account_update",
 					"save_calibration",
 					"apply_calibration",
-					"optical_set",
 					"npu_set"
 				]
 			}

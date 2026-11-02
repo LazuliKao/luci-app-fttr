@@ -5,8 +5,6 @@ import { checked } from "./common";
 import { syncStatus } from "./provisioning";
 import { type NpuStatus, networkDevices } from "./status";
 
-export { opticalReply } from "../../api/validators";
-
 const rawReload = L.rpc.declare<unknown>({ object: "luci.fttr", method: "config_reload", reject: true });
 const rawRestart = L.rpc.declare<unknown>({ object: "luci.fttr", method: "restart_service", reject: true });
 const rawNetwork = L.rpc.declare<unknown>({
@@ -83,10 +81,10 @@ const rawGetCalibration = L.rpc.declare<unknown>({
 	reject: true,
 });
 
-const rawSaveCalibration = L.rpc.declare<unknown, [string, string]>({
+const rawSaveCalibration = L.rpc.declare<unknown, [string]>({
 	object: "luci.fttr",
 	method: "save_calibration",
-	params: ["path", "data"],
+	params: ["data"],
 	reject: true,
 });
 
@@ -140,7 +138,7 @@ export const getCalibration = async (): Promise<CalibrationInfo> =>
 	calibrationInfo.parse(checked(await rawGetCalibration()));
 
 export const saveCalibration = async (data: string): Promise<SaveCalibrationResult> =>
-	saveCalibrationResult.parse(checked(await rawSaveCalibration("/lib/firmware/modified_UX3326.bin", data)));
+	saveCalibrationResult.parse(checked(await rawSaveCalibration(data)));
 
 export const applyCalibration = async (): Promise<ApplyCalibrationResult> =>
 	applyCalibrationResult.parse(checked(await rawApplyCalibration()));
