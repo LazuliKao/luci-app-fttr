@@ -1,7 +1,11 @@
 import * as z from "zod/mini";
+import { getFttrClient } from "../../api/client";
+import type { opticalReply } from "../../api/validators";
 import { checked } from "./common";
 import { configCheck, syncStatus } from "./provisioning";
 import { type NpuStatus, networkDevices, npuStatus, status } from "./status";
+
+export { opticalReply } from "../../api/validators";
 
 const rawStatus = L.rpc.declare<unknown>({ object: "luci.fttr", method: "get_status", reject: true });
 const rawSync = L.rpc.declare<unknown>({ object: "luci.fttr", method: "get_sync", reject: true });
@@ -27,46 +31,12 @@ export const reloadConfig = async () => syncStatus.parse(checked(await rawReload
 export const restartService = async () => z.object({ restarting: z.literal(true) }).parse(checked(await rawRestart()));
 export const getNetworkDevices = async () => networkDevices.parse(checked(await rawNetwork()));
 
-// Optical TX (laser) control. `fttrctl optical on|off|status` forwards the
-// OPTICAL IPC to fttrd; the daemon owns persistence, quiesce, FPGA reset and readback.
-export const opticalReply = z.object({
-	schema_version: z.literal(1),
-	status: z.enum(["success", "error"]),
-	action: z.enum([
-		"optical_on",
-		"optical_off",
-		"optical_status",
-		"optical_reload",
-		"optical_reinitialize",
-		"optical_shutdown",
-	]),
-	desired_enabled: z.nullable(z.boolean()),
-	tx_enabled: z.nullable(z.boolean()),
-	actor_state: z.enum(["enabled", "disabled", "unknown"]),
-	hardware_ready: z.boolean(),
-	discovery_active: z.boolean(),
-	cleanup_pending: z.boolean(),
-	error: z.nullable(z.object({ code: z.string(), message: z.string() })),
-});
+// Native optical TX control; fttrd owns persistence, quiesce, FPGA reset and readback.
 export type OpticalReply = z.infer<typeof opticalReply>;
 
-const rawOpticalStatus = L.rpc.declare<unknown>({
-	object: "luci.fttr",
-	method: "optical_status",
-	reject: true,
-});
+export const getOpticalStatus = async (): Promise<OpticalReply> => getFttrClient().opticalStatus();
 
-const rawOpticalSet = L.rpc.declare<unknown, [boolean]>({
-	object: "luci.fttr",
-	method: "optical_set",
-	params: ["enabled"],
-	reject: true,
-});
-
-export const getOpticalStatus = async (): Promise<OpticalReply> => opticalReply.parse(await rawOpticalStatus());
-
-export const setOptical = async (enabled: boolean): Promise<OpticalReply> =>
-	opticalReply.parse(await rawOpticalSet(enabled));
+export const setOptical = async (enabled: boolean): Promise<OpticalReply> => getFttrClient().opticalSet({ enabled });
 
 // NPU / PPE Hardware Offload control.
 export const npuReply = z.object({

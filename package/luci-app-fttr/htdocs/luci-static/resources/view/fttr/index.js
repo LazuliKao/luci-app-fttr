@@ -1861,7 +1861,59 @@ eO("status", [
         bytes: ef(),
         data: ep()
     })
-]);
+]), ez({
+    schema_version: eL(1),
+    status: eP([
+        "success",
+        "error"
+    ]),
+    action: eP([
+        "optical_on",
+        "optical_off",
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
+    ]),
+    desired_enabled: eR(eb()),
+    tx_enabled: eR(eb()),
+    actor_state: eP([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
+    hardware_ready: eb(),
+    discovery_active: eb(),
+    cleanup_pending: eb(),
+    error: eR(ez({
+        code: ep(),
+        message: ep()
+    }))
+}), ez({
+    schema_version: eL(1),
+    version: ep(),
+    features: eS(ep(), eb()),
+    functions: ez({
+        optical: eb(),
+        omci_mib: eb(),
+        mqtt_telemetry: eb(),
+        hl202_management: eb(),
+        cwmp: eb()
+    }),
+    pages: ez({
+        status: eb(),
+        config: eb(),
+        sync: eb(),
+        hl202: eb(),
+        hardware: eb(),
+        calibration: eb(),
+        about: eb()
+    }),
+    adapters: ew(ez({
+        id: ep(),
+        name: ep()
+    }))
+});
 let tN = L.rpc.declare({
     object: "luci.fttr",
     method: "get_status",
@@ -1901,45 +1953,6 @@ L.rpc.declare({
 });
 const tA = async ()=>ts.parse(tL(await tN())), tD = async ()=>e3.parse(tL(await tI())), tU = async ()=>tl.parse(tL(await tR()));
 ez({
-    schema_version: eL(1),
-    status: eP([
-        "success",
-        "error"
-    ]),
-    action: eP([
-        "optical_on",
-        "optical_off",
-        "optical_status",
-        "optical_reload",
-        "optical_reinitialize",
-        "optical_shutdown"
-    ]),
-    desired_enabled: eR(eb()),
-    tx_enabled: eR(eb()),
-    actor_state: eP([
-        "enabled",
-        "disabled",
-        "unknown"
-    ]),
-    hardware_ready: eb(),
-    discovery_active: eb(),
-    cleanup_pending: eb(),
-    error: eR(ez({
-        code: ep(),
-        message: ep()
-    }))
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_status",
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_set",
-    params: [
-        "enabled"
-    ],
-    reject: !0
-}), ez({
     status: eP([
         "success",
         "error"

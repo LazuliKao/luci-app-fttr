@@ -113,6 +113,19 @@ package does not require Node.js or pnpm.
 
 Requirements: Node.js 18 or later and pnpm 10.12.4.
 
+### Generated native FTTR client
+
+`src/api/generated/` is generated from the backend's `fttr-api` crate. Run from
+the sibling `openwrt-fttr` checkout:
+
+```sh
+cargo run --locked --manifest-path h3c-fttr-tools/src/crates/fttr-api/Cargo.toml --features codegen --bin fttr-sdk -- --generate
+cargo run --locked --manifest-path h3c-fttr-tools/src/crates/fttr-api/Cargo.toml --features codegen --bin fttr-sdk -- --check
+```
+
+For another layout, append `--out-dir FRONTEND/src/api/generated`. Regenerate
+rather than edit these files, then run `pnpm typecheck` and `pnpm test`.
+
 ```sh
 pnpm install
 pnpm build

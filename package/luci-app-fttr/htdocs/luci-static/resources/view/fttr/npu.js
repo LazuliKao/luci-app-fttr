@@ -133,12 +133,12 @@ function v(e, t, n) {
         configurable: !0
     });
 }
-function y(...e) {
+function m(...e) {
     let t = {};
     for (let n of e)Object.assign(t, Object.getOwnPropertyDescriptors(n));
     return Object.defineProperties({}, t);
 }
-const m = "captureStackTrace" in Error ? Error.captureStackTrace : (...e)=>{};
+const y = "captureStackTrace" in Error ? Error.captureStackTrace : (...e)=>{};
 function b(e) {
     return "object" == typeof e && null !== e && !Array.isArray(e);
 }
@@ -218,7 +218,7 @@ const S = (e, t)=>{
     if (o instanceof Promise) throw new l();
     if (o.issues.length) {
         let e = new (i?.Err ?? t)(o.issues.map((e)=>T(e, a, c())));
-        throw m(e, i?.callee), e;
+        throw y(e, i?.callee), e;
     }
     return o.value;
 }), C = (n = Z, async (e, t, r, i)=>{
@@ -232,7 +232,7 @@ const S = (e, t)=>{
     }, a);
     if (o instanceof Promise && (o = await o), o.issues.length) {
         let e = new (i?.Err ?? n)(o.issues.map((e)=>T(e, a, c())));
-        throw m(e, i?.callee), e;
+        throw y(e, i?.callee), e;
     }
     return o.value;
 }), M = (r = Z, (e, t, n)=>{
@@ -273,7 +273,7 @@ const S = (e, t)=>{
     major: 4,
     minor: 3,
     patch: 6
-}, I = s("$ZodType", (e, t)=>{
+}, q = s("$ZodType", (e, t)=>{
     var n;
     e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = V;
     let r = [
@@ -350,10 +350,10 @@ const S = (e, t)=>{
             vendor: "zod",
             version: 1
         }));
-}), q = s("$ZodString", (e, t)=>{
+}), I = s("$ZodString", (e, t)=>{
     var n;
     let r;
-    I.init(e, t), e._zod.pattern = [
+    q.init(e, t), e._zod.pattern = [
         ...e?._zod.bag?.patterns ?? []
     ].pop() ?? (r = (n = e._zod.bag) ? `[\\s\\S]{${n?.minimum ?? 0},${n?.maximum ?? ""}}` : "[\\s\\S]*", RegExp(`^${r}$`)), e._zod.parse = (n, r)=>{
         if (t.coerce) try {
@@ -367,7 +367,7 @@ const S = (e, t)=>{
         }), n;
     };
 }), B = s("$ZodNumber", (e, t)=>{
-    I.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? U, e._zod.parse = (n, r)=>{
+    q.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? U, e._zod.parse = (n, r)=>{
         if (t.coerce) try {
             n.value = Number(n.value);
         } catch (e) {}
@@ -385,7 +385,7 @@ const S = (e, t)=>{
         }), n;
     };
 }), W = s("$ZodBoolean", (e, t)=>{
-    I.init(e, t), e._zod.pattern = D, e._zod.parse = (n, r)=>{
+    q.init(e, t), e._zod.pattern = D, e._zod.parse = (n, r)=>{
         if (t.coerce) try {
             n.value = !!n.value;
         } catch (e) {}
@@ -398,7 +398,7 @@ const S = (e, t)=>{
         }), n;
     };
 }), J = s("$ZodNull", (e, t)=>{
-    I.init(e, t), e._zod.pattern = F, e._zod.values = new Set([
+    q.init(e, t), e._zod.pattern = F, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, n)=>{
         let r = t.value;
@@ -410,7 +410,7 @@ const S = (e, t)=>{
         }), t;
     };
 }), K = s("$ZodNever", (e, t)=>{
-    I.init(e, t), e._zod.parse = (t, n)=>(t.issues.push({
+    q.init(e, t), e._zod.parse = (t, n)=>(t.issues.push({
             expected: "never",
             code: "invalid_type",
             input: t.value,
@@ -421,7 +421,7 @@ function X(e, t, n) {
     e.issues.length && t.issues.push(...$(n, e.issues)), t.value[n] = e.value;
 }
 const G = s("$ZodArray", (e, t)=>{
-    I.init(e, t), e._zod.parse = (n, r)=>{
+    q.init(e, t), e._zod.parse = (n, r)=>{
         let i = n.value;
         if (!Array.isArray(i)) return n.issues.push({
             expected: "array",
@@ -450,7 +450,7 @@ function H(e, t, n, r, i) {
 }
 const Q = s("$ZodObject", (e, t)=>{
     let n;
-    I.init(e, t);
+    q.init(e, t);
     let r = Object.getOwnPropertyDescriptor(t, "shape");
     if (!r?.get) {
         let e = t.shape;
@@ -539,7 +539,7 @@ function Y(e, t, n, r) {
     }), t);
 }
 const ee = s("$ZodUnion", (e, t)=>{
-    I.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
+    q.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
         if (t.options.every((e)=>e._zod.values)) return new Set(t.options.flatMap((e)=>Array.from(e._zod.values)));
     }), g(e._zod, "pattern", ()=>{
         if (t.options.every((e)=>e._zod.pattern)) {
@@ -610,7 +610,7 @@ const ee = s("$ZodUnion", (e, t)=>{
         }), i);
     };
 }), en = s("$ZodRecord", (e, t)=>{
-    I.init(e, t), e._zod.parse = (n, r)=>{
+    q.init(e, t), e._zod.parse = (n, r)=>{
         let i = n.value;
         if (!w(i)) return n.issues.push({
             expected: "record",
@@ -681,7 +681,7 @@ const ee = s("$ZodUnion", (e, t)=>{
 }), er = s("$ZodEnum", (e, t)=>{
     var n;
     let r;
-    I.init(e, t);
+    q.init(e, t);
     let i = (r = Object.values(n = t.entries).filter((e)=>"number" == typeof e), Object.entries(n).filter(([e, t])=>-1 === r.indexOf(+e)).map(([e, t])=>t)), a = new Set(i);
     e._zod.values = a, e._zod.pattern = RegExp(`^(${i.filter((e)=>z.has(typeof e)).map((e)=>"string" == typeof e ? k(e) : e.toString()).join("|")})$`), e._zod.parse = (t, n)=>{
         let r = t.value;
@@ -693,7 +693,7 @@ const ee = s("$ZodUnion", (e, t)=>{
         }), t;
     };
 }), ei = s("$ZodLiteral", (e, t)=>{
-    if (I.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
+    if (q.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let n = new Set(t.values);
     e._zod.values = n, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? k(e) : e ? k(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (r, i)=>{
         let a = r.value;
@@ -712,7 +712,7 @@ function ea(e, t) {
     } : e;
 }
 const eo = s("$ZodOptional", (e, t)=>{
-    I.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
+    q.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             void 0
         ]) : void 0), g(e._zod, "pattern", ()=>{
@@ -726,7 +726,7 @@ const eo = s("$ZodOptional", (e, t)=>{
         return void 0 === e.value ? e : t.innerType._zod.run(e, n);
     };
 }), es = s("$ZodNullable", (e, t)=>{
-    I.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
+    q.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "pattern", ()=>{
         let e = t.innerType._zod.pattern;
         return e ? RegExp(`^(${f(e.source)}|null)$`) : void 0;
     }), g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
@@ -734,7 +734,7 @@ const eo = s("$ZodOptional", (e, t)=>{
             null
         ]) : void 0), e._zod.parse = (e, n)=>null === e.value ? e : t.innerType._zod.run(e, n);
 }), el = s("$ZodCatch", (e, t)=>{
-    I.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, n)=>{
+    q.init(e, t), g(e._zod, "optin", ()=>t.innerType._zod.optin), g(e._zod, "optout", ()=>t.innerType._zod.optout), g(e._zod, "values", ()=>t.innerType._zod.values), e._zod.parse = (e, n)=>{
         if ("backward" === n.direction) return t.innerType._zod.run(e, n);
         let r = t.innerType._zod.run(e, n);
         return r instanceof Promise ? r.then((r)=>(e.value = r.value, r.issues.length && (e.value = t.catchValue({
@@ -752,7 +752,7 @@ const eo = s("$ZodOptional", (e, t)=>{
         }), e.issues = []), e);
     };
 }), ed = s("$ZodLazy", (e, t)=>{
-    I.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, n)=>e._zod.innerType._zod.run(t, n);
+    q.init(e, t), g(e._zod, "innerType", ()=>t.getter()), g(e._zod, "pattern", ()=>e._zod.innerType?._zod?.pattern), g(e._zod, "propValues", ()=>e._zod.innerType?._zod?.propValues), g(e._zod, "optin", ()=>e._zod.innerType?._zod?.optin ?? void 0), g(e._zod, "optout", ()=>e._zod.innerType?._zod?.optout ?? void 0), e._zod.parse = (t, n)=>e._zod.innerType._zod.run(t, n);
 });
 Symbol("ZodOutput"), Symbol("ZodInput");
 (e = globalThis).__zod_globalRegistry ?? (e.__zod_globalRegistry = new class e {
@@ -791,7 +791,7 @@ Symbol("ZodOutput"), Symbol("ZodInput");
 }());
 const ec = s("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
-    I.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>A(e, t, n, {
+    q.init(e, t), e.def = t, e.type = t.type, e.parse = (t, n)=>A(e, t, n, {
             callee: e.parse
         }), e.safeParse = (t, n)=>M(e, t, n), e.parseAsync = async (t, n)=>C(e, t, n, {
             callee: e.parseAsync
@@ -813,7 +813,7 @@ const ec = s("ZodMiniType", (e, t)=>{
             parent: !0
         }), e.with = e.check, e.clone = (t, n)=>x(e, t, n), e.brand = ()=>e, e.register = (t, n)=>(t.add(e, n), e), e.apply = (t)=>t(e);
 }), eu = s("ZodMiniString", (e, t)=>{
-    q.init(e, t), ec.init(e, t);
+    I.init(e, t), ec.init(e, t);
 });
 function ep(e) {
     return new eu({
@@ -842,11 +842,11 @@ function eg(e) {
 }
 const ev = s("ZodMiniNull", (e, t)=>{
     J.init(e, t), ec.init(e, t);
-}), ey = s("ZodMiniNever", (e, t)=>{
+}), em = s("ZodMiniNever", (e, t)=>{
     K.init(e, t), ec.init(e, t);
 });
-function em(e) {
-    return new ey({
+function ey(e) {
+    return new em({
         type: "never",
         ...j(e)
     });
@@ -990,8 +990,60 @@ ek({
         bytes: ef(),
         data: ep()
     })
-]);
-let eF = ep(), eV = ef(), eI = eg(), eq = eL(eF), eB = eL(eV), eW = eL(eI);
+]), ek({
+    schema_version: eZ(1),
+    status: eS([
+        "success",
+        "error"
+    ]),
+    action: eS([
+        "optical_on",
+        "optical_off",
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
+    ]),
+    desired_enabled: eM(eg()),
+    tx_enabled: eM(eg()),
+    actor_state: eS([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
+    hardware_ready: eg(),
+    discovery_active: eg(),
+    cleanup_pending: eg(),
+    error: eM(ek({
+        code: ep(),
+        message: ep()
+    }))
+}), ek({
+    schema_version: eZ(1),
+    version: ep(),
+    features: eE(ep(), eg()),
+    functions: ek({
+        optical: eg(),
+        omci_mib: eg(),
+        mqtt_telemetry: eg(),
+        hl202_management: eg(),
+        cwmp: eg()
+    }),
+    pages: ek({
+        status: eg(),
+        config: eg(),
+        sync: eg(),
+        hl202: eg(),
+        hardware: eg(),
+        calibration: eg(),
+        about: eg()
+    }),
+    adapters: ew(ek({
+        id: ep(),
+        name: ep()
+    }))
+});
+let eF = ep(), eV = ef(), eq = eg(), eI = eL(eF), eB = eL(eV), eW = eL(eq);
 const eJ = eS([
     "waiting",
     "wan_reconciling",
@@ -1032,8 +1084,8 @@ const eJ = eS([
     ]),
     service_type: eF,
     state: eF,
-    reason: eq,
-    revision: eq,
+    reason: eI,
+    revision: eI,
     current_revision: eW,
     management_fresh: eW,
     operation_id: eB,
@@ -1046,7 +1098,7 @@ const eJ = eS([
 });
 let eG = ek({
     state: eF,
-    reason: eq,
+    reason: eI,
     task_id: eL(eM(eV)),
     instance: eB
 });
@@ -1058,7 +1110,7 @@ const eH = ek({
         "offline_or_stale",
         "waiting_transport"
     ]),
-    optical_online: eI,
+    optical_online: eq,
     last_inform: eM(eV),
     age_seconds: eM(eV)
 });
@@ -1080,14 +1132,14 @@ let eQ = ek({
         "configuring_management_wan",
         "verifying_management_wan"
     ]),
-    method: eq,
-    reason: eq,
+    method: eI,
+    reason: eI,
     mqtt_target: eM(eF),
-    binding_source: eq,
+    binding_source: eI,
     link_identity_error: eM(eF),
     mqtt_last_seen: eM(eV),
-    cwmp_id: eq,
-    desired_version: eq,
+    cwmp_id: eI,
+    desired_version: eI,
     generation: eB,
     inflight: eW,
     attempts: eB,
@@ -1104,12 +1156,12 @@ let eQ = ek({
         acs_url: eF
     }))),
     listener: eL(ek({
-        enabled: eI,
+        enabled: eq,
         listen: eF,
         path: eF,
         error: eM(eF)
     })),
-    endpoint_notice: eq,
+    endpoint_notice: eI,
     manual_steps: eL(ew(eF))
 });
 const eY = e$("state", [
@@ -1121,7 +1173,7 @@ const eY = e$("state", [
             let n = e._zod.def.shape;
             for(let e in t)if (void 0 !== Object.getOwnPropertyDescriptor(n, e)) throw Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
         }
-        let r = y(e._zod.def, {
+        let r = m(e._zod.def, {
             get shape () {
                 let n = {
                     ...e._zod.def.shape,
@@ -1135,7 +1187,7 @@ const eY = e$("state", [
         var t = void 0;
         let n = e._zod.def.checks;
         if (n && n.length > 0) throw Error(".partial() cannot be used on object schemas containing refinements");
-        let r = y(e._zod.def, {
+        let r = m(e._zod.def, {
             get shape () {
                 let n = e._zod.def.shape, r = {
                     ...n
@@ -1172,10 +1224,10 @@ const eY = e$("state", [
     })),
     state: eJ,
     operation_id: eB,
-    device: eq,
-    optical_sn: eq,
-    cwmp_id: eq,
-    revision: eq,
+    device: eI,
+    optical_sn: eI,
+    cwmp_id: eI,
+    revision: eI,
     mode: eL(eS([
         "apply",
         "plan"
@@ -1183,18 +1235,18 @@ const eY = e$("state", [
     started_at: eB,
     current_revision: eW,
     management_fresh: eW,
-    reason: eq,
-    error: eq,
+    reason: eI,
+    error: eI,
     attempts: eB,
     next_retry_at: eB,
-    reconcile_reason: eq,
+    reconcile_reason: eI,
     items: ew(eX),
     cwmp_contract: eL(ek({
         state: eF,
         requested: eF,
         contract: eM(eF),
         reason: eF,
-        cache_hit: eI,
+        cache_hit: eq,
         schema: eF,
         capabilities: eM(ek({
             wan: eF,
@@ -1246,7 +1298,7 @@ const eY = e$("state", [
     ]))
 });
 let e1 = ek({
-    enabled: eI,
+    enabled: eq,
     mode: eS([
         "auto",
         "manual"
@@ -1257,7 +1309,7 @@ let e1 = ek({
     acs_url: eF,
     port: eV,
     path: eF,
-    dhcp_enabled: eI
+    dhcp_enabled: eq
 }), e2 = ek({
     state: eS([
         "discovering",
@@ -1275,8 +1327,8 @@ let e1 = ek({
         "retry_wait"
     ]),
     error: eM(eF),
-    inflight: eI,
-    ready: eI,
+    inflight: eq,
+    ready: eq,
     desired_version: eM(eF),
     applied_version: eM(eF),
     next_retry_at: eV,
@@ -1310,7 +1362,7 @@ const e5 = ek({
     ssids: ew(eX),
     wifi_sync: eK
 }), e6 = ek({
-    enabled: eI,
+    enabled: eq,
     mode: eS([
         "auto",
         "manual"
@@ -1340,13 +1392,13 @@ ej([
         valid: eZ(!0),
         revision: eF,
         devices: eV,
-        error: eL(em())
+        error: eL(ey())
     }),
     ek({
         error: eF,
-        valid: eL(em()),
-        revision: eL(em()),
-        devices: eL(em())
+        valid: eL(ey()),
+        revision: eL(ey()),
+        devices: eL(ey())
     })
 ]);
 let e8 = ep(), e3 = ef(), e4 = eM(e3), e9 = eE(e8, ek({
@@ -1578,45 +1630,6 @@ ek({
         "target"
     ],
     reject: !0
-}), ek({
-    schema_version: eZ(1),
-    status: eS([
-        "success",
-        "error"
-    ]),
-    action: eS([
-        "optical_on",
-        "optical_off",
-        "optical_status",
-        "optical_reload",
-        "optical_reinitialize",
-        "optical_shutdown"
-    ]),
-    desired_enabled: eM(eg()),
-    tx_enabled: eM(eg()),
-    actor_state: eS([
-        "enabled",
-        "disabled",
-        "unknown"
-    ]),
-    hardware_ready: eg(),
-    discovery_active: eg(),
-    cleanup_pending: eg(),
-    error: eM(ek({
-        code: ep(),
-        message: ep()
-    }))
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_status",
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_set",
-    params: [
-        "enabled"
-    ],
-    reject: !0
 });
 const ts = ek({
     status: eS([
@@ -1780,12 +1793,12 @@ let main = L.view.extend({
             children: _("Refresh")
         }), v = ()=>{
             d.disabled = c.disabled = h.disabled = i || !L.hasViewPermission() || !n?.supported || !0 !== n.config_valid || !l || Date.now() - l > 12000, g.disabled = i || !!r;
-        }, y = async ()=>{
+        }, m = async ()=>{
             if (r || i) return r;
             let e = s;
             return r = (async ()=>{
                 try {
-                    var t, u, h, g, y, m, b, w, z, k, x, j, P, $, O, T, S, N, Z, A, C, M, R;
+                    var t, u, h, g, m, y, b, w, z, k, x, j, P, $, O, T, S, N, Z, A, C, M, R;
                     let r, v = await Promise.race([
                         tc(),
                         new Promise((e, t)=>{
@@ -1821,9 +1834,9 @@ let main = L.view.extend({
                                     (b = {
                                         class: "cbi-section",
                                         children: [
-                                            (y = {
+                                            (m = {
                                                 children: _("Engine and admission status")
-                                            }, o("h3", y)),
+                                            }, o("h3", m)),
                                             tf(_("Saved configuration"), th(v.bridge_offload_enabled, v.config_valid, _("Enabled"), _("Disabled"))),
                                             tf(_("NPU engine"), th(v.engine_attached, v.engine_valid, _("Attached"), _("Detached"))),
                                             tf(_("Port admission"), th(0 !== v.bridge_offload_mask, v.mask_valid, _("Admitted"), _("Not admitted"))),
@@ -1833,10 +1846,10 @@ let main = L.view.extend({
                                             tf(_("Firewall hooks"), th(v.fw4_hooks_ready, v.hooks_valid, _("Ready"), _("Not ready"))),
                                             tf(_("Routed offload mask"), t_(v.routed_offload_mask, v.routed_mask_valid)),
                                             tf(_("Driver debug logging"), th(v.bridge_offload_debug, v.debug_valid, _("Enabled"), _("Disabled"))),
-                                            (m = {
+                                            (y = {
                                                 class: "fttr-npu-note",
                                                 children: _("Admission allows eligible traffic to bind; it does not prove that packets are currently hardware-forwarded. The switch controls FTTR bridge admission, not the entire NPU or global routed offload policy.")
-                                            }, o("p", m))
+                                            }, o("p", y))
                                         ]
                                     }, o("div", b)),
                                     (x = {
@@ -1958,7 +1971,7 @@ let main = L.view.extend({
             })(), v(), r;
         };
         g.onclick = ()=>{
-            y();
+            m();
         }, h.onclick = async ()=>{
             if (h.disabled || i) return;
             let e = c.value.trim(), t = d.checked, o = !1;
@@ -1974,10 +1987,10 @@ let main = L.view.extend({
             } catch (e) {
                 u.textContent = `${_("NPU configuration failed")}: ${String(e)}`;
             } finally{
-                await r, i = !1, await y(), !o || l && n?.config_valid && n.bridge === e && n.bridge_offload_enabled === t || (u.textContent = _("Save returned success, but configuration readback could not be confirmed. Refresh before retrying.")), v();
+                await r, i = !1, await m(), !o || l && n?.config_valid && n.bridge === e && n.bridge_offload_enabled === t || (u.textContent = _("Save returned success, but configuration readback could not be confirmed. Refresh before retrying.")), v();
             }
         };
-        let m = (t = {
+        let y = (t = {
             class: "cbi-map fttr-npu",
             children: [
                 o("style", {
@@ -2020,12 +2033,12 @@ let main = L.view.extend({
                 f
             ]
         }, o("div", t));
-        return y(), L.Poll.add(async ()=>{
-            m.isConnected && (l && Date.now() - l > 12000 && (l = 0, f.replaceChildren(o("p", {
+        return m(), L.Poll.add(async ()=>{
+            y.isConnected && (l && Date.now() - l > 12000 && (l = 0, f.replaceChildren(o("p", {
                 class: "alert-message warning",
                 children: _("Live NPU data is unavailable. Previous readings are stale.")
-            })), v()), await y());
-        }, 3), m;
+            })), v()), await m());
+        }, 3), y;
     },
     handleSaveApply: null,
     handleSave: null,

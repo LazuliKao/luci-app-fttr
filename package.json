@@ -16,7 +16,7 @@
 		"i18n:extract": "luci-types i18n --no-translate",
 		"i18n:build": "dotenvx run -- luci-types i18n --translate",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"test": "tsx --test tests/config.test.ts tests/npu.test.ts",
+		"test": "tsx --test tests/config.test.ts tests/npu.test.ts tests/sdk.test.ts",
 		"test:luci": "tsx --test tests/luci-form.test.ts",
 		"dev:remote": "dotenvx run -- luci-types dev",
 		"prepare": "husky"

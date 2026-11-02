@@ -1005,7 +1005,59 @@ ez({
         bytes: eh(),
         data: eu()
     })
-]);
+]), ez({
+    schema_version: eE(1),
+    status: eU([
+        "success",
+        "error"
+    ]),
+    action: eU([
+        "optical_on",
+        "optical_off",
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
+    ]),
+    desired_enabled: eZ(eg()),
+    tx_enabled: eZ(eg()),
+    actor_state: eU([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
+    hardware_ready: eg(),
+    discovery_active: eg(),
+    cleanup_pending: eg(),
+    error: eZ(ez({
+        code: eu(),
+        message: eu()
+    }))
+}), ez({
+    schema_version: eE(1),
+    version: eu(),
+    features: eA(eu(), eg()),
+    functions: ez({
+        optical: eg(),
+        omci_mib: eg(),
+        mqtt_telemetry: eg(),
+        hl202_management: eg(),
+        cwmp: eg()
+    }),
+    pages: ez({
+        status: eg(),
+        config: eg(),
+        sync: eg(),
+        hl202: eg(),
+        hardware: eg(),
+        calibration: eg(),
+        about: eg()
+    }),
+    adapters: ew(ez({
+        id: eu(),
+        name: eu()
+    }))
+});
 let eI = eu(), eV = eh(), eH = eg(), eq = eN(eI), eW = eN(eV), eJ = eN(eH);
 const eK = eU([
     "waiting",
@@ -1591,45 +1643,6 @@ ez({
     params: [
         "action",
         "target"
-    ],
-    reject: !0
-}), ez({
-    schema_version: eE(1),
-    status: eU([
-        "success",
-        "error"
-    ]),
-    action: eU([
-        "optical_on",
-        "optical_off",
-        "optical_status",
-        "optical_reload",
-        "optical_reinitialize",
-        "optical_shutdown"
-    ]),
-    desired_enabled: eZ(eg()),
-    tx_enabled: eZ(eg()),
-    actor_state: eU([
-        "enabled",
-        "disabled",
-        "unknown"
-    ]),
-    hardware_ready: eg(),
-    discovery_active: eg(),
-    cleanup_pending: eg(),
-    error: eZ(ez({
-        code: eu(),
-        message: eu()
-    }))
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_status",
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_set",
-    params: [
-        "enabled"
     ],
     reject: !0
 }), ez({

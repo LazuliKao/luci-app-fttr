@@ -1092,9 +1092,34 @@ eV({
         data: ez()
     })
 ]);
-let e2 = eV({
-    id: ez(),
-    name: ez()
+const e2 = eV({
+    schema_version: eH(1),
+    status: eZ([
+        "success",
+        "error"
+    ]),
+    action: eZ([
+        "optical_on",
+        "optical_off",
+        "optical_status",
+        "optical_reload",
+        "optical_reinitialize",
+        "optical_shutdown"
+    ]),
+    desired_enabled: eK(eA()),
+    tx_enabled: eK(eA()),
+    actor_state: eZ([
+        "enabled",
+        "disabled",
+        "unknown"
+    ]),
+    hardware_ready: eA(),
+    discovery_active: eA(),
+    cleanup_pending: eA(),
+    error: eK(eV({
+        code: ez(),
+        message: ez()
+    }))
 }), e4 = eV({
     schema_version: eH(1),
     version: ez(),
@@ -1115,13 +1140,40 @@ let e2 = eV({
         calibration: eA(),
         about: eA()
     }),
-    adapters: ex(e2)
-});
-const e5 = async ()=>e4.parse(e1(await (!t && (t = L.rpc.declare({
-        object: "luci.fttr",
+    adapters: ex(eV({
+        id: ez(),
+        name: ez()
+    }))
+}), e5 = async ()=>{
+    var e, n;
+    let i, r, a;
+    return (t ??= (e = L.rpc, n = {
+        getCapabilities: {
+            parse: (e)=>e4.parse(e1(e))
+        },
+        opticalStatus: e2,
+        opticalSet: e2
+    }, i = e.declare({
+        object: "fttr",
         method: "get_capabilities",
         reject: !0
-    })), t()))), e3 = [
+    }), r = e.declare({
+        object: "fttr",
+        method: "optical_status",
+        reject: !0
+    }), a = e.declare({
+        object: "fttr",
+        method: "optical_set",
+        params: [
+            "enabled"
+        ],
+        reject: !0
+    }), {
+        getCapabilities: async ()=>n.getCapabilities.parse(await i()),
+        opticalStatus: async ()=>n.opticalStatus.parse(await r()),
+        opticalSet: async (e)=>n.opticalSet.parse(await a(e.enabled))
+    })).getCapabilities();
+}, e3 = [
     "INTERNET",
     "OTHER",
     "IPTV",
@@ -2047,45 +2099,6 @@ const tF = async ()=>tW.parse(e1(await tU())), tG = async ()=>tA.parse(await tZ(
         restarting: eH(!0)
     }).parse(e1(await tH()));
 eV({
-    schema_version: eH(1),
-    status: eZ([
-        "success",
-        "error"
-    ]),
-    action: eZ([
-        "optical_on",
-        "optical_off",
-        "optical_status",
-        "optical_reload",
-        "optical_reinitialize",
-        "optical_shutdown"
-    ]),
-    desired_enabled: eK(eA()),
-    tx_enabled: eK(eA()),
-    actor_state: eZ([
-        "enabled",
-        "disabled",
-        "unknown"
-    ]),
-    hardware_ready: eA(),
-    discovery_active: eA(),
-    cleanup_pending: eA(),
-    error: eK(eV({
-        code: ez(),
-        message: ez()
-    }))
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_status",
-    reject: !0
-}), L.rpc.declare({
-    object: "luci.fttr",
-    method: "optical_set",
-    params: [
-        "enabled"
-    ],
-    reject: !0
-}), eV({
     status: eZ([
         "success",
         "error"
