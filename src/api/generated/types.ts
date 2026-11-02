@@ -2,7 +2,9 @@
 export type AdapterCapability = { id: string, name: string, };
 export type Capabilities = { schema_version: 1, version: string, features: { [key in string]: boolean }, functions: { [key in string]: boolean }, pages: { [key in string]: boolean }, adapters: Array<AdapterCapability>, };
 export type EmptyRequest = Record<symbol, never>;
+export type OpticalAction = "optical_on" | "optical_off" | "optical_status" | "optical_reload" | "optical_reinitialize" | "optical_shutdown";
 export type OpticalError = { code: string, message: string, };
-export type OpticalReply = { schema_version: 1, status: "success" | "error", action: "optical_on" | "optical_off" | "optical_status" | "optical_reload" | "optical_reinitialize" | "optical_shutdown", desired_enabled: boolean | null, tx_enabled: boolean | null, actor_state: OpticalState, hardware_ready: boolean, discovery_active: boolean, cleanup_pending: boolean, error: OpticalError | null, };
+export type OpticalReply = { schema_version: 1, status: ReplyStatus, action: OpticalAction, desired_enabled: boolean | null, tx_enabled: boolean | null, actor_state: OpticalState, hardware_ready: boolean, discovery_active: boolean, cleanup_pending: boolean, error: OpticalError | null, };
 export type OpticalSetRequest = { enabled: boolean, };
 export type OpticalState = "enabled" | "disabled" | "unknown";
+export type ReplyStatus = "success" | "error";

@@ -124,7 +124,8 @@ cargo run --locked --manifest-path h3c-fttr-tools/src/crates/fttr-api/Cargo.toml
 ```
 
 For another layout, append `--out-dir FRONTEND/src/api/generated`. Regenerate
-rather than edit these files, then run `pnpm typecheck` and `pnpm test`.
+these files, then run `pnpm sdk:check`, `pnpm typecheck` and `pnpm test`.
+Set `FTTR_BACKEND_DIR` for a non-sibling backend when using `pnpm sdk:check`.
 
 ```sh
 pnpm install
