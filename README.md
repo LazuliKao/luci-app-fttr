@@ -141,6 +141,13 @@ Both repositories run the pipeline in CI and reject stale package JavaScript.
 Use `FTTR_BACKEND_REF` / `FTTR_FRONTEND_REF` repository variables (or manual workflow
 inputs) to select the paired repository revision; pin a commit SHA for repeatable CI.
 
+After `pnpm check`, run `FTTR_SSH_TARGET=root@router pnpm test:device` against an
+installed router (PowerShell: set `$env:FTTR_SSH_TARGET` first). This read-only
+check validates live query replies with the frontend's actual validators and
+compares native methods, the installed ACL and built page hashes. Live replies
+stay in memory; failures report schema paths without device identifiers. It does
+not exercise write actions or browser rendering.
+
 ```sh
 pnpm install
 pnpm build

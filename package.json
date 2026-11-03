@@ -21,6 +21,7 @@
 		"check": "pnpm sdk:check && pnpm typecheck && pnpm test && pnpm build",
 		"test": "tsx --test tests/config.test.ts tests/npu.test.ts tests/sdk.test.ts tests/schema-codegen.test.mjs",
 		"test:luci": "tsx --test tests/luci-form.test.ts",
+		"test:device": "tsx --test tests/device-contracts.test.ts",
 		"dev:remote": "dotenvx run -- luci-types dev",
 		"prepare": "husky"
 	},
