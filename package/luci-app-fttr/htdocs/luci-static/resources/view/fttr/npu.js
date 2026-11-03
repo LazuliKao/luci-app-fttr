@@ -36,14 +36,14 @@ function o(e, t) {
         ...n
     };
     for (let [e, t] of Object.entries(o))e.startsWith("on") && "function" == typeof t ? (i[e] = t, delete o[e]) : "boolean" == typeof t && (t ? o[e] = e : delete o[e]);
-    let l = Object.keys(o).length > 0 ? a.length > 1 ? E(e, o, a) : E(e, o, a[0]) : a.length > 1 ? E(e, {}, a) : E(e, {}, a[0]);
+    let d = Object.keys(o).length > 0 ? a.length > 1 ? E(e, o, a) : E(e, o, a[0]) : a.length > 1 ? E(e, {}, a) : E(e, {}, a[0]);
     for (let [e, t] of Object.entries(i)){
         let r = e.slice(2).toLowerCase();
-        l.addEventListener(r, t);
+        d.addEventListener(r, t);
     }
-    return l;
+    return d;
 }
-function l(e, t, r) {
+function d(e, t, r) {
     function n(r, n) {
         if (r._zod || Object.defineProperty(r, "_zod", {
             value: {
@@ -82,7 +82,7 @@ function l(e, t, r) {
 Object.freeze({
     status: "aborted"
 }), Symbol("zod_brand");
-class d extends Error {
+class l extends Error {
     constructor(){
         super("Encountered Promise during synchronous parse. Use .parseAsync() instead.");
     }
@@ -163,7 +163,7 @@ const x = (e, t)=>{
         value: ()=>e.message,
         enumerable: !1
     });
-}, S = l("$ZodError", x), P = l("$ZodError", x, {
+}, S = d("$ZodError", x), P = d("$ZodError", x, {
     Parent: Error
 }), $ = (r = P, (e, t, n, a)=>{
     let i = n ? Object.assign(n, {
@@ -174,7 +174,7 @@ const x = (e, t)=>{
         value: t,
         issues: []
     }, i);
-    if (s instanceof Promise) throw new d();
+    if (s instanceof Promise) throw new l();
     if (s.issues.length) {
         let e = new (a?.Err ?? r)(s.issues.map((e)=>j(e, i, u())));
         throw m(e, a?.callee), e;
@@ -204,7 +204,7 @@ const x = (e, t)=>{
         value: t,
         issues: []
     }, n);
-    if (i instanceof Promise) throw new d();
+    if (i instanceof Promise) throw new l();
     return i.issues.length ? {
         success: !1,
         error: new (a ?? S)(i.issues.map((e)=>j(e, n, u())))
@@ -232,7 +232,7 @@ const x = (e, t)=>{
     major: 4,
     minor: 3,
     patch: 6
-}, U = l("$ZodType", (e, t)=>{
+}, U = d("$ZodType", (e, t)=>{
     var r;
     e ?? (e = {}), e._zod.def = t, e._zod.bag = e._zod.bag || {}, e._zod.version = Z;
     let n = [
@@ -250,7 +250,7 @@ const x = (e, t)=>{
                     if (!i._zod.def.when(e)) continue;
                 } else if (a) continue;
                 let t = e.issues.length, s = i._zod.check(e);
-                if (s instanceof Promise && r?.async === !1) throw new d();
+                if (s instanceof Promise && r?.async === !1) throw new l();
                 if (n || s instanceof Promise) n = (n ?? Promise.resolve()).then(async ()=>{
                     await s, e.issues.length !== t && (a || (a = w(e, t)));
                 });
@@ -264,7 +264,7 @@ const x = (e, t)=>{
             if (w(r)) return r.aborted = !0, r;
             let s = t(a, n, i);
             if (s instanceof Promise) {
-                if (!1 === i.async) throw new d();
+                if (!1 === i.async) throw new l();
                 return s.then((t)=>e._zod.parse(t, i));
             }
             return e._zod.parse(s, i);
@@ -283,7 +283,7 @@ const x = (e, t)=>{
             }
             let s = e._zod.parse(a, i);
             if (s instanceof Promise) {
-                if (!1 === i.async) throw new d();
+                if (!1 === i.async) throw new l();
                 return s.then((e)=>t(e, n, i));
             }
             return t(s, n, i);
@@ -309,7 +309,7 @@ const x = (e, t)=>{
             vendor: "zod",
             version: 1
         }));
-}), M = l("$ZodString", (e, t)=>{
+}), q = d("$ZodString", (e, t)=>{
     var r;
     let n;
     U.init(e, t), e._zod.pattern = [
@@ -325,7 +325,7 @@ const x = (e, t)=>{
             inst: e
         }), r;
     };
-}), q = l("$ZodNumber", (e, t)=>{
+}), M = d("$ZodNumber", (e, t)=>{
     U.init(e, t), e._zod.pattern = e._zod.bag.pattern ?? N, e._zod.parse = (r, n)=>{
         if (t.coerce) try {
             r.value = Number(r.value);
@@ -343,7 +343,7 @@ const x = (e, t)=>{
             } : {}
         }), r;
     };
-}), D = l("$ZodBoolean", (e, t)=>{
+}), D = d("$ZodBoolean", (e, t)=>{
     U.init(e, t), e._zod.pattern = R, e._zod.parse = (r, n)=>{
         if (t.coerce) try {
             r.value = !!r.value;
@@ -356,7 +356,7 @@ const x = (e, t)=>{
             inst: e
         }), r;
     };
-}), F = l("$ZodNull", (e, t)=>{
+}), F = d("$ZodNull", (e, t)=>{
     U.init(e, t), e._zod.pattern = T, e._zod.values = new Set([
         null
     ]), e._zod.parse = (t, r)=>{
@@ -368,13 +368,13 @@ const x = (e, t)=>{
             inst: e
         }), t;
     };
-}), B = l("$ZodUnknown", (e, t)=>{
+}), B = d("$ZodUnknown", (e, t)=>{
     U.init(e, t), e._zod.parse = (e)=>e;
 });
 function I(e, t, r) {
     e.issues.length && t.issues.push(...k(r, e.issues)), t.value[r] = e.value;
 }
-const W = l("$ZodArray", (e, t)=>{
+const W = d("$ZodArray", (e, t)=>{
     U.init(e, t), e._zod.parse = (r, n)=>{
         let a = r.value;
         if (!Array.isArray(a)) return r.issues.push({
@@ -402,7 +402,7 @@ function J(e, t, r, n, a) {
     }
     void 0 === e.value ? r in n && (t.value[r] = void 0) : t.value[r] = e.value;
 }
-const K = l("$ZodObject", (e, t)=>{
+const K = d("$ZodObject", (e, t)=>{
     var r;
     let n;
     U.init(e, t);
@@ -461,23 +461,23 @@ const K = l("$ZodObject", (e, t)=>{
             inst: e
         }), t;
         t.value = {};
-        let o = [], l = n.shape;
+        let o = [], d = n.shape;
         for (let e of n.keys){
-            let n = l[e], i = "optional" === n._zod.optout, s = n._zod.run({
+            let n = d[e], i = "optional" === n._zod.optout, s = n._zod.run({
                 value: a[e],
                 issues: []
             }, r);
             s instanceof Promise ? o.push(s.then((r)=>J(r, t, e, a, i))) : J(s, t, e, a, i);
         }
         return s ? function(e, t, r, n, a, i) {
-            let s = [], o = a.keySet, l = a.catchall._zod, d = l.def.type, c = "optional" === l.optout;
+            let s = [], o = a.keySet, d = a.catchall._zod, l = d.def.type, c = "optional" === d.optout;
             for(let a in t){
                 if (o.has(a)) continue;
-                if ("never" === d) {
+                if ("never" === l) {
                     s.push(a);
                     continue;
                 }
-                let i = l.run({
+                let i = d.run({
                     value: t[a],
                     issues: []
                 }, n);
@@ -502,7 +502,7 @@ function V(e, t, r, n) {
         errors: e.map((e)=>e.issues.map((e)=>j(e, n, u())))
     }), t);
 }
-const X = l("$ZodUnion", (e, t)=>{
+const X = d("$ZodUnion", (e, t)=>{
     U.init(e, t), g(e._zod, "optin", ()=>t.options.some((e)=>"optional" === e._zod.optin) ? "optional" : void 0), g(e._zod, "optout", ()=>t.options.some((e)=>"optional" === e._zod.optout) ? "optional" : void 0), g(e._zod, "values", ()=>{
         if (t.options.every((e)=>e._zod.values)) return new Set(t.options.flatMap((e)=>Array.from(e._zod.values)));
     }), g(e._zod, "pattern", ()=>{
@@ -528,7 +528,7 @@ const X = l("$ZodUnion", (e, t)=>{
         }
         return s ? Promise.all(o).then((t)=>V(t, a, e, i)) : V(o, a, e, i);
     };
-}), G = l("$ZodRecord", (e, t)=>{
+}), G = d("$ZodRecord", (e, t)=>{
     U.init(e, t), e._zod.parse = (r, n)=>{
         let a = r.value;
         if (!function(e) {
@@ -547,9 +547,9 @@ const X = l("$ZodUnion", (e, t)=>{
         if (s) {
             let o;
             r.value = {};
-            let l = new Set();
+            let d = new Set();
             for (let e of s)if ("string" == typeof e || "number" == typeof e || "symbol" == typeof e) {
-                l.add("number" == typeof e ? e.toString() : e);
+                d.add("number" == typeof e ? e.toString() : e);
                 let s = t.valueType._zod.run({
                     value: a[e],
                     issues: []
@@ -558,7 +558,7 @@ const X = l("$ZodUnion", (e, t)=>{
                     t.issues.length && r.issues.push(...k(e, t.issues)), r.value[e] = t.value;
                 })) : (s.issues.length && r.issues.push(...k(e, s.issues)), r.value[e] = s.value);
             }
-            for(let e in a)l.has(e) || (o = o ?? []).push(e);
+            for(let e in a)d.has(e) || (o = o ?? []).push(e);
             o && o.length > 0 && r.issues.push({
                 code: "unrecognized_keys",
                 input: a,
@@ -593,17 +593,17 @@ const X = l("$ZodUnion", (e, t)=>{
                 });
                 continue;
             }
-            let l = t.valueType._zod.run({
+            let d = t.valueType._zod.run({
                 value: a[s],
                 issues: []
             }, n);
-            l instanceof Promise ? i.push(l.then((e)=>{
+            d instanceof Promise ? i.push(d.then((e)=>{
                 e.issues.length && r.issues.push(...k(s, e.issues)), r.value[o.value] = e.value;
-            })) : (l.issues.length && r.issues.push(...k(s, l.issues)), r.value[o.value] = l.value);
+            })) : (d.issues.length && r.issues.push(...k(s, d.issues)), r.value[o.value] = d.value);
         }
         return i.length ? Promise.all(i).then(()=>r) : r;
     };
-}), H = l("$ZodLiteral", (e, t)=>{
+}), H = d("$ZodLiteral", (e, t)=>{
     if (U.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let r = new Set(t.values);
     e._zod.values = r, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? b(e) : e ? b(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (n, a)=>{
@@ -622,7 +622,7 @@ function Q(e, t) {
         value: void 0
     } : e;
 }
-const Y = l("$ZodOptional", (e, t)=>{
+const Y = d("$ZodOptional", (e, t)=>{
     U.init(e, t), e._zod.optin = "optional", e._zod.optout = "optional", g(e._zod, "values", ()=>t.innerType._zod.values ? new Set([
             ...t.innerType._zod.values,
             void 0
@@ -672,7 +672,7 @@ Symbol("ZodOutput"), Symbol("ZodInput");
         return this._map.has(e);
     }
 }());
-const ee = l("ZodMiniType", (e, t)=>{
+const ee = d("ZodMiniType", (e, t)=>{
     if (!e._zod) throw Error("Uninitialized schema in ZodMiniType.");
     U.init(e, t), e.def = t, e.type = t.type, e.parse = (t, r)=>$(e, t, r, {
             callee: e.parse
@@ -698,8 +698,8 @@ const ee = l("ZodMiniType", (e, t)=>{
         let n;
         return n = new e._zod.constr(t ?? e._zod.def), (!t || r?.parent) && (n._zod.parent = e), n;
     }, e.brand = ()=>e, e.register = (t, r)=>(t.add(e, r), e), e.apply = (t)=>t(e);
-}), et = l("ZodMiniString", (e, t)=>{
-    M.init(e, t), ee.init(e, t);
+}), et = d("ZodMiniString", (e, t)=>{
+    q.init(e, t), ee.init(e, t);
 });
 function er(e) {
     return new et({
@@ -707,8 +707,8 @@ function er(e) {
         ...y(e)
     });
 }
-const en = l("ZodMiniNumber", (e, t)=>{
-    q.init(e, t), ee.init(e, t);
+const en = d("ZodMiniNumber", (e, t)=>{
+    M.init(e, t), ee.init(e, t);
 });
 function ea(e) {
     return new en({
@@ -717,7 +717,7 @@ function ea(e) {
         ...y(e)
     });
 }
-const ei = l("ZodMiniBoolean", (e, t)=>{
+const ei = d("ZodMiniBoolean", (e, t)=>{
     D.init(e, t), ee.init(e, t);
 });
 function es(e) {
@@ -726,18 +726,18 @@ function es(e) {
         ...y(e)
     });
 }
-const eo = l("ZodMiniNull", (e, t)=>{
+const eo = d("ZodMiniNull", (e, t)=>{
     F.init(e, t), ee.init(e, t);
 });
-function el(e) {
+function ed(e) {
     return new eo({
         type: "null",
         ...y(e)
     });
 }
-const ed = l("ZodMiniUnknown", (e, t)=>{
+const el = d("ZodMiniUnknown", (e, t)=>{
     B.init(e, t), ee.init(e, t);
-}), ec = l("ZodMiniArray", (e, t)=>{
+}), ec = d("ZodMiniArray", (e, t)=>{
     W.init(e, t), ee.init(e, t);
 });
 function eu(e, t) {
@@ -747,7 +747,7 @@ function eu(e, t) {
         ...y(t)
     });
 }
-const ep = l("ZodMiniObject", (e, t)=>{
+const ep = d("ZodMiniObject", (e, t)=>{
     K.init(e, t), ee.init(e, t), g(e, "shape", ()=>t.shape);
 });
 function e_(e, t) {
@@ -757,7 +757,7 @@ function e_(e, t) {
         ...y(t)
     });
 }
-const ef = l("ZodMiniUnion", (e, t)=>{
+const ef = d("ZodMiniUnion", (e, t)=>{
     X.init(e, t), ee.init(e, t);
 });
 function eh(e, t) {
@@ -767,7 +767,7 @@ function eh(e, t) {
         ...y(t)
     });
 }
-const eg = l("ZodMiniRecord", (e, t)=>{
+const eg = d("ZodMiniRecord", (e, t)=>{
     G.init(e, t), ee.init(e, t);
 });
 function em(e, t, r) {
@@ -778,7 +778,7 @@ function em(e, t, r) {
         ...y(r)
     });
 }
-const ev = l("ZodMiniLiteral", (e, t)=>{
+const ev = d("ZodMiniLiteral", (e, t)=>{
     H.init(e, t), ee.init(e, t);
 });
 function eb(e, t) {
@@ -790,7 +790,7 @@ function eb(e, t) {
         ...y(t)
     });
 }
-const ey = l("ZodMiniOptional", (e, t)=>{
+const ey = d("ZodMiniOptional", (e, t)=>{
     Y.init(e, t), ee.init(e, t);
 });
 function ew(e) {
@@ -822,15 +822,15 @@ const ek = eh([
     enabled: es(),
     listen: eh([
         er(),
-        el()
+        ed()
     ]),
     path: eh([
         er(),
-        el()
+        ed()
     ]),
     error: eh([
         er(),
-        el()
+        ed()
     ])
 }), ex = e_({
     vlan: ea(),
@@ -843,7 +843,7 @@ const ek = eh([
     cwmp_id: er(),
     mqtt_target: eh([
         er(),
-        el()
+        ed()
     ]),
     binding_source: er(),
     method: er(),
@@ -855,40 +855,40 @@ const ek = eh([
     updated_at: ea(),
     settings_verified_at: eh([
         ea(),
-        el()
+        ed()
     ]),
     selected_vlan: eh([
         ea(),
-        el()
+        ed()
     ]),
     last_inform: eh([
         ea(),
-        el()
+        ed()
     ]),
     expected_acs_url: er(),
     last_error: eh([
         er(),
-        el()
+        ed()
     ]),
     transport_epoch: ea(),
     completed_authorization: ea(),
     connection_request_enabled: eh([
         es(),
-        el()
+        ed()
     ]),
     inflight: es(),
     persistence_error: eh([
         er(),
-        el()
+        ed()
     ]),
     link_identity_error: eh([
         er(),
-        el()
+        ed()
     ]),
     listener: ej,
     mqtt_last_seen: eh([
         ea(),
-        el()
+        ed()
     ]),
     desired: ew(ex),
     endpoint_notice: ew(er()),
@@ -926,7 +926,7 @@ const ek = eh([
     generation: ea(),
     error: eh([
         er(),
-        el()
+        ed()
     ])
 });
 e_({
@@ -977,7 +977,7 @@ eh([
 ]), e_({
     data: er()
 });
-const eM = e_({
+const eq = e_({
     acs: es(),
     mqtt: es(),
     npu: es(),
@@ -985,7 +985,7 @@ const eM = e_({
     "device-hwtc": es(),
     "device-star": es(),
     "device-zte": es()
-}), eq = e_({
+}), eM = e_({
     optical: es(),
     bridge_offload: es(),
     omci_mib: es(),
@@ -1004,8 +1004,8 @@ const eM = e_({
 }), eD = e_({
     schema_version: eb(1),
     version: er(),
-    features: eM,
-    functions: eq,
+    features: eq,
+    functions: eM,
     pages: eL,
     adapters: eu(e$)
 }), eF = eh([
@@ -1025,7 +1025,7 @@ const eM = e_({
     enabled: es(),
     reason: ew(eh([
         er(),
-        el()
+        ed()
     ])),
     revision: ew(er()),
     vlan: ew(ea()),
@@ -1041,11 +1041,11 @@ const eM = e_({
     optical_online: es(),
     last_inform: eh([
         ea(),
-        el()
+        ed()
     ]),
     age_seconds: eh([
         ea(),
-        el()
+        ed()
     ])
 }), eV = eh([
     eb("waiting"),
@@ -1078,7 +1078,7 @@ const eM = e_({
     id: er(),
     name: ew(eh([
         er(),
-        el()
+        ed()
     ])),
     kind: eX,
     service_type: er(),
@@ -1090,7 +1090,7 @@ const eM = e_({
     operation_id: ew(ea()),
     task_id: ew(eh([
         ea(),
-        el()
+        ed()
     ])),
     updated_at: ew(ea()),
     changes: ew(eu(eG))
@@ -1106,14 +1106,14 @@ const eM = e_({
     requested: er(),
     contract: eh([
         er(),
-        el()
+        ed()
     ]),
     reason: er(),
     cache_hit: es(),
     schema: er(),
     capabilities: eh([
         eY,
-        el()
+        ed()
     ])
 }), e1 = e_({
     parent: ea(),
@@ -1123,14 +1123,14 @@ const eM = e_({
     kind: er(),
     baseline: eh([
         eu(ea()),
-        el()
+        ed()
     ])
 }), e2 = e_({
     state: er(),
     reason: ew(er()),
     task_id: ew(eh([
         ea(),
-        el()
+        ed()
     ])),
     instance: ew(ea()),
     cwmp_id: ew(er())
@@ -1153,11 +1153,11 @@ const eM = e_({
     owned: eu(ea()),
     pending: eh([
         er(),
-        el()
+        ed()
     ]),
     pending_instance: eh([
         ea(),
-        el()
+        ed()
     ])
 }), e8 = eh([
     eb("waiting"),
@@ -1193,7 +1193,7 @@ const eM = e_({
     started_at: ew(ea()),
     completed_at: ew(eh([
         ea(),
-        el()
+        ed()
     ])),
     current_revision: ew(es()),
     management_fresh: ew(es()),
@@ -1227,30 +1227,30 @@ const eM = e_({
     device: er(),
     name: eh([
         er(),
-        el()
+        ed()
     ]),
     group: eh([
         er(),
-        el()
+        ed()
     ]),
     group_name: eh([
         er(),
-        el()
+        ed()
     ]),
     template: eh([
         er(),
-        el()
+        ed()
     ]),
     template_name: eh([
         er(),
-        el()
+        ed()
     ]),
     optical_sn: er(),
     adapter: er(),
     omci_management: eW,
     management: eh([
         eK,
-        el()
+        ed()
     ]),
     acs_bootstrap: eE,
     provisioning: e9,
@@ -1289,44 +1289,44 @@ const eM = e_({
     state: tt,
     error: eh([
         er(),
-        el()
+        ed()
     ]),
     inflight: es(),
     ready: es(),
     desired_version: eh([
         er(),
-        el()
+        ed()
     ]),
     applied_version: eh([
         er(),
-        el()
+        ed()
     ]),
     next_retry_at: ea(),
     attempts: ea(),
     desired: eh([
         tr,
-        el()
+        ed()
     ]),
     applied: eh([
         tr,
-        el()
+        ed()
     ]),
     previous: eh([
         tr,
-        el()
+        ed()
     ]),
     plan: eu(tn)
 }), ti = e_({
     desired: eh([
         ex,
-        el()
+        ed()
     ]),
     state: er()
 }), ts = e_({
     id: er(),
     name: eh([
         er(),
-        el()
+        ed()
     ]),
     template: er()
 }), to = e_({
@@ -1338,7 +1338,7 @@ const eM = e_({
     interval_minutes: ea(),
     error: eh([
         er(),
-        el()
+        ed()
     ]),
     devices: eu(te),
     management_network: ta,
@@ -1348,67 +1348,67 @@ const eM = e_({
     onu_pins: ew(em(er(), ea())),
     config_error: ew(eh([
         er(),
-        el()
+        ed()
     ]))
 });
 eh([
     to,
     eZ
 ]);
-const tl = e_({
+const td = e_({
     enabled: eh([
         es(),
-        el()
+        ed()
     ]),
     routed_enabled: eh([
         es(),
-        el()
+        ed()
     ]),
     bridge_enabled: eh([
         es(),
-        el()
+        ed()
     ]),
     engine_attached: eh([
         es(),
-        el()
+        ed()
     ]),
     forwarding_verified: eh([
         es(),
-        el()
+        ed()
     ])
-}), td = e_({
+}), tl = e_({
     entity_id: ea(),
     port_id: eh([
         ea(),
-        el()
+        ed()
     ])
 }), tc = e_({
     entity_id: ea(),
     filter_list_hex: eh([
         er(),
-        el()
+        ed()
     ]),
     forward_operation: eh([
         ea(),
-        el()
+        ed()
     ]),
     number_of_entries: eh([
         ea(),
-        el()
+        ed()
     ])
 }), tu = e_({
     entity_id: ea(),
     received_frame_rules_hex: eh([
         eu(er()),
-        el()
+        ed()
     ]),
     error: eh([
         er(),
-        el()
+        ed()
     ])
 }), tp = e_({
     age_seconds: ea(),
-    gem_ports: eu(td),
+    gem_ports: eu(tl),
     vlan_filters: eu(tc),
     vlan_operations: eu(tu)
 }), t_ = e_({
@@ -1416,49 +1416,49 @@ const tl = e_({
     unit: er(),
     reason: eh([
         er(),
-        el()
+        ed()
     ]),
     raw: eh([
         er(),
-        el()
+        ed()
     ]),
     age_seconds: eh([
         ea(),
-        el()
+        ed()
     ])
 }), tf = e_({
     interface: er(),
     gem_ports: eh([
         eu(ea()),
-        el()
+        ed()
     ]),
     vlan_id: eh([
         ea(),
-        el()
+        ed()
     ]),
     onu_inventory: eh([
         tp,
-        el()
+        ed()
     ]),
     tx_bytes: eh([
         ea(),
-        el()
+        ed()
     ]),
     rx_bytes: eh([
         ea(),
-        el()
+        ed()
     ]),
     current_tx_kbps: eh([
         ea(),
-        el()
+        ed()
     ]),
     current_rx_kbps: eh([
         ea(),
-        el()
+        ed()
     ]),
     olt_channel_gem: ew(ea()),
     forwarding_verified: ew(es()),
-    offload: tl,
+    offload: td,
     measurements: em(er(), t_)
 });
 e_({});
@@ -1474,11 +1474,11 @@ const th = e_({
     mqtt_mac: er(),
     optical_sn: eh([
         er(),
-        el()
+        ed()
     ]),
     onu_id: eh([
         ea(),
-        el()
+        ed()
     ]),
     binding_generation: er(),
     last_seen: ea(),
@@ -1514,7 +1514,7 @@ eh([
         operation: tb,
         accounts: eh([
             eu(th),
-            el()
+            ed()
         ]),
         write_status: ty
     }),
@@ -1523,21 +1523,44 @@ eh([
         error: tw
     })
 ]);
-const tk = eh([
-    e_({
-        optical_sn: er(),
-        onu_id: ea(),
-        binding_generation: er()
-    }),
-    e_({
-        mqtt_mac: er(),
-        binding_generation: er()
-    })
+const tk = e_({
+    optical_sn: er(),
+    onu_id: ea(),
+    binding_generation: er()
+}), tz = e_({
+    mqtt_mac: er(),
+    binding_generation: er()
+}), tj = eh([
+    tk,
+    tz
 ]);
 e_({
-    target: tk
+    target: tj
 });
-const tz = e_({
+const tx = eh([
+    e_({
+        kind: eb("exec"),
+        script: er(),
+        timeout_seconds: ea()
+    }),
+    e_({
+        kind: eb("accounts_read")
+    }),
+    e_({
+        kind: eb("account_set_password"),
+        entry: ea(),
+        password: er()
+    }),
+    e_({
+        kind: eb("account_set_active"),
+        entry: ea(),
+        active: es()
+    })
+]), tS = e_({
+    schema_version: ea(),
+    target: tk,
+    action: tx
+}), tP = e_({
     optical_sn: er(),
     onu_id: ea(),
     model: er(),
@@ -1545,11 +1568,11 @@ const tz = e_({
     can_execute: es(),
     mqtt: eh([
         tg,
-        el()
+        ed()
     ]),
     report_revision: eh([
         ea(),
-        el()
+        ed()
     ])
 });
 eh([
@@ -1562,66 +1585,84 @@ eh([
         error: tw
     })
 ]), e_({
-    target: tk,
+    target: tj,
     script: er(),
     timeout_seconds: ea()
 });
-const tj = eh([
+const tE = eh([
     e_({
         schema_version: eb(1),
-        devices: eu(tz),
+        devices: eu(tP),
         sources: eu(tg)
     }),
     e_({
         schema_version: ea(),
         error: tw
     })
-]), tx = eh([
+]);
+eh([
+    e_({
+        method: eb("list")
+    }),
+    e_({
+        method: eb("report"),
+        target: tk
+    }),
+    e_({
+        method: eb("source_report"),
+        target: tz
+    }),
+    e_({
+        method: eb("run"),
+        request: tS
+    })
+]);
+const t$ = eh([
     eb("received"),
     eb("report_unavailable")
-]), tS = e_({
-    value: new ed({
+]), tO = e_({
+    value: new el({
         type: "unknown"
     }),
     member: er(),
     unit: eh([
         er(),
-        el()
+        ed()
     ])
-}), tP = e_({
+}), tA = e_({
     name: er(),
     bytes: ea(),
     encoding: er(),
     text: eh([
         er(),
-        el()
+        ed()
     ]),
     text_omitted: es()
-}), tE = e_({
+}), tC = e_({
     schema_version: ea(),
     compressed_bytes: ea(),
     decompressed_bytes: ea(),
-    fields: em(er(), tS),
-    members: eu(tP),
+    fields: em(er(), tO),
+    members: eu(tA),
     errors: eu(er())
-}), t$ = e_({
+}), tN = e_({
     revision: ea(),
     last_received: ea(),
     last_processed_receipt: eh([
         ea(),
-        el()
+        ed()
     ]),
     last_good: eh([
         ea(),
-        el()
+        ed()
     ]),
     error: eh([
         er(),
-        el()
+        ed()
     ]),
     report: eh([
-        tE,
-        el()
+        tC,
+        ed()
     ])
 });
 eh([
@@ -1629,17 +1670,17 @@ eh([
         schema_version: eb(1),
         target: tg,
         report: eh([
-            t$,
-            el()
+            tN,
+            ed()
         ]),
-        state: tx
+        state: t$
     }),
     e_({
         schema_version: eb(1),
         target: tg,
         report: eh([
-            t$,
-            el()
+            tN,
+            ed()
         ]),
         read_only: eb(!0)
     }),
@@ -1648,22 +1689,22 @@ eh([
         error: tw
     })
 ]), e_({
-    target: tk
+    target: tj
 }), e_({
-    target: tk,
+    target: tj,
     kind: ek,
     entry: ea(),
     password: er(),
     active: es()
 });
-const tO = e_({
+const tR = e_({
     accepted: ea(),
     rejected: ea(),
     read_errors: ea(),
     handled: ea(),
     max_intake_us: ea(),
     max_handler_us: ea()
-}), tA = eb("pending"), tC = e_({
+}), tT = eb("pending"), tZ = e_({
     phase: eh([
         eb("starting"),
         eb("upload"),
@@ -1672,15 +1713,15 @@ const tO = e_({
     received: ea(),
     expected: eh([
         ea(),
-        el()
+        ed()
     ])
-}), tN = eb("ready"), tR = eh([
+}), tU = eb("ready"), tq = eh([
     e_({
-        status: tA,
-        progress: ew(tC)
+        status: tT,
+        progress: ew(tZ)
     }),
     e_({
-        status: tN,
+        status: tU,
         chunk: ea(),
         chunks: ea(),
         bytes: ea(),
@@ -1688,13 +1729,13 @@ const tO = e_({
     })
 ]);
 eh([
-    tR,
+    tq,
     eZ
 ]);
-const tT = e_({
-    status: tA,
+const tM = e_({
+    status: tT,
     job: er()
-}), tZ = e_({
+}), tL = e_({
     released: es()
 });
 e_({
@@ -1703,10 +1744,10 @@ e_({
     job: er(),
     chunk: ea()
 }), eh([
-    tT,
+    tM,
     eZ
 ]);
-const tU = e_({
+const tD = e_({
     accepting: es(),
     running: ea(),
     stored: ea(),
@@ -1715,23 +1756,23 @@ const tU = e_({
     stored_limit: ea(),
     bytes_limit: ea(),
     result_bytes_limit: ea()
-}), tM = e_({
+}), tF = e_({
     mac: er(),
     ip: er(),
     band: er(),
     rssi_dbm: eh([
         ea(),
-        el()
+        ed()
     ]),
     rx_rate_mbps: eh([
         ea(),
-        el()
+        ed()
     ]),
     tx_rate_mbps: eh([
         ea(),
-        el()
+        ed()
     ])
-}), tq = eh([
+}), tB = eh([
     eb("unknown"),
     eb("octets"),
     eb("string"),
@@ -1742,12 +1783,12 @@ const tU = e_({
     eb("bit_field"),
     eb("enumeration"),
     eb("counter")
-]), tL = e_({
+]), tI = e_({
     id: er(),
     url: er()
-}), tD = e_({
+}), tW = e_({
     name: er(),
-    kind: tq,
+    kind: tB,
     index: ea(),
     mask: ea(),
     size: ea(),
@@ -1759,10 +1800,10 @@ const tU = e_({
     deprecated: es(),
     default_hex: eh([
         er(),
-        el()
+        ed()
     ]),
-    reference: tL
-}), tF = eh([
+    reference: tI
+}), tJ = eh([
     e_({
         type: eb("unsigned"),
         value: ea()
@@ -1779,7 +1820,7 @@ const tU = e_({
         type: eb("text"),
         value: eh([
             er(),
-            el()
+            ed()
         ])
     }),
     e_({
@@ -1790,51 +1831,51 @@ const tU = e_({
         type: eb("table_length"),
         bytes: ea()
     })
-]), tB = e_({
+]), tK = e_({
     raw_hex: er(),
-    value: tF,
+    value: tJ,
     sequences: eu(ea())
-}), tI = e_({
-    definition: tD,
+}), tV = e_({
+    definition: tW,
     value: eh([
-        tF,
-        el()
+        tJ,
+        ed()
     ]),
-    observations: eu(tB)
-}), tW = eh([
+    observations: eu(tK)
+}), tX = eh([
     eb("layout"),
     eb("name_only"),
     eb("unknown")
-]), tJ = e_({
+]), tG = e_({
     class_id: ea(),
     name: eh([
         er(),
-        el()
+        ed()
     ]),
     entities: ea(),
     records: ea(),
-    support: tW
-}), tK = e_({
+    support: tX
+}), tH = e_({
     code: er(),
     message: er(),
     offset: ea(),
     mask: ea()
-}), tV = e_({
+}), tQ = e_({
     class_id: ea(),
     entity_id: ea(),
     name: eh([
         er(),
-        el()
+        ed()
     ]),
-    support: tW,
+    support: tX,
     reference: eh([
-        tL,
-        el()
+        tI,
+        ed()
     ]),
     sequences: eu(ea()),
-    attributes: eu(tI),
-    diagnostics: eu(tK)
-}), tX = eb("ready"), tG = e_({
+    attributes: eu(tV),
+    diagnostics: eu(tH)
+}), tY = eb("ready"), t0 = e_({
     class_id: ea(),
     entity_id: ea(),
     sequence: ea(),
@@ -1843,7 +1884,7 @@ const tU = e_({
     consumed: ea(),
     remaining_hex: er(),
     undecoded_mask: ea()
-}), tH = e_({
+}), t1 = e_({
     raw_hex: er(),
     filter_outer_priority: ea(),
     filter_outer_vid: ea(),
@@ -1860,24 +1901,24 @@ const tU = e_({
     treatment_inner_vid: ea(),
     treatment_inner_tpid_dei: ea(),
     delete_entry: es()
-}), tQ = e_({
+}), t2 = e_({
     class_id: ea(),
     entity_id: ea(),
-    attribute: tD,
+    attribute: tW,
     collected: es(),
     error: eh([
         er(),
-        el()
+        ed()
     ]),
     raw_hex: er(),
     rows: eu(er()),
-    vlan_rules: eu(tH)
-}), tY = e_({
+    vlan_rules: eu(t1)
+}), t5 = e_({
     schema_version: eb(1),
     reference_version: er(),
     onu_id: eh([
         ea(),
-        el()
+        ed()
     ]),
     uploaded_complete: es(),
     expected_records: ea(),
@@ -1887,21 +1928,21 @@ const tU = e_({
     basic_records: ea(),
     tables_requested: es(),
     tables_collected: es(),
-    classes: eu(tJ),
-    entities: eu(tV),
-    records: eu(tG),
-    tables: eu(tQ),
-    diagnostics: eu(tK)
+    classes: eu(tG),
+    entities: eu(tQ),
+    records: eu(t0),
+    tables: eu(t2),
+    diagnostics: eu(tH)
 });
 e_({
-    status: tX,
-    report: tY
+    status: tY,
+    report: t5
 }), e_({
     onu_id: ea(),
     optical_sn: er(),
     tables: es()
 });
-const t0 = eh([
+const t6 = eh([
     e_({
         status: eb("success"),
         enabled: es()
@@ -1915,7 +1956,7 @@ e_({
     enabled: es(),
     bridge: er()
 });
-const t1 = e_({
+const t8 = e_({
     index: er(),
     state: er(),
     pkt_type: er(),
@@ -1928,7 +1969,7 @@ const t1 = e_({
     counters_valid: es(),
     packets_exact: er(),
     bytes_exact: er()
-}), t2 = e_({
+}), t3 = e_({
     sampled_at_ms: ea(),
     errors: eu(er()),
     config_valid: es(),
@@ -1957,74 +1998,74 @@ const t1 = e_({
     bound_ipv6_entries: ea(),
     total_packets: ea(),
     total_bytes: ea(),
-    bound_flows: eu(t1)
-}), t5 = e_({
+    bound_flows: eu(t8)
+}), t4 = e_({
     equipment_id: eh([
         er(),
-        el()
+        ed()
     ]),
     hardware_version: eh([
         er(),
-        el()
+        ed()
     ]),
     software_images: eu(er()),
     omcc_version: eh([
         ea(),
-        el()
+        ed()
     ]),
     errors: eu(er())
-}), t6 = e_({
+}), t9 = e_({
     desired: em(er(), ea()),
     active: em(er(), ea()),
     pending_restart: es(),
     allocation_blocked: es(),
     startup_error: eh([
         er(),
-        el()
+        ed()
     ]),
     config_error: eh([
         er(),
-        el()
+        ed()
     ])
-}), t8 = eh([
+}), t7 = eh([
     eb("optical_on"),
     eb("optical_off"),
     eb("optical_status"),
     eb("optical_reload"),
     eb("optical_reinitialize"),
     eb("optical_shutdown")
-]), t3 = eh([
+]), re = eh([
     eb("success"),
     eb("error")
-]), t4 = eh([
+]), rt = eh([
     eb("enabled"),
     eb("disabled"),
     eb("unknown")
-]), t9 = e_({
+]), rr = e_({
     schema_version: eb(1),
-    status: t3,
-    action: t8,
+    status: re,
+    action: t7,
     desired_enabled: eh([
         es(),
-        el()
+        ed()
     ]),
     tx_enabled: eh([
         es(),
-        el()
+        ed()
     ]),
-    actor_state: t4,
+    actor_state: rt,
     hardware_ready: es(),
     discovery_active: es(),
     cleanup_pending: es(),
     error: eh([
         tw,
-        el()
+        ed()
     ])
 });
 e_({
     enabled: es()
 });
-const t7 = e_({
+const rn = e_({
     model: er(),
     wavelength_tx_nm: ea(),
     wavelength_rx_nm: ea(),
@@ -2032,27 +2073,27 @@ const t7 = e_({
     phy_rate_uplink_gbps: ea(),
     tx_power_dbm: eh([
         ea(),
-        el()
+        ed()
     ]),
     laser_bias_current_ma: eh([
         ea(),
-        el()
+        ed()
     ]),
     temperature_celsius: eh([
         ea(),
-        el()
+        ed()
     ]),
     vcc_voltage: eh([
         ea(),
-        el()
+        ed()
     ]),
     cdr_locked: eh([
         es(),
-        el()
+        ed()
     ]),
     tx_enabled: ew(es()),
     measurements: em(er(), t_)
-}), re = eh([
+}), ra = eh([
     eb("o1_initial"),
     eb("o2_standby"),
     eb("o3_serial_number"),
@@ -2060,15 +2101,15 @@ const t7 = e_({
     eb("o5_operation"),
     eb("o6_intermittent_lods"),
     eb("o7_emergency_stop")
-]), rt = e_({
+]), ri = e_({
     restarting: eb(!0)
-}), rr = e_({
+}), rs = e_({
     calls: ea(),
     failures: ea(),
     last_us: ea(),
     max_us: ea(),
     total_us: ea()
-}), rn = e_({
+}), ro = e_({
     port: ea(),
     interface: er(),
     carrier: es(),
@@ -2077,104 +2118,104 @@ const t7 = e_({
     onu_sn: ew(er()),
     link_state: er(),
     reserved_sn: ew(er())
-}), ra = e_({
+}), rd = e_({
     channel_2g: eh([
         ea(),
-        el()
+        ed()
     ]),
     channel_5g: eh([
         ea(),
-        el()
+        ed()
     ]),
     bandwidth_5g: eh([
         er(),
-        el()
+        ed()
     ]),
     tx_power_pct: eh([
         ea(),
-        el()
+        ed()
     ]),
     measurements: em(er(), t_)
-}), ri = e_({
+}), rl = e_({
     onu_id: ea(),
     vendor: er(),
     model: er(),
     serial_number: er(),
-    state: re,
+    state: ra,
     business_status: eA,
     management: eh([
         eK,
-        el()
+        ed()
     ]),
     provisioning: eh([
         e9,
-        el()
+        ed()
     ]),
     services: eu(eH),
     ssids: eu(eH),
     wifi_sync: e7,
     identity: eh([
-        t5,
-        el()
+        t4,
+        ed()
     ]),
     identity_age_seconds: eh([
         ea(),
-        el()
+        ed()
     ]),
     identity_current: es(),
     fiber_distance_m: eh([
         ea(),
-        el()
+        ed()
     ]),
     ranging_delay_rtd_ns: eh([
         ea(),
-        el()
+        ed()
     ]),
     equalization_delay_bits: eh([
         ea(),
-        el()
+        ed()
     ]),
     optical_rx_power_dbm: eh([
         ea(),
-        el()
+        ed()
     ]),
     optical_tx_power_dbm: eh([
         ea(),
-        el()
+        ed()
     ]),
     firmware_version: er(),
     hardware_version: er(),
     uptime_seconds: eh([
         ea(),
-        el()
+        ed()
     ]),
     data_path: tf,
-    wifi_mesh: ra,
+    wifi_mesh: rd,
     connected_clients: eh([
-        eu(tM),
-        el()
+        eu(tF),
+        ed()
     ]),
     measurements: em(er(), t_)
-}), rs = e_({
+}), rc = e_({
     id: er(),
     last_seen_sec_ago: ea(),
     last_payload_bytes: ea()
-}), ro = e_({
-    ubus: ew(em(er(), rr)),
-    jobs: ew(tU),
-    onu_pinning: ew(t6),
+}), ru = e_({
+    ubus: ew(em(er(), rs)),
+    jobs: ew(tD),
+    onu_pinning: ew(t9),
     fpga_status: er(),
     provisioning: eh([
         to,
-        el()
+        ed()
     ]),
-    optical_transceiver: t7,
-    switch_ports: eu(rn),
-    sub_gateways: eu(ri),
-    telemetry_gateways: eu(rs),
-    npu: ew(t2),
-    ipc: ew(tO)
-}), rl = eh([
+    optical_transceiver: rn,
+    switch_ports: eu(ro),
+    sub_gateways: eu(rl),
+    telemetry_gateways: eu(rc),
+    npu: ew(t3),
+    ipc: ew(tR)
+}), rp = eh([
     eb("plan"),
     eb("apply"),
     eb("management_plan"),
@@ -2182,7 +2223,7 @@ const t7 = e_({
     eb("reset_state"),
     eb("reconcile"),
     eb("retry")
-]), rd = eh([
+]), r_ = eh([
     e_({
         operation_ids: eu(ea()),
         revision: er()
@@ -2204,12 +2245,12 @@ const t7 = e_({
     eZ
 ]);
 e_({
-    action: rl,
+    action: rp,
     target: er(),
     management: ew(es()),
     item: ew(er())
 });
-let rc = e_({
+let rf = e_({
     error: eh([
         er(),
         e_({
@@ -2218,29 +2259,29 @@ let rc = e_({
         })
     ])
 });
-class ru extends Error {
+class rh extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function rp(e) {
-    let t = rc.safeParse(e);
+function rg(e) {
+    let t = rf.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new ru("rpc", e) : new ru(e.code, e.message);
+        throw "string" == typeof e ? new rh("rpc", e) : new rh(e.code, e.message);
     }
     return e;
 }
-const r_ = {
+const rm = {
     parse (e) {
-        let t = tj.parse(rp(e));
-        if ("object" == typeof t && null !== t && "error" in t) throw rp(t), Error("Unexpected RPC error");
+        let t = tE.parse(rg(e));
+        if ("object" == typeof t && null !== t && "error" in t) throw rg(t), Error("Unexpected RPC error");
         return t;
     }
-}, rf = {
+}, rv = {
     parse (e) {
-        let t = rd.parse(rp(e));
+        let t = r_.parse(rg(e));
         if ("error" in t) throw Error(t.error);
         return t;
     }
@@ -2255,17 +2296,17 @@ em(er(), e_({
     })),
     stats: ew(em(er(), ea()))
 }));
-const rh = {
+const rb = {
     getCapabilities: {
-        parse: (e)=>eD.parse(rp(e))
+        parse: (e)=>eD.parse(rg(e))
     },
-    opticalStatus: t9,
-    opticalSet: t9,
+    opticalStatus: rr,
+    opticalSet: rr,
     getStatus: {
-        parse: (e)=>ro.parse(rp(e))
+        parse: (e)=>ru.parse(rg(e))
     },
     getSync: {
-        parse: (e)=>to.parse(rp(e))
+        parse: (e)=>to.parse(rg(e))
     },
     configCheck: {
         parse (e) {
@@ -2273,57 +2314,57 @@ const rh = {
             return eF.parse(e);
         }
     },
-    npuStatus: t2,
+    npuStatus: t3,
     configReload: {
-        parse: (e)=>to.parse(rp(e))
+        parse: (e)=>to.parse(rg(e))
     },
     restartService: {
-        parse: (e)=>rt.parse(rp(e))
+        parse: (e)=>ri.parse(rg(e))
     },
     sync: {
-        parse: (e)=>rf.parse(rp(e))
+        parse: (e)=>rv.parse(rg(e))
     },
-    npuSet: t0,
+    npuSet: t6,
     mibStart: {
-        parse: (e)=>tT.parse(rp(e))
+        parse: (e)=>tM.parse(rg(e))
     },
     mibResult: {
-        parse: (e)=>tR.parse(rp(e))
+        parse: (e)=>tq.parse(rg(e))
     },
     jobRelease: {
-        parse: (e)=>tZ.parse(rp(e))
+        parse: (e)=>tL.parse(rg(e))
     },
     hl202List: {
-        parse: (e)=>r_.parse(rp(e))
+        parse: (e)=>rm.parse(rg(e))
     },
     hl202Report: {
-        parse: (e)=>tT.parse(rp(e))
+        parse: (e)=>tM.parse(rg(e))
     },
     hl202AccountsStart: {
-        parse: (e)=>tT.parse(rp(e))
+        parse: (e)=>tM.parse(rg(e))
     },
     hl202AccountUpdate: {
-        parse: (e)=>tT.parse(rp(e))
+        parse: (e)=>tM.parse(rg(e))
     },
     hl202ExecStart: {
-        parse: (e)=>tT.parse(rp(e))
+        parse: (e)=>tM.parse(rg(e))
     },
     jobResult: {
-        parse: (e)=>tR.parse(rp(e))
+        parse: (e)=>tq.parse(rg(e))
     },
     getCalibration: {
-        parse: (e)=>eT.parse(rp(e))
+        parse: (e)=>eT.parse(rg(e))
     },
     saveCalibration: {
-        parse: (e)=>eU.parse(rp(e))
+        parse: (e)=>eU.parse(rg(e))
     },
     applyCalibration: {
-        parse: (e)=>tT.parse(rp(e))
+        parse: (e)=>tM.parse(rg(e))
     }
 };
-function rg() {
+function ry() {
     var e;
-    let r, n, a, i, s, o, l, d, c, u, p, f, h, g, m, v, b, y, w, k, z, j, x;
+    let r, n, a, i, s, o, d, l, c, u, p, f, h, g, m, v, b, y, w, k, z, j, x;
     return t ??= (e = L.rpc, r = e.declare({
         object: "fttr",
         method: "get_capabilities",
@@ -2351,11 +2392,11 @@ function rg() {
         object: "fttr",
         method: "config_check",
         reject: !0
-    }), l = e.declare({
+    }), d = e.declare({
         object: "fttr",
         method: "npu_status",
         reject: !0
-    }), d = e.declare({
+    }), l = e.declare({
         object: "fttr",
         method: "config_reload",
         reject: !0
@@ -2467,29 +2508,29 @@ function rg() {
         method: "apply_calibration",
         reject: !0
     }), {
-        getCapabilities: async ()=>rh.getCapabilities.parse(await r()),
-        opticalStatus: async ()=>rh.opticalStatus.parse(await n()),
-        opticalSet: async (e)=>rh.opticalSet.parse(await a(e.enabled)),
-        getStatus: async ()=>rh.getStatus.parse(await i()),
-        getSync: async ()=>rh.getSync.parse(await s()),
-        configCheck: async ()=>rh.configCheck.parse(await o()),
-        npuStatus: async ()=>rh.npuStatus.parse(await l()),
-        configReload: async ()=>rh.configReload.parse(await d()),
-        restartService: async ()=>rh.restartService.parse(await c()),
-        sync: async (e)=>rh.sync.parse(await u(e.action, e.target, e.management, e.item)),
-        npuSet: async (e)=>rh.npuSet.parse(await p(e.enabled, e.bridge)),
-        mibStart: async (e)=>rh.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
-        mibResult: async (e)=>rh.mibResult.parse(await h(e.job, e.chunk)),
-        jobRelease: async (e)=>rh.jobRelease.parse(await g(e.job)),
-        hl202List: async ()=>rh.hl202List.parse(await m()),
-        hl202Report: async (e)=>rh.hl202Report.parse(await v(e.target)),
-        hl202AccountsStart: async (e)=>rh.hl202AccountsStart.parse(await b(e.target)),
-        hl202AccountUpdate: async (e)=>rh.hl202AccountUpdate.parse(await y(e.target, e.kind, e.entry, e.password, e.active)),
-        hl202ExecStart: async (e)=>rh.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
-        jobResult: async (e)=>rh.jobResult.parse(await k(e.job, e.chunk)),
-        getCalibration: async ()=>rh.getCalibration.parse(await z()),
-        saveCalibration: async (e)=>rh.saveCalibration.parse(await j(e.data)),
-        applyCalibration: async ()=>rh.applyCalibration.parse(await x())
+        getCapabilities: async ()=>rb.getCapabilities.parse(await r()),
+        opticalStatus: async ()=>rb.opticalStatus.parse(await n()),
+        opticalSet: async (e)=>rb.opticalSet.parse(await a(e.enabled)),
+        getStatus: async ()=>rb.getStatus.parse(await i()),
+        getSync: async ()=>rb.getSync.parse(await s()),
+        configCheck: async ()=>rb.configCheck.parse(await o()),
+        npuStatus: async ()=>rb.npuStatus.parse(await d()),
+        configReload: async ()=>rb.configReload.parse(await l()),
+        restartService: async ()=>rb.restartService.parse(await c()),
+        sync: async (e)=>rb.sync.parse(await u(e.action, e.target, e.management, e.item)),
+        npuSet: async (e)=>rb.npuSet.parse(await p(e.enabled, e.bridge)),
+        mibStart: async (e)=>rb.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
+        mibResult: async (e)=>rb.mibResult.parse(await h(e.job, e.chunk)),
+        jobRelease: async (e)=>rb.jobRelease.parse(await g(e.job)),
+        hl202List: async ()=>rb.hl202List.parse(await m()),
+        hl202Report: async (e)=>rb.hl202Report.parse(await v(e.target)),
+        hl202AccountsStart: async (e)=>rb.hl202AccountsStart.parse(await b(e.target)),
+        hl202AccountUpdate: async (e)=>rb.hl202AccountUpdate.parse(await y(e.target, e.kind, e.entry, e.password, e.active)),
+        hl202ExecStart: async (e)=>rb.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
+        jobResult: async (e)=>rb.jobResult.parse(await k(e.job, e.chunk)),
+        getCalibration: async ()=>rb.getCalibration.parse(await z()),
+        saveCalibration: async (e)=>rb.saveCalibration.parse(await j(e.data)),
+        applyCalibration: async ()=>rb.applyCalibration.parse(await x())
     });
 }
 L.rpc.declare({
@@ -2500,20 +2541,20 @@ L.rpc.declare({
     },
     reject: !0
 });
-const rm = async ()=>rg().npuStatus(), rv = async function(e) {
+const rw = async ()=>ry().npuStatus(), rk = async function(e) {
     let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "";
-    return rg().npuSet({
+    return ry().npuSet({
         enabled: e,
         bridge: t
     });
 };
-function rb(e, t) {
+function rz(e, t) {
     return !0 === t && void 0 !== e && /^(0|[1-9][0-9]*)$/.test(e) ? BigInt(e).toLocaleString() : "\u2014";
 }
-function ry(e, t) {
+function rj(e, t) {
     return !0 === t ? `0x${e.toString(16).padStart(4, "0")} (${e})` : "\u2014";
 }
-function rw(e, t) {
+function rx(e, t) {
     var r;
     return r = {
         class: "fttr-npu-row",
@@ -2527,7 +2568,7 @@ function rw(e, t) {
         ]
     }, o("div", r);
 }
-function rk(e, t, r, n) {
+function rS(e, t, r, n) {
     return o("span", {
         class: `fttr-npu-state ${!0 === t ? e ? "ready" : "pending" : ""}`,
         children: !0 === t ? e ? r : n : _("Unknown")
@@ -2536,7 +2577,7 @@ function rk(e, t, r, n) {
 let main = L.view.extend({
     render: function() {
         var e, t;
-        let r, n, a = !1, i = !1, s = 0, l = 0, d = o("input", {
+        let r, n, a = !1, i = !1, s = 0, d = 0, l = o("input", {
             id: "fttr-npu-enabled",
             type: "checkbox",
             disabled: !0,
@@ -2566,7 +2607,7 @@ let main = L.view.extend({
             class: "cbi-button cbi-button-action",
             children: _("Refresh")
         }), m = ()=>{
-            d.disabled = c.disabled = h.disabled = a || !L.hasViewPermission() || !r?.supported || !0 !== r.config_valid || !l || Date.now() - l > 12000, g.disabled = a || !!n;
+            l.disabled = c.disabled = h.disabled = a || !L.hasViewPermission() || !r?.supported || !0 !== r.config_valid || !d || Date.now() - d > 12000, g.disabled = a || !!n;
         }, v = async ()=>{
             if (n || a) return n;
             let e = s;
@@ -2574,13 +2615,13 @@ let main = L.view.extend({
                 try {
                     var t, u, h, g, v, b, y, w, k, z, j, x, S, P, $, O, A, C, N, R, T, Z, U;
                     let n, m = await Promise.race([
-                        rm(),
+                        rw(),
                         new Promise((e, t)=>{
                             n = setTimeout(()=>t(Error(_("NPU status request timed out"))), 10000);
                         })
                     ]).finally(()=>clearTimeout(n));
                     if (e !== s || a) return;
-                    r = m, l = Date.now(), !i && m.config_valid && (d.checked = m.bridge_offload_enabled, c.value = m.bridge), f.replaceChildren(m.supported ? (Z = {
+                    r = m, d = Date.now(), !i && m.config_valid && (l.checked = m.bridge_offload_enabled, c.value = m.bridge), f.replaceChildren(m.supported ? (Z = {
                         children: [
                             void 0 === m.sampled_at_ms ? (t = {
                                 class: "alert-message warning",
@@ -2611,15 +2652,15 @@ let main = L.view.extend({
                                             (v = {
                                                 children: _("Engine and admission status")
                                             }, o("h3", v)),
-                                            rw(_("Saved configuration"), rk(m.bridge_offload_enabled, m.config_valid, _("Enabled"), _("Disabled"))),
-                                            rw(_("NPU engine"), rk(m.engine_attached, m.engine_valid, _("Attached"), _("Detached"))),
-                                            rw(_("Port admission"), rk(0 !== m.bridge_offload_mask, m.mask_valid, _("Admitted"), _("Not admitted"))),
-                                            rw(_("Managed bridge"), m.config_valid ? m.bridge : "\u2014"),
-                                            rw(_("Bridge offload mask"), ry(m.bridge_offload_mask, m.mask_valid)),
-                                            rw(_("Admitted ports"), m.mask_valid ? m.active_ports.join(", ") || _("None") : "\u2014"),
-                                            rw(_("Firewall hooks"), rk(m.fw4_hooks_ready, m.hooks_valid, _("Ready"), _("Not ready"))),
-                                            rw(_("Routed offload mask"), ry(m.routed_offload_mask, m.routed_mask_valid)),
-                                            rw(_("Driver debug logging"), rk(m.bridge_offload_debug, m.debug_valid, _("Enabled"), _("Disabled"))),
+                                            rx(_("Saved configuration"), rS(m.bridge_offload_enabled, m.config_valid, _("Enabled"), _("Disabled"))),
+                                            rx(_("NPU engine"), rS(m.engine_attached, m.engine_valid, _("Attached"), _("Detached"))),
+                                            rx(_("Port admission"), rS(0 !== m.bridge_offload_mask, m.mask_valid, _("Admitted"), _("Not admitted"))),
+                                            rx(_("Managed bridge"), m.config_valid ? m.bridge : "\u2014"),
+                                            rx(_("Bridge offload mask"), rj(m.bridge_offload_mask, m.mask_valid)),
+                                            rx(_("Admitted ports"), m.mask_valid ? m.active_ports.join(", ") || _("None") : "\u2014"),
+                                            rx(_("Firewall hooks"), rS(m.fw4_hooks_ready, m.hooks_valid, _("Ready"), _("Not ready"))),
+                                            rx(_("Routed offload mask"), rj(m.routed_offload_mask, m.routed_mask_valid)),
+                                            rx(_("Driver debug logging"), rS(m.bridge_offload_debug, m.debug_valid, _("Enabled"), _("Disabled"))),
                                             (b = {
                                                 class: "fttr-npu-note",
                                                 children: _("Admission allows eligible traffic to bind; it does not prove that packets are currently hardware-forwarded. The switch controls FTTR bridge admission, not the entire NPU or global routed offload policy.")
@@ -2632,10 +2673,10 @@ let main = L.view.extend({
                                             (w = {
                                                 children: _("PPE flow snapshot")
                                             }, o("h3", w)),
-                                            rw(_("Bound hardware flows"), m.flows_valid ? m.bound_entries : "\u2014"),
-                                            rw(_("Current non-empty FOE entries"), m.entries_valid ? m.total_entries : "\u2014"),
-                                            rw(_("Current bound-flow packets"), rb(m.total_packets_exact, m.counters_valid)),
-                                            rw(_("Current bound-flow bytes"), rb(m.total_bytes_exact, m.counters_valid)),
+                                            rx(_("Bound hardware flows"), m.flows_valid ? m.bound_entries : "\u2014"),
+                                            rx(_("Current non-empty FOE entries"), m.entries_valid ? m.total_entries : "\u2014"),
+                                            rx(_("Current bound-flow packets"), rz(m.total_packets_exact, m.counters_valid)),
+                                            rx(_("Current bound-flow bytes"), rz(m.total_bytes_exact, m.counters_valid)),
                                             (k = {
                                                 class: "fttr-npu-note",
                                                 children: _("Source: PPE debugfs bind/entries and driver sysfs. These are global PPE snapshots, not FTTR-only totals or table capacity. Reads are sequential, not atomic.")
@@ -2682,7 +2723,7 @@ let main = L.view.extend({
                                                 }, o("thead", O)),
                                                 (A = {
                                                     children: m.bound_flows.map((e)=>{
-                                                        var t, r, n, a, i, s, l, d, c, u, p, f, h;
+                                                        var t, r, n, a, i, s, d, l, c, u, p, f, h;
                                                         return h = {
                                                             children: [
                                                                 (r = {
@@ -2698,24 +2739,24 @@ let main = L.view.extend({
                                                                         children: e.orig_tuple || "\u2014"
                                                                     }, o("code", a))
                                                                 }, o("td", i)),
-                                                                (l = {
+                                                                (d = {
                                                                     children: (s = {
                                                                         children: e.new_tuple || "\u2014"
                                                                     }, o("code", s))
-                                                                }, o("td", l)),
+                                                                }, o("td", d)),
                                                                 (c = {
-                                                                    children: (d = {
+                                                                    children: (l = {
                                                                         children: e.eth || "\u2014"
-                                                                    }, o("code", d))
+                                                                    }, o("code", l))
                                                                 }, o("td", c)),
                                                                 (u = {
                                                                     children: e.vlan || "\u2014"
                                                                 }, o("td", u)),
                                                                 (p = {
-                                                                    children: rb(e.packets_exact, e.counters_valid && m.engine_valid && m.engine_attached)
+                                                                    children: rz(e.packets_exact, e.counters_valid && m.engine_valid && m.engine_attached)
                                                                 }, o("td", p)),
                                                                 (f = {
-                                                                    children: rb(e.bytes_exact, e.counters_valid && m.engine_valid && m.engine_attached)
+                                                                    children: rz(e.bytes_exact, e.counters_valid && m.engine_valid && m.engine_attached)
                                                                 }, o("td", f))
                                                             ]
                                                         }, o("tr", h);
@@ -2735,7 +2776,7 @@ let main = L.view.extend({
                     }, o("div", U))), p.textContent = `${_("Last successful sample")}: ${m.sampled_at_ms ? new Date(m.sampled_at_ms).toLocaleString() : _("Unknown")} \xb7 ${_("Refresh interval: 3 seconds")}`;
                 } catch (t) {
                     if (e !== s || a) return;
-                    l = 0, f.replaceChildren(o("p", {
+                    d = 0, f.replaceChildren(o("p", {
                         class: "alert-message warning",
                         children: _("Live NPU data is unavailable. Previous readings are stale.")
                     })), p.textContent = `${_("Refresh failed")}: ${String(t)}`;
@@ -2748,20 +2789,20 @@ let main = L.view.extend({
             v();
         }, h.onclick = async ()=>{
             if (h.disabled || a) return;
-            let e = c.value.trim(), t = d.checked, o = !1;
+            let e = c.value.trim(), t = l.checked, o = !1;
             if (!/^[a-zA-Z0-9_.-]{1,15}$/.test(e)) {
                 u.textContent = _("Use a bridge interface name of 1\u201315 letters, digits, dots, underscores or hyphens.");
                 return;
             }
             a = !0, s++, m(), u.textContent = _("Saving\u2026");
             try {
-                let r = await rv(t, e);
+                let r = await rk(t, e);
                 if ("success" !== r.status) throw Error(r.error || _("Failed to save NPU configuration"));
                 i = !1, o = !0, u.textContent = _("Configuration saved. Waiting for driver admission readback; enabling may take several seconds and requires eligible ports and firewall policy.");
             } catch (e) {
                 u.textContent = `${_("NPU configuration failed")}: ${String(e)}`;
             } finally{
-                await n, a = !1, await v(), !o || l && r?.config_valid && r.bridge === e && r.bridge_offload_enabled === t || (u.textContent = _("Save returned success, but configuration readback could not be confirmed. Refresh before retrying.")), m();
+                await n, a = !1, await v(), !o || d && r?.config_valid && r.bridge === e && r.bridge_offload_enabled === t || (u.textContent = _("Save returned success, but configuration readback could not be confirmed. Refresh before retrying.")), m();
             }
         };
         let b = (t = {
@@ -2782,7 +2823,7 @@ let main = L.view.extend({
                         o("label", {
                             htmlFor: "fttr-npu-enabled",
                             children: [
-                                d,
+                                l,
                                 _("Enable FTTR bridge hardware offload")
                             ]
                         }),
@@ -2808,7 +2849,7 @@ let main = L.view.extend({
             ]
         }, o("div", t));
         return v(), L.Poll.add(async ()=>{
-            b.isConnected && (l && Date.now() - l > 12000 && (l = 0, f.replaceChildren(o("p", {
+            b.isConnected && (d && Date.now() - d > 12000 && (d = 0, f.replaceChildren(o("p", {
                 class: "alert-message warning",
                 children: _("Live NPU data is unavailable. Previous readings are stale.")
             })), m()), await v());

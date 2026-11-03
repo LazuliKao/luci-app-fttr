@@ -132,6 +132,11 @@ Status, provisioning, MIB reports and HL202 job results use shared Rust models
 and generated runtime schemas. Only device-defined telemetry field values remain
 explicit `unknown` JSON; their enclosing metadata is typed.
 
+Backend status, HL202 protocol/telemetry and calibration producers use the same
+`fttr-api` structs directly. Add fixed wire fields there, then regenerate; import
+types from `src/api/generated/types` and validators from `src/api/generated/schemas`
+instead of creating another frontend model. UI-only form and display models stay local.
+
 Both repositories run the pipeline in CI and reject stale package JavaScript.
 Use `FTTR_BACKEND_REF` / `FTTR_FRONTEND_REF` repository variables (or manual workflow
 inputs) to select the paired repository revision; pin a commit SHA for repeatable CI.

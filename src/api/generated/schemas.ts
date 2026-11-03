@@ -74,12 +74,17 @@ export const HlOperationSchema = z.object({ "target": MqttSourceSchema, "result"
 export const HlWriteStatusSchema = z.union([z.literal("not_applicable"), z.literal("accepted_and_saved"), z.literal("unconfirmed")]) satisfies z.ZodMiniType<wire.HlWriteStatus>;
 export const OpticalErrorSchema = z.object({ "code": z.string(), "message": z.string() }) satisfies z.ZodMiniType<wire.OpticalError>;
 export const HlAccountReplySchema = z.union([z.object({ "schema_version": z.literal(1), "operation": HlOperationSchema, "accounts": z.union([z.array(HlAccountSchema), z.null()]), "write_status": HlWriteStatusSchema }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlAccountReply>;
-export const HlTargetSchema = z.union([z.object({ "optical_sn": z.string(), "onu_id": z.number(), "binding_generation": z.string() }), z.object({ "mqtt_mac": z.string(), "binding_generation": z.string() })]) satisfies z.ZodMiniType<wire.HlTarget>;
+export const HlOpticalSelectionSchema = z.object({ "optical_sn": z.string(), "onu_id": z.number(), "binding_generation": z.string() }) satisfies z.ZodMiniType<wire.HlOpticalSelection>;
+export const HlSourceSelectionSchema = z.object({ "mqtt_mac": z.string(), "binding_generation": z.string() }) satisfies z.ZodMiniType<wire.HlSourceSelection>;
+export const HlTargetSchema = z.union([HlOpticalSelectionSchema, HlSourceSelectionSchema]) satisfies z.ZodMiniType<wire.HlTarget>;
 export const HlAccountsRequestSchema = z.object({ "target": HlTargetSchema }) satisfies z.ZodMiniType<wire.HlAccountsRequest>;
+export const HlActionSchema = z.union([z.object({ "kind": z.literal("exec"), "script": z.string(), "timeout_seconds": z.number() }), z.object({ "kind": z.literal("accounts_read") }), z.object({ "kind": z.literal("account_set_password"), "entry": z.number(), "password": z.string() }), z.object({ "kind": z.literal("account_set_active"), "entry": z.number(), "active": z.boolean() })]) satisfies z.ZodMiniType<wire.HlAction>;
+export const HlCommandRequestSchema = z.object({ "schema_version": z.number(), "target": HlOpticalSelectionSchema, "action": HlActionSchema }) satisfies z.ZodMiniType<wire.HlCommandRequest>;
 export const HlDeviceSchema = z.object({ "optical_sn": z.string(), "onu_id": z.number(), "model": z.string(), "optical_online": z.boolean(), "can_execute": z.boolean(), "mqtt": z.union([MqttSourceSchema, z.null()]), "report_revision": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.HlDevice>;
 export const HlExecReplySchema = z.union([z.object({ "schema_version": z.literal(1), "operation": HlOperationSchema }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlExecReply>;
 export const HlExecRequestSchema = z.object({ "target": HlTargetSchema, "script": z.string(), "timeout_seconds": z.number() }) satisfies z.ZodMiniType<wire.HlExecRequest>;
 export const HlListReplySchema = z.union([z.object({ "schema_version": z.literal(1), "devices": z.array(HlDeviceSchema), "sources": z.array(MqttSourceSchema) }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlListReply>;
+export const HlQuerySchema = z.union([z.object({ "method": z.literal("list") }), z.object({ "method": z.literal("report"), "target": HlOpticalSelectionSchema }), z.object({ "method": z.literal("source_report"), "target": HlSourceSelectionSchema }), z.object({ "method": z.literal("run"), "request": HlCommandRequestSchema })]) satisfies z.ZodMiniType<wire.HlQuery>;
 export const HlReportPhaseSchema = z.union([z.literal("received"), z.literal("report_unavailable")]) satisfies z.ZodMiniType<wire.HlReportPhase>;
 export const HlTelemetryFieldSchema = z.object({ "value": z.unknown(), "member": z.string(), "unit": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.HlTelemetryField>;
 export const HlTelemetryMemberSchema = z.object({ "name": z.string(), "bytes": z.number(), "encoding": z.string(), "text": z.union([z.string(), z.null()]), "text_omitted": z.boolean() }) satisfies z.ZodMiniType<wire.HlTelemetryMember>;
@@ -290,10 +295,18 @@ export type SchemaContracts = [
 	Assert<[wire.OpticalError] extends [z.infer<typeof OpticalErrorSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlAccountReplySchema>] extends [wire.HlAccountReply] ? true : false>,
 	Assert<[wire.HlAccountReply] extends [z.infer<typeof HlAccountReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof HlOpticalSelectionSchema>] extends [wire.HlOpticalSelection] ? true : false>,
+	Assert<[wire.HlOpticalSelection] extends [z.infer<typeof HlOpticalSelectionSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlSourceSelectionSchema>] extends [wire.HlSourceSelection] ? true : false>,
+	Assert<[wire.HlSourceSelection] extends [z.infer<typeof HlSourceSelectionSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlTargetSchema>] extends [wire.HlTarget] ? true : false>,
 	Assert<[wire.HlTarget] extends [z.infer<typeof HlTargetSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlAccountsRequestSchema>] extends [wire.HlAccountsRequest] ? true : false>,
 	Assert<[wire.HlAccountsRequest] extends [z.infer<typeof HlAccountsRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlActionSchema>] extends [wire.HlAction] ? true : false>,
+	Assert<[wire.HlAction] extends [z.infer<typeof HlActionSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlCommandRequestSchema>] extends [wire.HlCommandRequest] ? true : false>,
+	Assert<[wire.HlCommandRequest] extends [z.infer<typeof HlCommandRequestSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlDeviceSchema>] extends [wire.HlDevice] ? true : false>,
 	Assert<[wire.HlDevice] extends [z.infer<typeof HlDeviceSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlExecReplySchema>] extends [wire.HlExecReply] ? true : false>,
@@ -302,6 +315,8 @@ export type SchemaContracts = [
 	Assert<[wire.HlExecRequest] extends [z.infer<typeof HlExecRequestSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlListReplySchema>] extends [wire.HlListReply] ? true : false>,
 	Assert<[wire.HlListReply] extends [z.infer<typeof HlListReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof HlQuerySchema>] extends [wire.HlQuery] ? true : false>,
+	Assert<[wire.HlQuery] extends [z.infer<typeof HlQuerySchema>] ? true : false>,
 	Assert<[z.infer<typeof HlReportPhaseSchema>] extends [wire.HlReportPhase] ? true : false>,
 	Assert<[wire.HlReportPhase] extends [z.infer<typeof HlReportPhaseSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlTelemetryFieldSchema>] extends [wire.HlTelemetryField] ? true : false>,

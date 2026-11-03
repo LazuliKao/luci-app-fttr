@@ -1542,21 +1542,44 @@ ev([
         error: tj
     })
 ]);
-const tS = ev([
-    eh({
-        optical_sn: es(),
-        onu_id: el(),
-        binding_generation: es()
-    }),
-    eh({
-        mqtt_mac: es(),
-        binding_generation: es()
-    })
+const tS = eh({
+    optical_sn: es(),
+    onu_id: el(),
+    binding_generation: es()
+}), t$ = eh({
+    mqtt_mac: es(),
+    binding_generation: es()
+}), tC = ev([
+    tS,
+    t$
 ]);
 eh({
-    target: tS
+    target: tC
 });
-const t$ = eh({
+const tM = ev([
+    eh({
+        kind: ek("exec"),
+        script: es(),
+        timeout_seconds: el()
+    }),
+    eh({
+        kind: ek("accounts_read")
+    }),
+    eh({
+        kind: ek("account_set_password"),
+        entry: el(),
+        password: es()
+    }),
+    eh({
+        kind: ek("account_set_active"),
+        entry: el(),
+        active: ed()
+    })
+]), tO = eh({
+    schema_version: el(),
+    target: tS,
+    action: tM
+}), tP = eh({
     optical_sn: es(),
     onu_id: el(),
     model: es(),
@@ -1581,24 +1604,42 @@ ev([
         error: tj
     })
 ]), eh({
-    target: tS,
+    target: tC,
     script: es(),
     timeout_seconds: el()
 });
-const tC = ev([
+const tR = ev([
     eh({
         schema_version: ek(1),
-        devices: eg(t$),
+        devices: eg(tP),
         sources: eg(ty)
     }),
     eh({
         schema_version: el(),
         error: tj
     })
-]), tM = ev([
+]);
+ev([
+    eh({
+        method: ek("list")
+    }),
+    eh({
+        method: ek("report"),
+        target: tS
+    }),
+    eh({
+        method: ek("source_report"),
+        target: t$
+    }),
+    eh({
+        method: ek("run"),
+        request: tO
+    })
+]);
+const tA = ev([
     ek("received"),
     ek("report_unavailable")
-]), tO = eh({
+]), tN = eh({
     value: new e_({
         type: "unknown"
     }),
@@ -1607,7 +1648,7 @@ const tC = ev([
         es(),
         eu()
     ])
-}), tP = eh({
+}), tE = eh({
     name: es(),
     bytes: el(),
     encoding: es(),
@@ -1616,14 +1657,14 @@ const tC = ev([
         eu()
     ]),
     text_omitted: ed()
-}), tR = eh({
+}), tI = eh({
     schema_version: el(),
     compressed_bytes: el(),
     decompressed_bytes: el(),
-    fields: ew(es(), tO),
-    members: eg(tP),
+    fields: ew(es(), tN),
+    members: eg(tE),
     errors: eg(es())
-}), tA = eh({
+}), tL = eh({
     revision: el(),
     last_received: el(),
     last_processed_receipt: ev([
@@ -1639,7 +1680,7 @@ const tC = ev([
         eu()
     ]),
     report: ev([
-        tR,
+        tI,
         eu()
     ])
 });
@@ -1648,16 +1689,16 @@ ev([
         schema_version: ek(1),
         target: ty,
         report: ev([
-            tA,
+            tL,
             eu()
         ]),
-        state: tM
+        state: tA
     }),
     eh({
         schema_version: ek(1),
         target: ty,
         report: ev([
-            tA,
+            tL,
             eu()
         ]),
         read_only: ek(!0)
@@ -1667,22 +1708,22 @@ ev([
         error: tj
     })
 ]), eh({
-    target: tS
+    target: tC
 }), eh({
-    target: tS,
+    target: tC,
     kind: eS,
     entry: el(),
     password: es(),
     active: ed()
 });
-const tN = eh({
+const tD = eh({
     accepted: el(),
     rejected: el(),
     read_errors: el(),
     handled: el(),
     max_intake_us: el(),
     max_handler_us: el()
-}), tE = ek("pending"), tI = eh({
+}), tT = ek("pending"), tq = eh({
     phase: ev([
         ek("starting"),
         ek("upload"),
@@ -1693,13 +1734,13 @@ const tN = eh({
         el(),
         eu()
     ])
-}), tL = ek("ready"), tD = ev([
+}), tW = ek("ready"), tB = ev([
     eh({
-        status: tE,
-        progress: ej(tI)
+        status: tT,
+        progress: ej(tq)
     }),
     eh({
-        status: tL,
+        status: tW,
         chunk: el(),
         chunks: el(),
         bytes: el(),
@@ -1707,13 +1748,13 @@ const tN = eh({
     })
 ]);
 ev([
-    tD,
+    tB,
     eq
 ]);
-const tT = eh({
-    status: tE,
+const tU = eh({
+    status: tT,
     job: es()
-}), tq = eh({
+}), tZ = eh({
     released: ed()
 });
 eh({
@@ -1722,10 +1763,10 @@ eh({
     job: es(),
     chunk: el()
 }), ev([
-    tT,
+    tU,
     eq
 ]);
-const tW = eh({
+const tV = eh({
     accepting: ed(),
     running: el(),
     stored: el(),
@@ -1734,7 +1775,7 @@ const tW = eh({
     stored_limit: el(),
     bytes_limit: el(),
     result_bytes_limit: el()
-}), tB = eh({
+}), tF = eh({
     mac: es(),
     ip: es(),
     band: es(),
@@ -1750,7 +1791,7 @@ const tW = eh({
         el(),
         eu()
     ])
-}), tU = ev([
+}), tJ = ev([
     ek("unknown"),
     ek("octets"),
     ek("string"),
@@ -1761,12 +1802,12 @@ const tW = eh({
     ek("bit_field"),
     ek("enumeration"),
     ek("counter")
-]), tZ = eh({
+]), tK = eh({
     id: es(),
     url: es()
-}), tV = eh({
+}), tG = eh({
     name: es(),
-    kind: tU,
+    kind: tJ,
     index: el(),
     mask: el(),
     size: el(),
@@ -1780,8 +1821,8 @@ const tW = eh({
         es(),
         eu()
     ]),
-    reference: tZ
-}), tF = ev([
+    reference: tK
+}), tH = ev([
     eh({
         type: ek("unsigned"),
         value: el()
@@ -1809,22 +1850,22 @@ const tW = eh({
         type: ek("table_length"),
         bytes: el()
     })
-]), tJ = eh({
+]), tQ = eh({
     raw_hex: es(),
-    value: tF,
+    value: tH,
     sequences: eg(el())
-}), tK = eh({
-    definition: tV,
+}), tX = eh({
+    definition: tG,
     value: ev([
-        tF,
+        tH,
         eu()
     ]),
-    observations: eg(tJ)
-}), tG = ev([
+    observations: eg(tQ)
+}), tY = ev([
     ek("layout"),
     ek("name_only"),
     ek("unknown")
-]), tH = eh({
+]), t0 = eh({
     class_id: el(),
     name: ev([
         es(),
@@ -1832,28 +1873,28 @@ const tW = eh({
     ]),
     entities: el(),
     records: el(),
-    support: tG
-}), tQ = eh({
+    support: tY
+}), t1 = eh({
     code: es(),
     message: es(),
     offset: el(),
     mask: el()
-}), tX = eh({
+}), t2 = eh({
     class_id: el(),
     entity_id: el(),
     name: ev([
         es(),
         eu()
     ]),
-    support: tG,
+    support: tY,
     reference: ev([
-        tZ,
+        tK,
         eu()
     ]),
     sequences: eg(el()),
-    attributes: eg(tK),
-    diagnostics: eg(tQ)
-}), tY = ek("ready"), t0 = eh({
+    attributes: eg(tX),
+    diagnostics: eg(t1)
+}), t8 = ek("ready"), t5 = eh({
     class_id: el(),
     entity_id: el(),
     sequence: el(),
@@ -1862,7 +1903,7 @@ const tW = eh({
     consumed: el(),
     remaining_hex: es(),
     undecoded_mask: el()
-}), t1 = eh({
+}), t4 = eh({
     raw_hex: es(),
     filter_outer_priority: el(),
     filter_outer_vid: el(),
@@ -1879,10 +1920,10 @@ const tW = eh({
     treatment_inner_vid: el(),
     treatment_inner_tpid_dei: el(),
     delete_entry: ed()
-}), t2 = eh({
+}), t3 = eh({
     class_id: el(),
     entity_id: el(),
-    attribute: tV,
+    attribute: tG,
     collected: ed(),
     error: ev([
         es(),
@@ -1890,8 +1931,8 @@ const tW = eh({
     ]),
     raw_hex: es(),
     rows: eg(es()),
-    vlan_rules: eg(t1)
-}), t8 = eh({
+    vlan_rules: eg(t4)
+}), t6 = eh({
     schema_version: ek(1),
     reference_version: es(),
     onu_id: ev([
@@ -1906,21 +1947,21 @@ const tW = eh({
     basic_records: el(),
     tables_requested: ed(),
     tables_collected: ed(),
-    classes: eg(tH),
-    entities: eg(tX),
-    records: eg(t0),
-    tables: eg(t2),
-    diagnostics: eg(tQ)
-}), t5 = eh({
-    status: tY,
-    report: t8
+    classes: eg(t0),
+    entities: eg(t2),
+    records: eg(t5),
+    tables: eg(t3),
+    diagnostics: eg(t1)
+}), t7 = eh({
+    status: t8,
+    report: t6
 });
 eh({
     onu_id: el(),
     optical_sn: es(),
     tables: ed()
 });
-const t4 = ev([
+const t9 = ev([
     eh({
         status: ek("success"),
         enabled: ed()
@@ -1934,7 +1975,7 @@ eh({
     enabled: ed(),
     bridge: es()
 });
-const t3 = eh({
+const re = eh({
     index: es(),
     state: es(),
     pkt_type: es(),
@@ -1947,7 +1988,7 @@ const t3 = eh({
     counters_valid: ed(),
     packets_exact: es(),
     bytes_exact: es()
-}), t6 = eh({
+}), rt = eh({
     sampled_at_ms: el(),
     errors: eg(es()),
     config_valid: ed(),
@@ -1976,8 +2017,8 @@ const t3 = eh({
     bound_ipv6_entries: el(),
     total_packets: el(),
     total_bytes: el(),
-    bound_flows: eg(t3)
-}), t7 = eh({
+    bound_flows: eg(re)
+}), rr = eh({
     equipment_id: ev([
         es(),
         eu()
@@ -1992,7 +2033,7 @@ const t3 = eh({
         eu()
     ]),
     errors: eg(es())
-}), t9 = eh({
+}), rn = eh({
     desired: ew(es(), el()),
     active: ew(es(), el()),
     pending_restart: ed(),
@@ -2005,24 +2046,24 @@ const t3 = eh({
         es(),
         eu()
     ])
-}), re = ev([
+}), ri = ev([
     ek("optical_on"),
     ek("optical_off"),
     ek("optical_status"),
     ek("optical_reload"),
     ek("optical_reinitialize"),
     ek("optical_shutdown")
-]), rt = ev([
+]), ra = ev([
     ek("success"),
     ek("error")
-]), rr = ev([
+]), rs = ev([
     ek("enabled"),
     ek("disabled"),
     ek("unknown")
-]), rn = eh({
+]), ro = eh({
     schema_version: ek(1),
-    status: rt,
-    action: re,
+    status: ra,
+    action: ri,
     desired_enabled: ev([
         ed(),
         eu()
@@ -2031,7 +2072,7 @@ const t3 = eh({
         ed(),
         eu()
     ]),
-    actor_state: rr,
+    actor_state: rs,
     hardware_ready: ed(),
     discovery_active: ed(),
     cleanup_pending: ed(),
@@ -2043,7 +2084,7 @@ const t3 = eh({
 eh({
     enabled: ed()
 });
-const ri = eh({
+const rl = eh({
     model: es(),
     wavelength_tx_nm: el(),
     wavelength_rx_nm: el(),
@@ -2071,7 +2112,7 @@ const ri = eh({
     ]),
     tx_enabled: ej(ed()),
     measurements: ew(es(), th)
-}), ra = ev([
+}), rc = ev([
     ek("o1_initial"),
     ek("o2_standby"),
     ek("o3_serial_number"),
@@ -2079,15 +2120,15 @@ const ri = eh({
     ek("o5_operation"),
     ek("o6_intermittent_lods"),
     ek("o7_emergency_stop")
-]), rs = eh({
+]), rd = eh({
     restarting: ek(!0)
-}), ro = eh({
+}), rp = eh({
     calls: el(),
     failures: el(),
     last_us: el(),
     max_us: el(),
     total_us: el()
-}), rl = eh({
+}), ru = eh({
     port: el(),
     interface: es(),
     carrier: ed(),
@@ -2096,7 +2137,7 @@ const ri = eh({
     onu_sn: ej(es()),
     link_state: es(),
     reserved_sn: ej(es())
-}), rc = eh({
+}), r_ = eh({
     channel_2g: ev([
         el(),
         eu()
@@ -2114,12 +2155,12 @@ const ri = eh({
         eu()
     ]),
     measurements: ew(es(), th)
-}), rd = eh({
+}), rf = eh({
     onu_id: el(),
     vendor: es(),
     model: es(),
     serial_number: es(),
-    state: ra,
+    state: rc,
     business_status: eE,
     management: ev([
         eQ,
@@ -2133,7 +2174,7 @@ const ri = eh({
     ssids: eg(e1),
     wifi_sync: tn,
     identity: ev([
-        t7,
+        rr,
         eu()
     ]),
     identity_age_seconds: ev([
@@ -2168,32 +2209,32 @@ const ri = eh({
         eu()
     ]),
     data_path: tm,
-    wifi_mesh: rc,
+    wifi_mesh: r_,
     connected_clients: ev([
-        eg(tB),
+        eg(tF),
         eu()
     ]),
     measurements: ew(es(), th)
-}), rp = eh({
+}), rg = eh({
     id: es(),
     last_seen_sec_ago: el(),
     last_payload_bytes: el()
-}), ru = eh({
-    ubus: ej(ew(es(), ro)),
-    jobs: ej(tW),
-    onu_pinning: ej(t9),
+}), rb = eh({
+    ubus: ej(ew(es(), rp)),
+    jobs: ej(tV),
+    onu_pinning: ej(rn),
     fpga_status: es(),
     provisioning: ev([
         tp,
         eu()
     ]),
-    optical_transceiver: ri,
-    switch_ports: eg(rl),
-    sub_gateways: eg(rd),
-    telemetry_gateways: eg(rp),
-    npu: ej(t6),
-    ipc: ej(tN)
-}), r_ = ev([
+    optical_transceiver: rl,
+    switch_ports: eg(ru),
+    sub_gateways: eg(rf),
+    telemetry_gateways: eg(rg),
+    npu: ej(rt),
+    ipc: ej(tD)
+}), rh = ev([
     ek("plan"),
     ek("apply"),
     ek("management_plan"),
@@ -2201,7 +2242,7 @@ const ri = eh({
     ek("reset_state"),
     ek("reconcile"),
     ek("retry")
-]), rf = ev([
+]), rm = ev([
     eh({
         operation_ids: eg(el()),
         revision: es()
@@ -2223,12 +2264,12 @@ const ri = eh({
     eq
 ]);
 eh({
-    action: r_,
+    action: rh,
     target: es(),
     management: ej(ed()),
     item: ej(es())
 });
-let rg = eh({
+let rv = eh({
     error: ev([
         es(),
         eh({
@@ -2237,29 +2278,29 @@ let rg = eh({
         })
     ])
 });
-class rb extends Error {
+class ry extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function rh(e) {
-    let t = rg.safeParse(e);
+function rw(e) {
+    let t = rv.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new rb("rpc", e) : new rb(e.code, e.message);
+        throw "string" == typeof e ? new ry("rpc", e) : new ry(e.code, e.message);
     }
     return e;
 }
-const rm = {
+const rx = {
     parse (e) {
-        let t = tC.parse(rh(e));
-        if ("object" == typeof t && null !== t && "error" in t) throw rh(t), Error("Unexpected RPC error");
+        let t = tR.parse(rw(e));
+        if ("object" == typeof t && null !== t && "error" in t) throw rw(t), Error("Unexpected RPC error");
         return t;
     }
-}, rv = {
+}, rk = {
     parse (e) {
-        let t = rf.parse(rh(e));
+        let t = rm.parse(rw(e));
         if ("error" in t) throw Error(t.error);
         return t;
     }
@@ -2274,17 +2315,17 @@ ew(es(), eh({
     })),
     stats: ej(ew(es(), el()))
 }));
-const ry = {
+const rz = {
     getCapabilities: {
-        parse: (e)=>eV.parse(rh(e))
+        parse: (e)=>eV.parse(rw(e))
     },
-    opticalStatus: rn,
-    opticalSet: rn,
+    opticalStatus: ro,
+    opticalSet: ro,
     getStatus: {
-        parse: (e)=>ru.parse(rh(e))
+        parse: (e)=>rb.parse(rw(e))
     },
     getSync: {
-        parse: (e)=>tp.parse(rh(e))
+        parse: (e)=>tp.parse(rw(e))
     },
     configCheck: {
         parse (e) {
@@ -2292,55 +2333,55 @@ const ry = {
             return eF.parse(e);
         }
     },
-    npuStatus: t6,
+    npuStatus: rt,
     configReload: {
-        parse: (e)=>tp.parse(rh(e))
+        parse: (e)=>tp.parse(rw(e))
     },
     restartService: {
-        parse: (e)=>rs.parse(rh(e))
+        parse: (e)=>rd.parse(rw(e))
     },
     sync: {
-        parse: (e)=>rv.parse(rh(e))
+        parse: (e)=>rk.parse(rw(e))
     },
-    npuSet: t4,
+    npuSet: t9,
     mibStart: {
-        parse: (e)=>tT.parse(rh(e))
+        parse: (e)=>tU.parse(rw(e))
     },
     mibResult: {
-        parse: (e)=>tD.parse(rh(e))
+        parse: (e)=>tB.parse(rw(e))
     },
     jobRelease: {
-        parse: (e)=>tq.parse(rh(e))
+        parse: (e)=>tZ.parse(rw(e))
     },
     hl202List: {
-        parse: (e)=>rm.parse(rh(e))
+        parse: (e)=>rx.parse(rw(e))
     },
     hl202Report: {
-        parse: (e)=>tT.parse(rh(e))
+        parse: (e)=>tU.parse(rw(e))
     },
     hl202AccountsStart: {
-        parse: (e)=>tT.parse(rh(e))
+        parse: (e)=>tU.parse(rw(e))
     },
     hl202AccountUpdate: {
-        parse: (e)=>tT.parse(rh(e))
+        parse: (e)=>tU.parse(rw(e))
     },
     hl202ExecStart: {
-        parse: (e)=>tT.parse(rh(e))
+        parse: (e)=>tU.parse(rw(e))
     },
     jobResult: {
-        parse: (e)=>tD.parse(rh(e))
+        parse: (e)=>tB.parse(rw(e))
     },
     getCalibration: {
-        parse: (e)=>eT.parse(rh(e))
+        parse: (e)=>eT.parse(rw(e))
     },
     saveCalibration: {
-        parse: (e)=>eW.parse(rh(e))
+        parse: (e)=>eW.parse(rw(e))
     },
     applyCalibration: {
-        parse: (e)=>tT.parse(rh(e))
+        parse: (e)=>tU.parse(rw(e))
     }
 };
-function rw() {
+function rj() {
     var e;
     let r, n, i, a, s, o, l, c, d, p, u, f, g, b, h, m, v, y, w, x, k, z, j;
     return t ??= (e = L.rpc, r = e.declare({
@@ -2486,29 +2527,29 @@ function rw() {
         method: "apply_calibration",
         reject: !0
     }), {
-        getCapabilities: async ()=>ry.getCapabilities.parse(await r()),
-        opticalStatus: async ()=>ry.opticalStatus.parse(await n()),
-        opticalSet: async (e)=>ry.opticalSet.parse(await i(e.enabled)),
-        getStatus: async ()=>ry.getStatus.parse(await a()),
-        getSync: async ()=>ry.getSync.parse(await s()),
-        configCheck: async ()=>ry.configCheck.parse(await o()),
-        npuStatus: async ()=>ry.npuStatus.parse(await l()),
-        configReload: async ()=>ry.configReload.parse(await c()),
-        restartService: async ()=>ry.restartService.parse(await d()),
-        sync: async (e)=>ry.sync.parse(await p(e.action, e.target, e.management, e.item)),
-        npuSet: async (e)=>ry.npuSet.parse(await u(e.enabled, e.bridge)),
-        mibStart: async (e)=>ry.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
-        mibResult: async (e)=>ry.mibResult.parse(await g(e.job, e.chunk)),
-        jobRelease: async (e)=>ry.jobRelease.parse(await b(e.job)),
-        hl202List: async ()=>ry.hl202List.parse(await h()),
-        hl202Report: async (e)=>ry.hl202Report.parse(await m(e.target)),
-        hl202AccountsStart: async (e)=>ry.hl202AccountsStart.parse(await v(e.target)),
-        hl202AccountUpdate: async (e)=>ry.hl202AccountUpdate.parse(await y(e.target, e.kind, e.entry, e.password, e.active)),
-        hl202ExecStart: async (e)=>ry.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
-        jobResult: async (e)=>ry.jobResult.parse(await x(e.job, e.chunk)),
-        getCalibration: async ()=>ry.getCalibration.parse(await k()),
-        saveCalibration: async (e)=>ry.saveCalibration.parse(await z(e.data)),
-        applyCalibration: async ()=>ry.applyCalibration.parse(await j())
+        getCapabilities: async ()=>rz.getCapabilities.parse(await r()),
+        opticalStatus: async ()=>rz.opticalStatus.parse(await n()),
+        opticalSet: async (e)=>rz.opticalSet.parse(await i(e.enabled)),
+        getStatus: async ()=>rz.getStatus.parse(await a()),
+        getSync: async ()=>rz.getSync.parse(await s()),
+        configCheck: async ()=>rz.configCheck.parse(await o()),
+        npuStatus: async ()=>rz.npuStatus.parse(await l()),
+        configReload: async ()=>rz.configReload.parse(await c()),
+        restartService: async ()=>rz.restartService.parse(await d()),
+        sync: async (e)=>rz.sync.parse(await p(e.action, e.target, e.management, e.item)),
+        npuSet: async (e)=>rz.npuSet.parse(await u(e.enabled, e.bridge)),
+        mibStart: async (e)=>rz.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
+        mibResult: async (e)=>rz.mibResult.parse(await g(e.job, e.chunk)),
+        jobRelease: async (e)=>rz.jobRelease.parse(await b(e.job)),
+        hl202List: async ()=>rz.hl202List.parse(await h()),
+        hl202Report: async (e)=>rz.hl202Report.parse(await m(e.target)),
+        hl202AccountsStart: async (e)=>rz.hl202AccountsStart.parse(await v(e.target)),
+        hl202AccountUpdate: async (e)=>rz.hl202AccountUpdate.parse(await y(e.target, e.kind, e.entry, e.password, e.active)),
+        hl202ExecStart: async (e)=>rz.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
+        jobResult: async (e)=>rz.jobResult.parse(await x(e.job, e.chunk)),
+        getCalibration: async ()=>rz.getCalibration.parse(await k()),
+        saveCalibration: async (e)=>rz.saveCalibration.parse(await z(e.data)),
+        applyCalibration: async ()=>rz.applyCalibration.parse(await j())
     });
 }
 L.rpc.declare({
@@ -2519,27 +2560,27 @@ L.rpc.declare({
     },
     reject: !0
 });
-const rx = async ()=>rw().getStatus(), rk = async ()=>rw().getSync(), rz = async ()=>rw().configCheck(), rj = async (e, t)=>rw().sync({
+const rS = async ()=>rj().getStatus(), r$ = async ()=>rj().getSync(), rC = async ()=>rj().configCheck(), rM = async (e, t)=>rj().sync({
         action: e,
         target: t
-    }), rS = async (e, t, r)=>rw().mibStart({
+    }), rO = async (e, t, r)=>rj().mibStart({
         onu_id: e,
         optical_sn: t,
         tables: r
-    }), r$ = async (e, t)=>rw().mibResult({
+    }), rP = async (e, t)=>rj().mibResult({
         job: e,
         chunk: t
-    }), rC = async (e)=>rw().jobRelease({
+    }), rR = async (e)=>rj().jobRelease({
         job: e
     });
-function rM(e) {
+function rA(e) {
     let t = "none" === e.tone ? "" : `fttr-badge fttr-badge-${e.tone}`, r = e.class ? ` ${e.class}` : "", n = o("span", {
         class: `${t}${r}`.trim(),
         children: e.children
     });
     return e.title && n.setAttribute("title", e.title), n;
 }
-const rO = {
+const rN = {
     o1_initial: _("O1 Initial"),
     o2_standby: _("O2 Standby"),
     o3_serial_number: _("O3 Serial Number"),
@@ -2548,27 +2589,27 @@ const rO = {
     o6_intermittent_lods: _("O6 Intermittent LODS"),
     o7_emergency_stop: _("O7 Emergency Stop")
 };
-function rP(e) {
+function rE(e) {
     var t;
     let r = (t = e.state) ? "o5_operation" === t ? {
         tone: "success",
-        label: rO.o5_operation,
+        label: rN.o5_operation,
         title: t
     } : {
         tone: "warning",
-        label: rO[t] ?? l(t),
+        label: rN[t] ?? l(t),
         title: t
     } : {
         tone: "none",
         label: "\u2014"
     };
-    return o(rM, {
+    return o(rA, {
         tone: r.tone,
         title: r.title,
         children: r.label
     });
 }
-function rR(e) {
+function rI(e) {
     var t;
     let r = (t = e.status) ? {
         tone: "verified" === t.phase ? "success" : t.error || "wan_bootstrap_pending" === t.phase ? "warning" : "neutral",
@@ -2589,31 +2630,31 @@ function rR(e) {
         tone: "neutral",
         label: "\u2014"
     };
-    return o(rM, {
+    return o(rA, {
         tone: r.tone,
         title: r.title,
         children: r.label
     });
 }
-const rA = {
+const rL = {
     online: _("Online"),
     waiting_inform: _("Waiting Inform"),
     offline_or_stale: _("Offline or stale")
 };
-function rN(e) {
+function rD(e) {
     var t;
-    let r, n, i, a, s, c, d = (t = e.management, r = t?.state, n = p(t?.age_seconds ?? (t?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - t.last_inform) : null)), a = (i = t?.last_inform ? new Date(1000 * t.last_inform).toLocaleString() : null) ? _("Last Inform: %s").replace("%s", i) : void 0, s = "\u2014", c = "none", "online" === r ? (c = "success", s = rA.online) : "waiting_inform" === r ? (c = "warning", s = rA.waiting_inform) : "offline_or_stale" === r ? (c = "danger", s = rA.offline_or_stale) : r && (c = "neutral", s = l(r)), {
+    let r, n, i, a, s, c, d = (t = e.management, r = t?.state, n = p(t?.age_seconds ?? (t?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - t.last_inform) : null)), a = (i = t?.last_inform ? new Date(1000 * t.last_inform).toLocaleString() : null) ? _("Last Inform: %s").replace("%s", i) : void 0, s = "\u2014", c = "none", "online" === r ? (c = "success", s = rL.online) : "waiting_inform" === r ? (c = "warning", s = rL.waiting_inform) : "offline_or_stale" === r ? (c = "danger", s = rL.offline_or_stale) : r && (c = "neutral", s = l(r)), {
         tone: c,
         label: n && r ? `${s} \xb7 ${n}` : s,
         title: a
     });
-    return o(rM, {
+    return o(rA, {
         tone: d.tone,
         title: d.title,
         children: d.label
     });
 }
-const rE = {
+const rT = {
     waiting: _("Waiting"),
     wan_reconciling: _("WAN reconciling"),
     wan_verifying: _("WAN verifying"),
@@ -2636,23 +2677,23 @@ const rE = {
     blocked: _("Blocked"),
     not_started: _("Not started")
 };
-function rI(e) {
+function rq(e) {
     var t, r;
     let n, i, a, s = (t = e.provisioning, r = e.title, n = t?.state, i = t?.next_retry_at && t.next_retry_at > Math.floor(Date.now() / 1000) ? t.next_retry_at - Math.floor(Date.now() / 1000) : 0, a = r ?? (t?.current_revision === !1 ? _("Previous configuration") : t?.management_fresh === !1 ? _("Management stale") : t?.reconcile_reason ? t.reconcile_reason : i > 0 ? _("Next self-healing retry in %d seconds").replace("%d", String(i)) : t?.reason ?? t?.error), n && "not_started" !== n ? "completed" === n || "verified" === n ? {
         tone: "success",
-        label: "completed" === n ? rE.completed : _("Ready"),
+        label: "completed" === n ? rT.completed : _("Ready"),
         title: a
     } : "wan_reconciling" === n || "wan_verifying" === n || "wifi_reconciling" === n || "discovering" === n || "reading" === n || "disabling" === n || "disabling_read" === n || "writing" === n || "verifying" === n || "settling" === n || "recovering" === n || "waiting_task" === n ? {
         tone: "info",
-        label: rE[n] ?? l(n),
+        label: rT[n] ?? l(n),
         title: a
     } : "interrupted" === n || "failed" === n || "error" === n || "blocked" === n ? {
         tone: "danger",
-        label: "blocked" === n ? rE.blocked : rE.interrupted,
+        label: "blocked" === n ? rT.blocked : rT.interrupted,
         title: a
     } : "waiting" === n || "pending" === n || "waiting_management" === n || "reset_pending" === n ? {
         tone: "warning",
-        label: rE[n] ?? rE.waiting,
+        label: rT[n] ?? rT.waiting,
         title: a
     } : {
         tone: "neutral",
@@ -2660,16 +2701,16 @@ function rI(e) {
         title: a
     } : {
         tone: "neutral",
-        label: rE.not_started,
+        label: rT.not_started,
         title: a
     });
-    return o(rM, {
+    return o(rA, {
         tone: s.tone,
         title: s.title,
         children: s.label
     });
 }
-const rL = {
+const rW = {
     not_configured: _("Not configured"),
     stale_revision: _("Stale revision"),
     stale_management: _("Stale management"),
@@ -2680,37 +2721,37 @@ const rL = {
     recovering: _("Recovering"),
     waiting_management: _("Waiting management")
 };
-function rD(e) {
+function rB(e) {
     var t;
     let r = (t = e.state) && "not_configured" !== t ? "verified" === t ? {
         tone: "success",
-        label: rL.verified
+        label: rW.verified
     } : "attention_required" === t ? {
         tone: "danger",
-        label: rL.attention_required
+        label: rW.attention_required
     } : "stale_revision" === t || "stale_management" === t || "waiting_management" === t ? {
         tone: "warning",
-        label: rL[t]
+        label: rW[t]
     } : "recovering" === t ? {
         tone: "info",
-        label: rL.recovering
+        label: rW.recovering
     } : "accepted_unverified" === t || "pending" === t ? {
         tone: "warning",
-        label: rL[t]
+        label: rW[t]
     } : {
         tone: "neutral",
         label: l(t)
     } : {
         tone: "neutral",
-        label: rL.not_configured
+        label: rW.not_configured
     };
-    return o(rM, {
+    return o(rA, {
         tone: r.tone,
         title: r.title,
         children: r.label
     });
 }
-const rT = `
+const rU = `
 .fttr-badge {
 	display: inline-block;
 	padding: 0.18em 0.55em;
@@ -2791,8 +2832,8 @@ const rT = `
 	color: var(--fttr-neutral-color, #bdc3c7);
 }
 `;
-let rq = (e)=>JSON.stringify(e, null, 2);
-async function rW(e) {
+let rZ = (e)=>JSON.stringify(e, null, 2);
+async function rV(e) {
     let t = [
         "{"
     ], r = !0;
@@ -2814,7 +2855,7 @@ async function rW(e) {
         type: "application/json"
     });
 }
-function rB(e) {
+function rF(e) {
     let t = e.reference;
     return t?.url.startsWith("https://github.com/opencord/omci-lib-go/blob/v2.2.4/") ? o("a", {
         href: t.url,
@@ -2825,11 +2866,11 @@ function rB(e) {
         children: "\u2014"
     });
 }
-const rU = async ()=>rw().getCapabilities();
-async function rZ(e) {
-    if (!(await rU()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
+const rJ = async ()=>rj().getCapabilities();
+async function rK(e) {
+    if (!(await rJ()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
 }
-let rV = {
+let rG = {
     ready: {
         label: _("Ready"),
         type: "success"
@@ -2919,19 +2960,19 @@ let rV = {
         type: "neutral"
     }
 };
-function rF(e, t) {
+function rH(e, t) {
     if (!e) return o("span", {
         class: "fttr-badge fttr-badge-neutral",
         children: "\u2014"
     });
-    let r = rV[e], n = r?.label || l(e), i = r?.type || "neutral";
+    let r = rG[e], n = r?.label || l(e), i = r?.type || "neutral";
     return o("span", {
         class: `fttr-badge fttr-badge-${i}`,
         title: t || e,
         children: n
     });
 }
-function rJ(e) {
+function rQ(e) {
     var t, r, n, i, a, s;
     return s = {
         class: "table-wrapper",
@@ -2995,7 +3036,7 @@ function rJ(e) {
                                     })
                                 }, o("td", i)),
                                 o("td", {
-                                    children: rF(e.state)
+                                    children: rH(e.state)
                                 }),
                                 (s = {
                                     children: (t = e.current_revision, r = e.management_fresh, a = {
@@ -3081,9 +3122,9 @@ function rJ(e) {
     }, o("div", s);
 }
 let main = L.view.extend({
-    load: async ()=>(await rZ("sync"), Promise.all([
-            rk(),
-            rz()
+    load: async ()=>(await rK("sync"), Promise.all([
+            r$(),
+            rC()
         ])),
     render (e) {
         var t, r, n, i, a, u;
@@ -3112,10 +3153,10 @@ let main = L.view.extend({
                 z = !0, B(x);
                 try {
                     var t;
-                    await rj("reset_state", e.device), m.replaceChildren((t = {
+                    await rM("reset_state", e.device), m.replaceChildren((t = {
                         class: "alert-message info",
                         children: _("Synchronization state reset for %s. Preview differences to read the current device state.").replace("%s", e.name || e.optical_sn)
-                    }, o("div", t))), B(await rk());
+                    }, o("div", t))), B(await r$());
                 } catch (e) {
                     m.replaceChildren(o("div", {
                         class: "alert-message danger",
@@ -3130,11 +3171,11 @@ let main = L.view.extend({
                 z = !0, B(x);
                 try {
                     var t;
-                    let r = await rj("apply", e.device), n = "operation_ids" in r ? r.operation_ids.join(", ") : "\u2014";
+                    let r = await rM("apply", e.device), n = "operation_ids" in r ? r.operation_ids.join(", ") : "\u2014";
                     m.replaceChildren((t = {
                         class: "alert-message info",
                         children: _("Configuration delivery started for %s. Operation IDs: %s").replace("%s", e.name || e.optical_sn).replace("%s", n || "\u2014")
-                    }, o("div", t))), B(await rk());
+                    }, o("div", t))), B(await r$());
                 } catch (e) {
                     m.replaceChildren(o("div", {
                         class: "alert-message danger",
@@ -3146,7 +3187,7 @@ let main = L.view.extend({
             }
         }, M = async (e)=>{
             try {
-                let t = (await rx()).sub_gateways.find((t)=>t.serial_number === e.optical_sn);
+                let t = (await rS()).sub_gateways.find((t)=>t.serial_number === e.optical_sn);
                 if (!t) throw Error(_("Device is offline or no longer registered; refresh status and retry."));
                 !function(e) {
                     var t, r, n, i, a, c, p, u, f, g, b, h;
@@ -3200,13 +3241,13 @@ let main = L.view.extend({
                                 rows: [
                                     [
                                         _("Registration"),
-                                        o(rP, {
+                                        o(rE, {
                                             state: e.state
                                         })
                                     ],
                                     [
                                         _("Business"),
-                                        o(rR, {
+                                        o(rI, {
                                             status: e.business_status
                                         })
                                     ],
@@ -3250,7 +3291,7 @@ let main = L.view.extend({
                                 rows: [
                                     [
                                         _("CWMP"),
-                                        o(rN, {
+                                        o(rD, {
                                             management: e.management
                                         })
                                     ],
@@ -3260,13 +3301,13 @@ let main = L.view.extend({
                                     ],
                                     [
                                         _("Provisioning"),
-                                        o(rI, {
+                                        o(rq, {
                                             provisioning: e.provisioning
                                         })
                                     ],
                                     [
                                         _("Wi-Fi sync"),
-                                        o(rD, {
+                                        o(rB, {
                                             state: e.wifi_sync
                                         })
                                     ],
@@ -3343,7 +3384,7 @@ let main = L.view.extend({
                             if (w && !v) {
                                 O.disabled = !0, C.textContent = _("Preparing JSON download\u2026");
                                 try {
-                                    let t = await rW(w);
+                                    let t = await rV(w);
                                     if (v) return;
                                     M && URL.revokeObjectURL(M), M = URL.createObjectURL(t);
                                     let r = document.createElement("a");
@@ -3508,7 +3549,7 @@ let main = L.view.extend({
 						--fttr-neutral-color: #bdc3c7;
 					}
 				}
-				${rT}
+				${rU}
 				.onu-details-header {
 					margin-bottom: 12px;
 					border-bottom: 1px solid var(--fttr-border);
@@ -3881,21 +3922,21 @@ let main = L.view.extend({
                         if (!y) {
                             y = !0, R.disabled = A.disabled = !0, j.style.display = "", j.title = "0%", j.firstElementChild.style.width = "0%", z.textContent = _("Reading MIB\u2026");
                             try {
-                                let v = await rx(), y = v.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
+                                let v = await rS(), y = v.sub_gateways?.find((t)=>t.serial_number === e.serial_number);
                                 if (y?.state !== "o5_operation") throw Error(_("Device is offline; reopen details after registration."));
                                 if (!B()) return;
-                                let k = await rS(y.onu_id, y.serial_number, t);
+                                let k = await rO(y.onu_id, y.serial_number, t);
                                 x = k.job;
                                 let C = Date.now() + 140000;
                                 for(; B();){
-                                    let e = await r$(k.job, 0);
+                                    let e = await rP(k.job, 0);
                                     if (!B()) return;
                                     if ("ready" === e.status) {
                                         var r, n, i, a, s, c, d, p, u, f, g, b, h, m;
                                         if (!e.chunks || e.chunks > 1024 || !e.bytes || e.bytes > 33554432 || 0 !== e.chunk || !e.data) throw Error(_("Invalid MIB snapshot"));
                                         let t = new Uint8Array(e.bytes), v = 0;
                                         for(let r = 0; r < e.chunks; r++){
-                                            let n = 0 === r ? e : await r$(k.job, r);
+                                            let n = 0 === r ? e : await rP(k.job, r);
                                             if (!B()) return;
                                             if ("ready" !== n.status || n.chunk !== r || n.chunks !== e.chunks || n.bytes !== e.bytes || !n.data) throw Error(_("Invalid MIB snapshot chunk"));
                                             let i = atob(n.data);
@@ -3905,7 +3946,7 @@ let main = L.view.extend({
                                             j.title = `${a}%`, j.firstElementChild.style.width = `${a}%`, z.textContent = `${_("Downloading MIB snapshot")}: ${r + 1}/${e.chunks}`;
                                         }
                                         if (v !== t.length) throw Error(_("Incomplete MIB snapshot"));
-                                        if (await Z(), w = t5.parse(rh(JSON.parse(new TextDecoder("utf-8", {
+                                        if (await Z(), w = t7.parse(rw(JSON.parse(new TextDecoder("utf-8", {
                                             fatal: !0
                                         }).decode(t)))).report, 1 !== w.schema_version || w.onu_id !== y.onu_id) throw Error(_("Unexpected MIB response"));
                                         j.style.display = "none", z.replaceChildren((r = w, g = {
@@ -4073,7 +4114,7 @@ let main = L.view.extend({
                                                                                                                 case "table_length":
                                                                                                                     return l(e.bytes);
                                                                                                                 default:
-                                                                                                                    throw new rb("unexpected_variant", `Unexpected variant: ${String(e)}`);
+                                                                                                                    throw new ry("unexpected_variant", `Unexpected variant: ${String(e)}`);
                                                                                                             }
                                                                                                         }(e.value)
                                                                                                     }, o("span", i)),
@@ -4085,7 +4126,7 @@ let main = L.view.extend({
                                                                                                             }, o("summary", a)),
                                                                                                             (s = {
                                                                                                                 class: "mib-pre",
-                                                                                                                children: rq(e.observations)
+                                                                                                                children: rZ(e.observations)
                                                                                                             }, o("pre", s))
                                                                                                         ]
                                                                                                     }, o("details", c)) : null
@@ -4093,7 +4134,7 @@ let main = L.view.extend({
                                                                                             }, o("td", d)),
                                                                                             (p = {
                                                                                                 class: "mib-attr-ref",
-                                                                                                children: rB(e.definition)
+                                                                                                children: rF(e.definition)
                                                                                             }, o("td", p))
                                                                                         ]
                                                                                     }, o("tr", u);
@@ -4186,12 +4227,12 @@ let main = L.view.extend({
                                                                                     children: [
                                                                                         _("G.988 encoded field values"),
                                                                                         ": ",
-                                                                                        rB(e.attribute)
+                                                                                        rF(e.attribute)
                                                                                     ]
                                                                                 }, o("p", h)),
                                                                                 (m = {
                                                                                     class: "mib-pre",
-                                                                                    children: rq(e.vlan_rules.length ? e.vlan_rules : e.rows)
+                                                                                    children: rZ(e.vlan_rules.length ? e.vlan_rules : e.rows)
                                                                                 }, o("pre", m))
                                                                             ]
                                                                         }, o("details", v);
@@ -4204,7 +4245,7 @@ let main = L.view.extend({
                                                                             }, o("summary", w)),
                                                                             (x = {
                                                                                 class: "mib-pre",
-                                                                                children: rq({
+                                                                                children: rZ({
                                                                                     diagnostics: r.diagnostics,
                                                                                     records: e.records.filter((e)=>e.class_id === t && e.entity_id === r.entity_id)
                                                                                 })
@@ -4279,10 +4320,10 @@ let main = L.view.extend({
                                                 }, o("summary", b)),
                                                 (h = {
                                                     class: "mib-pre",
-                                                    children: rq(w.diagnostics)
+                                                    children: rZ(w.diagnostics)
                                                 }, o("pre", h))
                                             ]
-                                        }, o("details", m))), n = w, $.textContent = rq({
+                                        }, o("details", m))), n = w, $.textContent = rZ({
                                             schema_version: n.schema_version,
                                             reference_version: n.reference_version,
                                             onu_id: n.onu_id,
@@ -4332,7 +4373,7 @@ let main = L.view.extend({
                         let e = x;
                         x = null;
                         try {
-                            await rC(e);
+                            await rR(e);
                         } catch (e) {
                             console.warn("Failed to release MIB snapshot", e);
                         }
@@ -4351,11 +4392,11 @@ let main = L.view.extend({
                 B(x);
                 try {
                     var t;
-                    let r = await rj(e, v.value), n = e.startsWith("management_") ? _("Management operation started; status is refreshed below.") : _("Started: %s").replace("%s", "operation_ids" in r ? r.operation_ids.join(", ") : "\u2014");
+                    let r = await rM(e, v.value), n = e.startsWith("management_") ? _("Management operation started; status is refreshed below.") : _("Started: %s").replace("%s", "operation_ids" in r ? r.operation_ids.join(", ") : "\u2014");
                     m.replaceChildren((t = {
                         class: "alert-message info",
                         children: n
-                    }, o("div", t))), B(await rk());
+                    }, o("div", t))), B(await r$());
                 } catch (e) {
                     m.replaceChildren(o("div", {
                         class: "alert-message danger",
@@ -4803,7 +4844,7 @@ let main = L.view.extend({
                                         ]
                                     }),
                                     " ",
-                                    rF(es?.state)
+                                    rH(es?.state)
                                 ]
                             }, o("span", u)),
                             (f = {
@@ -5130,7 +5171,7 @@ let main = L.view.extend({
                                                     style: "font-size:85%;color:#666",
                                                     children: [
                                                         "OMCI: ",
-                                                        rF(t.omci_management?.state),
+                                                        rH(t.omci_management?.state),
                                                         t.omci_management?.reason ? o("span", {
                                                             style: "margin-left:4px;color:#888",
                                                             title: t.omci_management.reason,
@@ -5191,7 +5232,7 @@ let main = L.view.extend({
                                                     children: "CWMP:"
                                                 }),
                                                 " ",
-                                                rF(t.management?.state, t.management?.last_inform ? `${_("Last Inform: %s").replace("%s", c(t.management.last_inform))}${null != t.management.age_seconds ? ` (${p(t.management.age_seconds)})` : ""}` : void 0)
+                                                rH(t.management?.state, t.management?.last_inform ? `${_("Last Inform: %s").replace("%s", c(t.management.last_inform))}${null != t.management.age_seconds ? ` (${p(t.management.age_seconds)})` : ""}` : void 0)
                                             ]
                                         }, o("span", y)),
                                         (w = {
@@ -5204,7 +5245,7 @@ let main = L.view.extend({
                                                     ]
                                                 }),
                                                 " ",
-                                                rF(ej.state)
+                                                rH(ej.state)
                                             ]
                                         }, o("span", w)),
                                         (x = {
@@ -5214,7 +5255,7 @@ let main = L.view.extend({
                                                     children: "Wi-Fi:"
                                                 }),
                                                 " ",
-                                                rF(t.wifi_sync)
+                                                rH(t.wifi_sync)
                                             ]
                                         }, o("span", x))
                                     ]
@@ -5293,7 +5334,7 @@ let main = L.view.extend({
                             style: "margin:8px 0;font-size:85%",
                             children: ej.reconcile_reason
                         }) : null,
-                        rJ(ej.items ?? []),
+                        rQ(ej.items ?? []),
                         ej.cwmp_contract ? (K = {
                             style: "margin-top:1.2em",
                             children: [
@@ -5320,7 +5361,7 @@ let main = L.view.extend({
                                                     ]
                                                 }, o("div", T)),
                                                 o("div", {
-                                                    children: rF(ej.cwmp_contract.state)
+                                                    children: rH(ej.cwmp_contract.state)
                                                 })
                                             ]
                                         }, o("div", q)),
@@ -5334,7 +5375,7 @@ let main = L.view.extend({
                                                             children: "WAN:"
                                                         }),
                                                         " ",
-                                                        rF(ej.cwmp_contract.capabilities?.wan)
+                                                        rH(ej.cwmp_contract.capabilities?.wan)
                                                     ]
                                                 }, o("span", W)),
                                                 (B = {
@@ -5344,7 +5385,7 @@ let main = L.view.extend({
                                                             children: "WLAN:"
                                                         }),
                                                         " ",
-                                                        rF(ej.cwmp_contract.capabilities?.wlan)
+                                                        rH(ej.cwmp_contract.capabilities?.wlan)
                                                     ]
                                                 }, o("span", B)),
                                                 (U = {
@@ -5357,7 +5398,7 @@ let main = L.view.extend({
                                                             ]
                                                         }),
                                                         " ",
-                                                        rF(ej.cwmp_contract.capabilities?.binding)
+                                                        rH(ej.cwmp_contract.capabilities?.binding)
                                                     ]
                                                 }, o("span", U)),
                                                 (Z = {
@@ -5410,7 +5451,7 @@ let main = L.view.extend({
                                         (G = {
                                             style: "display:flex;align-items:center;gap:6px",
                                             children: [
-                                                rF(u.state),
+                                                rH(u.state),
                                                 u.inflight ? o("span", {
                                                     class: "fttr-badge fttr-badge-info",
                                                     children: _("Command in progress")
@@ -5629,7 +5670,7 @@ let main = L.view.extend({
                                 o("h4", {
                                     children: _("ACS bootstrap")
                                 }),
-                                rF(u.state),
+                                rH(u.state),
                                 o("p", {
                                     children: u.reason
                                 })
@@ -5642,7 +5683,7 @@ let main = L.view.extend({
                                     style: "margin-bottom:0.5em",
                                     children: _("WAN / WLAN lifecycle results")
                                 }),
-                                rJ(e$)
+                                rQ(e$)
                             ]
                         }, o("div", em)) : null,
                         (ek = {
@@ -5708,8 +5749,8 @@ let main = L.view.extend({
                 j = !0;
                 try {
                     let [e, t] = await Promise.all([
-                        rk(),
-                        rz()
+                        r$(),
+                        rC()
                     ]);
                     k = t, B(e);
                 } catch (e) {
