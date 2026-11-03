@@ -405,7 +405,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;
-	laserOverride = initialStatus.optical_transceiver.tx_enabled;
+	laserOverride = initialStatus.optical_transceiver.tx_enabled ?? null;
 	laserReply = null;
 	const initialRevision = laserRevision;
 	getOpticalStatus()

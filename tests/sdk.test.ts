@@ -141,6 +141,42 @@ test("capability helpers import without a LuCI global", async () => {
 	assert.deepEqual(helpers.adaptersFromCapabilities(), []);
 });
 
+test("generated nested contracts reject drift and preserve unknown measurements and sparse outcomes", async () => {
+	const schemas = await import("../src/api/generated/schemas");
+	const optical = {
+		model: "test",
+		wavelength_tx_nm: 1490,
+		wavelength_rx_nm: 1310,
+		phy_rate_downlink_gbps: 2.488,
+		phy_rate_uplink_gbps: 1.244,
+		tx_power_dbm: null,
+		laser_bias_current_ma: null,
+		temperature_celsius: null,
+		vcc_voltage: null,
+		cdr_locked: null,
+		measurements: {},
+	};
+	assert.deepEqual(schemas.OpticalTransceiverStatusSchema.parse(optical), optical);
+	assert.throws(() => schemas.OpticalTransceiverStatusSchema.parse({ ...optical, tx_power_dbm: "unknown" }));
+	assert.deepEqual(schemas.AcsBootstrapSchema.parse({ state: "pending", reason: "not observed" }), {
+		state: "pending",
+		reason: "not observed",
+	});
+	assert.throws(() => schemas.AcsBootstrapSchema.parse({ state: "ready", reason: "missing snapshot" }));
+	assert.deepEqual(schemas.ProvisioningStatusSchema.parse({ state: "not_started", items: [] }), {
+		state: "not_started",
+		items: [],
+	});
+	assert.throws(() => schemas.ProvisioningStatusSchema.parse({ state: "not_started", items: [{ id: "test" }] }));
+	const failed = { target: "REDACTED", status: "timeout", output_truncated: false, error: "outcome unknown" };
+	assert.deepEqual(schemas.HlCommandResultSchema.parse(failed), failed);
+	assert.throws(() => schemas.HlCommandResultSchema.parse({ ...failed, status: "typo" }));
+	assert.throws(() => schemas.HlAccountSchema.parse({ entry: 3, username: "test", active: false }));
+	assert.throws(() => schemas.ConfigCheckReplySchema.parse({ valid: false, revision: "test", devices: 0 }));
+	const { configCheck } = await import("../src/view/contracts/provisioning");
+	assert.throws(() => configCheck.parse({ valid: true, revision: "test", devices: 0, error: "invalid" }));
+});
+
 test("native writes preserve synchronization selectors, errors and single-attempt transport", async () => {
 	const { client, declarations, calls } = setup({ operation_ids: [1], revision: "revision_a" });
 	assert.deepEqual(declarations.find((item) => item.method === "sync")?.params, [

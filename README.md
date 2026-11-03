@@ -128,8 +128,9 @@ wire types, client and ACL, then derives Zod mini schemas from those types.
 `sdk:check` checks all four artifacts without writing; `check` also runs the
 typecheck, tests and production build. The schema compiler rejects unsupported
 syntax and checks assignability in both directions during TypeScript compilation.
-Explicit `unknown` nested status/provisioning payloads still use the stricter
-frontend domain schemas until those producers have shared Rust types.
+Status, provisioning, MIB reports and HL202 job results use shared Rust models
+and generated runtime schemas. Only device-defined telemetry field values remain
+explicit `unknown` JSON; their enclosing metadata is typed.
 
 Both repositories run the pipeline in CI and reject stale package JavaScript.
 Use `FTTR_BACKEND_REF` / `FTTR_FRONTEND_REF` repository variables (or manual workflow

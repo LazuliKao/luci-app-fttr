@@ -3,7 +3,16 @@ import * as z from "zod/mini";
 import type * as wire from "./types";
 
 export const AccountChangeSchema = z.union([z.literal("account_set_password"), z.literal("account_set_active")]) satisfies z.ZodMiniType<wire.AccountChange>;
+export const BootstrapPhaseSchema = z.union([z.literal("waiting_transport"), z.literal("waiting_identity"), z.literal("reading"), z.literal("configuring"), z.literal("verifying"), z.literal("waiting_inform"), z.literal("ready"), z.literal("retry_wait"), z.literal("manual_required"), z.literal("not_configured"), z.literal("waiting_acs"), z.literal("awaiting_apply"), z.literal("discovering_management_wan"), z.literal("configuring_management_wan"), z.literal("verifying_management_wan")]) satisfies z.ZodMiniType<wire.BootstrapPhase>;
+export const AcsListenerSchema = z.object({ "enabled": z.boolean(), "listen": z.union([z.string(), z.null()]), "path": z.union([z.string(), z.null()]), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.AcsListener>;
+export const ManagementDesiredSchema = z.object({ "vlan": z.number(), "vlans": z.array(z.number()), "priority": z.number(), "acs_url": z.string() }) satisfies z.ZodMiniType<wire.ManagementDesired>;
+export const BootstrapSnapshotSchema = z.object({ "state": BootstrapPhaseSchema, "optical_sn": z.string(), "cwmp_id": z.string(), "mqtt_target": z.union([z.string(), z.null()]), "binding_source": z.string(), "method": z.string(), "desired_version": z.string(), "generation": z.number(), "reason": z.string(), "attempts": z.number(), "next_retry_at": z.number(), "updated_at": z.number(), "settings_verified_at": z.union([z.number(), z.null()]), "selected_vlan": z.union([z.number(), z.null()]), "last_inform": z.union([z.number(), z.null()]), "expected_acs_url": z.string(), "last_error": z.union([z.string(), z.null()]), "transport_epoch": z.number(), "completed_authorization": z.number(), "connection_request_enabled": z.union([z.boolean(), z.null()]), "inflight": z.boolean(), "persistence_error": z.union([z.string(), z.null()]), "link_identity_error": z.union([z.string(), z.null()]), "listener": AcsListenerSchema, "mqtt_last_seen": z.union([z.number(), z.null()]), "desired": z.optional(ManagementDesiredSchema), "endpoint_notice": z.optional(z.string()), "manual_steps": z.optional(z.array(z.string())) }) satisfies z.ZodMiniType<wire.BootstrapSnapshot>;
+export const BootstrapUnavailablePhaseSchema = z.union([z.literal("pending"), z.literal("unavailable")]) satisfies z.ZodMiniType<wire.BootstrapUnavailablePhase>;
+export const AcsBootstrapSchema = z.union([BootstrapSnapshotSchema, z.object({ "state": BootstrapUnavailablePhaseSchema, "reason": z.string() })]) satisfies z.ZodMiniType<wire.AcsBootstrap>;
 export const AdapterCapabilitySchema = z.object({ "id": z.string(), "name": z.string() }) satisfies z.ZodMiniType<wire.AdapterCapability>;
+export const BackendStatusSchema = z.object({ "configured": z.string(), "effective": z.string(), "available": z.array(z.string()), "reason": z.string() }) satisfies z.ZodMiniType<wire.BackendStatus>;
+export const BusinessPhaseSchema = z.union([z.literal("not_started"), z.literal("collecting_identity"), z.literal("retrying_identity"), z.literal("unsupported"), z.literal("configuring"), z.literal("verifying"), z.literal("wan_bootstrap_pending"), z.literal("verified"), z.literal("retrying"), z.literal("offline")]) satisfies z.ZodMiniType<wire.BusinessPhase>;
+export const BusinessStatusSchema = z.object({ "phase": BusinessPhaseSchema, "generation": z.number(), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.BusinessStatus>;
 export const CalibrationAppliedSchema = z.object({ "success": z.boolean(), "output": z.optional(z.string()), "error": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.CalibrationApplied>;
 export const CalibrationSourceSchema = z.union([z.literal("factory"), z.literal("firmware"), z.literal("builtin")]) satisfies z.ZodMiniType<wire.CalibrationSource>;
 export const FactoryCalibrationSchema = z.object({ "detected": z.boolean(), "device": z.string(), "has_data": z.boolean(), "sha256": z.string(), "data": z.string() }) satisfies z.ZodMiniType<wire.FactoryCalibration>;
@@ -18,22 +27,68 @@ export const CapabilityFeaturesSchema = z.object({ "acs": z.boolean(), "mqtt": z
 export const CapabilityFunctionsSchema = z.object({ "optical": z.boolean(), "bridge_offload": z.boolean(), "omci_mib": z.boolean(), "mqtt_telemetry": z.boolean(), "hl202_management": z.boolean(), "cwmp": z.boolean(), "command_provisioning": z.boolean() }) satisfies z.ZodMiniType<wire.CapabilityFunctions>;
 export const CapabilityPagesSchema = z.object({ "status": z.boolean(), "config": z.boolean(), "sync": z.boolean(), "hardware": z.boolean(), "calibration": z.boolean(), "hl202": z.boolean(), "about": z.boolean() }) satisfies z.ZodMiniType<wire.CapabilityPages>;
 export const CapabilitiesSchema = z.object({ "schema_version": z.literal(1), "version": z.string(), "features": CapabilityFeaturesSchema, "functions": CapabilityFunctionsSchema, "pages": CapabilityPagesSchema, "adapters": z.array(AdapterCapabilitySchema) }) satisfies z.ZodMiniType<wire.Capabilities>;
-export const ConfigCheckReplySchema = z.union([z.object({ "valid": z.boolean(), "revision": z.string(), "devices": z.number() }), z.object({ "error": z.string() })]) satisfies z.ZodMiniType<wire.ConfigCheckReply>;
+export const ConfigCheckReplySchema = z.union([z.object({ "valid": z.literal(true), "revision": z.string(), "devices": z.number() }), z.object({ "error": z.string() })]) satisfies z.ZodMiniType<wire.ConfigCheckReply>;
 export const SyncModeSchema = z.union([z.literal("auto"), z.literal("manual")]) satisfies z.ZodMiniType<wire.SyncMode>;
 export const SyncMethodSchema = z.literal("diff") satisfies z.ZodMiniType<wire.SyncMethod>;
+export const DeviceOmciManagementSchema = z.object({ "state": z.string(), "enabled": z.boolean(), "reason": z.optional(z.union([z.string(), z.null()])), "revision": z.optional(z.string()), "vlan": z.optional(z.number()), "updated_at": z.optional(z.number()) }) satisfies z.ZodMiniType<wire.DeviceOmciManagement>;
+export const ManagementStateSchema = z.union([z.literal("online"), z.literal("waiting_inform"), z.literal("offline_or_stale"), z.literal("waiting_transport")]) satisfies z.ZodMiniType<wire.ManagementState>;
+export const ManagementStatusSchema = z.object({ "cwmp_id": z.string(), "state": ManagementStateSchema, "optical_online": z.boolean(), "last_inform": z.union([z.number(), z.null()]), "age_seconds": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.ManagementStatus>;
+export const OperationPhaseSchema = z.union([z.literal("waiting"), z.literal("wan_reconciling"), z.literal("wan_verifying"), z.literal("wifi_reconciling"), z.literal("discovering"), z.literal("reading"), z.literal("disabling"), z.literal("disabling_read"), z.literal("writing"), z.literal("verifying"), z.literal("settling"), z.literal("completed"), z.literal("not_started"), z.literal("reset_pending"), z.literal("interrupted"), z.literal("recovering"), z.literal("waiting_management"), z.literal("waiting_task")]) satisfies z.ZodMiniType<wire.OperationPhase>;
+export const SyncItemKindSchema = z.union([z.literal("device_service"), z.literal("ssid"), z.literal("port_binding"), z.literal("wan_activation")]) satisfies z.ZodMiniType<wire.SyncItemKind>;
+export const SyncChangeSchema = z.object({ "name": z.string(), "desired": z.string() }) satisfies z.ZodMiniType<wire.SyncChange>;
+export const SyncItemSchema = z.object({ "id": z.string(), "name": z.optional(z.union([z.string(), z.null()])), "kind": SyncItemKindSchema, "service_type": z.string(), "state": z.string(), "reason": z.optional(z.string()), "revision": z.optional(z.string()), "current_revision": z.optional(z.boolean()), "management_fresh": z.optional(z.boolean()), "operation_id": z.optional(z.number()), "task_id": z.optional(z.union([z.number(), z.null()])), "updated_at": z.optional(z.number()), "changes": z.optional(z.array(SyncChangeSchema)) }) satisfies z.ZodMiniType<wire.SyncItem>;
+export const OperationModeSchema = z.union([z.literal("plan"), z.literal("apply")]) satisfies z.ZodMiniType<wire.OperationMode>;
+export const CwmpCapabilitiesSchema = z.object({ "wan": z.string(), "wlan": z.string(), "binding": z.string() }) satisfies z.ZodMiniType<wire.CwmpCapabilities>;
+export const CwmpContractSchema = z.object({ "state": z.string(), "requested": z.string(), "contract": z.union([z.string(), z.null()]), "reason": z.string(), "cache_hit": z.boolean(), "schema": z.string(), "capabilities": z.union([CwmpCapabilitiesSchema, z.null()]) }) satisfies z.ZodMiniType<wire.CwmpContract>;
+export const WanOwnedSchema = z.object({ "parent": z.number(), "connection": z.number(), "state": z.string(), "service_list": z.string(), "kind": z.string(), "baseline": z.union([z.array(z.number()), z.null()]) }) satisfies z.ZodMiniType<wire.WanOwned>;
+export const LifecycleSchema = z.object({ "state": z.string(), "reason": z.optional(z.string()), "task_id": z.optional(z.union([z.number(), z.null()])), "instance": z.optional(z.number()), "cwmp_id": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.Lifecycle>;
+export const WanStageSchema = z.union([z.literal("waiting"), z.literal("inventory"), z.literal("classifying"), z.literal("adding_parent"), z.literal("child_names"), z.literal("adding_child"), z.literal("delete_guard"), z.literal("deleting"), z.literal("verify_delete"), z.literal("empty_parent"), z.literal("deleting_parent"), z.literal("verify_parent_delete"), z.literal("next"), z.literal("done")]) satisfies z.ZodMiniType<wire.WanStage>;
+export const WifiOwnedSchema = z.object({ "owned": z.array(z.number()), "pending": z.union([z.string(), z.null()]), "pending_instance": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.WifiOwned>;
+export const WifiStageSchema = z.union([z.literal("waiting"), z.literal("inventory"), z.literal("adding"), z.literal("verify_add"), z.literal("deleting"), z.literal("verify_delete"), z.literal("reading_disable"), z.literal("disabling"), z.literal("verifying_disable"), z.literal("next"), z.literal("done")]) satisfies z.ZodMiniType<wire.WifiStage>;
+export const WifiCleanupSchema = z.union([z.literal("disable"), z.literal("preserve"), z.literal("delete")]) satisfies z.ZodMiniType<wire.WifiCleanup>;
+export const NativeWanOwnedSchema = z.object({ "parent": z.number(), "child": z.number(), "service": z.string(), "vlan": z.string() }) satisfies z.ZodMiniType<wire.NativeWanOwned>;
+export const ProvisioningStatusSchema = z.object({ "state": OperationPhaseSchema, "items": z.array(SyncItemSchema), "backend": z.optional(BackendStatusSchema), "operation_id": z.optional(z.number()), "device": z.optional(z.string()), "optical_sn": z.optional(z.string()), "cwmp_id": z.optional(z.string()), "revision": z.optional(z.string()), "mode": z.optional(OperationModeSchema), "started_at": z.optional(z.number()), "completed_at": z.optional(z.union([z.number(), z.null()])), "current_revision": z.optional(z.boolean()), "management_fresh": z.optional(z.boolean()), "reason": z.optional(z.string()), "error": z.optional(z.string()), "attempts": z.optional(z.number()), "next_retry_at": z.optional(z.number()), "reconcile_reason": z.optional(z.string()), "cwmp_contract": z.optional(CwmpContractSchema), "wan_objects": z.optional(z.record(z.string(), WanOwnedSchema)), "wan_lifecycle": z.optional(z.record(z.string(), LifecycleSchema)), "wan_stage": z.optional(WanStageSchema), "wifi_objects": z.optional(WifiOwnedSchema), "wifi_lifecycle": z.optional(z.record(z.string(), LifecycleSchema)), "wifi_stage": z.optional(WifiStageSchema), "wifi_cleanup": z.optional(WifiCleanupSchema), "native_ownership": z.optional(z.record(z.string(), NativeWanOwnedSchema)), "write_performed": z.optional(z.boolean()), "readback_verified": z.optional(z.boolean()) }) satisfies z.ZodMiniType<wire.ProvisioningStatus>;
+export const WifiSyncSchema = z.union([z.literal("not_configured"), z.literal("stale_revision"), z.literal("stale_management"), z.literal("verified"), z.literal("attention_required"), z.literal("accepted_unverified"), z.literal("pending"), z.literal("recovering"), z.literal("waiting_management")]) satisfies z.ZodMiniType<wire.WifiSync>;
+export const DeviceSyncSchema = z.object({ "device": z.string(), "name": z.union([z.string(), z.null()]), "group": z.union([z.string(), z.null()]), "group_name": z.union([z.string(), z.null()]), "template": z.union([z.string(), z.null()]), "template_name": z.union([z.string(), z.null()]), "optical_sn": z.string(), "adapter": z.string(), "omci_management": DeviceOmciManagementSchema, "management": z.union([ManagementStatusSchema, z.null()]), "acs_bootstrap": AcsBootstrapSchema, "provisioning": ProvisioningStatusSchema, "services": z.array(SyncItemSchema), "ssids": z.array(SyncItemSchema), "wifi_sync": WifiSyncSchema }) satisfies z.ZodMiniType<wire.DeviceSync>;
+export const NetworkPhaseSchema = z.union([z.literal("discovering"), z.literal("comparing"), z.literal("planning"), z.literal("applying"), z.literal("verifying"), z.literal("configuring_listener"), z.literal("cleaning_previous"), z.literal("waiting_devices"), z.literal("ready"), z.literal("awaiting_apply"), z.literal("verified"), z.literal("blocked"), z.literal("retry_wait")]) satisfies z.ZodMiniType<wire.NetworkPhase>;
+export const NetworkConfigSchema = z.object({ "enabled": z.boolean(), "mode": SyncModeSchema, "vlan": z.array(z.number()), "priority": z.number(), "address": z.string(), "acs_url": z.string(), "port": z.number(), "path": z.string(), "dhcp_enabled": z.boolean() }) satisfies z.ZodMiniType<wire.NetworkConfig>;
+export const NetworkPlanSchema = z.object({ "operation": z.string(), "key": z.string(), "value": z.array(z.string()) }) satisfies z.ZodMiniType<wire.NetworkPlan>;
+export const ManagementNetworkSchema = z.object({ "state": NetworkPhaseSchema, "error": z.union([z.string(), z.null()]), "inflight": z.boolean(), "ready": z.boolean(), "desired_version": z.union([z.string(), z.null()]), "applied_version": z.union([z.string(), z.null()]), "next_retry_at": z.number(), "attempts": z.number(), "desired": z.union([NetworkConfigSchema, z.null()]), "applied": z.union([NetworkConfigSchema, z.null()]), "previous": z.union([NetworkConfigSchema, z.null()]), "plan": z.array(NetworkPlanSchema) }) satisfies z.ZodMiniType<wire.ManagementNetwork>;
+export const OmciManagementSchema = z.object({ "desired": z.union([ManagementDesiredSchema, z.null()]), "state": z.string() }) satisfies z.ZodMiniType<wire.OmciManagement>;
 export const SyncGroupSchema = z.object({ "id": z.string(), "name": z.union([z.string(), z.null()]), "template": z.string() }) satisfies z.ZodMiniType<wire.SyncGroup>;
-export const SyncStatusReplySchema = z.object({ "enabled": z.boolean(), "mode": SyncModeSchema, "method": SyncMethodSchema, "revision": z.string(), "triggers": z.array(z.string()), "interval_minutes": z.number(), "error": z.union([z.string(), z.null()]), "devices": z.array(z.unknown()), "management_network": z.unknown(), "omci_management": z.unknown(), "groups": z.array(SyncGroupSchema), "pending_devices": z.array(z.string()) }) satisfies z.ZodMiniType<wire.SyncStatusReply>;
+export const SyncStatusReplySchema = z.object({ "enabled": z.boolean(), "mode": SyncModeSchema, "method": SyncMethodSchema, "revision": z.string(), "triggers": z.array(z.string()), "interval_minutes": z.number(), "error": z.union([z.string(), z.null()]), "devices": z.array(DeviceSyncSchema), "management_network": ManagementNetworkSchema, "omci_management": OmciManagementSchema, "groups": z.array(SyncGroupSchema), "pending_devices": z.array(z.string()), "onu_pins": z.optional(z.record(z.string(), z.number())), "config_error": z.optional(z.union([z.string(), z.null()])) }) satisfies z.ZodMiniType<wire.SyncStatusReply>;
 export const ConfigReloadReplySchema = z.union([SyncStatusReplySchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.ConfigReloadReply>;
+export const DataPathOffloadStatusSchema = z.object({ "enabled": z.union([z.boolean(), z.null()]), "routed_enabled": z.union([z.boolean(), z.null()]), "bridge_enabled": z.union([z.boolean(), z.null()]), "engine_attached": z.union([z.boolean(), z.null()]), "forwarding_verified": z.union([z.boolean(), z.null()]) }) satisfies z.ZodMiniType<wire.DataPathOffloadStatus>;
+export const OnuGemPortSchema = z.object({ "entity_id": z.number(), "port_id": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.OnuGemPort>;
+export const OnuVlanFilterSchema = z.object({ "entity_id": z.number(), "filter_list_hex": z.union([z.string(), z.null()]), "forward_operation": z.union([z.number(), z.null()]), "number_of_entries": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.OnuVlanFilter>;
+export const OnuVlanOperationSchema = z.object({ "entity_id": z.number(), "received_frame_rules_hex": z.union([z.array(z.string()), z.null()]), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.OnuVlanOperation>;
+export const OnuOmciInventorySchema = z.object({ "age_seconds": z.number(), "gem_ports": z.array(OnuGemPortSchema), "vlan_filters": z.array(OnuVlanFilterSchema), "vlan_operations": z.array(OnuVlanOperationSchema) }) satisfies z.ZodMiniType<wire.OnuOmciInventory>;
+export const MeasurementEvidenceSchema = z.object({ "source": z.string(), "unit": z.string(), "reason": z.union([z.string(), z.null()]), "raw": z.union([z.string(), z.null()]), "age_seconds": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.MeasurementEvidence>;
+export const DataPathStatusSchema = z.object({ "interface": z.string(), "gem_ports": z.union([z.array(z.number()), z.null()]), "vlan_id": z.union([z.number(), z.null()]), "onu_inventory": z.union([OnuOmciInventorySchema, z.null()]), "tx_bytes": z.union([z.number(), z.null()]), "rx_bytes": z.union([z.number(), z.null()]), "current_tx_kbps": z.union([z.number(), z.null()]), "current_rx_kbps": z.union([z.number(), z.null()]), "olt_channel_gem": z.optional(z.number()), "forwarding_verified": z.optional(z.boolean()), "offload": DataPathOffloadStatusSchema, "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.DataPathStatus>;
 export const EmptyRequestSchema = z.object({}) satisfies z.ZodMiniType<wire.EmptyRequest>;
+export const HlAccountSchema = z.object({ "entry": z.union([z.literal(0), z.literal(1), z.literal(2)]), "username": z.string(), "active": z.boolean() }) satisfies z.ZodMiniType<wire.HlAccount>;
+export const MqttSourceSchema = z.object({ "mqtt_mac": z.string(), "optical_sn": z.union([z.string(), z.null()]), "onu_id": z.union([z.number(), z.null()]), "binding_generation": z.string(), "last_seen": z.number(), "reason": z.string() }) satisfies z.ZodMiniType<wire.MqttSource>;
+export const HlCommandStatusSchema = z.union([z.literal("executed"), z.literal("dispatched"), z.literal("timeout"), z.literal("error")]) satisfies z.ZodMiniType<wire.HlCommandStatus>;
+export const HlCommandResultSchema = z.object({ "target": z.string(), "status": HlCommandStatusSchema, "request_id": z.optional(z.string()), "exit_code": z.optional(z.number()), "output": z.optional(z.string()), "output_truncated": z.boolean(), "error": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.HlCommandResult>;
+export const HlOperationSchema = z.object({ "target": MqttSourceSchema, "result": HlCommandResultSchema, "binding_current": z.boolean() }) satisfies z.ZodMiniType<wire.HlOperation>;
+export const HlWriteStatusSchema = z.union([z.literal("not_applicable"), z.literal("accepted_and_saved"), z.literal("unconfirmed")]) satisfies z.ZodMiniType<wire.HlWriteStatus>;
+export const OpticalErrorSchema = z.object({ "code": z.string(), "message": z.string() }) satisfies z.ZodMiniType<wire.OpticalError>;
+export const HlAccountReplySchema = z.union([z.object({ "schema_version": z.literal(1), "operation": HlOperationSchema, "accounts": z.union([z.array(HlAccountSchema), z.null()]), "write_status": HlWriteStatusSchema }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlAccountReply>;
 export const HlTargetSchema = z.union([z.object({ "optical_sn": z.string(), "onu_id": z.number(), "binding_generation": z.string() }), z.object({ "mqtt_mac": z.string(), "binding_generation": z.string() })]) satisfies z.ZodMiniType<wire.HlTarget>;
 export const HlAccountsRequestSchema = z.object({ "target": HlTargetSchema }) satisfies z.ZodMiniType<wire.HlAccountsRequest>;
-export const MqttSourceSchema = z.object({ "mqtt_mac": z.string(), "optical_sn": z.union([z.string(), z.null()]), "onu_id": z.union([z.number(), z.null()]), "binding_generation": z.string(), "last_seen": z.number(), "reason": z.string() }) satisfies z.ZodMiniType<wire.MqttSource>;
 export const HlDeviceSchema = z.object({ "optical_sn": z.string(), "onu_id": z.number(), "model": z.string(), "optical_online": z.boolean(), "can_execute": z.boolean(), "mqtt": z.union([MqttSourceSchema, z.null()]), "report_revision": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.HlDevice>;
+export const HlExecReplySchema = z.union([z.object({ "schema_version": z.literal(1), "operation": HlOperationSchema }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlExecReply>;
 export const HlExecRequestSchema = z.object({ "target": HlTargetSchema, "script": z.string(), "timeout_seconds": z.number() }) satisfies z.ZodMiniType<wire.HlExecRequest>;
-export const OpticalErrorSchema = z.object({ "code": z.string(), "message": z.string() }) satisfies z.ZodMiniType<wire.OpticalError>;
 export const HlListReplySchema = z.union([z.object({ "schema_version": z.literal(1), "devices": z.array(HlDeviceSchema), "sources": z.array(MqttSourceSchema) }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlListReply>;
+export const HlReportPhaseSchema = z.union([z.literal("received"), z.literal("report_unavailable")]) satisfies z.ZodMiniType<wire.HlReportPhase>;
+export const HlTelemetryFieldSchema = z.object({ "value": z.unknown(), "member": z.string(), "unit": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.HlTelemetryField>;
+export const HlTelemetryMemberSchema = z.object({ "name": z.string(), "bytes": z.number(), "encoding": z.string(), "text": z.union([z.string(), z.null()]), "text_omitted": z.boolean() }) satisfies z.ZodMiniType<wire.HlTelemetryMember>;
+export const HlTelemetrySchema = z.object({ "schema_version": z.number(), "compressed_bytes": z.number(), "decompressed_bytes": z.number(), "fields": z.record(z.string(), HlTelemetryFieldSchema), "members": z.array(HlTelemetryMemberSchema), "errors": z.array(z.string()) }) satisfies z.ZodMiniType<wire.HlTelemetry>;
+export const HlReportStateSchema = z.object({ "revision": z.number(), "last_received": z.number(), "last_processed_receipt": z.union([z.number(), z.null()]), "last_good": z.union([z.number(), z.null()]), "error": z.union([z.string(), z.null()]), "report": z.union([HlTelemetrySchema, z.null()]) }) satisfies z.ZodMiniType<wire.HlReportState>;
+export const HlReportReplySchema = z.union([z.object({ "schema_version": z.literal(1), "target": MqttSourceSchema, "report": z.union([HlReportStateSchema, z.null()]), "state": HlReportPhaseSchema }), z.object({ "schema_version": z.literal(1), "target": MqttSourceSchema, "report": z.union([HlReportStateSchema, z.null()]), "read_only": z.literal(true) }), z.object({ "schema_version": z.number(), "error": OpticalErrorSchema })]) satisfies z.ZodMiniType<wire.HlReportReply>;
 export const HlReportRequestSchema = z.object({ "target": HlTargetSchema }) satisfies z.ZodMiniType<wire.HlReportRequest>;
 export const HlUpdateRequestSchema = z.object({ "target": HlTargetSchema, "kind": AccountChangeSchema, "entry": z.number(), "password": z.string(), "active": z.boolean() }) satisfies z.ZodMiniType<wire.HlUpdateRequest>;
+export const IpcStatsSchema = z.object({ "accepted": z.number(), "rejected": z.number(), "read_errors": z.number(), "handled": z.number(), "max_intake_us": z.number(), "max_handler_us": z.number() }) satisfies z.ZodMiniType<wire.IpcStats>;
 export const PendingStatusSchema = z.literal("pending") satisfies z.ZodMiniType<wire.PendingStatus>;
 export const JobPhaseSchema = z.union([z.literal("starting"), z.literal("upload"), z.literal("tables")]) satisfies z.ZodMiniType<wire.JobPhase>;
 export const JobProgressSchema = z.object({ "phase": JobPhaseSchema, "received": z.number(), "expected": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.JobProgress>;
@@ -46,22 +101,46 @@ export const JobReleaseRequestSchema = z.object({ "job": z.string() }) satisfies
 export const JobRequestSchema = z.object({ "job": z.string(), "chunk": z.number() }) satisfies z.ZodMiniType<wire.JobRequest>;
 export const JobStartReplySchema = z.union([JobPendingSchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.JobStartReply>;
 export const JobStatsSchema = z.object({ "accepting": z.boolean(), "running": z.number(), "stored": z.number(), "bytes": z.number(), "running_limit": z.number(), "stored_limit": z.number(), "bytes_limit": z.number(), "result_bytes_limit": z.number() }) satisfies z.ZodMiniType<wire.JobStats>;
+export const MeshClientStatusSchema = z.object({ "mac": z.string(), "ip": z.string(), "band": z.string(), "rssi_dbm": z.union([z.number(), z.null()]), "rx_rate_mbps": z.union([z.number(), z.null()]), "tx_rate_mbps": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.MeshClientStatus>;
+export const MibAttributeKindSchema = z.union([z.literal("unknown"), z.literal("octets"), z.literal("string"), z.literal("unsigned_integer"), z.literal("table"), z.literal("signed_integer"), z.literal("pointer"), z.literal("bit_field"), z.literal("enumeration"), z.literal("counter")]) satisfies z.ZodMiniType<wire.MibAttributeKind>;
+export const MibReferenceSchema = z.object({ "id": z.string(), "url": z.string() }) satisfies z.ZodMiniType<wire.MibReference>;
+export const MibDefinitionSchema = z.object({ "name": z.string(), "kind": MibAttributeKindSchema, "index": z.number(), "mask": z.number(), "size": z.number(), "read": z.boolean(), "write": z.boolean(), "set_by_create": z.boolean(), "avc": z.boolean(), "optional": z.boolean(), "deprecated": z.boolean(), "default_hex": z.union([z.string(), z.null()]), "reference": MibReferenceSchema }) satisfies z.ZodMiniType<wire.MibDefinition>;
+export const MibValueSchema = z.union([z.object({ "type": z.literal("unsigned"), "value": z.number() }), z.object({ "type": z.literal("signed"), "value": z.number() }), z.object({ "type": z.literal("decimal"), "value": z.string() }), z.object({ "type": z.literal("text"), "value": z.union([z.string(), z.null()]) }), z.object({ "type": z.literal("octets"), "hex": z.string() }), z.object({ "type": z.literal("table_length"), "bytes": z.number() })]) satisfies z.ZodMiniType<wire.MibValue>;
+export const MibObservationSchema = z.object({ "raw_hex": z.string(), "value": MibValueSchema, "sequences": z.array(z.number()) }) satisfies z.ZodMiniType<wire.MibObservation>;
+export const MibAttributeSchema = z.object({ "definition": MibDefinitionSchema, "value": z.union([MibValueSchema, z.null()]), "observations": z.array(MibObservationSchema) }) satisfies z.ZodMiniType<wire.MibAttribute>;
+export const MibSupportSchema = z.union([z.literal("layout"), z.literal("name_only"), z.literal("unknown")]) satisfies z.ZodMiniType<wire.MibSupport>;
+export const MibClassSchema = z.object({ "class_id": z.number(), "name": z.union([z.string(), z.null()]), "entities": z.number(), "records": z.number(), "support": MibSupportSchema }) satisfies z.ZodMiniType<wire.MibClass>;
+export const MibDiagnosticSchema = z.object({ "code": z.string(), "message": z.string(), "offset": z.number(), "mask": z.number() }) satisfies z.ZodMiniType<wire.MibDiagnostic>;
+export const MibEntitySchema = z.object({ "class_id": z.number(), "entity_id": z.number(), "name": z.union([z.string(), z.null()]), "support": MibSupportSchema, "reference": z.union([MibReferenceSchema, z.null()]), "sequences": z.array(z.number()), "attributes": z.array(MibAttributeSchema), "diagnostics": z.array(MibDiagnosticSchema) }) satisfies z.ZodMiniType<wire.MibEntity>;
+export const MibReadySchema = z.literal("ready") satisfies z.ZodMiniType<wire.MibReady>;
+export const MibRecordSchema = z.object({ "class_id": z.number(), "entity_id": z.number(), "sequence": z.number(), "attribute_mask": z.number(), "raw_hex": z.string(), "consumed": z.number(), "remaining_hex": z.string(), "undecoded_mask": z.number() }) satisfies z.ZodMiniType<wire.MibRecord>;
+export const MibVlanRuleSchema = z.object({ "raw_hex": z.string(), "filter_outer_priority": z.number(), "filter_outer_vid": z.number(), "filter_outer_tpid_dei": z.number(), "filter_inner_priority": z.number(), "filter_inner_vid": z.number(), "filter_inner_tpid_dei": z.number(), "filter_ethertype": z.number(), "tags_to_remove": z.number(), "treatment_outer_priority": z.number(), "treatment_outer_vid": z.number(), "treatment_outer_tpid_dei": z.number(), "treatment_inner_priority": z.number(), "treatment_inner_vid": z.number(), "treatment_inner_tpid_dei": z.number(), "delete_entry": z.boolean() }) satisfies z.ZodMiniType<wire.MibVlanRule>;
+export const MibTableSchema = z.object({ "class_id": z.number(), "entity_id": z.number(), "attribute": MibDefinitionSchema, "collected": z.boolean(), "error": z.union([z.string(), z.null()]), "raw_hex": z.string(), "rows": z.array(z.string()), "vlan_rules": z.array(MibVlanRuleSchema) }) satisfies z.ZodMiniType<wire.MibTable>;
+export const MibReportSchema = z.object({ "schema_version": z.literal(1), "reference_version": z.string(), "onu_id": z.union([z.number(), z.null()]), "uploaded_complete": z.boolean(), "expected_records": z.number(), "received_records": z.number(), "decoded_records": z.number(), "partial_records": z.number(), "basic_records": z.number(), "tables_requested": z.boolean(), "tables_collected": z.boolean(), "classes": z.array(MibClassSchema), "entities": z.array(MibEntitySchema), "records": z.array(MibRecordSchema), "tables": z.array(MibTableSchema), "diagnostics": z.array(MibDiagnosticSchema) }) satisfies z.ZodMiniType<wire.MibReport>;
+export const MibSnapshotSchema = z.object({ "status": MibReadySchema, "report": MibReportSchema }) satisfies z.ZodMiniType<wire.MibSnapshot>;
 export const MibStartRequestSchema = z.object({ "onu_id": z.number(), "optical_sn": z.string(), "tables": z.boolean() }) satisfies z.ZodMiniType<wire.MibStartRequest>;
 export const NpuSetReplySchema = z.union([z.object({ "status": z.literal("success"), "enabled": z.boolean() }), z.object({ "status": z.literal("error"), "error": z.string() })]) satisfies z.ZodMiniType<wire.NpuSetReply>;
 export const NpuSetRequestSchema = z.object({ "enabled": z.boolean(), "bridge": z.string() }) satisfies z.ZodMiniType<wire.NpuSetRequest>;
 export const PpeFlowEntrySchema = z.object({ "index": z.string(), "state": z.string(), "pkt_type": z.string(), "orig_tuple": z.string(), "new_tuple": z.string(), "eth": z.string(), "vlan": z.string(), "packets": z.number(), "bytes": z.number(), "counters_valid": z.boolean(), "packets_exact": z.string(), "bytes_exact": z.string() }) satisfies z.ZodMiniType<wire.PpeFlowEntry>;
 export const NpuStatusSchema = z.object({ "sampled_at_ms": z.number(), "errors": z.array(z.string()), "config_valid": z.boolean(), "engine_valid": z.boolean(), "mask_valid": z.boolean(), "routed_mask_valid": z.boolean(), "debug_valid": z.boolean(), "flows_valid": z.boolean(), "entries_valid": z.boolean(), "counters_valid": z.boolean(), "hooks_valid": z.boolean(), "total_packets_exact": z.string(), "total_bytes_exact": z.string(), "supported": z.boolean(), "engine_attached": z.boolean(), "bridge_offload_enabled": z.boolean(), "bridge_offload_mask": z.number(), "routed_offload_mask": z.number(), "bridge_offload_debug": z.boolean(), "bridge": z.string(), "active_ports": z.array(z.string()), "fw4_hooks_ready": z.boolean(), "total_entries": z.number(), "bound_entries": z.number(), "bound_ipv4_entries": z.number(), "bound_ipv6_entries": z.number(), "total_packets": z.number(), "total_bytes": z.number(), "bound_flows": z.array(PpeFlowEntrySchema) }) satisfies z.ZodMiniType<wire.NpuStatus>;
-export const OperationModeSchema = z.union([z.literal("plan"), z.literal("apply")]) satisfies z.ZodMiniType<wire.OperationMode>;
+export const OnuIdentitySchema = z.object({ "equipment_id": z.union([z.string(), z.null()]), "hardware_version": z.union([z.string(), z.null()]), "software_images": z.array(z.string()), "omcc_version": z.union([z.number(), z.null()]), "errors": z.array(z.string()) }) satisfies z.ZodMiniType<wire.OnuIdentity>;
+export const OnuPinningSchema = z.object({ "desired": z.record(z.string(), z.number()), "active": z.record(z.string(), z.number()), "pending_restart": z.boolean(), "allocation_blocked": z.boolean(), "startup_error": z.union([z.string(), z.null()]), "config_error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.OnuPinning>;
 export const OpticalActionSchema = z.union([z.literal("optical_on"), z.literal("optical_off"), z.literal("optical_status"), z.literal("optical_reload"), z.literal("optical_reinitialize"), z.literal("optical_shutdown")]) satisfies z.ZodMiniType<wire.OpticalAction>;
 export const ReplyStatusSchema = z.union([z.literal("success"), z.literal("error")]) satisfies z.ZodMiniType<wire.ReplyStatus>;
 export const OpticalStateSchema = z.union([z.literal("enabled"), z.literal("disabled"), z.literal("unknown")]) satisfies z.ZodMiniType<wire.OpticalState>;
 export const OpticalReplySchema = z.object({ "schema_version": z.literal(1), "status": ReplyStatusSchema, "action": OpticalActionSchema, "desired_enabled": z.union([z.boolean(), z.null()]), "tx_enabled": z.union([z.boolean(), z.null()]), "actor_state": OpticalStateSchema, "hardware_ready": z.boolean(), "discovery_active": z.boolean(), "cleanup_pending": z.boolean(), "error": z.union([OpticalErrorSchema, z.null()]) }) satisfies z.ZodMiniType<wire.OpticalReply>;
 export const OpticalSetRequestSchema = z.object({ "enabled": z.boolean() }) satisfies z.ZodMiniType<wire.OpticalSetRequest>;
-export const RestartReplySchema = z.object({ "restarting": z.boolean() }) satisfies z.ZodMiniType<wire.RestartReply>;
+export const OpticalTransceiverStatusSchema = z.object({ "model": z.string(), "wavelength_tx_nm": z.number(), "wavelength_rx_nm": z.number(), "phy_rate_downlink_gbps": z.number(), "phy_rate_uplink_gbps": z.number(), "tx_power_dbm": z.union([z.number(), z.null()]), "laser_bias_current_ma": z.union([z.number(), z.null()]), "temperature_celsius": z.union([z.number(), z.null()]), "vcc_voltage": z.union([z.number(), z.null()]), "cdr_locked": z.union([z.boolean(), z.null()]), "tx_enabled": z.optional(z.boolean()), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.OpticalTransceiverStatus>;
+export const RegistrationStateSchema = z.union([z.literal("o1_initial"), z.literal("o2_standby"), z.literal("o3_serial_number"), z.literal("o4_ranging"), z.literal("o5_operation"), z.literal("o6_intermittent_lods"), z.literal("o7_emergency_stop")]) satisfies z.ZodMiniType<wire.RegistrationState>;
+export const RestartReplySchema = z.object({ "restarting": z.literal(true) }) satisfies z.ZodMiniType<wire.RestartReply>;
 export const UbusMethodStatsSchema = z.object({ "calls": z.number(), "failures": z.number(), "last_us": z.number(), "max_us": z.number(), "total_us": z.number() }) satisfies z.ZodMiniType<wire.UbusMethodStats>;
-export const StatusReplySchema = z.object({ "ubus": z.optional(z.record(z.string(), UbusMethodStatsSchema)), "jobs": z.optional(JobStatsSchema), "onu_pinning": z.optional(z.unknown()), "fpga_status": z.string(), "provisioning": z.unknown(), "optical_transceiver": z.unknown(), "switch_ports": z.array(z.unknown()), "sub_gateways": z.array(z.unknown()), "telemetry_gateways": z.array(z.unknown()), "npu": z.optional(z.unknown()), "ipc": z.optional(z.unknown()) }) satisfies z.ZodMiniType<wire.StatusReply>;
+export const SwitchPortStatusSchema = z.object({ "port": z.number(), "interface": z.string(), "carrier": z.boolean(), "status": z.string(), "onu_id": z.optional(z.number()), "onu_sn": z.optional(z.string()), "link_state": z.string(), "reserved_sn": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.SwitchPortStatus>;
+export const WifiMeshStatusSchema = z.object({ "channel_2g": z.union([z.number(), z.null()]), "channel_5g": z.union([z.number(), z.null()]), "bandwidth_5g": z.union([z.string(), z.null()]), "tx_power_pct": z.union([z.number(), z.null()]), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.WifiMeshStatus>;
+export const SubGatewayStatusSchema = z.object({ "onu_id": z.number(), "vendor": z.string(), "model": z.string(), "serial_number": z.string(), "state": RegistrationStateSchema, "business_status": BusinessStatusSchema, "management": z.union([ManagementStatusSchema, z.null()]), "provisioning": z.union([ProvisioningStatusSchema, z.null()]), "services": z.array(SyncItemSchema), "ssids": z.array(SyncItemSchema), "wifi_sync": WifiSyncSchema, "identity": z.union([OnuIdentitySchema, z.null()]), "identity_age_seconds": z.union([z.number(), z.null()]), "identity_current": z.boolean(), "fiber_distance_m": z.union([z.number(), z.null()]), "ranging_delay_rtd_ns": z.union([z.number(), z.null()]), "equalization_delay_bits": z.union([z.number(), z.null()]), "optical_rx_power_dbm": z.union([z.number(), z.null()]), "optical_tx_power_dbm": z.union([z.number(), z.null()]), "firmware_version": z.string(), "hardware_version": z.string(), "uptime_seconds": z.union([z.number(), z.null()]), "data_path": DataPathStatusSchema, "wifi_mesh": WifiMeshStatusSchema, "connected_clients": z.union([z.array(MeshClientStatusSchema), z.null()]), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.SubGatewayStatus>;
+export const TelemetryGatewayInfoSchema = z.object({ "id": z.string(), "last_seen_sec_ago": z.number(), "last_payload_bytes": z.number() }) satisfies z.ZodMiniType<wire.TelemetryGatewayInfo>;
+export const StatusReplySchema = z.object({ "ubus": z.optional(z.record(z.string(), UbusMethodStatsSchema)), "jobs": z.optional(JobStatsSchema), "onu_pinning": z.optional(OnuPinningSchema), "fpga_status": z.string(), "provisioning": z.union([SyncStatusReplySchema, z.null()]), "optical_transceiver": OpticalTransceiverStatusSchema, "switch_ports": z.array(SwitchPortStatusSchema), "sub_gateways": z.array(SubGatewayStatusSchema), "telemetry_gateways": z.array(TelemetryGatewayInfoSchema), "npu": z.optional(NpuStatusSchema), "ipc": z.optional(IpcStatsSchema) }) satisfies z.ZodMiniType<wire.StatusReply>;
 export const SyncActionSchema = z.union([z.literal("plan"), z.literal("apply"), z.literal("management_plan"), z.literal("management_apply"), z.literal("reset_state"), z.literal("reconcile"), z.literal("retry")]) satisfies z.ZodMiniType<wire.SyncAction>;
-export const SyncReplySchema = z.union([z.object({ "operation_ids": z.array(z.number()), "revision": z.string() }), z.object({ "started": z.boolean(), "mode": OperationModeSchema }), z.object({ "reset": z.boolean(), "device": z.string() }), z.object({ "operation_ids": z.array(z.number()), "mode": OperationModeSchema, "reconcile": z.optional(z.boolean()), "retry": z.optional(z.boolean()) }), CommandErrorSchema]) satisfies z.ZodMiniType<wire.SyncReply>;
+export const SyncReplySchema = z.union([z.object({ "operation_ids": z.array(z.number()), "revision": z.string() }), z.object({ "started": z.literal(true), "mode": OperationModeSchema }), z.object({ "reset": z.literal(true), "device": z.string() }), z.object({ "operation_ids": z.array(z.number()), "mode": OperationModeSchema, "reconcile": z.optional(z.boolean()), "retry": z.optional(z.boolean()) }), CommandErrorSchema]) satisfies z.ZodMiniType<wire.SyncReply>;
 export const SyncRequestSchema = z.object({ "action": SyncActionSchema, "target": z.string(), "management": z.optional(z.boolean()), "item": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.SyncRequest>;
 
 // Both directions are checked: schema narrowing and contract widening fail compilation.
@@ -69,8 +148,26 @@ type Assert<T extends true> = T;
 export type SchemaContracts = [
 	Assert<[z.infer<typeof AccountChangeSchema>] extends [wire.AccountChange] ? true : false>,
 	Assert<[wire.AccountChange] extends [z.infer<typeof AccountChangeSchema>] ? true : false>,
+	Assert<[z.infer<typeof BootstrapPhaseSchema>] extends [wire.BootstrapPhase] ? true : false>,
+	Assert<[wire.BootstrapPhase] extends [z.infer<typeof BootstrapPhaseSchema>] ? true : false>,
+	Assert<[z.infer<typeof AcsListenerSchema>] extends [wire.AcsListener] ? true : false>,
+	Assert<[wire.AcsListener] extends [z.infer<typeof AcsListenerSchema>] ? true : false>,
+	Assert<[z.infer<typeof ManagementDesiredSchema>] extends [wire.ManagementDesired] ? true : false>,
+	Assert<[wire.ManagementDesired] extends [z.infer<typeof ManagementDesiredSchema>] ? true : false>,
+	Assert<[z.infer<typeof BootstrapSnapshotSchema>] extends [wire.BootstrapSnapshot] ? true : false>,
+	Assert<[wire.BootstrapSnapshot] extends [z.infer<typeof BootstrapSnapshotSchema>] ? true : false>,
+	Assert<[z.infer<typeof BootstrapUnavailablePhaseSchema>] extends [wire.BootstrapUnavailablePhase] ? true : false>,
+	Assert<[wire.BootstrapUnavailablePhase] extends [z.infer<typeof BootstrapUnavailablePhaseSchema>] ? true : false>,
+	Assert<[z.infer<typeof AcsBootstrapSchema>] extends [wire.AcsBootstrap] ? true : false>,
+	Assert<[wire.AcsBootstrap] extends [z.infer<typeof AcsBootstrapSchema>] ? true : false>,
 	Assert<[z.infer<typeof AdapterCapabilitySchema>] extends [wire.AdapterCapability] ? true : false>,
 	Assert<[wire.AdapterCapability] extends [z.infer<typeof AdapterCapabilitySchema>] ? true : false>,
+	Assert<[z.infer<typeof BackendStatusSchema>] extends [wire.BackendStatus] ? true : false>,
+	Assert<[wire.BackendStatus] extends [z.infer<typeof BackendStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof BusinessPhaseSchema>] extends [wire.BusinessPhase] ? true : false>,
+	Assert<[wire.BusinessPhase] extends [z.infer<typeof BusinessPhaseSchema>] ? true : false>,
+	Assert<[z.infer<typeof BusinessStatusSchema>] extends [wire.BusinessStatus] ? true : false>,
+	Assert<[wire.BusinessStatus] extends [z.infer<typeof BusinessStatusSchema>] ? true : false>,
 	Assert<[z.infer<typeof CalibrationAppliedSchema>] extends [wire.CalibrationApplied] ? true : false>,
 	Assert<[wire.CalibrationApplied] extends [z.infer<typeof CalibrationAppliedSchema>] ? true : false>,
 	Assert<[z.infer<typeof CalibrationSourceSchema>] extends [wire.CalibrationSource] ? true : false>,
@@ -105,32 +202,124 @@ export type SchemaContracts = [
 	Assert<[wire.SyncMode] extends [z.infer<typeof SyncModeSchema>] ? true : false>,
 	Assert<[z.infer<typeof SyncMethodSchema>] extends [wire.SyncMethod] ? true : false>,
 	Assert<[wire.SyncMethod] extends [z.infer<typeof SyncMethodSchema>] ? true : false>,
+	Assert<[z.infer<typeof DeviceOmciManagementSchema>] extends [wire.DeviceOmciManagement] ? true : false>,
+	Assert<[wire.DeviceOmciManagement] extends [z.infer<typeof DeviceOmciManagementSchema>] ? true : false>,
+	Assert<[z.infer<typeof ManagementStateSchema>] extends [wire.ManagementState] ? true : false>,
+	Assert<[wire.ManagementState] extends [z.infer<typeof ManagementStateSchema>] ? true : false>,
+	Assert<[z.infer<typeof ManagementStatusSchema>] extends [wire.ManagementStatus] ? true : false>,
+	Assert<[wire.ManagementStatus] extends [z.infer<typeof ManagementStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof OperationPhaseSchema>] extends [wire.OperationPhase] ? true : false>,
+	Assert<[wire.OperationPhase] extends [z.infer<typeof OperationPhaseSchema>] ? true : false>,
+	Assert<[z.infer<typeof SyncItemKindSchema>] extends [wire.SyncItemKind] ? true : false>,
+	Assert<[wire.SyncItemKind] extends [z.infer<typeof SyncItemKindSchema>] ? true : false>,
+	Assert<[z.infer<typeof SyncChangeSchema>] extends [wire.SyncChange] ? true : false>,
+	Assert<[wire.SyncChange] extends [z.infer<typeof SyncChangeSchema>] ? true : false>,
+	Assert<[z.infer<typeof SyncItemSchema>] extends [wire.SyncItem] ? true : false>,
+	Assert<[wire.SyncItem] extends [z.infer<typeof SyncItemSchema>] ? true : false>,
+	Assert<[z.infer<typeof OperationModeSchema>] extends [wire.OperationMode] ? true : false>,
+	Assert<[wire.OperationMode] extends [z.infer<typeof OperationModeSchema>] ? true : false>,
+	Assert<[z.infer<typeof CwmpCapabilitiesSchema>] extends [wire.CwmpCapabilities] ? true : false>,
+	Assert<[wire.CwmpCapabilities] extends [z.infer<typeof CwmpCapabilitiesSchema>] ? true : false>,
+	Assert<[z.infer<typeof CwmpContractSchema>] extends [wire.CwmpContract] ? true : false>,
+	Assert<[wire.CwmpContract] extends [z.infer<typeof CwmpContractSchema>] ? true : false>,
+	Assert<[z.infer<typeof WanOwnedSchema>] extends [wire.WanOwned] ? true : false>,
+	Assert<[wire.WanOwned] extends [z.infer<typeof WanOwnedSchema>] ? true : false>,
+	Assert<[z.infer<typeof LifecycleSchema>] extends [wire.Lifecycle] ? true : false>,
+	Assert<[wire.Lifecycle] extends [z.infer<typeof LifecycleSchema>] ? true : false>,
+	Assert<[z.infer<typeof WanStageSchema>] extends [wire.WanStage] ? true : false>,
+	Assert<[wire.WanStage] extends [z.infer<typeof WanStageSchema>] ? true : false>,
+	Assert<[z.infer<typeof WifiOwnedSchema>] extends [wire.WifiOwned] ? true : false>,
+	Assert<[wire.WifiOwned] extends [z.infer<typeof WifiOwnedSchema>] ? true : false>,
+	Assert<[z.infer<typeof WifiStageSchema>] extends [wire.WifiStage] ? true : false>,
+	Assert<[wire.WifiStage] extends [z.infer<typeof WifiStageSchema>] ? true : false>,
+	Assert<[z.infer<typeof WifiCleanupSchema>] extends [wire.WifiCleanup] ? true : false>,
+	Assert<[wire.WifiCleanup] extends [z.infer<typeof WifiCleanupSchema>] ? true : false>,
+	Assert<[z.infer<typeof NativeWanOwnedSchema>] extends [wire.NativeWanOwned] ? true : false>,
+	Assert<[wire.NativeWanOwned] extends [z.infer<typeof NativeWanOwnedSchema>] ? true : false>,
+	Assert<[z.infer<typeof ProvisioningStatusSchema>] extends [wire.ProvisioningStatus] ? true : false>,
+	Assert<[wire.ProvisioningStatus] extends [z.infer<typeof ProvisioningStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof WifiSyncSchema>] extends [wire.WifiSync] ? true : false>,
+	Assert<[wire.WifiSync] extends [z.infer<typeof WifiSyncSchema>] ? true : false>,
+	Assert<[z.infer<typeof DeviceSyncSchema>] extends [wire.DeviceSync] ? true : false>,
+	Assert<[wire.DeviceSync] extends [z.infer<typeof DeviceSyncSchema>] ? true : false>,
+	Assert<[z.infer<typeof NetworkPhaseSchema>] extends [wire.NetworkPhase] ? true : false>,
+	Assert<[wire.NetworkPhase] extends [z.infer<typeof NetworkPhaseSchema>] ? true : false>,
+	Assert<[z.infer<typeof NetworkConfigSchema>] extends [wire.NetworkConfig] ? true : false>,
+	Assert<[wire.NetworkConfig] extends [z.infer<typeof NetworkConfigSchema>] ? true : false>,
+	Assert<[z.infer<typeof NetworkPlanSchema>] extends [wire.NetworkPlan] ? true : false>,
+	Assert<[wire.NetworkPlan] extends [z.infer<typeof NetworkPlanSchema>] ? true : false>,
+	Assert<[z.infer<typeof ManagementNetworkSchema>] extends [wire.ManagementNetwork] ? true : false>,
+	Assert<[wire.ManagementNetwork] extends [z.infer<typeof ManagementNetworkSchema>] ? true : false>,
+	Assert<[z.infer<typeof OmciManagementSchema>] extends [wire.OmciManagement] ? true : false>,
+	Assert<[wire.OmciManagement] extends [z.infer<typeof OmciManagementSchema>] ? true : false>,
 	Assert<[z.infer<typeof SyncGroupSchema>] extends [wire.SyncGroup] ? true : false>,
 	Assert<[wire.SyncGroup] extends [z.infer<typeof SyncGroupSchema>] ? true : false>,
 	Assert<[z.infer<typeof SyncStatusReplySchema>] extends [wire.SyncStatusReply] ? true : false>,
 	Assert<[wire.SyncStatusReply] extends [z.infer<typeof SyncStatusReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof ConfigReloadReplySchema>] extends [wire.ConfigReloadReply] ? true : false>,
 	Assert<[wire.ConfigReloadReply] extends [z.infer<typeof ConfigReloadReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof DataPathOffloadStatusSchema>] extends [wire.DataPathOffloadStatus] ? true : false>,
+	Assert<[wire.DataPathOffloadStatus] extends [z.infer<typeof DataPathOffloadStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof OnuGemPortSchema>] extends [wire.OnuGemPort] ? true : false>,
+	Assert<[wire.OnuGemPort] extends [z.infer<typeof OnuGemPortSchema>] ? true : false>,
+	Assert<[z.infer<typeof OnuVlanFilterSchema>] extends [wire.OnuVlanFilter] ? true : false>,
+	Assert<[wire.OnuVlanFilter] extends [z.infer<typeof OnuVlanFilterSchema>] ? true : false>,
+	Assert<[z.infer<typeof OnuVlanOperationSchema>] extends [wire.OnuVlanOperation] ? true : false>,
+	Assert<[wire.OnuVlanOperation] extends [z.infer<typeof OnuVlanOperationSchema>] ? true : false>,
+	Assert<[z.infer<typeof OnuOmciInventorySchema>] extends [wire.OnuOmciInventory] ? true : false>,
+	Assert<[wire.OnuOmciInventory] extends [z.infer<typeof OnuOmciInventorySchema>] ? true : false>,
+	Assert<[z.infer<typeof MeasurementEvidenceSchema>] extends [wire.MeasurementEvidence] ? true : false>,
+	Assert<[wire.MeasurementEvidence] extends [z.infer<typeof MeasurementEvidenceSchema>] ? true : false>,
+	Assert<[z.infer<typeof DataPathStatusSchema>] extends [wire.DataPathStatus] ? true : false>,
+	Assert<[wire.DataPathStatus] extends [z.infer<typeof DataPathStatusSchema>] ? true : false>,
 	Assert<[z.infer<typeof EmptyRequestSchema>] extends [wire.EmptyRequest] ? true : false>,
 	Assert<[wire.EmptyRequest] extends [z.infer<typeof EmptyRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlAccountSchema>] extends [wire.HlAccount] ? true : false>,
+	Assert<[wire.HlAccount] extends [z.infer<typeof HlAccountSchema>] ? true : false>,
+	Assert<[z.infer<typeof MqttSourceSchema>] extends [wire.MqttSource] ? true : false>,
+	Assert<[wire.MqttSource] extends [z.infer<typeof MqttSourceSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlCommandStatusSchema>] extends [wire.HlCommandStatus] ? true : false>,
+	Assert<[wire.HlCommandStatus] extends [z.infer<typeof HlCommandStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlCommandResultSchema>] extends [wire.HlCommandResult] ? true : false>,
+	Assert<[wire.HlCommandResult] extends [z.infer<typeof HlCommandResultSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlOperationSchema>] extends [wire.HlOperation] ? true : false>,
+	Assert<[wire.HlOperation] extends [z.infer<typeof HlOperationSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlWriteStatusSchema>] extends [wire.HlWriteStatus] ? true : false>,
+	Assert<[wire.HlWriteStatus] extends [z.infer<typeof HlWriteStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof OpticalErrorSchema>] extends [wire.OpticalError] ? true : false>,
+	Assert<[wire.OpticalError] extends [z.infer<typeof OpticalErrorSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlAccountReplySchema>] extends [wire.HlAccountReply] ? true : false>,
+	Assert<[wire.HlAccountReply] extends [z.infer<typeof HlAccountReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof HlTargetSchema>] extends [wire.HlTarget] ? true : false>,
 	Assert<[wire.HlTarget] extends [z.infer<typeof HlTargetSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlAccountsRequestSchema>] extends [wire.HlAccountsRequest] ? true : false>,
 	Assert<[wire.HlAccountsRequest] extends [z.infer<typeof HlAccountsRequestSchema>] ? true : false>,
-	Assert<[z.infer<typeof MqttSourceSchema>] extends [wire.MqttSource] ? true : false>,
-	Assert<[wire.MqttSource] extends [z.infer<typeof MqttSourceSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlDeviceSchema>] extends [wire.HlDevice] ? true : false>,
 	Assert<[wire.HlDevice] extends [z.infer<typeof HlDeviceSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlExecReplySchema>] extends [wire.HlExecReply] ? true : false>,
+	Assert<[wire.HlExecReply] extends [z.infer<typeof HlExecReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof HlExecRequestSchema>] extends [wire.HlExecRequest] ? true : false>,
 	Assert<[wire.HlExecRequest] extends [z.infer<typeof HlExecRequestSchema>] ? true : false>,
-	Assert<[z.infer<typeof OpticalErrorSchema>] extends [wire.OpticalError] ? true : false>,
-	Assert<[wire.OpticalError] extends [z.infer<typeof OpticalErrorSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlListReplySchema>] extends [wire.HlListReply] ? true : false>,
 	Assert<[wire.HlListReply] extends [z.infer<typeof HlListReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof HlReportPhaseSchema>] extends [wire.HlReportPhase] ? true : false>,
+	Assert<[wire.HlReportPhase] extends [z.infer<typeof HlReportPhaseSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlTelemetryFieldSchema>] extends [wire.HlTelemetryField] ? true : false>,
+	Assert<[wire.HlTelemetryField] extends [z.infer<typeof HlTelemetryFieldSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlTelemetryMemberSchema>] extends [wire.HlTelemetryMember] ? true : false>,
+	Assert<[wire.HlTelemetryMember] extends [z.infer<typeof HlTelemetryMemberSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlTelemetrySchema>] extends [wire.HlTelemetry] ? true : false>,
+	Assert<[wire.HlTelemetry] extends [z.infer<typeof HlTelemetrySchema>] ? true : false>,
+	Assert<[z.infer<typeof HlReportStateSchema>] extends [wire.HlReportState] ? true : false>,
+	Assert<[wire.HlReportState] extends [z.infer<typeof HlReportStateSchema>] ? true : false>,
+	Assert<[z.infer<typeof HlReportReplySchema>] extends [wire.HlReportReply] ? true : false>,
+	Assert<[wire.HlReportReply] extends [z.infer<typeof HlReportReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof HlReportRequestSchema>] extends [wire.HlReportRequest] ? true : false>,
 	Assert<[wire.HlReportRequest] extends [z.infer<typeof HlReportRequestSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlUpdateRequestSchema>] extends [wire.HlUpdateRequest] ? true : false>,
 	Assert<[wire.HlUpdateRequest] extends [z.infer<typeof HlUpdateRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof IpcStatsSchema>] extends [wire.IpcStats] ? true : false>,
+	Assert<[wire.IpcStats] extends [z.infer<typeof IpcStatsSchema>] ? true : false>,
 	Assert<[z.infer<typeof PendingStatusSchema>] extends [wire.PendingStatus] ? true : false>,
 	Assert<[wire.PendingStatus] extends [z.infer<typeof PendingStatusSchema>] ? true : false>,
 	Assert<[z.infer<typeof JobPhaseSchema>] extends [wire.JobPhase] ? true : false>,
@@ -155,6 +344,40 @@ export type SchemaContracts = [
 	Assert<[wire.JobStartReply] extends [z.infer<typeof JobStartReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof JobStatsSchema>] extends [wire.JobStats] ? true : false>,
 	Assert<[wire.JobStats] extends [z.infer<typeof JobStatsSchema>] ? true : false>,
+	Assert<[z.infer<typeof MeshClientStatusSchema>] extends [wire.MeshClientStatus] ? true : false>,
+	Assert<[wire.MeshClientStatus] extends [z.infer<typeof MeshClientStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibAttributeKindSchema>] extends [wire.MibAttributeKind] ? true : false>,
+	Assert<[wire.MibAttributeKind] extends [z.infer<typeof MibAttributeKindSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibReferenceSchema>] extends [wire.MibReference] ? true : false>,
+	Assert<[wire.MibReference] extends [z.infer<typeof MibReferenceSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibDefinitionSchema>] extends [wire.MibDefinition] ? true : false>,
+	Assert<[wire.MibDefinition] extends [z.infer<typeof MibDefinitionSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibValueSchema>] extends [wire.MibValue] ? true : false>,
+	Assert<[wire.MibValue] extends [z.infer<typeof MibValueSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibObservationSchema>] extends [wire.MibObservation] ? true : false>,
+	Assert<[wire.MibObservation] extends [z.infer<typeof MibObservationSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibAttributeSchema>] extends [wire.MibAttribute] ? true : false>,
+	Assert<[wire.MibAttribute] extends [z.infer<typeof MibAttributeSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibSupportSchema>] extends [wire.MibSupport] ? true : false>,
+	Assert<[wire.MibSupport] extends [z.infer<typeof MibSupportSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibClassSchema>] extends [wire.MibClass] ? true : false>,
+	Assert<[wire.MibClass] extends [z.infer<typeof MibClassSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibDiagnosticSchema>] extends [wire.MibDiagnostic] ? true : false>,
+	Assert<[wire.MibDiagnostic] extends [z.infer<typeof MibDiagnosticSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibEntitySchema>] extends [wire.MibEntity] ? true : false>,
+	Assert<[wire.MibEntity] extends [z.infer<typeof MibEntitySchema>] ? true : false>,
+	Assert<[z.infer<typeof MibReadySchema>] extends [wire.MibReady] ? true : false>,
+	Assert<[wire.MibReady] extends [z.infer<typeof MibReadySchema>] ? true : false>,
+	Assert<[z.infer<typeof MibRecordSchema>] extends [wire.MibRecord] ? true : false>,
+	Assert<[wire.MibRecord] extends [z.infer<typeof MibRecordSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibVlanRuleSchema>] extends [wire.MibVlanRule] ? true : false>,
+	Assert<[wire.MibVlanRule] extends [z.infer<typeof MibVlanRuleSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibTableSchema>] extends [wire.MibTable] ? true : false>,
+	Assert<[wire.MibTable] extends [z.infer<typeof MibTableSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibReportSchema>] extends [wire.MibReport] ? true : false>,
+	Assert<[wire.MibReport] extends [z.infer<typeof MibReportSchema>] ? true : false>,
+	Assert<[z.infer<typeof MibSnapshotSchema>] extends [wire.MibSnapshot] ? true : false>,
+	Assert<[wire.MibSnapshot] extends [z.infer<typeof MibSnapshotSchema>] ? true : false>,
 	Assert<[z.infer<typeof MibStartRequestSchema>] extends [wire.MibStartRequest] ? true : false>,
 	Assert<[wire.MibStartRequest] extends [z.infer<typeof MibStartRequestSchema>] ? true : false>,
 	Assert<[z.infer<typeof NpuSetReplySchema>] extends [wire.NpuSetReply] ? true : false>,
@@ -165,8 +388,10 @@ export type SchemaContracts = [
 	Assert<[wire.PpeFlowEntry] extends [z.infer<typeof PpeFlowEntrySchema>] ? true : false>,
 	Assert<[z.infer<typeof NpuStatusSchema>] extends [wire.NpuStatus] ? true : false>,
 	Assert<[wire.NpuStatus] extends [z.infer<typeof NpuStatusSchema>] ? true : false>,
-	Assert<[z.infer<typeof OperationModeSchema>] extends [wire.OperationMode] ? true : false>,
-	Assert<[wire.OperationMode] extends [z.infer<typeof OperationModeSchema>] ? true : false>,
+	Assert<[z.infer<typeof OnuIdentitySchema>] extends [wire.OnuIdentity] ? true : false>,
+	Assert<[wire.OnuIdentity] extends [z.infer<typeof OnuIdentitySchema>] ? true : false>,
+	Assert<[z.infer<typeof OnuPinningSchema>] extends [wire.OnuPinning] ? true : false>,
+	Assert<[wire.OnuPinning] extends [z.infer<typeof OnuPinningSchema>] ? true : false>,
 	Assert<[z.infer<typeof OpticalActionSchema>] extends [wire.OpticalAction] ? true : false>,
 	Assert<[wire.OpticalAction] extends [z.infer<typeof OpticalActionSchema>] ? true : false>,
 	Assert<[z.infer<typeof ReplyStatusSchema>] extends [wire.ReplyStatus] ? true : false>,
@@ -177,10 +402,22 @@ export type SchemaContracts = [
 	Assert<[wire.OpticalReply] extends [z.infer<typeof OpticalReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof OpticalSetRequestSchema>] extends [wire.OpticalSetRequest] ? true : false>,
 	Assert<[wire.OpticalSetRequest] extends [z.infer<typeof OpticalSetRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof OpticalTransceiverStatusSchema>] extends [wire.OpticalTransceiverStatus] ? true : false>,
+	Assert<[wire.OpticalTransceiverStatus] extends [z.infer<typeof OpticalTransceiverStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof RegistrationStateSchema>] extends [wire.RegistrationState] ? true : false>,
+	Assert<[wire.RegistrationState] extends [z.infer<typeof RegistrationStateSchema>] ? true : false>,
 	Assert<[z.infer<typeof RestartReplySchema>] extends [wire.RestartReply] ? true : false>,
 	Assert<[wire.RestartReply] extends [z.infer<typeof RestartReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof UbusMethodStatsSchema>] extends [wire.UbusMethodStats] ? true : false>,
 	Assert<[wire.UbusMethodStats] extends [z.infer<typeof UbusMethodStatsSchema>] ? true : false>,
+	Assert<[z.infer<typeof SwitchPortStatusSchema>] extends [wire.SwitchPortStatus] ? true : false>,
+	Assert<[wire.SwitchPortStatus] extends [z.infer<typeof SwitchPortStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof WifiMeshStatusSchema>] extends [wire.WifiMeshStatus] ? true : false>,
+	Assert<[wire.WifiMeshStatus] extends [z.infer<typeof WifiMeshStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof SubGatewayStatusSchema>] extends [wire.SubGatewayStatus] ? true : false>,
+	Assert<[wire.SubGatewayStatus] extends [z.infer<typeof SubGatewayStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof TelemetryGatewayInfoSchema>] extends [wire.TelemetryGatewayInfo] ? true : false>,
+	Assert<[wire.TelemetryGatewayInfo] extends [z.infer<typeof TelemetryGatewayInfoSchema>] ? true : false>,
 	Assert<[z.infer<typeof StatusReplySchema>] extends [wire.StatusReply] ? true : false>,
 	Assert<[wire.StatusReply] extends [z.infer<typeof StatusReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof SyncActionSchema>] extends [wire.SyncAction] ? true : false>,

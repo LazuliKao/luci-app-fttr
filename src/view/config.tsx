@@ -7,6 +7,7 @@ import { saveConfiguration } from "./config/save";
 import { addServices } from "./config/services";
 import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
 import { type Capabilities, getCapabilities } from "./contracts/capabilities";
+import type { ConfigCheck } from "./contracts/provisioning";
 import type { FttrStatus, SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -48,7 +49,7 @@ const main = view.extend({
 			getStatus().catch((error: unknown) => ({ error: String(error), sub_gateways: [] })),
 		]);
 		return {
-			error: check.error || ("error" in status ? status.error : undefined),
+			error: ("error" in check ? check.error : undefined) || ("error" in status ? status.error : undefined),
 			connectedDevices: status.sub_gateways,
 			pinning: "onu_pinning" in status ? status.onu_pinning : undefined,
 			capabilities,
@@ -70,15 +71,15 @@ const main = view.extend({
 		const output = <pre style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite" />;
 		let checkNotification: Node | null = null;
 		let backendError: string | undefined;
-		const showCheck = (result: { error?: string }): void => {
-			backendError = result?.error;
+		const showCheck = (result: ConfigCheck | { error?: string }): void => {
+			backendError = "error" in result ? result.error : undefined;
 			checkNotification?.parentNode?.removeChild(checkNotification);
 			checkNotification = null;
-			if (result?.error) {
+			if (backendError) {
 				checkNotification = L.ui.addNotification(
 					_("FTTR configuration check failed"),
 					<div>
-						<p>{String(result.error)}</p>
+						<p>{backendError}</p>
 						<button
 							class="cbi-button cbi-button-action"
 							type="button"
@@ -111,7 +112,7 @@ const main = view.extend({
 				<button
 					class="cbi-button cbi-button-action"
 					type="button"
-					onclick={() => command(checkConfig, output, showCheck)}
+					onclick={() => command<ConfigCheck>(checkConfig, output, showCheck)}
 				>
 					{_("Check")}
 				</button>{" "}
@@ -120,7 +121,7 @@ const main = view.extend({
 					type="button"
 					disabled={!L.hasViewPermission()}
 					onclick={() =>
-						command(
+						command<ConfigCheck>(
 							async () => {
 								await reloadConfig();
 								return await checkConfig();

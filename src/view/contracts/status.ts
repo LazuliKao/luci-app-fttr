@@ -1,225 +1,42 @@
 import * as z from "zod/mini";
-import { JobStatsSchema, UbusMethodStatsSchema } from "../../api/generated/schemas";
+import type { BusinessStatus, SubGatewayStatus } from "../../api/generated/types";
 
-// Native replies use the generated strict schema; embedded snapshots below keep
-// their legacy optional counters until their producer has a shared contract.
-export { NpuStatusSchema as nativeNpuStatus } from "../../api/generated/schemas";
+export {
+	BusinessStatusSchema as businessStatus,
+	NpuStatusSchema as npuStatus,
+	NpuStatusSchema as nativeNpuStatus,
+	PpeFlowEntrySchema as ppeFlowEntry,
+	RegistrationStateSchema as registrationState,
+	StatusReplySchema as status,
+	SubGatewayStatusSchema as subGateway,
+} from "../../api/generated/schemas";
+export type {
+	BusinessStatus,
+	NpuStatus,
+	PpeFlowEntry,
+	StatusReply as FttrStatus,
+	SubGatewayStatus as SubGateway,
+	SwitchPortStatus,
+} from "../../api/generated/types";
 
-import { acsBootstrap, management, provisioning, syncItem, syncStatus, wifiSync } from "./provisioning";
-
-const str = z.string();
-const num = z.number();
-const nullableNumber = z.nullable(num);
-const measurements = z.record(
-	str,
-	z.object({ source: str, unit: str, reason: z.nullable(str), raw: z.nullable(str), age_seconds: nullableNumber }),
-);
-export const businessStatus = z.object({
-	phase: z.enum([
-		"not_started",
-		"collecting_identity",
-		"retrying_identity",
-		"unsupported",
-		"configuring",
-		"verifying",
-		"wan_bootstrap_pending",
-		"verified",
-		"retrying",
-		"offline",
-	]),
-	generation: num,
-	error: z.nullable(str),
-});
-export const registrationState = z.enum([
-	"o1_initial",
-	"o2_standby",
-	"o3_serial_number",
-	"o4_ranging",
-	"o5_operation",
-	"o6_intermittent_lods",
-	"o7_emergency_stop",
-]);
-const optical = z.object({
-	model: str,
-	wavelength_tx_nm: num,
-	wavelength_rx_nm: num,
-	phy_rate_downlink_gbps: num,
-	phy_rate_uplink_gbps: num,
-	tx_power_dbm: nullableNumber,
-	laser_bias_current_ma: nullableNumber,
-	temperature_celsius: nullableNumber,
-	vcc_voltage: nullableNumber,
-	cdr_locked: z.nullable(z.boolean()),
-	// FPGA BOSA reset readback; not an optical power measurement.
-	tx_enabled: z.nullable(z.boolean()),
-	measurements,
-});
-const identity = z.object({
-	equipment_id: z.nullable(str),
-	hardware_version: z.nullable(str),
-	software_images: z.array(str),
-	omcc_version: nullableNumber,
-	errors: z.array(str),
-});
-export const subGateway = z.object({
-	onu_id: num,
-	vendor: str,
-	model: str,
-	serial_number: str,
-	state: registrationState,
-	business_status: businessStatus,
-	management: z.nullable(management),
-	provisioning: z.nullable(provisioning),
-	services: z.array(syncItem),
-	ssids: z.array(syncItem),
-	wifi_sync: wifiSync,
-	acs_bootstrap: z.optional(acsBootstrap),
-	identity: z.nullable(identity),
-	identity_age_seconds: nullableNumber,
-	identity_current: z.boolean(),
-	fiber_distance_m: nullableNumber,
-	ranging_delay_rtd_ns: nullableNumber,
-	equalization_delay_bits: z.catch(nullableNumber, null),
-	optical_rx_power_dbm: nullableNumber,
-	optical_tx_power_dbm: nullableNumber,
-	firmware_version: str,
-	hardware_version: str,
-	uptime_seconds: nullableNumber,
-	data_path: z.object({
-		interface: str,
-		gem_ports: z.nullable(z.array(num)),
-		vlan_id: nullableNumber,
-		tx_bytes: nullableNumber,
-		rx_bytes: nullableNumber,
-		current_tx_kbps: nullableNumber,
-		current_rx_kbps: nullableNumber,
-		offload: z.optional(
-			z.object({
-				enabled: z.optional(z.nullable(z.boolean())),
-				routed_enabled: z.optional(z.nullable(z.boolean())),
-				bridge_enabled: z.optional(z.nullable(z.boolean())),
-				engine_attached: z.optional(z.nullable(z.boolean())),
-				forwarding_verified: z.optional(z.nullable(z.boolean())),
-			}),
-		),
-		measurements,
-	}),
-	wifi_mesh: z.object({
-		channel_2g: nullableNumber,
-		channel_5g: nullableNumber,
-		bandwidth_5g: z.nullable(str),
-		tx_power_pct: nullableNumber,
-		measurements,
-	}),
-	connected_clients: z.nullable(
-		z.array(
-			z.object({
-				mac: str,
-				ip: str,
-				band: str,
-				rssi_dbm: nullableNumber,
-				rx_rate_mbps: nullableNumber,
-				tx_rate_mbps: nullableNumber,
-			}),
-		),
-	),
-	measurements,
-});
-const switchPort = z.object({
-	reserved_sn: z.optional(str),
-	port: num,
-	interface: str,
-	carrier: z.boolean(),
-	status: str,
-	onu_id: z.optional(num),
-	onu_sn: z.optional(str),
-	link_state: str,
-});
-export const ppeFlowEntry = z.object({
-	counters_valid: z.optional(z.boolean()),
-	packets_exact: z.optional(str),
-	bytes_exact: z.optional(str),
-	index: str,
-	state: str,
-	pkt_type: str,
-	orig_tuple: str,
-	new_tuple: str,
-	eth: str,
-	vlan: str,
-	packets: num,
-	bytes: num,
-});
-export type PpeFlowEntry = z.infer<typeof ppeFlowEntry>;
-
-export const npuStatus = z.object({
-	sampled_at_ms: z.optional(num),
-	errors: z.optional(z.array(str)),
-	config_valid: z.optional(z.boolean()),
-	engine_valid: z.optional(z.boolean()),
-	mask_valid: z.optional(z.boolean()),
-	routed_mask_valid: z.optional(z.boolean()),
-	debug_valid: z.optional(z.boolean()),
-	flows_valid: z.optional(z.boolean()),
-	entries_valid: z.optional(z.boolean()),
-	counters_valid: z.optional(z.boolean()),
-	hooks_valid: z.optional(z.boolean()),
-	total_packets_exact: z.optional(str),
-	total_bytes_exact: z.optional(str),
-	supported: z.boolean(),
-	engine_attached: z.boolean(),
-	bridge_offload_enabled: z.boolean(),
-	bridge_offload_mask: num,
-	routed_offload_mask: num,
-	bridge_offload_debug: z.boolean(),
-	bridge: str,
-	active_ports: z.array(str),
-	fw4_hooks_ready: z.boolean(),
-	total_entries: num,
-	bound_entries: num,
-	total_packets: num,
-	total_bytes: num,
-	bound_flows: z.array(ppeFlowEntry),
-});
-export type NpuStatus = z.infer<typeof npuStatus>;
-
-export const status = z.object({
-	ubus: z.optional(z.record(str, UbusMethodStatsSchema)),
-	jobs: z.optional(JobStatsSchema),
-	onu_pinning: z.optional(
-		z.object({
-			desired: z.record(str, num),
-			active: z.record(str, num),
-			pending_restart: z.boolean(),
-			allocation_blocked: z.boolean(),
-			startup_error: z.nullable(str),
-			config_error: z.nullable(str),
-		}),
-	),
-	fpga_status: str,
-	provisioning: z.nullable(syncStatus),
-	optical_transceiver: optical,
-	switch_ports: z.array(switchPort),
-	sub_gateways: z.array(subGateway),
-	telemetry_gateways: z.array(z.object({ id: str, last_seen_sec_ago: num, last_payload_bytes: num })),
-	npu: z.optional(z.nullable(npuStatus)),
-});
+// luci-rpc is an external service and does not belong to the FTTR wire contract.
 export const networkDevices = z.record(
-	str,
+	z.string(),
 	z.object({
 		carrier: z.optional(z.boolean()),
-		mac: z.optional(str),
+		mac: z.optional(z.string()),
 		link: z.optional(
-			z.object({ speed: z.optional(num), duplex: z.optional(str), autoneg: z.optional(z.boolean()) }),
+			z.object({
+				speed: z.optional(z.number()),
+				duplex: z.optional(z.string()),
+				autoneg: z.optional(z.boolean()),
+			}),
 		),
-		stats: z.optional(z.record(str, num)),
+		stats: z.optional(z.record(z.string(), z.number())),
 	}),
 );
-export type SubGateway = z.infer<typeof subGateway>;
-export type FttrStatus = z.infer<typeof status>;
-export type SwitchPortStatus = z.infer<typeof switchPort>;
 export type NetworkDevice = z.infer<typeof networkDevices>[string];
 export type NetworkDevices = z.infer<typeof networkDevices>;
-export type BusinessStatus = z.infer<typeof businessStatus>;
 
 export const businessLabels = () =>
 	({
@@ -238,7 +55,6 @@ export const businessLabels = () =>
 export function businessText(value: BusinessStatus): string {
 	return `${businessLabels()[value.phase]} · ${value.generation}${value.error ? ` · ${value.error}` : ""}`;
 }
-
-export function eqdText(value: SubGateway["equalization_delay_bits"]): string {
+export function eqdText(value: SubGatewayStatus["equalization_delay_bits"]): string {
 	return value === null ? "—" : `${value} bits`;
 }

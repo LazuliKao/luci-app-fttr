@@ -165,6 +165,15 @@ function bootstrapCard(
 	managementApplyDisabled: boolean,
 ): HTMLElement | null {
 	if (!bootstrap) return null;
+	if (!("inflight" in bootstrap)) {
+		return (
+			<div class="fttr-card">
+				<h4>{_("ACS bootstrap")}</h4>
+				{renderStateBadge(bootstrap.state)}
+				<p>{bootstrap.reason}</p>
+			</div>
+		);
+	}
 	return (
 		<div style="margin-top:1.2em">
 			<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.5em">
@@ -985,7 +994,7 @@ const main = L.view.extend({
 
 			const messages = [
 				status.error,
-				committed.error
+				"error" in committed
 					? _("Committed configuration is invalid: %s").format(committed.error)
 					: committed.revision && committed.revision !== status.revision
 						? _(
@@ -1035,13 +1044,13 @@ const main = L.view.extend({
 			plan.disabled =
 				busy ||
 				active ||
-				!!committed.error ||
+				"error" in committed ||
 				(!!committed.revision && committed.revision !== status.revision) ||
 				!(status.devices ?? []).length;
 			apply.disabled = plan.disabled || !status.enabled;
 
 			const host = status.management_network;
-			managementPlan.disabled = busy || !!host?.inflight || !!committed.error || !L.hasViewPermission();
+			managementPlan.disabled = busy || !!host?.inflight || "error" in committed || !L.hasViewPermission();
 			managementApply.disabled = managementPlan.disabled;
 
 			const configuration = host.desired ?? host.applied;
