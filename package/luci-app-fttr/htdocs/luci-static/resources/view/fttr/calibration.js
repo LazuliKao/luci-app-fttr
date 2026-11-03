@@ -7,10 +7,10 @@
 'require poll as __fttr_poll';
 'require dom as __fttr_dom';
 var e;
-let t, r, i, n, a;
+let t, r, i, a, n;
 const s = Symbol.for("jsx.fragment");
 function o(e, t) {
-    let { children: r, ...i } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, n = function e(t) {
+    let { children: r, ...i } = null === t || "object" != typeof t || Array.isArray(t) ? {} : t, a = function e(t) {
         let r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : [];
         for (let i of t)null != i && "boolean" != typeof i && (Array.isArray(i) ? e(i, r) : r.push(i instanceof Node ? i : String(i)));
         return r;
@@ -19,25 +19,25 @@ function o(e, t) {
     ]);
     if (e === s) {
         let e = document.createDocumentFragment();
-        return e.append(...n), e;
+        return e.append(...a), e;
     }
     if ("function" == typeof e) {
         let t = Reflect.apply(e, void 0, [
             {
                 ...i,
-                children: n
+                children: a
             }
         ]);
         if (!(t instanceof Node)) throw TypeError("JSX components must return a DOM Node");
         return t;
     }
     if ("string" != typeof e) throw TypeError("JSX element types must be tag names or component functions");
-    let a = {}, o = {
+    let n = {}, o = {
         ...i
     };
-    for (let [e, t] of Object.entries(o))e.startsWith("on") && "function" == typeof t ? (a[e] = t, delete o[e]) : "boolean" == typeof t && (t ? o[e] = e : delete o[e]);
-    let l = Object.keys(o).length > 0 ? n.length > 1 ? E(e, o, n) : E(e, o, n[0]) : n.length > 1 ? E(e, {}, n) : E(e, {}, n[0]);
-    for (let [e, t] of Object.entries(a)){
+    for (let [e, t] of Object.entries(o))e.startsWith("on") && "function" == typeof t ? (n[e] = t, delete o[e]) : "boolean" == typeof t && (t ? o[e] = e : delete o[e]);
+    let l = Object.keys(o).length > 0 ? a.length > 1 ? E(e, o, a) : E(e, o, a[0]) : a.length > 1 ? E(e, {}, a) : E(e, {}, a[0]);
+    for (let [e, t] of Object.entries(n)){
         let r = e.slice(2).toLowerCase();
         l.addEventListener(r, t);
     }
@@ -54,22 +54,22 @@ function l(e, t, r) {
             enumerable: !1
         }), r._zod.traits.has(e)) return;
         r._zod.traits.add(e), t(r, i);
-        let n = s.prototype, a = Object.keys(n);
-        for(let e = 0; e < a.length; e++){
-            let t = a[e];
-            t in r || (r[t] = n[t].bind(r));
+        let a = s.prototype, n = Object.keys(a);
+        for(let e = 0; e < n.length; e++){
+            let t = n[e];
+            t in r || (r[t] = a[t].bind(r));
         }
     }
-    let n = r?.Parent ?? Object;
-    class a extends n {
+    let a = r?.Parent ?? Object;
+    class n extends a {
     }
     function s(e) {
         var t;
-        let n = r?.Parent ? new a() : this;
-        for (let r of (i(n, e), (t = n._zod).deferred ?? (t.deferred = []), n._zod.deferred))r();
-        return n;
+        let a = r?.Parent ? new n() : this;
+        for (let r of (i(a, e), (t = a._zod).deferred ?? (t.deferred = []), a._zod.deferred))r();
+        return a;
     }
-    return Object.defineProperty(a, "name", {
+    return Object.defineProperty(n, "name", {
         value: e
     }), Object.defineProperty(s, "init", {
         value: i
@@ -206,68 +206,68 @@ const T = (e, t)=>{
     });
 }, U = l("$ZodError", T), $ = l("$ZodError", T, {
     Parent: Error
-}), N = (r = $, (e, t, i, n)=>{
-    let a = i ? Object.assign(i, {
+}), N = (r = $, (e, t, i, a)=>{
+    let n = i ? Object.assign(i, {
         async: !1
     }) : {
         async: !1
     }, s = e._zod.run({
         value: t,
         issues: []
-    }, a);
+    }, n);
     if (s instanceof Promise) throw new d();
     if (s.issues.length) {
-        let e = new (n?.Err ?? r)(s.issues.map((e)=>O(e, a, p())));
-        throw v(e, n?.callee), e;
+        let e = new (a?.Err ?? r)(s.issues.map((e)=>O(e, n, p())));
+        throw v(e, a?.callee), e;
     }
     return s.value;
-}), M = (i = $, async (e, t, r, n)=>{
-    let a = r ? Object.assign(r, {
+}), M = (i = $, async (e, t, r, a)=>{
+    let n = r ? Object.assign(r, {
         async: !0
     }) : {
         async: !0
     }, s = e._zod.run({
         value: t,
         issues: []
-    }, a);
+    }, n);
     if (s instanceof Promise && (s = await s), s.issues.length) {
-        let e = new (n?.Err ?? i)(s.issues.map((e)=>O(e, a, p())));
-        throw v(e, n?.callee), e;
+        let e = new (a?.Err ?? i)(s.issues.map((e)=>O(e, n, p())));
+        throw v(e, a?.callee), e;
     }
     return s.value;
-}), Z = (n = $, (e, t, r)=>{
+}), Z = (a = $, (e, t, r)=>{
     let i = r ? {
         ...r,
         async: !1
     } : {
         async: !1
-    }, a = e._zod.run({
-        value: t,
-        issues: []
-    }, i);
-    if (a instanceof Promise) throw new d();
-    return a.issues.length ? {
-        success: !1,
-        error: new (n ?? U)(a.issues.map((e)=>O(e, i, p())))
-    } : {
-        success: !0,
-        data: a.value
-    };
-}), R = (a = $, async (e, t, r)=>{
-    let i = r ? Object.assign(r, {
-        async: !0
-    }) : {
-        async: !0
     }, n = e._zod.run({
         value: t,
         issues: []
     }, i);
-    return n instanceof Promise && (n = await n), n.issues.length ? {
+    if (n instanceof Promise) throw new d();
+    return n.issues.length ? {
         success: !1,
-        error: new a(n.issues.map((e)=>O(e, i, p())))
+        error: new (a ?? U)(n.issues.map((e)=>O(e, i, p())))
     } : {
         success: !0,
         data: n.value
+    };
+}), R = (n = $, async (e, t, r)=>{
+    let i = r ? Object.assign(r, {
+        async: !0
+    }) : {
+        async: !0
+    }, a = e._zod.run({
+        value: t,
+        issues: []
+    }, i);
+    return a instanceof Promise && (a = await a), a.issues.length ? {
+        success: !1,
+        error: new n(a.issues.map((e)=>O(e, i, p())))
+    } : {
+        success: !0,
+        data: a.value
     };
 }), D = /^-?\d+(?:\.\d+)?$/, F = /^(?:true|false)$/i, I = /^null$/i, B = {
     major: 4,
@@ -285,49 +285,49 @@ const T = (e, t)=>{
     });
     else {
         let t = (e, t, r)=>{
-            let i, n = C(e);
-            for (let a of t){
-                if (a._zod.def.when) {
-                    if (!a._zod.def.when(e)) continue;
-                } else if (n) continue;
-                let t = e.issues.length, s = a._zod.check(e);
+            let i, a = C(e);
+            for (let n of t){
+                if (n._zod.def.when) {
+                    if (!n._zod.def.when(e)) continue;
+                } else if (a) continue;
+                let t = e.issues.length, s = n._zod.check(e);
                 if (s instanceof Promise && r?.async === !1) throw new d();
                 if (i || s instanceof Promise) i = (i ?? Promise.resolve()).then(async ()=>{
-                    await s, e.issues.length !== t && (n || (n = C(e, t)));
+                    await s, e.issues.length !== t && (a || (a = C(e, t)));
                 });
                 else {
                     if (e.issues.length === t) continue;
-                    n || (n = C(e, t));
+                    a || (a = C(e, t));
                 }
             }
             return i ? i.then(()=>e) : e;
-        }, r = (r, n, a)=>{
+        }, r = (r, a, n)=>{
             if (C(r)) return r.aborted = !0, r;
-            let s = t(n, i, a);
+            let s = t(a, i, n);
             if (s instanceof Promise) {
-                if (!1 === a.async) throw new d();
-                return s.then((t)=>e._zod.parse(t, a));
+                if (!1 === n.async) throw new d();
+                return s.then((t)=>e._zod.parse(t, n));
             }
-            return e._zod.parse(s, a);
+            return e._zod.parse(s, n);
         };
-        e._zod.run = (n, a)=>{
-            if (a.skipChecks) return e._zod.parse(n, a);
-            if ("backward" === a.direction) {
+        e._zod.run = (a, n)=>{
+            if (n.skipChecks) return e._zod.parse(a, n);
+            if ("backward" === n.direction) {
                 let t = e._zod.parse({
-                    value: n.value,
+                    value: a.value,
                     issues: []
                 }, {
-                    ...a,
+                    ...n,
                     skipChecks: !0
                 });
-                return t instanceof Promise ? t.then((e)=>r(e, n, a)) : r(t, n, a);
+                return t instanceof Promise ? t.then((e)=>r(e, a, n)) : r(t, a, n);
             }
-            let s = e._zod.parse(n, a);
+            let s = e._zod.parse(a, n);
             if (s instanceof Promise) {
-                if (!1 === a.async) throw new d();
-                return s.then((e)=>t(e, i, a));
+                if (!1 === n.async) throw new d();
+                return s.then((e)=>t(e, i, n));
             }
-            return t(s, i, a);
+            return t(s, i, n);
         };
     }
     m(e, "~standard", ()=>({
@@ -371,16 +371,16 @@ const T = (e, t)=>{
         if (t.coerce) try {
             r.value = Number(r.value);
         } catch (e) {}
-        let n = r.value;
-        if ("number" == typeof n && !Number.isNaN(n) && Number.isFinite(n)) return r;
-        let a = "number" == typeof n ? Number.isNaN(n) ? "NaN" : Number.isFinite(n) ? void 0 : "Infinity" : void 0;
+        let a = r.value;
+        if ("number" == typeof a && !Number.isNaN(a) && Number.isFinite(a)) return r;
+        let n = "number" == typeof a ? Number.isNaN(a) ? "NaN" : Number.isFinite(a) ? void 0 : "Infinity" : void 0;
         return r.issues.push({
             expected: "number",
             code: "invalid_type",
-            input: n,
+            input: a,
             inst: e,
-            ...a ? {
-                received: a
+            ...n ? {
+                received: n
             } : {}
         }), r;
     };
@@ -389,11 +389,11 @@ const T = (e, t)=>{
         if (t.coerce) try {
             r.value = !!r.value;
         } catch (e) {}
-        let n = r.value;
-        return "boolean" == typeof n || r.issues.push({
+        let a = r.value;
+        return "boolean" == typeof a || r.issues.push({
             expected: "boolean",
             code: "invalid_type",
-            input: n,
+            input: a,
             inst: e
         }), r;
     };
@@ -422,28 +422,28 @@ function K(e, t, r) {
 }
 const G = l("$ZodArray", (e, t)=>{
     X.init(e, t), e._zod.parse = (r, i)=>{
-        let n = r.value;
-        if (!Array.isArray(n)) return r.issues.push({
+        let a = r.value;
+        if (!Array.isArray(a)) return r.issues.push({
             expected: "array",
             code: "invalid_type",
-            input: n,
+            input: a,
             inst: e
         }), r;
-        r.value = Array(n.length);
-        let a = [];
-        for(let e = 0; e < n.length; e++){
-            let s = n[e], o = t.element._zod.run({
+        r.value = Array(a.length);
+        let n = [];
+        for(let e = 0; e < a.length; e++){
+            let s = a[e], o = t.element._zod.run({
                 value: s,
                 issues: []
             }, i);
-            o instanceof Promise ? a.push(o.then((t)=>K(t, r, e))) : K(o, r, e);
+            o instanceof Promise ? n.push(o.then((t)=>K(t, r, e))) : K(o, r, e);
         }
-        return a.length ? Promise.all(a).then(()=>r) : r;
+        return n.length ? Promise.all(n).then(()=>r) : r;
     };
 });
-function Q(e, t, r, i, n) {
+function Q(e, t, r, i, a) {
     if (e.issues.length) {
-        if (n && !(r in i)) return;
+        if (a && !(r in i)) return;
         t.issues.push(...A(r, e.issues));
     }
     void 0 === e.value ? r in i && (t.value[r] = void 0) : t.value[r] = e.value;
@@ -465,7 +465,7 @@ const Y = l("$ZodObject", (e, t)=>{
             }
         });
     }
-    let n = f(()=>(function(e) {
+    let a = f(()=>(function(e) {
             var t;
             let r = Object.keys(e.shape);
             for (let t of r)if (!e.shape?.[t]?._zod?.traits?.has("$ZodType")) throw Error(`Invalid element at key "${t}": expected a Zod schema`);
@@ -486,9 +486,9 @@ const Y = l("$ZodObject", (e, t)=>{
         }
         return r;
     });
-    let a = t.catchall;
+    let n = t.catchall;
     e._zod.parse = (t, i)=>{
-        r ?? (r = n.value);
+        r ?? (r = a.value);
         let s = t.value;
         if (!w(s)) return t.issues.push({
             expected: "object",
@@ -499,39 +499,39 @@ const Y = l("$ZodObject", (e, t)=>{
         t.value = {};
         let o = [], l = r.shape;
         for (let e of r.keys){
-            let r = l[e], n = "optional" === r._zod.optout, a = r._zod.run({
+            let r = l[e], a = "optional" === r._zod.optout, n = r._zod.run({
                 value: s[e],
                 issues: []
             }, i);
-            a instanceof Promise ? o.push(a.then((r)=>Q(r, t, e, s, n))) : Q(a, t, e, s, n);
+            n instanceof Promise ? o.push(n.then((r)=>Q(r, t, e, s, a))) : Q(n, t, e, s, a);
         }
-        return a ? function(e, t, r, i, n, a) {
-            let s = [], o = n.keySet, l = n.catchall._zod, d = l.def.type, c = "optional" === l.optout;
-            for(let n in t){
-                if (o.has(n)) continue;
+        return n ? function(e, t, r, i, a, n) {
+            let s = [], o = a.keySet, l = a.catchall._zod, d = l.def.type, c = "optional" === l.optout;
+            for(let a in t){
+                if (o.has(a)) continue;
                 if ("never" === d) {
-                    s.push(n);
+                    s.push(a);
                     continue;
                 }
-                let a = l.run({
-                    value: t[n],
+                let n = l.run({
+                    value: t[a],
                     issues: []
                 }, i);
-                a instanceof Promise ? e.push(a.then((e)=>Q(e, r, n, t, c))) : Q(a, r, n, t, c);
+                n instanceof Promise ? e.push(n.then((e)=>Q(e, r, a, t, c))) : Q(n, r, a, t, c);
             }
             return (s.length && r.issues.push({
                 code: "unrecognized_keys",
                 keys: s,
                 input: t,
-                inst: a
+                inst: n
             }), e.length) ? Promise.all(e).then(()=>r) : r;
-        }(o, s, t, i, n.value, e) : o.length ? Promise.all(o).then(()=>t) : t;
+        }(o, s, t, i, a.value, e) : o.length ? Promise.all(o).then(()=>t) : t;
     };
 });
 function ee(e, t, r, i) {
     for (let r of e)if (0 === r.issues.length) return t.value = r.value, t;
-    let n = e.filter((e)=>!C(e));
-    return 1 === n.length ? (t.value = n[0].value, n[0]) : (t.issues.push({
+    let a = e.filter((e)=>!C(e));
+    return 1 === a.length ? (t.value = a[0].value, a[0]) : (t.issues.push({
         code: "invalid_union",
         input: t.value,
         inst: r,
@@ -548,21 +548,21 @@ const et = l("$ZodUnion", (e, t)=>{
         }
     });
     let r = 1 === t.options.length, i = t.options[0]._zod.run;
-    e._zod.parse = (n, a)=>{
-        if (r) return i(n, a);
+    e._zod.parse = (a, n)=>{
+        if (r) return i(a, n);
         let s = !1, o = [];
         for (let e of t.options){
             let t = e._zod.run({
-                value: n.value,
+                value: a.value,
                 issues: []
-            }, a);
+            }, n);
             if (t instanceof Promise) o.push(t), s = !0;
             else {
                 if (0 === t.issues.length) return t;
                 o.push(t);
             }
         }
-        return s ? Promise.all(o).then((t)=>ee(t, n, e, a)) : ee(o, n, e, a);
+        return s ? Promise.all(o).then((t)=>ee(t, a, e, n)) : ee(o, a, e, n);
     };
 }), er = l("$ZodDiscriminatedUnion", (e, t)=>{
     t.inclusive = !1, et.init(e, t);
@@ -588,16 +588,16 @@ const et = l("$ZodUnion", (e, t)=>{
         }
         return r;
     });
-    e._zod.parse = (n, a)=>{
-        let s = n.value;
-        if (!w(s)) return n.issues.push({
+    e._zod.parse = (a, n)=>{
+        let s = a.value;
+        if (!w(s)) return a.issues.push({
             code: "invalid_type",
             expected: "object",
             input: s,
             inst: e
-        }), n;
+        }), a;
         let o = i.value.get(s?.[t.discriminator]);
-        return o ? o._zod.run(n, a) : t.unionFallback ? r(n, a) : (n.issues.push({
+        return o ? o._zod.run(a, n) : t.unionFallback ? r(a, n) : (a.issues.push({
             code: "invalid_union",
             errors: [],
             note: "No matching discriminator",
@@ -607,18 +607,18 @@ const et = l("$ZodUnion", (e, t)=>{
                 t.discriminator
             ],
             inst: e
-        }), n);
+        }), a);
     };
 }), ei = l("$ZodRecord", (e, t)=>{
     X.init(e, t), e._zod.parse = (r, i)=>{
-        let n = r.value;
-        if (!x(n)) return r.issues.push({
+        let a = r.value;
+        if (!x(a)) return r.issues.push({
             expected: "record",
             code: "invalid_type",
-            input: n,
+            input: a,
             inst: e
         }), r;
-        let a = [], s = t.keyType._zod.values;
+        let n = [], s = t.keyType._zod.values;
         if (s) {
             let o;
             r.value = {};
@@ -626,21 +626,21 @@ const et = l("$ZodUnion", (e, t)=>{
             for (let e of s)if ("string" == typeof e || "number" == typeof e || "symbol" == typeof e) {
                 l.add("number" == typeof e ? e.toString() : e);
                 let s = t.valueType._zod.run({
-                    value: n[e],
+                    value: a[e],
                     issues: []
                 }, i);
-                s instanceof Promise ? a.push(s.then((t)=>{
+                s instanceof Promise ? n.push(s.then((t)=>{
                     t.issues.length && r.issues.push(...A(e, t.issues)), r.value[e] = t.value;
                 })) : (s.issues.length && r.issues.push(...A(e, s.issues)), r.value[e] = s.value);
             }
-            for(let e in n)l.has(e) || (o = o ?? []).push(e);
+            for(let e in a)l.has(e) || (o = o ?? []).push(e);
             o && o.length > 0 && r.issues.push({
                 code: "unrecognized_keys",
-                input: n,
+                input: a,
                 inst: e,
                 keys: o
             });
-        } else for (let s of (r.value = {}, Reflect.ownKeys(n))){
+        } else for (let s of (r.value = {}, Reflect.ownKeys(a))){
             if ("__proto__" === s) continue;
             let o = t.keyType._zod.run({
                 value: s,
@@ -656,7 +656,7 @@ const et = l("$ZodUnion", (e, t)=>{
                 0 === e.issues.length && (o = e);
             }
             if (o.issues.length) {
-                "loose" === t.mode ? r.value[s] = n[s] : r.issues.push({
+                "loose" === t.mode ? r.value[s] = a[s] : r.issues.push({
                     code: "invalid_key",
                     origin: "record",
                     issues: o.issues.map((e)=>O(e, i, p())),
@@ -669,38 +669,38 @@ const et = l("$ZodUnion", (e, t)=>{
                 continue;
             }
             let l = t.valueType._zod.run({
-                value: n[s],
+                value: a[s],
                 issues: []
             }, i);
-            l instanceof Promise ? a.push(l.then((e)=>{
+            l instanceof Promise ? n.push(l.then((e)=>{
                 e.issues.length && r.issues.push(...A(s, e.issues)), r.value[o.value] = e.value;
             })) : (l.issues.length && r.issues.push(...A(s, l.issues)), r.value[o.value] = l.value);
         }
-        return a.length ? Promise.all(a).then(()=>r) : r;
+        return n.length ? Promise.all(n).then(()=>r) : r;
     };
-}), en = l("$ZodEnum", (e, t)=>{
+}), ea = l("$ZodEnum", (e, t)=>{
     var r;
     let i;
     X.init(e, t);
-    let n = (i = Object.values(r = t.entries).filter((e)=>"number" == typeof e), Object.entries(r).filter(([e, t])=>-1 === i.indexOf(+e)).map(([e, t])=>t)), a = new Set(n);
-    e._zod.values = a, e._zod.pattern = RegExp(`^(${n.filter((e)=>z.has(typeof e)).map((e)=>"string" == typeof e ? k(e) : e.toString()).join("|")})$`), e._zod.parse = (t, r)=>{
+    let a = (i = Object.values(r = t.entries).filter((e)=>"number" == typeof e), Object.entries(r).filter(([e, t])=>-1 === i.indexOf(+e)).map(([e, t])=>t)), n = new Set(a);
+    e._zod.values = n, e._zod.pattern = RegExp(`^(${a.filter((e)=>z.has(typeof e)).map((e)=>"string" == typeof e ? k(e) : e.toString()).join("|")})$`), e._zod.parse = (t, r)=>{
         let i = t.value;
-        return a.has(i) || t.issues.push({
+        return n.has(i) || t.issues.push({
             code: "invalid_value",
-            values: n,
+            values: a,
             input: i,
             inst: e
         }), t;
     };
-}), ea = l("$ZodLiteral", (e, t)=>{
+}), en = l("$ZodLiteral", (e, t)=>{
     if (X.init(e, t), 0 === t.values.length) throw Error("Cannot create literal schema with no valid values");
     let r = new Set(t.values);
-    e._zod.values = r, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? k(e) : e ? k(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (i, n)=>{
-        let a = i.value;
-        return r.has(a) || i.issues.push({
+    e._zod.values = r, e._zod.pattern = RegExp(`^(${t.values.map((e)=>"string" == typeof e ? k(e) : e ? k(e.toString()) : String(e)).join("|")})$`), e._zod.parse = (i, a)=>{
+        let n = i.value;
+        return r.has(n) || i.issues.push({
             code: "invalid_value",
             values: t.values,
-            input: a,
+            input: n,
             inst: e
         }), i;
     };
@@ -922,7 +922,7 @@ function eT(e, t, r) {
     });
 }
 const eU = l("ZodMiniEnum", (e, t)=>{
-    en.init(e, t), ep.init(e, t), e.options = Object.values(t.entries);
+    ea.init(e, t), ep.init(e, t), e.options = Object.values(t.entries);
 });
 function eE(e, t) {
     return new eU({
@@ -935,7 +935,7 @@ function eE(e, t) {
     });
 }
 const e$ = l("ZodMiniLiteral", (e, t)=>{
-    ea.init(e, t), ep.init(e, t);
+    en.init(e, t), ep.init(e, t);
 });
 function eN(e, t) {
     return new e$({
@@ -1202,13 +1202,13 @@ const tt = eE([
         desired: e8
     })))
 });
-let tn = ek({
+let ta = ek({
     state: e8,
     reason: e7,
     task_id: eZ(eD(e5)),
     instance: e9
 });
-const ta = ek({
+const tn = ek({
     cwmp_id: e8,
     state: eE([
         "online",
@@ -1344,7 +1344,7 @@ const to = eP("state", [
         }))
     })),
     wan_objects: eZ(eT(e8, eI())),
-    wan_lifecycle: eZ(eT(e8, tn)),
+    wan_lifecycle: eZ(eT(e8, ta)),
     wan_stage: eZ(eE([
         "waiting",
         "inventory",
@@ -1366,7 +1366,7 @@ const to = eP("state", [
         pending: eD(e8),
         pending_instance: eD(e5)
     })),
-    wifi_lifecycle: eZ(eT(e8, tn)),
+    wifi_lifecycle: eZ(eT(e8, ta)),
     wifi_stage: eZ(eE([
         "waiting",
         "inventory",
@@ -1444,7 +1444,7 @@ const tp = ek({
         state: e8,
         reason: eZ(eD(e8))
     }),
-    management: eD(ta),
+    management: eD(tn),
     acs_bootstrap: to,
     provisioning: tl,
     services: ex(ti),
@@ -1574,7 +1574,7 @@ const tk = ek({
     serial_number: tg,
     state: tw,
     business_status: tv,
-    management: eD(ta),
+    management: eD(tn),
     provisioning: eD(tl),
     services: ex(ti),
     ssids: ex(ti),
@@ -1930,7 +1930,7 @@ const tO = eP("status", [
 };
 function tD() {
     var e;
-    let r, i, n, a, s, o, l, d, c, p, u, f, h, g, m, b, y, v, w, x, z, k, j;
+    let r, i, a, n, s, o, l, d, c, p, u, f, h, g, m, b, y, v, w, x, z, k, j;
     return t ??= (e = L.rpc, r = e.declare({
         object: "fttr",
         method: "get_capabilities",
@@ -1939,14 +1939,14 @@ function tD() {
         object: "fttr",
         method: "optical_status",
         reject: !0
-    }), n = e.declare({
+    }), a = e.declare({
         object: "fttr",
         method: "optical_set",
         params: [
             "enabled"
         ],
         reject: !0
-    }), a = e.declare({
+    }), n = e.declare({
         object: "fttr",
         method: "get_status",
         reject: !0
@@ -2076,8 +2076,8 @@ function tD() {
     }), {
         getCapabilities: async ()=>tR.getCapabilities.parse(await r()),
         opticalStatus: async ()=>tR.opticalStatus.parse(await i()),
-        opticalSet: async (e)=>tR.opticalSet.parse(await n(e.enabled)),
-        getStatus: async ()=>tR.getStatus.parse(await a()),
+        opticalSet: async (e)=>tR.opticalSet.parse(await a(e.enabled)),
+        getStatus: async ()=>tR.getStatus.parse(await n()),
         getSync: async ()=>tR.getSync.parse(await s()),
         configCheck: async ()=>tR.configCheck.parse(await o()),
         npuStatus: async ()=>tR.npuStatus.parse(await l()),
@@ -2100,32 +2100,32 @@ function tD() {
     });
 }
 async function tF(e) {
-    let t, r = eH.parse(eV(e)), i = Date.now() + 330000, n = window.location.pathname, a = [], s = 0;
+    let t, r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : eV, i = eH.parse(eV(e)), a = Date.now() + 330000, n = window.location.pathname, s = [], o = 0;
     try {
         for(let e = 0; e < 128;){
             if (window.location.pathname !== n) throw new eX("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
-            if (Date.now() > i) throw new eX("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
-            let o = await tD().jobResult({
-                job: r.job,
+            if (Date.now() > a) throw new eX("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
+            let l = await tD().jobResult({
+                job: i.job,
                 chunk: e
             });
-            if ("pending" === o.status) {
+            if ("pending" === l.status) {
                 await new Promise((e)=>window.setTimeout(e, 1000));
                 continue;
             }
-            if (!Number.isInteger(o.chunks) || o.chunks < 1 || o.chunks > 128 || o.chunk !== e || !Number.isInteger(o.bytes) || o.bytes < 1 || o.bytes > 4194304 || o.data.length > 43692) throw new eX("transport", _("Invalid job result"));
-            if (t && (o.chunks !== t.chunks || o.bytes !== t.bytes)) throw new eX("transport", _("Inconsistent job result chunks"));
+            if (!Number.isInteger(l.chunks) || l.chunks < 1 || l.chunks > 128 || l.chunk !== e || !Number.isInteger(l.bytes) || l.bytes < 1 || l.bytes > 4194304 || l.data.length > 43692) throw new eX("transport", _("Invalid job result"));
+            if (t && (l.chunks !== t.chunks || l.bytes !== t.bytes)) throw new eX("transport", _("Inconsistent job result chunks"));
             t = {
-                chunks: o.chunks,
-                bytes: o.bytes
+                chunks: l.chunks,
+                bytes: l.bytes
             };
-            let l = Uint8Array.from(atob(o.data), (e)=>e.charCodeAt(0));
-            if (l.length > 32768 || s + l.length > o.bytes) throw new eX("transport", _("Job result exceeds the transport limit"));
-            if (a.push(l), s += l.length, ++e === o.chunks) {
-                if (s !== o.bytes) throw new eX("transport", _("Incomplete job result"));
-                let e = new Uint8Array(s), t = 0;
-                for (let r of a)e.set(r, t), t += r.length;
-                return eV(JSON.parse(new TextDecoder("utf-8", {
+            let d = Uint8Array.from(atob(l.data), (e)=>e.charCodeAt(0));
+            if (d.length > 32768 || o + d.length > l.bytes) throw new eX("transport", _("Job result exceeds the transport limit"));
+            if (s.push(d), o += d.length, ++e === l.chunks) {
+                if (o !== l.bytes) throw new eX("transport", _("Incomplete job result"));
+                let e = new Uint8Array(o), t = 0;
+                for (let r of s)e.set(r, t), t += r.length;
+                return r(JSON.parse(new TextDecoder("utf-8", {
                     fatal: !0
                 }).decode(e)));
             }
@@ -2133,7 +2133,7 @@ async function tF(e) {
         throw new eX("transport", _("Too many result chunks"));
     } finally{
         await tD().jobRelease({
-            job: r.job
+            job: i.job
         }).catch(()=>{});
     }
 }
@@ -2147,7 +2147,10 @@ L.rpc.declare({
 });
 const tL = async ()=>tD().getCalibration(), tI = async (e)=>tD().saveCalibration({
         data: e
-    }), tB = async ()=>tE.parse(await tF(await tD().applyCalibration()));
+    }), tB = async ()=>tE.parse(await tF(await tD().applyCalibration(), (e)=>{
+        let t = tE.safeParse(e);
+        return t.success ? t.data : eV(e);
+    }));
 async function tX(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : _("Unavailable");
 }
@@ -2159,53 +2162,53 @@ function tV(e) {
 function tH(e, t) {
     let r = new Uint8Array(e), i = r.byteLength;
     if (288 !== i && 56 !== i) return null;
-    let n = new DataView(e), a = [];
-    for(let e = 0; e < Math.min(56, i); e++)a.push(r[e]);
+    let a = new DataView(e), n = [];
+    for(let e = 0; e < Math.min(56, i); e++)n.push(r[e]);
     let s = i >= 0x46 ? {
-        n: n.getUint16(0x40, !1),
-        d: n.getUint16(0x42, !1),
-        o: n.getInt16(0x44, !1)
+        n: a.getUint16(0x40, !1),
+        d: a.getUint16(0x42, !1),
+        o: a.getInt16(0x44, !1)
     } : {
         n: 7142,
         d: 4096,
         o: -24780
     }, o = i >= 0x4c ? {
-        n: n.getUint16(0x46, !1),
-        d: n.getUint16(0x48, !1),
-        o: n.getInt16(0x4a, !1)
+        n: a.getUint16(0x46, !1),
+        d: a.getUint16(0x48, !1),
+        o: a.getInt16(0x4a, !1)
     } : {
         n: 950,
         d: 1024,
         o: 0
     }, l = i >= 0x52 ? {
-        n: n.getUint16(0x4c, !1),
-        d: n.getUint16(0x4e, !1),
-        o: n.getInt16(0x50, !1)
+        n: a.getUint16(0x4c, !1),
+        d: a.getUint16(0x4e, !1),
+        o: a.getInt16(0x50, !1)
     } : {
         n: 1403,
         d: 1024,
         o: 337
     }, d = i >= 0x58 ? {
-        n: n.getUint16(0x52, !1),
-        d: n.getUint16(0x54, !1),
-        o: n.getInt16(0x56, !1)
+        n: a.getUint16(0x52, !1),
+        d: a.getUint16(0x54, !1),
+        o: a.getInt16(0x56, !1)
     } : {
         n: 227,
         d: 256,
         o: 1
     }, c = i >= 0x5e ? {
-        n: n.getUint16(0x58, !1),
-        d: n.getUint16(0x5a, !1),
-        o: n.getInt16(0x5c, !1)
+        n: a.getUint16(0x58, !1),
+        d: a.getUint16(0x5a, !1),
+        o: a.getInt16(0x5c, !1)
     } : {
         n: 7372,
         d: 4096,
         o: -26735
-    }, p = i >= 0x60 ? n.getInt16(0x5e, !1) : 35, u = {
+    }, p = i >= 0x60 ? a.getInt16(0x5e, !1) : 35, u = {
         size: i,
         sha256: t,
         isStockHash: "a9447a85073b61016d8ef1e736e944c9942e1b138ba9a35663b48abcf47c1bd4" === t.toLowerCase(),
-        registers: a,
+        registers: n,
         tempPrimary: s,
         tempAlt: c,
         tempThreshold: p,
@@ -2221,12 +2224,12 @@ function tH(e, t) {
     };
     return u.simulated = {
         temp: function(e) {
-            let { n: t, d: r, o: i } = e.tempPrimary, n = (Math.floor(0x5980 * t / (0 === r ? 4096 : r)) + i) / 256.0;
-            if (n <= e.tempThreshold) {
+            let { n: t, d: r, o: i } = e.tempPrimary, a = (Math.floor(0x5980 * t / (0 === r ? 4096 : r)) + i) / 256.0;
+            if (a <= e.tempThreshold) {
                 let { n: t, d: r, o: i } = e.tempAlt;
                 return Number(((Math.floor(0x5980 * t / (0 === r ? 4096 : r)) + i) / 256.0).toFixed(2));
             }
-            return Number(n.toFixed(2));
+            return Number(a.toFixed(2));
         }(u),
         voltage: function(e) {
             let { n: t, d: r, o: i } = e.voltage;
@@ -2237,13 +2240,13 @@ function tH(e, t) {
             return Number(((Math.floor(0x1f40 * t / (0 === r ? 1024 : r)) + i) / 500.0).toFixed(2));
         }(u),
         txPower: function(e) {
-            let { n: t, d: r, o: i } = e.txPower, n = (Math.floor(0x2440 * t / (0 === r ? 256 : r)) + i) / 10000.0;
-            return n > 0 ? Number((10.0 * Math.log10(n)).toFixed(2)) : null;
+            let { n: t, d: r, o: i } = e.txPower, a = (Math.floor(0x2440 * t / (0 === r ? 256 : r)) + i) / 10000.0;
+            return a > 0 ? Number((10.0 * Math.log10(a)).toFixed(2)) : null;
         }(u)
     }, u;
 }
 function tq(e, t, r) {
-    var i, n, a, s, l, d, c, p, u, f, h, g, m, b, y, v, w, x, z, k, j, S, C, A, P, O, T, U, $, N, M, Z, R, D, F;
+    var i, a, n, s, l, d, c, p, u, f, h, g, m, b, y, v, w, x, z, k, j, S, C, A, P, O, T, U, $, N, M, Z, R, D, F;
     let I = e.isStockHash ? o("span", {
         class: "fttr-badge fttr-badge-success",
         children: _("Official factory baseline match")
@@ -2261,7 +2264,7 @@ function tq(e, t, r) {
         class: "fttr-card",
         style: "margin-top:12px",
         children: [
-            (n = {
+            (a = {
                 style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px",
                 children: [
                     (i = {
@@ -2284,12 +2287,12 @@ function tq(e, t, r) {
                         ]
                     })
                 ]
-            }, o("div", n)),
+            }, o("div", a)),
             (d = {
                 class: "fttr-grid-3",
                 style: "margin-bottom:12px",
                 children: [
-                    (a = {
+                    (n = {
                         class: "fttr-card",
                         children: [
                             o("div", {
@@ -2302,7 +2305,7 @@ function tq(e, t, r) {
                                 children: _("%s bytes").format(String(e.size))
                             })
                         ]
-                    }, o("div", a)),
+                    }, o("div", n)),
                     (s = {
                         class: "fttr-card",
                         children: [
@@ -2587,7 +2590,7 @@ function tq(e, t, r) {
                 children: _("BOSA hardware register initialization table (first %s bytes, %s)").format("56", "0x00 ~ 0x37")
             }),
             function(e) {
-                var t, r, i, n, a, s;
+                var t, r, i, a, n, s;
                 let l = [];
                 for(let r = 0; r < e.length; r += 8){
                     let i = e.slice(r, r + 8);
@@ -2602,11 +2605,11 @@ function tq(e, t, r) {
                             }),
                             i.map((e, t)=>{
                                 var i;
-                                let n = r + t, a = 0x27 === n;
+                                let a = r + t, n = 0x27 === a;
                                 return i = {
                                     style: "font-family:monospace;text-align:center",
-                                    title: _("Register %s: %s (%s)").format(`0x${n.toString(16).padStart(2, "0").toUpperCase()}`, `0x${e.toString(16).padStart(2, "0").toUpperCase()}`, String(e)),
-                                    children: a ? o("span", {
+                                    title: _("Register %s: %s (%s)").format(`0x${a.toString(16).padStart(2, "0").toUpperCase()}`, `0x${e.toString(16).padStart(2, "0").toUpperCase()}`, String(e)),
+                                    children: n ? o("span", {
                                         class: "fttr-badge fttr-badge-warning",
                                         children: [
                                             "0x",
@@ -2632,7 +2635,7 @@ function tq(e, t, r) {
                 return s = {
                     style: "overflow-x:auto",
                     children: [
-                        (n = {
+                        (a = {
                             class: "table cbi-section-table",
                             style: "font-size:90%;margin-top:8px",
                             children: [
@@ -2682,8 +2685,8 @@ function tq(e, t, r) {
                                     children: l
                                 })
                             ]
-                        }, o("table", n)),
-                        (a = {
+                        }, o("table", a)),
+                        (n = {
                             style: "font-size:85%;opacity:0.75;margin:4px 0 0",
                             children: [
                                 _("Note: Register"),
@@ -2700,7 +2703,7 @@ function tq(e, t, r) {
                                 " ",
                                 _("to commit all changes.")
                             ]
-                        }, o("p", a))
+                        }, o("p", n))
                     ]
                 }, o("div", s);
             }(e.registers)
@@ -2710,12 +2713,12 @@ function tq(e, t, r) {
 let main = L.view.extend({
     load: ()=>tL(),
     render: (e)=>(function(e) {
-            var t, r, i, n, a, s, l, d, c, p, u;
+            var t, r, i, a, n, s, l, d, c, p, u;
             let f = document.createElement("div");
             f.className = "fttr-calibration";
             let h = null, g = null, m = o("div", {}), b = o("div", {}), y = o("div", {}), v = o("div", {});
             function w(e) {
-                var t, r, i, n, a, s, l, d, c, p, u, f, h, g, y, v, w, x, z, k, j, S;
+                var t, r, i, a, n, s, l, d, c, p, u, f, h, g, y, v, w, x, z, k, j, S;
                 m.innerHTML = "", b.innerHTML = "", "builtin" === e.source && m.appendChild((i = {
                     class: "alert-message warning",
                     style: "margin-bottom:16px",
@@ -2779,14 +2782,14 @@ let main = L.view.extend({
                         (j = {
                             class: "fttr-card",
                             children: [
-                                (a = {
+                                (n = {
                                     style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px",
                                     children: [
                                         o("h3", {
                                             style: "margin:0;font-size:110%",
                                             children: _("Currently active system calibration data")
                                         }),
-                                        (n = {
+                                        (a = {
                                             style: "display:flex;align-items:center;gap:8px",
                                             children: [
                                                 o("span", {
@@ -2813,9 +2816,9 @@ let main = L.view.extend({
                                                     }
                                                 }(e.source)
                                             ]
-                                        }, o("div", n))
+                                        }, o("div", a))
                                     ]
-                                }, o("div", a)),
+                                }, o("div", n)),
                                 (c = {
                                     class: "fttr-grid-3",
                                     style: "margin-bottom:12px",
@@ -3037,7 +3040,7 @@ let main = L.view.extend({
                 ]
             }, o("div", i));
             async function S(e) {
-                var t, r, i, n, a, s, l, d, c, p, u, f;
+                var t, r, i, a, n, s, l, d, c, p, u, f;
                 v.innerHTML = "", y.innerHTML = "", z.disabled = !0;
                 let m = e.size;
                 if (288 !== m && 56 !== m) return void v.appendChild((r = {
@@ -3079,19 +3082,19 @@ let main = L.view.extend({
                     let t = await e.arrayBuffer();
                     h = t;
                     let r = await tX(t), f = tH(t, r);
-                    if (!f) return void v.appendChild((a = {
+                    if (!f) return void v.appendChild((n = {
                         class: "alert-message danger",
                         children: [
                             (i = {
                                 style: "margin:0 0 6px",
                                 children: _("Failed to parse calibration file")
                             }, o("h4", i)),
-                            (n = {
+                            (a = {
                                 style: "margin:0",
                                 children: _("Unable to parse the calibration file structure. Please check the file's integrity.")
-                            }, o("p", n))
+                            }, o("p", a))
                         ]
-                    }, o("div", a)));
+                    }, o("div", n)));
                     g = f, z.disabled = !1, v.appendChild((u = {
                         class: "alert-message success",
                         children: [
@@ -3139,14 +3142,14 @@ let main = L.view.extend({
                 k.files?.length && S(k.files[0]);
             }), z.addEventListener("click", async ()=>{
                 if (h && g) {
-                    var e, t, r, i, n, a;
+                    var e, t, r, i, a, n;
                     z.disabled = !0, z.textContent = _("Uploading to %s...").format("/lib/firmware/modified_UX3326.bin"), v.innerHTML = "";
                     try {
-                        let a = function(e) {
+                        let n = function(e) {
                             let t = "", r = new Uint8Array(e), i = r.byteLength;
                             for(let e = 0; e < i; e++)t += String.fromCharCode(r[e]);
                             return window.btoa(t);
-                        }(h), s = x.checked, l = await tI(a);
+                        }(h), s = x.checked, l = await tI(n);
                         if (!l.success) throw Error(l.error || _("Failed to save calibration file"));
                         let d = "";
                         if (s) {
@@ -3154,7 +3157,7 @@ let main = L.view.extend({
                             let e = await tB();
                             d = e.success ? _(", and the optical transceiver hardware was reset and the register table was latched successfully (%s succeeded)").format("bosa-init") : _(", but optical transceiver hardware initialization reported a warning: %s").format(e.error || _("Unknown error"));
                         }
-                        v.appendChild((n = {
+                        v.appendChild((a = {
                             class: "alert-message success",
                             children: [
                                 (e = {
@@ -3181,11 +3184,11 @@ let main = L.view.extend({
                                     ]
                                 }, o("p", i))
                             ]
-                        }, o("div", n)));
+                        }, o("div", a)));
                         let c = await tL();
                         w(c);
                     } catch (e) {
-                        v.appendChild((a = {
+                        v.appendChild((n = {
                             class: "alert-message danger",
                             children: [
                                 o("h4", {
@@ -3197,7 +3200,7 @@ let main = L.view.extend({
                                     children: String(e)
                                 })
                             ]
-                        }, o("div", a)));
+                        }, o("div", n)));
                     } finally{
                         z.disabled = !1, z.textContent = _("Upload and save to %s").format("/lib/firmware/modified_UX3326.bin");
                     }
@@ -3346,7 +3349,7 @@ let main = L.view.extend({
                         style: "margin-bottom:6px",
                         children: _("BOSA downstream optical calibration management (UX3326)")
                     }),
-                    (n = {
+                    (a = {
                         class: "cbi-section-descr",
                         style: "margin-bottom:16px",
                         children: [
@@ -3363,7 +3366,7 @@ let main = L.view.extend({
                             " ",
                             _("with automatic fallback to built-in static defaults if neither source has valid data.")
                         ]
-                    }, o("p", n)),
+                    }, o("p", a)),
                     m,
                     b,
                     (p = {
@@ -3372,7 +3375,7 @@ let main = L.view.extend({
                             o("h3", {
                                 children: _("Upload a new UX3326 calibration file")
                             }),
-                            (a = {
+                            (n = {
                                 style: "font-size:90%;opacity:0.75;margin-top:0;margin-bottom:12px",
                                 children: [
                                     _("New calibration tables are always saved to"),
@@ -3384,7 +3387,7 @@ let main = L.view.extend({
                                     " ",
                                     _("The file must be exactly %s bytes.").format("288")
                                 ]
-                            }, o("p", a)),
+                            }, o("p", n)),
                             j,
                             k,
                             o("div", {

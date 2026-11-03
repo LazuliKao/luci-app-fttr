@@ -2,7 +2,7 @@ import { checked, jobStart, RpcError } from "../view/contracts/common";
 import { getFttrClient } from "./client";
 
 // Polling never replays the operation. Leaving a page only releases its result.
-export async function waitForJob(start: unknown): Promise<unknown> {
+export async function waitForJob(start: unknown, parseResult: (value: unknown) => unknown = checked): Promise<unknown> {
 	const initial = jobStart.parse(checked(start));
 	const deadline = Date.now() + 330000;
 	const path = window.location.pathname;
@@ -54,7 +54,7 @@ export async function waitForJob(start: unknown): Promise<unknown> {
 					bytes.set(part, offset);
 					offset += part.length;
 				}
-				return checked(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
+				return parseResult(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
 			}
 		}
 		throw new RpcError("transport", _("Too many result chunks"));

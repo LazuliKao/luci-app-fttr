@@ -214,4 +214,26 @@ test("job polling assembles UTF-8 chunks, rejects changed metadata and never rep
 	await assert.rejects(waitForJob({ status: "pending", job: "test-job" }));
 	assert.equal(calls.at(-1), "job_release");
 	assert.ok(calls.every((method) => method === "job_result" || method === "job_release"));
+	const ready = (value: unknown) => {
+		const data = Buffer.from(JSON.stringify(value));
+		return { status: "ready", chunk: 0, chunks: 1, bytes: data.length, data: data.toString("base64") };
+	};
+	// The public calibration wrapper must preserve warning results for the page,
+	// while actual worker/transport failures still reject and release the job.
+	const { applyCalibration } = await import("../src/view/contracts/api");
+	for (const outcome of [
+		{ success: true, output: "Applied" },
+		{ success: false, error: "Hardware initialization warning" },
+	]) {
+		calls.length = 0;
+		results = [{ status: "pending", job: "calibration-job" }, ready(outcome)];
+		assert.deepEqual(await applyCalibration(), outcome);
+		assert.deepEqual(calls, ["apply_calibration", "job_result", "job_release"]);
+	}
+	results = [{ status: "pending", job: "calibration-job" }, ready({ error: "Worker outcome unknown" })];
+	await assert.rejects(applyCalibration(), /Worker outcome unknown/);
+	assert.equal(calls.at(-1), "job_release");
+	results = [ready({ success: false, error: "Generic job failure" })];
+	await assert.rejects(waitForJob({ status: "pending", job: "test-job" }), /Generic job failure/);
+	assert.equal(calls.at(-1), "job_release");
 });

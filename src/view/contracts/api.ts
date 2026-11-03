@@ -42,4 +42,10 @@ export const getCalibration = async (): Promise<CalibrationInfo> => getFttrClien
 export const saveCalibration = async (data: string): Promise<SaveCalibrationResult> =>
 	getFttrClient().saveCalibration({ data });
 export const applyCalibration = async (): Promise<ApplyCalibrationResult> =>
-	applyCalibrationResult.parse(await waitForJob(await getFttrClient().applyCalibration()));
+	applyCalibrationResult.parse(
+		await waitForJob(await getFttrClient().applyCalibration(), (value) => {
+			// A valid calibration warning is a business result, not a job failure.
+			const result = applyCalibrationResult.safeParse(value);
+			return result.success ? result.data : checked(value);
+		}),
+	);

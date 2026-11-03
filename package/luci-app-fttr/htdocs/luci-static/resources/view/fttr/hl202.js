@@ -2113,32 +2113,32 @@ function tF(e, t, n) {
     });
 }
 async function tW(e) {
-    let t, n = eF.parse(eV(e)), r = Date.now() + 330000, i = window.location.pathname, a = [], s = 0;
+    let t, n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : eV, r = eF.parse(eV(e)), i = Date.now() + 330000, a = window.location.pathname, s = [], o = 0;
     try {
         for(let e = 0; e < 128;){
-            if (window.location.pathname !== i) throw new eQ("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
-            if (Date.now() > r) throw new eQ("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
-            let o = await tJ().jobResult({
-                job: n.job,
+            if (window.location.pathname !== a) throw new eQ("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
+            if (Date.now() > i) throw new eQ("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
+            let l = await tJ().jobResult({
+                job: r.job,
                 chunk: e
             });
-            if ("pending" === o.status) {
+            if ("pending" === l.status) {
                 await new Promise((e)=>window.setTimeout(e, 1000));
                 continue;
             }
-            if (!Number.isInteger(o.chunks) || o.chunks < 1 || o.chunks > 128 || o.chunk !== e || !Number.isInteger(o.bytes) || o.bytes < 1 || o.bytes > 4194304 || o.data.length > 43692) throw new eQ("transport", _("Invalid job result"));
-            if (t && (o.chunks !== t.chunks || o.bytes !== t.bytes)) throw new eQ("transport", _("Inconsistent job result chunks"));
+            if (!Number.isInteger(l.chunks) || l.chunks < 1 || l.chunks > 128 || l.chunk !== e || !Number.isInteger(l.bytes) || l.bytes < 1 || l.bytes > 4194304 || l.data.length > 43692) throw new eQ("transport", _("Invalid job result"));
+            if (t && (l.chunks !== t.chunks || l.bytes !== t.bytes)) throw new eQ("transport", _("Inconsistent job result chunks"));
             t = {
-                chunks: o.chunks,
-                bytes: o.bytes
+                chunks: l.chunks,
+                bytes: l.bytes
             };
-            let l = Uint8Array.from(atob(o.data), (e)=>e.charCodeAt(0));
-            if (l.length > 32768 || s + l.length > o.bytes) throw new eQ("transport", _("Job result exceeds the transport limit"));
-            if (a.push(l), s += l.length, ++e === o.chunks) {
-                if (s !== o.bytes) throw new eQ("transport", _("Incomplete job result"));
-                let e = new Uint8Array(s), t = 0;
-                for (let n of a)e.set(n, t), t += n.length;
-                return eV(JSON.parse(new TextDecoder("utf-8", {
+            let c = Uint8Array.from(atob(l.data), (e)=>e.charCodeAt(0));
+            if (c.length > 32768 || o + c.length > l.bytes) throw new eQ("transport", _("Job result exceeds the transport limit"));
+            if (s.push(c), o += c.length, ++e === l.chunks) {
+                if (o !== l.bytes) throw new eQ("transport", _("Incomplete job result"));
+                let e = new Uint8Array(o), t = 0;
+                for (let n of s)e.set(n, t), t += n.length;
+                return n(JSON.parse(new TextDecoder("utf-8", {
                     fatal: !0
                 }).decode(e)));
             }
@@ -2146,7 +2146,7 @@ async function tW(e) {
         throw new eQ("transport", _("Too many result chunks"));
     } finally{
         await tJ().jobRelease({
-            job: n.job
+            job: r.job
         }).catch(()=>{});
     }
 }
