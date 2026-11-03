@@ -28,6 +28,9 @@ function renderStatus(npu: NpuStatus): HTMLElement {
 				{_("NPU hardware acceleration is not compiled or unsupported on this target.")}
 			</div>
 		);
+	const routed = npu.wan_upstream || npu.wan_downstream;
+	const admissionMask = routed ? npu.routed_offload_mask : npu.bridge_offload_mask;
+	const admissionValid = routed ? npu.routed_mask_valid : npu.mask_valid;
 	return (
 		<div>
 			{npu.sampled_at_ms === undefined ? (
@@ -55,11 +58,12 @@ function renderStatus(npu: NpuStatus): HTMLElement {
 					{row(_("NPU engine"), flag(npu.engine_attached, npu.engine_valid, _("Attached"), _("Detached")))}
 					{row(
 						_("Port admission"),
-						flag(npu.bridge_offload_mask !== 0, npu.mask_valid, _("Admitted"), _("Not admitted")),
+						flag(admissionMask !== 0, admissionValid, _("Admitted"), _("Not admitted")),
 					)}
+					{row(_("Configured mode"), routed ? _("WAN routed offload") : _("ONU bridge offload"))}
 					{row(_("Managed bridge"), npu.config_valid ? npu.bridge : "—")}
 					{row(_("Bridge offload mask"), maskText(npu.bridge_offload_mask, npu.mask_valid))}
-					{row(_("Admitted ports"), npu.mask_valid ? npu.active_ports.join(", ") || _("None") : "—")}
+					{row(_("Admitted ports"), admissionValid ? npu.active_ports.join(", ") || _("None") : "—")}
 					{row(_("Firewall hooks"), flag(npu.fw4_hooks_ready, npu.hooks_valid, _("Ready"), _("Not ready")))}
 					{row(_("Routed offload mask"), maskText(npu.routed_offload_mask, npu.routed_mask_valid))}
 					{row(
@@ -68,7 +72,7 @@ function renderStatus(npu: NpuStatus): HTMLElement {
 					)}
 					<p class="fttr-npu-note">
 						{_(
-							"Admission allows eligible traffic to bind; it does not prove that packets are currently hardware-forwarded. The switch controls FTTR bridge admission, not the entire NPU or global routed offload policy.",
+							"Admission allows eligible traffic to bind; it does not prove that packets are currently hardware-forwarded. The switch controls FTTR bridge and WAN admission, not the entire NPU or firewall offloading for other interfaces.",
 						)}
 					</p>
 				</div>
@@ -184,6 +188,20 @@ function renderPage(): HTMLElement {
 		/>
 	) as HTMLInputElement;
 	const feedback = <p aria-live="polite" />;
+	const direction = (id: string) =>
+		(
+			<input
+				id={id}
+				type="checkbox"
+				disabled
+				onchange={() => {
+					dirty = true;
+				}}
+			/>
+		) as HTMLInputElement;
+	const wanUpstream = direction("fttr-npu-wan-upstream");
+	const wanDownstream = direction("fttr-npu-wan-downstream");
+	const onuBridge = direction("fttr-npu-onu-bridge");
 	const freshness = <p aria-live="polite">{_("Loading…")}</p>;
 	const content = <div />;
 	const save = (
@@ -205,6 +223,7 @@ function renderPage(): HTMLElement {
 			!lastReceived ||
 			Date.now() - lastReceived > 12000;
 		enabled.disabled = bridge.disabled = save.disabled = unavailable;
+		wanUpstream.disabled = wanDownstream.disabled = onuBridge.disabled = unavailable;
 		refresh.disabled = busy || !!inFlight;
 	};
 	const fetchStatus = async (): Promise<void> => {
@@ -226,6 +245,9 @@ function renderPage(): HTMLElement {
 				if (!dirty && npu.config_valid) {
 					enabled.checked = npu.bridge_offload_enabled;
 					bridge.value = npu.bridge;
+					wanUpstream.checked = npu.wan_upstream;
+					wanDownstream.checked = npu.wan_downstream;
+					onuBridge.checked = npu.onu_bridge;
 				}
 				content.replaceChildren(renderStatus(npu));
 				freshness.textContent = `${_("Last successful sample")}: ${npu.sampled_at_ms ? new Date(npu.sampled_at_ms).toLocaleString() : _("Unknown")} · ${_("Refresh interval: 3 seconds")}`;
@@ -254,7 +276,16 @@ function renderPage(): HTMLElement {
 		if (save.disabled || busy) return;
 		const name = bridge.value.trim();
 		const requestedEnabled = enabled.checked;
+		const requestedUpstream = wanUpstream.checked;
+		const requestedDownstream = wanDownstream.checked;
+		const requestedOnuBridge = onuBridge.checked;
 		let saved = false;
+		if (requestedEnabled && requestedOnuBridge && (requestedUpstream || requestedDownstream)) {
+			feedback.textContent = _(
+				"WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge offload before enabling WAN directions.",
+			);
+			return;
+		}
 		if (!/^[a-zA-Z0-9_.-]{1,15}$/.test(name)) {
 			feedback.textContent = _(
 				"Use a bridge interface name of 1–15 letters, digits, dots, underscores or hyphens.",
@@ -266,7 +297,13 @@ function renderPage(): HTMLElement {
 		controls();
 		feedback.textContent = _("Saving…");
 		try {
-			const reply = await setNpu(requestedEnabled, name);
+			const reply = await setNpu({
+				enabled: requestedEnabled,
+				bridge: name,
+				wan_upstream: requestedUpstream,
+				wan_downstream: requestedDownstream,
+				onu_bridge: requestedOnuBridge,
+			});
 			if (reply.status !== "success") throw new Error(reply.error || _("Failed to save NPU configuration"));
 			dirty = false;
 			saved = true;
@@ -284,7 +321,10 @@ function renderPage(): HTMLElement {
 				(!lastReceived ||
 					!latest?.config_valid ||
 					latest.bridge !== name ||
-					latest.bridge_offload_enabled !== requestedEnabled)
+					latest.bridge_offload_enabled !== requestedEnabled ||
+					latest.wan_upstream !== requestedUpstream ||
+					latest.wan_downstream !== requestedDownstream ||
+					latest.onu_bridge !== requestedOnuBridge)
 			) {
 				feedback.textContent = _(
 					"Save returned success, but configuration readback could not be confirmed. Refresh before retrying.",
@@ -301,12 +341,34 @@ function renderPage(): HTMLElement {
 				<h3>{_("NPU configuration")}</h3>
 				<label htmlFor="fttr-npu-enabled">
 					{enabled}
-					{_("Enable FTTR bridge hardware offload")}
+					{_("Enable FTTR hardware offload")}
 				</label>
 				<label htmlFor="fttr-npu-bridge">
 					{_("Bridge interface")}
 					{bridge}
 				</label>
+				<label htmlFor="fttr-npu-wan-upstream">
+					{wanUpstream}
+					{_("Enable WAN upstream offload (experimental)")}
+				</label>
+				<label htmlFor="fttr-npu-wan-downstream">
+					{wanDownstream}
+					{_("Enable WAN downstream offload (experimental)")}
+				</label>
+				<label htmlFor="fttr-npu-onu-bridge">
+					{onuBridge}
+					{_("Enable ONU bridge offload")}
+				</label>
+				<p class="fttr-npu-note">
+					{_(
+						"WAN and ONU bridge offload use exclusive port modes. Disable ONU bridge offload before enabling either WAN direction.",
+					)}
+				</p>
+				<p class="fttr-npu-note">
+					{_(
+						"WAN directions require software and hardware flow offloading in the firewall settings. Saving here does not change those global settings.",
+					)}
+				</p>
 				<div>
 					{save} {refresh}
 				</div>

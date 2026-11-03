@@ -104,6 +104,17 @@ is corrupt or empty, the page may retain an explicitly older successfully parsed
 report. Account updates preserve permission masks; passwords are never read back,
 and a saved password does not prove that web login is permitted.
 
+### NPU configuration
+
+The NPU page edits all five `fttr.offload` settings: `enabled`, `bridge`,
+`wan_upstream`, `wan_downstream` and `onu_bridge`. All five are saved together and
+verified by configuration readback. WAN directions are experimental and default
+to disabled; ONU bridge offload defaults to enabled. When offload is enabled,
+WAN directions and ONU bridge offload require mutually exclusive port modes.
+The page does not change the global firewall software/hardware flow-offloading
+settings required for admission. Admission and valid counters alone do not prove
+that live traffic is hardware-forwarded.
+
 ## Develop
 
 The repository root is the frontend project. TSX sources are under `src/view/`;

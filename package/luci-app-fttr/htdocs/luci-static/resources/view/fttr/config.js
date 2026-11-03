@@ -2040,7 +2040,10 @@ const na = ez([
 ]);
 eL({
     enabled: eh(),
-    bridge: e_()
+    bridge: e_(),
+    wan_upstream: eh(),
+    wan_downstream: eh(),
+    onu_bridge: eh()
 });
 const no = eL({
     index: e_(),
@@ -2072,6 +2075,9 @@ const no = eL({
     supported: eh(),
     engine_attached: eh(),
     bridge_offload_enabled: eh(),
+    wan_upstream: eh(),
+    wan_downstream: eh(),
+    onu_bridge: eh(),
     bridge_offload_mask: ef(),
     routed_offload_mask: ef(),
     bridge_offload_debug: eh(),
@@ -2505,7 +2511,10 @@ function nN() {
         method: "npu_set",
         params: [
             "enabled",
-            "bridge"
+            "bridge",
+            "wan_upstream",
+            "wan_downstream",
+            "onu_bridge"
         ],
         reject: !0
     }), m = e.declare({
@@ -2604,7 +2613,7 @@ function nN() {
         configReload: async ()=>nx.configReload.parse(await c()),
         restartService: async ()=>nx.restartService.parse(await d()),
         sync: async (e)=>nx.sync.parse(await u(e.action, e.target, e.management, e.item)),
-        npuSet: async (e)=>nx.npuSet.parse(await p(e.enabled, e.bridge)),
+        npuSet: async (e)=>nx.npuSet.parse(await p(e.enabled, e.bridge, e.wan_upstream, e.wan_downstream, e.onu_bridge)),
         mibStart: async (e)=>nx.mibStart.parse(await m(e.onu_id, e.optical_sn, e.tables)),
         mibResult: async (e)=>nx.mibResult.parse(await f(e.job, e.chunk)),
         jobRelease: async (e)=>nx.jobRelease.parse(await g(e.job)),

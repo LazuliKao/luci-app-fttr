@@ -4,6 +4,7 @@ import type {
 	CalibrationInfo,
 	CalibrationSaved,
 	NpuSetReply,
+	NpuSetRequest,
 	OpticalReply,
 	SyncAction,
 } from "../../api/generated/types";
@@ -33,8 +34,7 @@ export const getNetworkDevices = async () => networkDevices.parse(checked(await 
 export const getOpticalStatus = async (): Promise<OpticalReply> => getFttrClient().opticalStatus();
 export const setOptical = async (enabled: boolean): Promise<OpticalReply> => getFttrClient().opticalSet({ enabled });
 export const getNpuStatus = async (): Promise<NpuStatus> => getFttrClient().npuStatus();
-export const setNpu = async (enabled: boolean, bridge = ""): Promise<NpuReply> =>
-	getFttrClient().npuSet({ enabled, bridge });
+export const setNpu = async (request: NpuSetRequest): Promise<NpuReply> => getFttrClient().npuSet(request);
 export const sync = async (action: SyncAction, target: string) => getFttrClient().sync({ action, target });
 export const getCalibration = async (): Promise<CalibrationInfo> => getFttrClient().getCalibration();
 export const saveCalibration = async (data: string): Promise<SaveCalibrationResult> =>

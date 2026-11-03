@@ -1954,7 +1954,10 @@ const t4 = eb([
 ]);
 e_({
     enabled: eo(),
-    bridge: er()
+    bridge: er(),
+    wan_upstream: eo(),
+    wan_downstream: eo(),
+    onu_bridge: eo()
 });
 const t8 = e_({
     index: er(),
@@ -1986,6 +1989,9 @@ const t8 = e_({
     supported: eo(),
     engine_attached: eo(),
     bridge_offload_enabled: eo(),
+    wan_upstream: eo(),
+    wan_downstream: eo(),
+    onu_bridge: eo(),
     bridge_offload_mask: en(),
     routed_offload_mask: en(),
     bridge_offload_debug: eo(),
@@ -2721,7 +2727,10 @@ function rZ() {
         method: "npu_set",
         params: [
             "enabled",
-            "bridge"
+            "bridge",
+            "wan_upstream",
+            "wan_downstream",
+            "onu_bridge"
         ],
         reject: !0
     }), f = e.declare({
@@ -2820,7 +2829,7 @@ function rZ() {
         configReload: async ()=>rB.configReload.parse(await d()),
         restartService: async ()=>rB.restartService.parse(await c()),
         sync: async (e)=>rB.sync.parse(await p(e.action, e.target, e.management, e.item)),
-        npuSet: async (e)=>rB.npuSet.parse(await u(e.enabled, e.bridge)),
+        npuSet: async (e)=>rB.npuSet.parse(await u(e.enabled, e.bridge, e.wan_upstream, e.wan_downstream, e.onu_bridge)),
         mibStart: async (e)=>rB.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
         mibResult: async (e)=>rB.mibResult.parse(await b(e.job, e.chunk)),
         jobRelease: async (e)=>rB.jobRelease.parse(await g(e.job)),

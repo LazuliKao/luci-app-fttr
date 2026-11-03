@@ -232,7 +232,7 @@ test("task, calibration and NPU calls preserve selectors and structured business
 	assert.deepEqual(start.calls[0], { method: "mib_start", args: [0, "TEST00000000", false] });
 	assert.equal(start.calls[1]?.args[4], false);
 	assert.deepEqual(
-		await setup({ status: "error", error: "not admitted" }).client.npuSet({ enabled: false, bridge: "br-test" }),
+		await setup({ status: "error", error: "not admitted" }).client.npuSet({ enabled: false, bridge: "br-test", wan_upstream: false, wan_downstream: false, onu_bridge: false }),
 		{ status: "error", error: "not admitted" },
 	);
 	await assert.rejects(

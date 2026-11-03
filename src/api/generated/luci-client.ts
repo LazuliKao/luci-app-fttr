@@ -12,7 +12,7 @@ export const fttrMethods = [
   { method: "config_reload", access: "write", feature: null, params: [] },
   { method: "restart_service", access: "write", feature: null, params: [] },
   { method: "sync", access: "write", feature: null, params: ["action", "target", "management", "item"] },
-  { method: "npu_set", access: "write", feature: "npu", params: ["enabled", "bridge"] },
+  { method: "npu_set", access: "write", feature: "npu", params: ["enabled", "bridge", "wan_upstream", "wan_downstream", "onu_bridge"] },
   { method: "mib_start", access: "read", feature: null, params: ["onu_id", "optical_sn", "tables"] },
   { method: "mib_result", access: "read", feature: null, params: ["job", "chunk"] },
   { method: "job_release", access: "read", feature: null, params: ["job"] },
@@ -65,7 +65,7 @@ export function createFttrClient<GetCapabilitiesResult extends Capabilities, Opt
   const raw_configReload = rpc.declare<unknown, []>({ object: "fttr", method: "config_reload", reject: true });
   const raw_restartService = rpc.declare<unknown, []>({ object: "fttr", method: "restart_service", reject: true });
   const raw_sync = rpc.declare<unknown, [SyncRequest["action"], SyncRequest["target"], SyncRequest["management"], SyncRequest["item"]]>({ object: "fttr", method: "sync", params: ["action", "target", "management", "item"], reject: true });
-  const raw_npuSet = rpc.declare<unknown, [NpuSetRequest["enabled"], NpuSetRequest["bridge"]]>({ object: "fttr", method: "npu_set", params: ["enabled", "bridge"], reject: true });
+  const raw_npuSet = rpc.declare<unknown, [NpuSetRequest["enabled"], NpuSetRequest["bridge"], NpuSetRequest["wan_upstream"], NpuSetRequest["wan_downstream"], NpuSetRequest["onu_bridge"]]>({ object: "fttr", method: "npu_set", params: ["enabled", "bridge", "wan_upstream", "wan_downstream", "onu_bridge"], reject: true });
   const raw_mibStart = rpc.declare<unknown, [MibStartRequest["onu_id"], MibStartRequest["optical_sn"], MibStartRequest["tables"]]>({ object: "fttr", method: "mib_start", params: ["onu_id", "optical_sn", "tables"], reject: true });
   const raw_mibResult = rpc.declare<unknown, [JobRequest["job"], JobRequest["chunk"]]>({ object: "fttr", method: "mib_result", params: ["job", "chunk"], reject: true });
   const raw_jobRelease = rpc.declare<unknown, [JobReleaseRequest["job"]]>({ object: "fttr", method: "job_release", params: ["job"], reject: true });
@@ -110,7 +110,7 @@ export function createFttrClient<GetCapabilitiesResult extends Capabilities, Opt
       return validators.sync.parse(await raw_sync(request.action, request.target, request.management, request.item));
     },
     async npuSet(request: NpuSetRequest): Promise<NpuSetResult> {
-      return validators.npuSet.parse(await raw_npuSet(request.enabled, request.bridge));
+      return validators.npuSet.parse(await raw_npuSet(request.enabled, request.bridge, request.wan_upstream, request.wan_downstream, request.onu_bridge));
     },
     async mibStart(request: MibStartRequest): Promise<MibStartResult> {
       return validators.mibStart.parse(await raw_mibStart(request.onu_id, request.optical_sn, request.tables));
