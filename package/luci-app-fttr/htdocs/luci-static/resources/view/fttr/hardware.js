@@ -1718,6 +1718,23 @@ const tM = eS({
         bytes_exact: tv
     }))
 }), tP = eS({
+    ubus: eZ(eR(tv, eS({
+        calls: ty,
+        failures: ty,
+        last_us: ty,
+        max_us: ty,
+        total_us: ty
+    }))),
+    jobs: eZ(eS({
+        accepting: ey(),
+        running: ty,
+        stored: ty,
+        bytes: ty,
+        running_limit: ty,
+        stored_limit: ty,
+        bytes_limit: ty,
+        result_bytes_limit: ty
+    })),
     onu_pinning: eZ(eS({
         desired: eR(tv, ty),
         active: eR(tv, ty),

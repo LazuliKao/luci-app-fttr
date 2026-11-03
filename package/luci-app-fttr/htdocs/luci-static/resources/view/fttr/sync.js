@@ -1721,6 +1721,23 @@ const tM = eC({
         bytes_exact: tv
     }))
 }), tR = eC({
+    ubus: eq(eN(tv, eC({
+        calls: tw,
+        failures: tw,
+        last_us: tw,
+        max_us: tw,
+        total_us: tw
+    }))),
+    jobs: eq(eC({
+        accepting: ew(),
+        running: tw,
+        stored: tw,
+        bytes: tw,
+        running_limit: tw,
+        stored_limit: tw,
+        bytes_limit: tw,
+        result_bytes_limit: tw
+    })),
     onu_pinning: eq(eC({
         desired: eN(tv, tw),
         active: eN(tv, tw),

@@ -198,6 +198,19 @@ export const nativeNpuStatus = z.extend(npuStatus, {
 });
 
 export const status = z.object({
+	ubus: z.optional(z.record(str, z.object({ calls: num, failures: num, last_us: num, max_us: num, total_us: num }))),
+	jobs: z.optional(
+		z.object({
+			accepting: z.boolean(),
+			running: num,
+			stored: num,
+			bytes: num,
+			running_limit: num,
+			stored_limit: num,
+			bytes_limit: num,
+			result_bytes_limit: num,
+		}),
+	),
 	onu_pinning: z.optional(
 		z.object({
 			desired: z.record(str, num),

@@ -1,0 +1,10 @@
+{
+	"luci-app-fttr": {
+		"description": "Read and manage FTTR devices through the native controller",
+		"read": {
+			"uci": ["fttr"],
+			"ubus": { "luci-rpc": ["getNetworkDevices"] }
+		},
+		"write": { "uci": ["fttr"], "ubus": {} }
+	}
+}

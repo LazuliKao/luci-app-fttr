@@ -1788,6 +1788,23 @@ const tR = e$({
         bytes_exact: tP
     }))
 }), tM = e$({
+    ubus: eB(eW(tP, e$({
+        calls: tA,
+        failures: tA,
+        last_us: tA,
+        max_us: tA,
+        total_us: tA
+    }))),
+    jobs: eB(e$({
+        accepting: eA(),
+        running: tA,
+        stored: tA,
+        bytes: tA,
+        running_limit: tA,
+        stored_limit: tA,
+        bytes_limit: tA,
+        result_bytes_limit: tA
+    })),
     onu_pinning: eB(e$({
         desired: eW(tP, tA),
         active: eW(tP, tA),

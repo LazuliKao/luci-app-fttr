@@ -1700,6 +1700,23 @@ const t$ = ek({
         bytes_exact: ty
     }))
 }), tN = ek({
+    ubus: eZ(eE(ty, ek({
+        calls: tv,
+        failures: tv,
+        last_us: tv,
+        max_us: tv,
+        total_us: tv
+    }))),
+    jobs: eZ(ek({
+        accepting: ef(),
+        running: tv,
+        stored: tv,
+        bytes: tv,
+        running_limit: tv,
+        stored_limit: tv,
+        bytes_limit: tv,
+        result_bytes_limit: tv
+    })),
     onu_pinning: eZ(ek({
         desired: eE(ty, tv),
         active: eE(ty, tv),

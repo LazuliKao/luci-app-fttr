@@ -164,6 +164,15 @@ test("all generated methods have matching native rpcd ACL access", () => {
 	for (const method of fttrMethods) {
 		assert.ok(acl[method.access].ubus.fttr.includes(method.method), `${method.access}: fttr.${method.method}`);
 	}
+	for (const access of ["read", "write"] as const) {
+		assert.deepEqual(
+			[...acl[access].ubus.fttr].sort(),
+			fttrMethods
+				.filter((method) => method.access === access)
+				.map((method) => method.method)
+				.sort(),
+		);
+	}
 });
 
 test("job polling assembles UTF-8 chunks, rejects changed metadata and never replays work", async () => {

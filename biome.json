@@ -1,7 +1,13 @@
 {
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**/*", "!package/luci-app-fttr/htdocs/**/*", "!node_modules/**/*", "!src/api/generated/**/*"]
+		"includes": [
+			"**/*",
+			"!package/luci-app-fttr/htdocs/**/*",
+			"!node_modules/**/*",
+			"!src/api/generated/**/*",
+			"!package/luci-app-fttr/root/usr/share/rpcd/acl.d/luci-app-fttr.json"
+		]
 	},
 	"formatter": {
 		"enabled": true,
