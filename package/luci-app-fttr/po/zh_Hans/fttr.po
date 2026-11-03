@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-01 21:21+0800\n"
+"POT-Creation-Date: 2026-11-03 16:24+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -351,7 +351,7 @@ msgid "calibration file extracted from the factory backup to"
 msgstr "校准文件（从原厂备份中提取）至"
 
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 msgid "Cancel the fixed interface for this device?"
 msgstr "确定取消此设备的固定接口？"
@@ -415,7 +415,7 @@ msgid "Configuration changed"
 msgstr "配置发生变更"
 
 msgid "Configuration delivery started for %s. Operation IDs: %s"
-msgstr ""
+msgstr "配置下发已为 %s 启动。操作 ID：%s"
 
 msgid "Configuration diagnostics"
 msgstr "配置诊断"
@@ -617,7 +617,7 @@ msgid "Device identification"
 msgstr "设备标识"
 
 msgid "Device is offline or no longer registered; refresh status and retry."
-msgstr ""
+msgstr "设备离线或已不再注册；刷新状态并重试。"
 
 msgid "Device is offline; reopen details after registration."
 msgstr "设备处于离线状态；请在重新注册后打开详情。"
@@ -684,13 +684,13 @@ msgid "Discovering"
 msgstr "发现中"
 
 msgid "Discovery active"
-msgstr ""
+msgstr "发现中"
 
 msgid "Discovery paused"
-msgstr ""
+msgstr "发现已暂停"
 
 msgid "Discovery state: unknown"
-msgstr ""
+msgstr "发现状态：未知"
 
 msgid "Dispatching to %s (timeout: %s s)..."
 msgstr "正在下发至 %s（超时：%s 秒）..."
@@ -1012,14 +1012,8 @@ msgstr "标识来源"
 msgid "Inactive"
 msgstr "未使用"
 
-msgid "Incomplete job result"
-msgstr "作业结果不完整"
-
 msgid "Incomplete MIB snapshot"
 msgstr "MIB 快照不完整"
-
-msgid "Inconsistent job result chunks"
-msgstr "作业结果块不一致"
 
 msgid ""
 "Independent of the optical adapter. Parameter paths, types and writable "
@@ -1074,9 +1068,6 @@ msgstr "已中断"
 msgid "Interval (minutes)"
 msgstr "间隔（分钟）"
 
-msgid "Invalid job result"
-msgstr "无效的任务结果"
-
 msgid "Invalid MIB snapshot"
 msgstr "无效的 MIB 快照"
 
@@ -1088,14 +1079,6 @@ msgstr "无效的 MIB 快照大小"
 
 msgid "Isolated TR069 management network"
 msgstr "隔离的 TR069 管理网络"
-
-msgid ""
-"Job polling timed out; execution outcome is unknown. Do not automatically "
-"retry."
-msgstr "任务轮询超时，执行结果未知。请勿自动重试。"
-
-msgid "Job result exceeds the transport limit"
-msgstr "任务结果超出了传输大小限制"
 
 msgid "JSON download started"
 msgstr "JSON 下载已开始"
@@ -1475,7 +1458,7 @@ msgid "ONU allocation blocked by invalid startup configuration."
 msgstr "启动配置无效，已暂停 ONU 分配。"
 
 msgid "ONU cleanup pending"
-msgstr ""
+msgstr "ONU 清理待处理"
 
 msgid "ONU ID"
 msgstr "ONU ID"
@@ -1833,11 +1816,6 @@ msgstr "重置同步状态"
 msgid "Restart"
 msgstr "重启"
 
-msgid ""
-"Result polling stopped after leaving the page. The backend job is not "
-"cancelled."
-msgstr "离开页面后结果轮询已停止。后台任务未被取消。"
-
 msgid "Retrying"
 msgstr "重试中"
 
@@ -1880,13 +1858,13 @@ msgid ""
 msgstr "禁用连接请求或选择后端默认值时，已保存的自定义值仍会保留。保持这些字段不变即可保留其已保存的值。"
 
 msgid "Saved setting: off"
-msgstr ""
+msgstr "已保存设置：关闭"
 
 msgid "Saved setting: on"
-msgstr ""
+msgstr "已保存设置：开启"
 
 msgid "Saved setting: unknown"
-msgstr ""
+msgstr "已保存设置：未知"
 
 msgid "Saved, but configuration reload or status refresh failed:"
 msgstr "已保存，但配置重载或状态刷新失败："
@@ -1904,7 +1882,7 @@ msgid ""
 msgstr "手动模式下保存配置不会创建接口、更改防火墙规则或配置子设备。请显式应用以授权当前管理配置。"
 
 msgid "Saving…"
-msgstr ""
+msgstr "保存中…"
 
 msgid "Schema"
 msgstr "数据模式"
@@ -1995,7 +1973,9 @@ msgid ""
 "Source: PPE debugfs bind/entries and driver sysfs. These are global PPE "
 "snapshots, not FTTR-only totals or table capacity. Reads are sequential, not "
 "atomic."
-msgstr "来源：PPE debugfs 的 bind/entries 与驱动 sysfs。这是全局 PPE 快照，并非仅 FTTR 流量合计或表容量。各数据源依次读取，并非原子快照。"
+msgstr ""
+"来源：PPE debugfs 的 bind/entries 与驱动 sysfs。这是全局 PPE 快照，并非仅 FTTR "
+"流量合计或表容量。各数据源依次读取，并非原子快照。"
 
 msgid "SSID"
 msgstr "SSID"
@@ -2019,7 +1999,7 @@ msgid "Standard %s bytes"
 msgstr "标准 %s 字节"
 
 msgid "Start configuration delivery for this device"
-msgstr ""
+msgstr "为此设备启动配置下发"
 
 msgid "Started"
 msgstr "已启动"
@@ -2061,7 +2041,7 @@ msgid "Supports Connection Request"
 msgstr "支持连接请求"
 
 msgid "Sync now"
-msgstr ""
+msgstr "立即同步"
 
 msgid "Synchronization"
 msgstr "配置同步"
@@ -2127,7 +2107,7 @@ msgid ""
 msgstr "此操作还会删除该模板的 SSID 和网络。正在被分组使用的模板无法删除。"
 
 msgid "This device already has an active synchronization operation"
-msgstr ""
+msgstr "此设备已有正在进行的同步操作"
 
 msgid "This field is required."
 msgstr "此字段为必填项。"
@@ -2143,7 +2123,7 @@ msgid ""
 msgstr "此光设备没有有效且明确的 MQTT 绑定，无法执行命令。"
 
 msgid "This page is not supported by the installed FTTR build."
-msgstr ""
+msgstr "此页面不受已安装的 FTTR 构建支持。"
 
 msgid ""
 "This removes the device's FTTR configuration and stops managing it. It does "
@@ -2179,9 +2159,6 @@ msgstr "以提交所有变更。"
 
 msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
 msgstr "，以确保激光发射功率和 ADC 诊断读数准确。"
-
-msgid "Too many result chunks"
-msgstr "结果分片过多"
 
 msgid "TR069 VLANs"
 msgstr "TR069 VLAN 列表"
@@ -2231,7 +2208,7 @@ msgid "Tutorial Coming Soon"
 msgstr "教程编写中"
 
 msgid "TX enabled (reset readback)"
-msgstr ""
+msgstr "TX 已启用（重置读回）"
 
 msgid "TX power"
 msgstr "发送功率"
