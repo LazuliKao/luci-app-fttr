@@ -749,7 +749,7 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			// Step 1: Save strictly to /lib/firmware/modified_UX3326.bin
 			const saveRes = await saveCalibration(base64Data);
 			if (!saveRes.success) {
-				throw new Error(saveRes.error || _("Failed to save calibration file"));
+				throw new Error(_("Failed to save calibration file"));
 			}
 
 			let applyMsg = "";

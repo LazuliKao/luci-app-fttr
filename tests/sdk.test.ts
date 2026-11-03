@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { fttrValidators } from "../src/api/client";
 import { createFttrClient, fttrMethods } from "../src/api/generated/luci-client";
+import { CalibrationAppliedSchema, CapabilitiesSchema, JobChunkSchema } from "../src/api/generated/schemas";
 
 const optical = {
 	schema_version: 1,
@@ -16,6 +17,57 @@ const optical = {
 	cleanup_pending: false,
 	error: { code: "NotConnected", message: "hardware initialization incomplete" },
 };
+
+test("generated wire validation retains required false flags, nullable progress and calibration warnings", () => {
+	const flags = {
+		schema_version: 1,
+		version: "test",
+		features: {
+			acs: false,
+			mqtt: false,
+			npu: false,
+			"device-hl202": false,
+			"device-hwtc": false,
+			"device-star": false,
+			"device-zte": false,
+		},
+		functions: {
+			optical: false,
+			bridge_offload: false,
+			omci_mib: false,
+			mqtt_telemetry: false,
+			hl202_management: false,
+			cwmp: false,
+			command_provisioning: false,
+		},
+		pages: {
+			status: false,
+			config: false,
+			sync: false,
+			hardware: false,
+			calibration: false,
+			hl202: false,
+			about: false,
+		},
+		adapters: [],
+	};
+	assert.deepEqual(CapabilitiesSchema.parse(flags), flags);
+	assert.equal(CapabilitiesSchema.safeParse({ ...flags, features: {} }).success, false);
+	assert.equal(CapabilitiesSchema.safeParse({ ...flags, pages: { ...flags.pages, sync: "false" } }).success, false);
+	assert.deepEqual(
+		JobChunkSchema.parse({ status: "pending", progress: { phase: "tables", received: 2, expected: null } }),
+		{ status: "pending", progress: { phase: "tables", received: 2, expected: null } },
+	);
+	assert.equal(
+		JobChunkSchema.safeParse({ status: "pending", progress: { phase: "future", received: 2, expected: null } })
+			.success,
+		false,
+	);
+	assert.equal(JobChunkSchema.safeParse({ status: "pending", progress: null }).success, false);
+	const warning = { success: false, error: "calibration warning" };
+	assert.deepEqual(CalibrationAppliedSchema.parse(warning), warning);
+	assert.equal(CalibrationAppliedSchema.safeParse({ error: "worker failure" }).success, false);
+});
 
 function setup(response: unknown, failure?: Error) {
 	const declarations: Array<{ object: string; method: string; params?: string[]; reject: boolean }> = [];

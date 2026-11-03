@@ -1,4 +1,10 @@
 import * as z from "zod/mini";
+import { JobStatsSchema, UbusMethodStatsSchema } from "../../api/generated/schemas";
+
+// Native replies use the generated strict schema; embedded snapshots below keep
+// their legacy optional counters until their producer has a shared contract.
+export { NpuStatusSchema as nativeNpuStatus } from "../../api/generated/schemas";
+
 import { acsBootstrap, management, provisioning, syncItem, syncStatus, wifiSync } from "./provisioning";
 
 const str = z.string();
@@ -176,41 +182,9 @@ export const npuStatus = z.object({
 });
 export type NpuStatus = z.infer<typeof npuStatus>;
 
-// Native replies always include validity and exact-counter fields. The legacy
-// schema above stays permissive for saved fixtures and embedded status views.
-export const nativeNpuStatus = z.extend(npuStatus, {
-	sampled_at_ms: num,
-	errors: z.array(str),
-	config_valid: z.boolean(),
-	engine_valid: z.boolean(),
-	mask_valid: z.boolean(),
-	routed_mask_valid: z.boolean(),
-	debug_valid: z.boolean(),
-	flows_valid: z.boolean(),
-	entries_valid: z.boolean(),
-	counters_valid: z.boolean(),
-	hooks_valid: z.boolean(),
-	total_packets_exact: str,
-	total_bytes_exact: str,
-	bound_ipv4_entries: num,
-	bound_ipv6_entries: num,
-	bound_flows: z.array(z.extend(ppeFlowEntry, { counters_valid: z.boolean(), packets_exact: str, bytes_exact: str })),
-});
-
 export const status = z.object({
-	ubus: z.optional(z.record(str, z.object({ calls: num, failures: num, last_us: num, max_us: num, total_us: num }))),
-	jobs: z.optional(
-		z.object({
-			accepting: z.boolean(),
-			running: num,
-			stored: num,
-			bytes: num,
-			running_limit: num,
-			stored_limit: num,
-			bytes_limit: num,
-			result_bytes_limit: num,
-		}),
-	),
+	ubus: z.optional(z.record(str, UbusMethodStatsSchema)),
+	jobs: z.optional(JobStatsSchema),
 	onu_pinning: z.optional(
 		z.object({
 			desired: z.record(str, num),

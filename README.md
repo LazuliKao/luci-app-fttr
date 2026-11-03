@@ -115,17 +115,25 @@ Requirements: Node.js 18 or later and pnpm 10.12.4.
 
 ### Generated native FTTR client
 
-`src/api/generated/` is generated from the backend's `fttr-api` crate. Run from
-the sibling `openwrt-fttr` checkout:
+`src/api/generated/` is generated from the backend's `fttr-api` crate. From this
+frontend checkout, use the complete pipeline:
 
 ```sh
-cargo run --locked --manifest-path h3c-fttr-tools/src/crates/fttr-api/Cargo.toml --features codegen --bin fttr-sdk -- --generate
-cargo run --locked --manifest-path h3c-fttr-tools/src/crates/fttr-api/Cargo.toml --features codegen --bin fttr-sdk -- --check
+pnpm sdk:generate
+pnpm check
 ```
 
-For another layout, append `--out-dir FRONTEND/src/api/generated`. Regenerate
-these files, then run `pnpm sdk:check`, `pnpm typecheck` and `pnpm test`.
-Set `FTTR_BACKEND_DIR` for a non-sibling backend when using `pnpm sdk:check`.
+Set `FTTR_BACKEND_DIR` for a non-sibling backend. `sdk:generate` emits Rust-owned
+wire types, client and ACL, then derives Zod mini schemas from those types.
+`sdk:check` checks all four artifacts without writing; `check` also runs the
+typecheck, tests and production build. The schema compiler rejects unsupported
+syntax and checks assignability in both directions during TypeScript compilation.
+Explicit `unknown` nested status/provisioning payloads still use the stricter
+frontend domain schemas until those producers have shared Rust types.
+
+Both repositories run the pipeline in CI and reject stale package JavaScript.
+Use `FTTR_BACKEND_REF` / `FTTR_FRONTEND_REF` repository variables (or manual workflow
+inputs) to select the paired repository revision; pin a commit SHA for repeatable CI.
 
 ```sh
 pnpm install

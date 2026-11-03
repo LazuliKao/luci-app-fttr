@@ -17,7 +17,9 @@
 		"i18n:build": "dotenvx run -- luci-types i18n --translate",
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"sdk:check": "node scripts/check-sdk.mjs",
-		"test": "tsx --test tests/config.test.ts tests/npu.test.ts tests/sdk.test.ts",
+		"sdk:generate": "node scripts/check-sdk.mjs --generate",
+		"check": "pnpm sdk:check && pnpm typecheck && pnpm test && pnpm build",
+		"test": "tsx --test tests/config.test.ts tests/npu.test.ts tests/sdk.test.ts tests/schema-codegen.test.mjs",
 		"test:luci": "tsx --test tests/luci-form.test.ts",
 		"dev:remote": "dotenvx run -- luci-types dev",
 		"prepare": "husky"

@@ -4,6 +4,11 @@ import { fileURLToPath } from "node:url";
 
 const frontend = fileURLToPath(new URL("../", import.meta.url));
 const backend = process.env.FTTR_BACKEND_DIR || resolve(frontend, "../openwrt-fttr");
+const args = process.argv.slice(2);
+if (args.some((arg) => arg !== "--generate") || args.length > 1) {
+	throw new Error("Usage: node scripts/check-sdk.mjs [--generate]");
+}
+const mode = args.includes("--generate") ? "--generate" : "--check";
 const result = spawnSync(
 	"cargo",
 	[
@@ -16,11 +21,15 @@ const result = spawnSync(
 		"--bin",
 		"fttr-sdk",
 		"--",
-		"--check",
+		mode,
 		"--out-dir",
 		resolve(frontend, "src/api/generated"),
 	],
 	{ stdio: "inherit" },
 );
 if (result.error) console.error(result.error.message);
-process.exit(result.status ?? 1);
+if (result.status !== 0) process.exit(result.status ?? 1);
+const schemas = spawnSync(process.execPath, [resolve(frontend, "scripts/generate-schemas.mjs"), mode], {
+	stdio: "inherit",
+});
+process.exit(schemas.status ?? 1);

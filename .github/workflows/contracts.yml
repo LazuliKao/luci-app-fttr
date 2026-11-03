@@ -1,0 +1,33 @@
+name: FTTR contracts and build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      backend_ref:
+        description: Backend revision paired with this frontend
+        default: main
+        required: true
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: luci-app-fttr
+      - uses: actions/checkout@v4
+        with:
+          repository: LazuliKao/openwrt-fttr
+          ref: ${{ inputs.backend_ref || vars.FTTR_BACKEND_REF || 'main' }}
+          path: openwrt-fttr
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: luci-app-fttr/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile && pnpm check && git diff --exit-code -- package/luci-app-fttr/htdocs
+        working-directory: luci-app-fttr

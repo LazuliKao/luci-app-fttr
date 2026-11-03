@@ -1,5 +1,7 @@
 import * as z from "zod/mini";
 
+export { JobChunkSchema as jobChunk, JobPendingSchema as jobStart } from "../../api/generated/schemas";
+
 const errorReply = z.object({ error: z.union([z.string(), z.object({ code: z.string(), message: z.string() })]) });
 
 export class RpcError extends Error {
@@ -20,18 +22,6 @@ export function checked(value: unknown): unknown {
 	}
 	return value;
 }
-
-export const jobStart = z.object({ status: z.literal("pending"), job: z.string() });
-export const jobChunk = z.discriminatedUnion("status", [
-	z.object({ status: z.literal("pending") }),
-	z.object({
-		status: z.literal("ready"),
-		chunk: z.number(),
-		chunks: z.number(),
-		bytes: z.number(),
-		data: z.string(),
-	}),
-]);
 
 export function assertNever(value: never): never {
 	throw new RpcError("unexpected_variant", `Unexpected variant: ${String(value)}`);

@@ -1,24 +1,22 @@
-import type * as z from "zod/mini";
 import { getFttrClient } from "../../api/client";
-import type { SyncAction } from "../../api/generated/types";
+import type {
+	CalibrationApplied,
+	CalibrationInfo,
+	CalibrationSaved,
+	NpuSetReply,
+	OpticalReply,
+	SyncAction,
+} from "../../api/generated/types";
 import { waitForJob } from "../../api/jobs";
-import {
-	applyCalibrationResult,
-	type calibrationInfo,
-	type npuReply,
-	type opticalReply,
-	type saveCalibrationResult,
-} from "../../api/validators";
+import { applyCalibrationResult } from "../../api/validators";
 import { checked } from "./common";
 import { type NpuStatus, networkDevices } from "./status";
 
-export type { SyncAction } from "../../api/generated/types";
+export type { CalibrationInfo, OpticalReply, SyncAction } from "../../api/generated/types";
 export { applyCalibrationResult, calibrationInfo, npuReply, saveCalibrationResult } from "../../api/validators";
-export type OpticalReply = z.infer<typeof opticalReply>;
-export type NpuReply = z.infer<typeof npuReply>;
-export type CalibrationInfo = z.infer<typeof calibrationInfo>;
-export type SaveCalibrationResult = z.infer<typeof saveCalibrationResult>;
-export type ApplyCalibrationResult = z.infer<typeof applyCalibrationResult>;
+export type NpuReply = NpuSetReply;
+export type SaveCalibrationResult = CalibrationSaved;
+export type ApplyCalibrationResult = CalibrationApplied;
 
 const rawNetwork = L.rpc.declare<unknown>({
 	object: "luci-rpc",

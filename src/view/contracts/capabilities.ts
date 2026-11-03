@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
-import type * as z from "zod/mini";
 import { getFttrClient } from "../../api/client";
-import type { capabilities } from "../../api/validators";
+import type { Capabilities } from "../../api/generated/types";
 
-export type Capabilities = z.infer<typeof capabilities>;
+export type { Capabilities } from "../../api/generated/types";
 
 export function adaptersFromCapabilities(capabilities?: Capabilities): Array<[string, string]> {
 	return (capabilities?.adapters ?? []).map((item) => [
