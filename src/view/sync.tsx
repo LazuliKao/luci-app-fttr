@@ -977,6 +977,25 @@ const main = L.view.extend({
 						<span style="color:#888;margin-right:.3em">{_("Revision")}:</span>
 						<code>{text(status.revision)}</code>
 					</span>
+					{status.config_load ? (
+						<span>
+							{status.config_load.state === "waiting"
+								? _("Saved; waiting to load automatically")
+								: _("Configuration loaded; device synchronization is tracked below")}
+							{status.config_load.state === "waiting" ? (
+								<span>
+									{" "}
+									<code>{status.config_load.requested_revision}</code>
+									{status.config_load.blocking_operations.map((op) => (
+										<span style="margin-left:.5em">
+											{`${op.device} #${op.operation_id}: ${text(op.state)} (${formatAge(Math.max(0, Date.now() / 1000 - op.started_at))})`}
+										</span>
+									))}
+									{status.config_load.reset_pending ? _("Waiting for device reset recovery") : null}
+								</span>
+							) : null}
+						</span>
+					) : null}
 					{(status.triggers ?? []).length ? (
 						<span>
 							<span style="color:#888;margin-right:.3em">{_("Triggers")}:</span>
@@ -994,11 +1013,17 @@ const main = L.view.extend({
 
 			const messages = [
 				status.error,
+				status.config_error,
 				"error" in committed
 					? _("Committed configuration is invalid: %s").format(committed.error)
-					: committed.revision && committed.revision !== status.revision
+					: committed.revision &&
+							committed.revision !== status.revision &&
+							!(
+								status.config_load?.state === "waiting" &&
+								status.config_load.requested_revision === committed.revision
+							)
 						? _(
-								"Committed configuration has not been loaded. Check Configuration diagnostics; an active operation may have prevented reload.",
+								"Committed configuration has not been requested for loading. Apply the configuration to load it.",
 							)
 						: "",
 			].filter(Boolean);
@@ -1044,13 +1069,19 @@ const main = L.view.extend({
 			plan.disabled =
 				busy ||
 				active ||
+				status.config_load?.state === "waiting" ||
 				"error" in committed ||
 				(!!committed.revision && committed.revision !== status.revision) ||
 				!(status.devices ?? []).length;
 			apply.disabled = plan.disabled || !status.enabled;
 
 			const host = status.management_network;
-			managementPlan.disabled = busy || !!host?.inflight || "error" in committed || !L.hasViewPermission();
+			managementPlan.disabled =
+				busy ||
+				status.config_load?.state === "waiting" ||
+				!!host?.inflight ||
+				"error" in committed ||
+				!L.hasViewPermission();
 			managementApply.disabled = managementPlan.disabled;
 
 			const configuration = host.desired ?? host.applied;

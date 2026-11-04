@@ -3,7 +3,36 @@ import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { fttrValidators } from "../src/api/client";
 import { createFttrClient, fttrMethods } from "../src/api/generated/luci-client";
-import { CalibrationAppliedSchema, CapabilitiesSchema, JobChunkSchema } from "../src/api/generated/schemas";
+import {
+	CalibrationAppliedSchema,
+	CapabilitiesSchema,
+	ConfigLoadStatusSchema,
+	JobChunkSchema,
+} from "../src/api/generated/schemas";
+
+test("configuration loading distinguishes queued activation from applied configuration", () => {
+	const waiting = {
+		state: "waiting",
+		requested_revision: "latest",
+		requested_at: 100,
+		blocking_operations: [{ operation_id: 3, device: "child", state: "writing", started_at: 90 }],
+		reset_pending: false,
+	};
+	assert.deepEqual(ConfigLoadStatusSchema.parse(waiting), waiting);
+	assert.deepEqual(
+		ConfigLoadStatusSchema.parse({ ...waiting, state: "applied", requested_at: null, blocking_operations: [] })
+			.blocking_operations,
+		[],
+	);
+	assert.equal(ConfigLoadStatusSchema.safeParse({ ...waiting, state: "failed" }).success, false);
+	assert.equal(
+		ConfigLoadStatusSchema.safeParse({
+			...waiting,
+			blocking_operations: [{ ...waiting.blocking_operations[0], state: "invalid" }],
+		}).success,
+		false,
+	);
+});
 
 const optical = {
 	schema_version: 1,
@@ -93,9 +122,9 @@ function setup(response: unknown, failure?: Error) {
 test("SDK declares native methods and maps false to the enabled positional parameter", async () => {
 	const { client, declarations, calls } = setup(optical);
 	assert.ok(declarations.every((item) => item.object === "fttr" && item.reject));
-	assert.deepEqual(declarations.find((item) => item.method === "optical_set")?.params, ["enabled"]);
-	assert.equal((await client.opticalSet({ enabled: false })).status, "error");
-	assert.deepEqual(calls, [{ method: "optical_set", args: [false] }]);
+	assert.deepEqual(declarations.find((item) => item.method === "optical_set")?.params, ["enabled", "downstream_tx_enabled", "fec_enabled"]);
+	assert.equal((await client.opticalSet({ enabled: false, downstream_tx_enabled: true, fec_enabled: false })).status, "error");
+	assert.deepEqual(calls, [{ method: "optical_set", args: [false, true, false] }]);
 	assert.equal(fttrMethods.find((item) => item.method === "optical_set")?.access, "write");
 });
 
@@ -108,7 +137,7 @@ test("optical business errors remain structured, null is accepted, malformed rep
 test("transport rejection is propagated once without retrying a write", async () => {
 	const error = new Error("transport unavailable");
 	const { client, calls } = setup(undefined, error);
-	await assert.rejects(client.opticalSet({ enabled: true }), (actual) => actual === error);
+	await assert.rejects(client.opticalSet({ enabled: true, downstream_tx_enabled: true, fec_enabled: false }), (actual) => actual === error);
 	assert.equal(calls.length, 1);
 });
 

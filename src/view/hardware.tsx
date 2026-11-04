@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { createFecMonitor } from "./components/fec-monitor";
 import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
-import { getOpticalStatus, getStatus, type OpticalReply, setOptical } from "./contracts/api";
+import { getStatus } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -39,91 +40,9 @@ function renderCdrBadge(locked: boolean | null): HTMLElement {
 	);
 }
 
-// Optical IPC reports committed intent separately from FPGA reset readback.
-let laserOverride: boolean | null = null;
-let laserReply: OpticalReply | null = null;
-// Panel currently hosting the laser row, plus an in-flight guard. Both are
-// module-level so a poll that swaps panels mid-request cannot re-enable the
-// button or leave the reply handler refreshing a detached node.
-let laserPanel: HTMLElement | null = null;
-let laserBusy = false;
-let laserRevision = 0;
-
-function applyLaserRow(txEnabled: boolean | null): void {
-	const panel = laserPanel;
-	if (!panel) return;
-	const stateNode = panel.querySelector('[data-fttr="laser-state"]');
-	const toggle = panel.querySelector('[data-fttr="laser-toggle"]');
-	if (!(stateNode instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return;
-	if (txEnabled === true) {
-		stateNode.textContent = _("TX enabled (reset readback)");
-		stateNode.className = "fttr-badge fttr-badge-success";
-	} else if (txEnabled === false) {
-		stateNode.textContent = _("Off (TX disabled)");
-		stateNode.className = "fttr-badge fttr-badge-warning";
-	} else {
-		stateNode.textContent = _("Unknown");
-		stateNode.className = "fttr-badge fttr-badge-neutral";
-	}
-	// Label and action must agree: offer "on" only when the laser is known to
-	// be off; an unknown state defaults to the conservative "off" action.
-	toggle.textContent = txEnabled === false ? _("Turn laser on") : _("Turn laser off");
-	toggle.disabled = laserBusy;
-	toggle.onclick = async () => {
-		if (laserBusy) return;
-		// Read the latest known state instead of a value captured at render time.
-		const enabling = laserOverride === false;
-		const warning = enabling
-			? _("Re-enable the 1490nm downlink laser? Discovery resumes and sub-gateways can register again.")
-			: _(
-					"Turn off the 1490nm downlink laser? All sub-gateways are gracefully disconnected and cannot register until the laser is re-enabled. This setting is saved and reapplied after a reboot.",
-				);
-		if (!window.confirm(warning)) return;
-		laserBusy = true;
-		laserRevision++;
-		applyLaserRow(laserOverride);
-		try {
-			const reply = await setOptical(enabling);
-			laserReply = reply;
-			laserOverride = reply.tx_enabled;
-			if (reply.status === "error") {
-				window.alert(`${_("Failed to change laser output")}: ${reply.error?.message ?? _("unknown error")}`);
-				return;
-			}
-		} catch (error) {
-			laserOverride = null;
-			laserReply = null;
-			window.alert(`${_("Failed to change laser output")}: ${String(error)}`);
-		} finally {
-			laserBusy = false;
-			applyLaserRow(laserOverride);
-		}
-	};
-	const detail = panel.querySelector('[data-fttr="laser-detail"]');
-	if (detail instanceof HTMLElement) {
-		const desired = laserReply?.desired_enabled;
-		detail.textContent = [
-			desired === true
-				? _("Saved setting: on")
-				: desired === false
-					? _("Saved setting: off")
-					: _("Saved setting: unknown"),
-			laserReply
-				? laserReply.discovery_active
-					? _("Discovery active")
-					: _("Discovery paused")
-				: _("Discovery state: unknown"),
-			laserReply?.cleanup_pending ? _("ONU cleanup pending") : "",
-			laserReply?.error?.message ?? "",
-		]
-			.filter(Boolean)
-			.join(" · ");
-	}
-}
-
 function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 	const optical = status.optical_transceiver;
-
+	const mac = status.pon_mac;
 	const fpgaStatusNode = (
 		<span
 			class={`fttr-badge ${status.fpga_status === "ready" ? "fttr-badge-success" : "fttr-badge-neutral"}`}
@@ -141,6 +60,13 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 			<div class="fttr-grid-3">
 				<div class="fttr-card">
 					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("FPGA status")}</h4>
+					<div class="fttr-kv-row">
+						<span class="fttr-kv-label">0x01000004</span>
+						<code>
+							{mac?.register == null ? _("Unknown") : `0x${mac.register.toString(16).padStart(8, "0")}`}
+						</code>
+					</div>
+					{mac?.error ? <p class="alert-message warning">{mac.error}</p> : null}
 					<div class="fttr-kv-row">
 						<span class="fttr-kv-label">{_("FPGA status")}</span>
 						<span>{fpgaStatusNode}</span>
@@ -169,13 +95,6 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 						<span class="fttr-kv-label">{_("RX wavelength")}</span>
 						<span>{optical.wavelength_rx_nm ? `${optical.wavelength_rx_nm} nm` : "—"}</span>
 					</div>
-					<div class="fttr-kv-row" data-fttr="laser-row">
-						<span class="fttr-kv-label">{_("Laser output")}</span>
-						<span class="fttr-badge fttr-badge-neutral" data-fttr="laser-state">
-							{_("Loading…")}
-						</span>
-					</div>
-					<div data-fttr="laser-detail" style="font-size:85%;margin-top:8px" />
 				</div>
 
 				<div class="fttr-card">
@@ -207,14 +126,6 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 						</span>
 					</div>
 				</div>
-			</div>
-			<div class="fttr-kv-row" style="margin-top:10px">
-				<span class="fttr-kv-label">{_("Laser control")}</span>
-				<span>
-					<button class="fttr-btn-subtle" data-fttr="laser-toggle" type="button" disabled>
-						{_("Loading…")}
-					</button>
-				</span>
 			</div>
 		</div>
 	);
@@ -354,22 +265,24 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 }
 
 function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
-	type TabId = "controller" | "subgateways";
+	type TabId = "controller" | "subgateways" | "fec";
 	let activeTab: TabId = "controller";
 
 	// Module state survives LuCI view remounts; clear a stuck in-flight flag
 	// from a previous mount whose rpcd reply may never settle after unload.
-	laserBusy = false;
 
 	const tabs: Array<{ id: TabId; label: string }> = [
 		{ id: "controller", label: _("Controller & optical transceiver") },
 		{ id: "subgateways", label: _("Sub-gateways & optical links") },
+		{ id: "fec", label: _("ONU FEC monitoring") },
 	];
 
 	const tabItems = new Map<TabId, HTMLElement>();
 
 	let controllerPanel = createControllerPanel(initialStatus);
 	let subgatewaysPanel = createSubgatewaysPanel(initialStatus.sub_gateways ?? []);
+	const fecMonitor = createFecMonitor(initialStatus);
+	const fecPanel = fecMonitor.element;
 
 	const switchTab = (id: TabId): void => {
 		activeTab = id;
@@ -378,6 +291,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 		}
 		controllerPanel.hidden = id !== "controller";
 		subgatewaysPanel.hidden = id !== "subgateways";
+		fecPanel.hidden = id !== "fec";
 		window.dispatchEvent(new Event("resize"));
 	};
 
@@ -405,28 +319,13 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;
-	laserOverride = initialStatus.optical_transceiver.tx_enabled ?? null;
-	laserReply = null;
-	const initialRevision = laserRevision;
-	getOpticalStatus()
-		.then((reply) => {
-			if (laserBusy || initialRevision !== laserRevision) return;
-			laserReply = reply;
-			laserOverride = reply.tx_enabled;
-			applyLaserRow(laserOverride);
-		})
-		.catch(() => {
-			if (laserBusy || initialRevision !== laserRevision) return;
-			laserOverride = null;
-			applyLaserRow(laserOverride);
-		});
-	laserPanel = controllerPanel;
-	applyLaserRow(laserOverride);
+	fecPanel.hidden = true;
 
 	const panelsContainer = (
 		<div id="fttr-panels-container">
 			{controllerPanel}
 			{subgatewaysPanel}
+			{fecPanel}
 		</div>
 	);
 
@@ -625,28 +524,19 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 	L.Poll.add(async () => {
 		if (!root.isConnected || updating) return;
 		updating = true;
-		const revision = laserRevision;
 		try {
-			if (laserBusy) return;
-			const [latest, optical] = await Promise.all([getStatus(), getOpticalStatus()]);
-			if (laserBusy || revision !== laserRevision) return;
+			const latest = await getStatus();
 			const newController = createControllerPanel(latest);
 			const newSubgateways = createSubgatewaysPanel(latest.sub_gateways ?? []);
 			newController.hidden = activeTab !== "controller";
 			newSubgateways.hidden = activeTab !== "subgateways";
+			fecMonitor.update(latest);
 			controllerPanel.replaceWith(newController);
 			subgatewaysPanel.replaceWith(newSubgateways);
 			controllerPanel = newController;
 			subgatewaysPanel = newSubgateways;
-			laserPanel = newController;
-			laserReply = optical;
-			laserOverride = optical.tx_enabled;
-			applyLaserRow(laserOverride);
-		} catch {
-			if (laserBusy || revision !== laserRevision) return;
-			laserReply = null;
-			laserOverride = null;
-			applyLaserRow(laserOverride);
+		} catch (error) {
+			console.error("Failed to refresh hardware status", error);
 		} finally {
 			updating = false;
 		}

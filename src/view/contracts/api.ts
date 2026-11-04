@@ -6,6 +6,7 @@ import type {
 	NpuSetReply,
 	NpuSetRequest,
 	OpticalReply,
+	OpticalSettings,
 	SyncAction,
 } from "../../api/generated/types";
 import { waitForJob } from "../../api/jobs";
@@ -32,7 +33,8 @@ export const reloadConfig = async () => getFttrClient().configReload();
 export const restartService = async () => getFttrClient().restartService();
 export const getNetworkDevices = async () => networkDevices.parse(checked(await rawNetwork()));
 export const getOpticalStatus = async (): Promise<OpticalReply> => getFttrClient().opticalStatus();
-export const setOptical = async (enabled: boolean): Promise<OpticalReply> => getFttrClient().opticalSet({ enabled });
+export const setOptical = async (settings: OpticalSettings): Promise<OpticalReply> =>
+	getFttrClient().opticalSet(settings);
 export const getNpuStatus = async (): Promise<NpuStatus> => getFttrClient().npuStatus();
 export const setNpu = async (request: NpuSetRequest): Promise<NpuReply> => getFttrClient().npuSet(request);
 export const sync = async (action: SyncAction, target: string) => getFttrClient().sync({ action, target });

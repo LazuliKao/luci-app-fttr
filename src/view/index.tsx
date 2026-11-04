@@ -12,6 +12,7 @@ import {
 import { formatBytes, formatFirmware, formatLinkSpeed, formatPackets, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { confirmOnuPin } from "./components/onu-pin";
+import { createOpticalControl } from "./components/optical-control";
 import { getNetworkDevices, getStatus } from "./contracts/api";
 import type { FttrStatus, NetworkDevices, SubGateway } from "./contracts/status";
 
@@ -465,6 +466,10 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 	const opticalNode = <span>{text(initialOptical.model)}</span>;
 	const cdrNode = <span class="fttr-badge" />;
 	const pinningNode = <p role="status" />;
+	const opticalControl = createOpticalControl();
+	poll.add(async () => {
+		if (opticalControl.element.isConnected) await opticalControl.refresh();
+	}, 2);
 
 	const element = (
 		<div class="cbi-map fttr-overview">
@@ -603,6 +608,7 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 				`}
 			</style>
 			<h2>{_("FTTR overview")}</h2>
+			{opticalControl.element}
 			{provisioningNode}
 			{pinningNode}
 			<div class="cbi-section">

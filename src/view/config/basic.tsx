@@ -119,12 +119,6 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.description = _(
 		"Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state.",
 	);
-	option = field(p, L.form.Flag, "fec_enabled", _("Enable FEC support (experimental)"));
-	option.default = "0";
-	option.rmempty = false;
-	option.description = _(
-		"Enable downstream FEC statistics and diagnostics globally. Disabled by default. This does not enable FPGA error correction; hardware FEC state remains unknown.",
-	);
 	option = choice(p, "mode", _("Synchronization mode"), [
 		["auto", _("Automatic")],
 		["manual", _("Manual")],

@@ -14,6 +14,93 @@ msgstr ""
 msgid "—"
 msgstr "—"
 
+msgid "FPGA master switch"
+msgstr "FPGA总开关"
+
+msgid "ONU FEC monitoring"
+msgstr "ONU FEC 监测"
+
+msgid "Downstream FEC hardware state"
+msgstr "下行 FEC 硬件状态"
+
+msgid "Saved"
+msgstr "已保存"
+
+msgid "Hardware"
+msgstr "硬件"
+
+msgid "Interval"
+msgstr "统计周期"
+
+msgid "Corrected bytes"
+msgstr "已纠正字节"
+
+msgid "Corrected code words"
+msgstr "已纠正码字"
+
+msgid "Uncorrectable code words"
+msgstr "不可纠正码字"
+
+msgid "Total code words"
+msgstr "总码字"
+
+msgid "FEC seconds"
+msgstr "FEC 秒数"
+
+msgid "GPON downstream optical emission"
+msgstr "GPON下行发光"
+
+msgid "GPON downstream FEC encoding"
+msgstr "GPON下行FEC编码"
+
+msgid "Controls optical module reset and ONU discovery. Turning it off resets the module and disconnects all ONUs."
+msgstr "控制光模块复位与ONU发现流程。关闭后光模块复位，所有ONU连接中断。"
+
+msgid "Controls GPON downstream 1490 nm optical emission. Turning it off removes the downstream optical signal and disconnects ONUs."
+msgstr "控制GPON下行1490 nm光信号发射。关闭后ONU将失去下行光信号并离线。"
+
+msgid "Controls GPON downstream FEC encoding. When downstream transmission is enabled, ONU-side OMCI FEC performance monitoring is also enabled."
+msgstr "控制GPON下行FEC编码；下行发射开启时，同时采集ONU侧OMCI FEC性能数据。"
+
+msgid "Hardware readback"
+msgstr "硬件读回"
+
+msgid "Saved; applying hardware configuration"
+msgstr "已保存，正在应用硬件配置"
+
+msgid "This disconnects all ONUs on this PON. Apply these settings?"
+msgstr "此操作会断开本PON的所有ONU，是否应用？"
+
+msgid "OMCI FEC monitoring ready"
+msgstr "OMCI FEC监测已就绪"
+
+msgid "OMCI FEC monitoring paused"
+msgstr "OMCI FEC监测已暂停"
+
+msgid "ONU FEC monitoring details"
+msgstr "ONU FEC监测详情"
+
+msgid "Counters describe the last completed 15-minute PM interval, not live or cumulative traffic."
+msgstr "计数来自最近完成的15分钟PM区间，并非实时或累计流量。"
+
+msgid "OMCI status"
+msgstr "OMCI状态"
+
+msgid "Awaiting OMCI preparation"
+msgstr "等待OMCI准备"
+
+msgid "Saved; waiting to load automatically"
+msgstr "已保存，等待自动加载"
+
+msgid "Configuration loaded; device synchronization is tracked below"
+msgstr "配置已加载，设备同步进度见下方"
+
+msgid "Waiting for device reset recovery"
+msgstr "等待设备重置恢复"
+
+msgid "Committed configuration has not been requested for loading. Apply the configuration to load it."
+msgstr "已提交的配置尚未请求加载，请应用配置以加载。"
+
 msgid ""
 ", and the optical transceiver hardware was reset and the register table was "
 "latched successfully (%s succeeded)"
@@ -2438,6 +2525,24 @@ msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
 msgid "Enable FEC support (experimental)"
 msgstr "启用 FEC 支持（实验性）"
+
+msgid "GPON downstream transmission (Bit 1)"
+msgstr "GPON 下行发送（Bit 1）"
+
+msgid "GPON downstream FEC (Bit 3)"
+msgstr "GPON 下行纠错（Bit 3）"
+
+msgid "Saved setting"
+msgstr "保存配置"
+
+msgid "Enable downstream FEC statistics and diagnostics globally. Disabled by default. The GPON downstream FEC switch controls hardware separately."
+msgstr "全局启用下行 FEC 统计与诊断，默认关闭。GPON 下行纠错开关独立控制硬件。"
+
+msgid "Controls register 0x01000004 bit 1. Disabling disconnects all ONUs on this PON; this is separate from the optical laser reset."
+msgstr "控制寄存器 0x01000004 的 Bit 1。关闭会断开此 PON 上所有 ONU，与激光器复位开关独立。"
+
+msgid "Controls register 0x01000004 bit 3, preserving transmission and other bits. Disabled by default. This does not enable upstream FEC."
+msgstr "控制寄存器 0x01000004 的 Bit 3，保留发送及其他位。默认关闭，不开启上行 FEC。"
 
 msgid "Enable downstream FEC statistics and diagnostics globally. Disabled by default. This does not enable FPGA error correction; hardware FEC state remains unknown."
 msgstr "全局启用下行 FEC 统计与诊断，默认关闭。此开关不会开启 FPGA 纠错，硬件 FEC 状态仍为未知。"
