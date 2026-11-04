@@ -984,7 +984,8 @@ const eA = e_({
     "device-hl202": es(),
     "device-hwtc": es(),
     "device-star": es(),
-    "device-zte": es()
+    "device-zte": es(),
+    "device-scty": es()
 }), eZ = e_({
     optical: es(),
     bridge_offload: es(),
@@ -1463,6 +1464,33 @@ const tl = e_({
 });
 e_({});
 const th = e_({
+    entity_id: ea(),
+    interval_end_time: ea(),
+    corrected_bytes: ea(),
+    corrected_code_words: ea(),
+    uncorrectable_code_words: ea(),
+    total_code_words: ea(),
+    fec_seconds: ea()
+}), tm = e_({
+    ani_entity_id: eh([
+        ea(),
+        el()
+    ]),
+    control_supported: es(),
+    downstream_enabled: eh([
+        es(),
+        el()
+    ]),
+    upstream_enabled: eh([
+        es(),
+        el()
+    ]),
+    downstream_pm: eh([
+        th,
+        el()
+    ]),
+    measurement: t_
+}), tf = e_({
     entry: eh([
         ey(0),
         ey(1),
@@ -1470,7 +1498,7 @@ const th = e_({
     ]),
     username: en(),
     active: es()
-}), tm = e_({
+}), tb = e_({
     mqtt_mac: en(),
     optical_sn: eh([
         en(),
@@ -1483,59 +1511,59 @@ const th = e_({
     binding_generation: en(),
     last_seen: ea(),
     reason: en()
-}), tf = eh([
+}), ty = eh([
     ey("executed"),
     ey("dispatched"),
     ey("timeout"),
     ey("error")
-]), tb = e_({
+]), tv = e_({
     target: en(),
-    status: tf,
+    status: ty,
     request_id: ew(en()),
     exit_code: ew(ea()),
     output: ew(en()),
     output_truncated: es(),
     error: ew(en())
-}), ty = e_({
-    target: tm,
-    result: tb,
+}), tw = e_({
+    target: tb,
+    result: tv,
     binding_current: es()
-}), tv = eh([
+}), tx = eh([
     ey("not_applicable"),
     ey("accepted_and_saved"),
     ey("unconfirmed")
-]), tw = e_({
+]), tk = e_({
     code: en(),
     message: en()
-}), tx = eh([
+}), tz = eh([
     e_({
         schema_version: ey(1),
-        operation: ty,
+        operation: tw,
         accounts: eh([
-            ep(th),
+            ep(tf),
             el()
         ]),
-        write_status: tv
+        write_status: tx
     }),
     e_({
         schema_version: ea(),
-        error: tw
+        error: tk
     })
-]), tk = e_({
+]), tj = e_({
     optical_sn: en(),
     onu_id: ea(),
     binding_generation: en()
-}), tz = e_({
+}), tC = e_({
     mqtt_mac: en(),
     binding_generation: en()
-}), tj = eh([
-    tk,
-    tz
+}), tS = eh([
+    tj,
+    tC
 ]);
 e_({
-    target: tj
+    target: tS
 });
-const tC = eh([
+const tT = eh([
     e_({
         kind: ey("exec"),
         script: en(),
@@ -1554,48 +1582,48 @@ const tC = eh([
         entry: ea(),
         active: es()
     })
-]), tS = e_({
+]), t$ = e_({
     schema_version: ea(),
-    target: tk,
-    action: tC
-}), tT = e_({
+    target: tj,
+    action: tT
+}), tE = e_({
     optical_sn: en(),
     onu_id: ea(),
     model: en(),
     optical_online: es(),
     can_execute: es(),
     mqtt: eh([
-        tm,
+        tb,
         el()
     ]),
     report_revision: eh([
         ea(),
         el()
     ])
-}), t$ = eh([
+}), tO = eh([
     e_({
         schema_version: ey(1),
-        operation: ty
+        operation: tw
     }),
     e_({
         schema_version: ea(),
-        error: tw
+        error: tk
     })
 ]);
 e_({
-    target: tj,
+    target: tS,
     script: en(),
     timeout_seconds: ea()
 });
-const tE = eh([
+const tN = eh([
     e_({
         schema_version: ey(1),
-        devices: ep(tT),
-        sources: ep(tm)
+        devices: ep(tE),
+        sources: ep(tb)
     }),
     e_({
         schema_version: ea(),
-        error: tw
+        error: tk
     })
 ]);
 eh([
@@ -1604,21 +1632,21 @@ eh([
     }),
     e_({
         method: ey("report"),
-        target: tk
+        target: tj
     }),
     e_({
         method: ey("source_report"),
-        target: tz
+        target: tC
     }),
     e_({
         method: ey("run"),
-        request: tS
+        request: t$
     })
 ]);
-const tO = eh([
+const tP = eh([
     ey("received"),
     ey("report_unavailable")
-]), tN = e_({
+]), tR = e_({
     value: new ec({
         type: "unknown"
     }),
@@ -1627,7 +1655,7 @@ const tO = eh([
         en(),
         el()
     ])
-}), tP = e_({
+}), tM = e_({
     name: en(),
     bytes: ea(),
     encoding: en(),
@@ -1636,14 +1664,14 @@ const tO = eh([
         el()
     ]),
     text_omitted: es()
-}), tR = e_({
+}), tL = e_({
     schema_version: ea(),
     compressed_bytes: ea(),
     decompressed_bytes: ea(),
-    fields: ef(en(), tN),
-    members: ep(tP),
+    fields: ef(en(), tR),
+    members: ep(tM),
     errors: ep(en())
-}), tM = e_({
+}), tq = e_({
     revision: ea(),
     last_received: ea(),
     last_processed_receipt: eh([
@@ -1659,50 +1687,50 @@ const tO = eh([
         el()
     ]),
     report: eh([
-        tR,
+        tL,
         el()
     ])
-}), tL = eh([
+}), tA = eh([
     e_({
         schema_version: ey(1),
-        target: tm,
+        target: tb,
         report: eh([
-            tM,
+            tq,
             el()
         ]),
-        state: tO
+        state: tP
     }),
     e_({
         schema_version: ey(1),
-        target: tm,
+        target: tb,
         report: eh([
-            tM,
+            tq,
             el()
         ]),
         read_only: ey(!0)
     }),
     e_({
         schema_version: ea(),
-        error: tw
+        error: tk
     })
 ]);
 e_({
-    target: tj
+    target: tS
 }), e_({
-    target: tj,
+    target: tS,
     kind: ex,
     entry: ea(),
     password: en(),
     active: es()
 });
-const tq = e_({
+const tZ = e_({
     accepted: ea(),
     rejected: ea(),
     read_errors: ea(),
     handled: ea(),
     max_intake_us: ea(),
     max_handler_us: ea()
-}), tA = ey("pending"), tZ = e_({
+}), tJ = ey("pending"), tD = e_({
     phase: eh([
         ey("starting"),
         ey("upload"),
@@ -1713,13 +1741,13 @@ const tq = e_({
         ea(),
         el()
     ])
-}), tJ = ey("ready"), tD = eh([
-    e_({
-        status: tA,
-        progress: ew(tZ)
-    }),
+}), tU = ey("ready"), tQ = eh([
     e_({
         status: tJ,
+        progress: ew(tD)
+    }),
+    e_({
+        status: tU,
         chunk: ea(),
         chunks: ea(),
         bytes: ea(),
@@ -1727,13 +1755,13 @@ const tq = e_({
     })
 ]);
 eh([
-    tD,
+    tQ,
     eL
 ]);
-const tU = e_({
-    status: tA,
+const tI = e_({
+    status: tJ,
     job: en()
-}), tQ = e_({
+}), tF = e_({
     released: es()
 });
 e_({
@@ -1742,10 +1770,10 @@ e_({
     job: en(),
     chunk: ea()
 }), eh([
-    tU,
+    tI,
     eL
 ]);
-const tI = e_({
+const tV = e_({
     accepting: es(),
     running: ea(),
     stored: ea(),
@@ -1754,7 +1782,7 @@ const tI = e_({
     stored_limit: ea(),
     bytes_limit: ea(),
     result_bytes_limit: ea()
-}), tF = e_({
+}), tW = e_({
     mac: en(),
     ip: en(),
     band: en(),
@@ -1770,7 +1798,7 @@ const tI = e_({
         ea(),
         el()
     ])
-}), tV = eh([
+}), tH = eh([
     ey("unknown"),
     ey("octets"),
     ey("string"),
@@ -1781,12 +1809,12 @@ const tI = e_({
     ey("bit_field"),
     ey("enumeration"),
     ey("counter")
-]), tW = e_({
+]), tK = e_({
     id: en(),
     url: en()
-}), tH = e_({
+}), tB = e_({
     name: en(),
-    kind: tV,
+    kind: tH,
     index: ea(),
     mask: ea(),
     size: ea(),
@@ -1800,8 +1828,8 @@ const tI = e_({
         en(),
         el()
     ]),
-    reference: tW
-}), tK = eh([
+    reference: tK
+}), tX = eh([
     e_({
         type: ey("unsigned"),
         value: ea()
@@ -1829,22 +1857,22 @@ const tI = e_({
         type: ey("table_length"),
         bytes: ea()
     })
-]), tB = e_({
+]), tG = e_({
     raw_hex: en(),
-    value: tK,
+    value: tX,
     sequences: ep(ea())
-}), tX = e_({
-    definition: tH,
+}), tY = e_({
+    definition: tB,
     value: eh([
-        tK,
+        tX,
         el()
     ]),
-    observations: ep(tB)
-}), tG = eh([
+    observations: ep(tG)
+}), t0 = eh([
     ey("layout"),
     ey("name_only"),
     ey("unknown")
-]), tY = e_({
+]), t2 = e_({
     class_id: ea(),
     name: eh([
         en(),
@@ -1852,28 +1880,28 @@ const tI = e_({
     ]),
     entities: ea(),
     records: ea(),
-    support: tG
-}), t0 = e_({
+    support: t0
+}), t1 = e_({
     code: en(),
     message: en(),
     offset: ea(),
     mask: ea()
-}), t2 = e_({
+}), t8 = e_({
     class_id: ea(),
     entity_id: ea(),
     name: eh([
         en(),
         el()
     ]),
-    support: tG,
+    support: t0,
     reference: eh([
-        tW,
+        tK,
         el()
     ]),
     sequences: ep(ea()),
-    attributes: ep(tX),
-    diagnostics: ep(t0)
-}), t1 = ey("ready"), t8 = e_({
+    attributes: ep(tY),
+    diagnostics: ep(t1)
+}), t4 = ey("ready"), t5 = e_({
     class_id: ea(),
     entity_id: ea(),
     sequence: ea(),
@@ -1882,7 +1910,7 @@ const tI = e_({
     consumed: ea(),
     remaining_hex: en(),
     undecoded_mask: ea()
-}), t4 = e_({
+}), t3 = e_({
     raw_hex: en(),
     filter_outer_priority: ea(),
     filter_outer_vid: ea(),
@@ -1899,10 +1927,10 @@ const tI = e_({
     treatment_inner_vid: ea(),
     treatment_inner_tpid_dei: ea(),
     delete_entry: es()
-}), t5 = e_({
+}), t6 = e_({
     class_id: ea(),
     entity_id: ea(),
-    attribute: tH,
+    attribute: tB,
     collected: es(),
     error: eh([
         en(),
@@ -1910,8 +1938,8 @@ const tI = e_({
     ]),
     raw_hex: en(),
     rows: ep(en()),
-    vlan_rules: ep(t4)
-}), t3 = e_({
+    vlan_rules: ep(t3)
+}), t7 = e_({
     schema_version: ey(1),
     reference_version: en(),
     onu_id: eh([
@@ -1926,21 +1954,21 @@ const tI = e_({
     basic_records: ea(),
     tables_requested: es(),
     tables_collected: es(),
-    classes: ep(tY),
-    entities: ep(t2),
-    records: ep(t8),
-    tables: ep(t5),
-    diagnostics: ep(t0)
+    classes: ep(t2),
+    entities: ep(t8),
+    records: ep(t5),
+    tables: ep(t6),
+    diagnostics: ep(t1)
 });
 e_({
-    status: t1,
-    report: t3
+    status: t4,
+    report: t7
 }), e_({
     onu_id: ea(),
     optical_sn: en(),
     tables: es()
 });
-const t6 = eh([
+const t9 = eh([
     e_({
         status: ey("success"),
         enabled: es()
@@ -1957,7 +1985,7 @@ e_({
     wan_downstream: es(),
     onu_bridge: es()
 });
-const t7 = e_({
+const ne = e_({
     index: en(),
     state: en(),
     pkt_type: en(),
@@ -1970,7 +1998,7 @@ const t7 = e_({
     counters_valid: es(),
     packets_exact: en(),
     bytes_exact: en()
-}), t9 = e_({
+}), nt = e_({
     sampled_at_ms: ea(),
     errors: ep(en()),
     config_valid: es(),
@@ -2002,8 +2030,8 @@ const t7 = e_({
     bound_ipv6_entries: ea(),
     total_packets: ea(),
     total_bytes: ea(),
-    bound_flows: ep(t7)
-}), ne = e_({
+    bound_flows: ep(ne)
+}), nn = e_({
     equipment_id: eh([
         en(),
         el()
@@ -2018,7 +2046,7 @@ const t7 = e_({
         el()
     ]),
     errors: ep(en())
-}), nt = e_({
+}), nr = e_({
     desired: ef(en(), ea()),
     active: ef(en(), ea()),
     pending_restart: es(),
@@ -2031,24 +2059,24 @@ const t7 = e_({
         en(),
         el()
     ])
-}), nn = eh([
+}), na = eh([
     ey("optical_on"),
     ey("optical_off"),
     ey("optical_status"),
     ey("optical_reload"),
     ey("optical_reinitialize"),
     ey("optical_shutdown")
-]), nr = eh([
+]), ni = eh([
     ey("success"),
     ey("error")
-]), na = eh([
+]), ns = eh([
     ey("enabled"),
     ey("disabled"),
     ey("unknown")
-]), ni = e_({
+]), no = e_({
     schema_version: ey(1),
-    status: nr,
-    action: nn,
+    status: ni,
+    action: na,
     desired_enabled: eh([
         es(),
         el()
@@ -2057,19 +2085,19 @@ const t7 = e_({
         es(),
         el()
     ]),
-    actor_state: na,
+    actor_state: ns,
     hardware_ready: es(),
     discovery_active: es(),
     cleanup_pending: es(),
     error: eh([
-        tw,
+        tk,
         el()
     ])
 });
 e_({
     enabled: es()
 });
-const ns = e_({
+const nl = e_({
     model: en(),
     wavelength_tx_nm: ea(),
     wavelength_rx_nm: ea(),
@@ -2097,7 +2125,7 @@ const ns = e_({
     ]),
     tx_enabled: ew(es()),
     measurements: ef(en(), t_)
-}), no = eh([
+}), nc = eh([
     ey("o1_initial"),
     ey("o2_standby"),
     ey("o3_serial_number"),
@@ -2105,15 +2133,15 @@ const ns = e_({
     ey("o5_operation"),
     ey("o6_intermittent_lods"),
     ey("o7_emergency_stop")
-]), nl = e_({
+]), nd = e_({
     restarting: ey(!0)
-}), nc = e_({
+}), np = e_({
     calls: ea(),
     failures: ea(),
     last_us: ea(),
     max_us: ea(),
     total_us: ea()
-}), nd = e_({
+}), nu = e_({
     port: ea(),
     interface: en(),
     carrier: es(),
@@ -2122,7 +2150,7 @@ const ns = e_({
     onu_sn: ew(en()),
     link_state: en(),
     reserved_sn: ew(en())
-}), np = e_({
+}), n_ = e_({
     channel_2g: eh([
         ea(),
         el()
@@ -2140,12 +2168,12 @@ const ns = e_({
         el()
     ]),
     measurements: ef(en(), t_)
-}), nu = e_({
+}), ng = e_({
     onu_id: ea(),
     vendor: en(),
     model: en(),
     serial_number: en(),
-    state: no,
+    state: nc,
     business_status: eO,
     management: eh([
         eW,
@@ -2159,7 +2187,7 @@ const ns = e_({
     ssids: ep(eX),
     wifi_sync: e9,
     identity: eh([
-        ne,
+        nn,
         el()
     ]),
     identity_age_seconds: eh([
@@ -2193,33 +2221,34 @@ const ns = e_({
         ea(),
         el()
     ]),
+    fec: ew(tm),
     data_path: tg,
-    wifi_mesh: np,
+    wifi_mesh: n_,
     connected_clients: eh([
-        ep(tF),
+        ep(tW),
         el()
     ]),
     measurements: ef(en(), t_)
-}), n_ = e_({
+}), nh = e_({
     id: en(),
     last_seen_sec_ago: ea(),
     last_payload_bytes: ea()
-}), ng = e_({
-    ubus: ew(ef(en(), nc)),
-    jobs: ew(tI),
-    onu_pinning: ew(nt),
+}), nm = e_({
+    ubus: ew(ef(en(), np)),
+    jobs: ew(tV),
+    onu_pinning: ew(nr),
     fpga_status: en(),
     provisioning: eh([
         to,
         el()
     ]),
-    optical_transceiver: ns,
-    switch_ports: ep(nd),
-    sub_gateways: ep(nu),
-    telemetry_gateways: ep(n_),
-    npu: ew(t9),
-    ipc: ew(tq)
-}), nh = eh([
+    optical_transceiver: nl,
+    switch_ports: ep(nu),
+    sub_gateways: ep(ng),
+    telemetry_gateways: ep(nh),
+    npu: ew(nt),
+    ipc: ew(tZ)
+}), nf = eh([
     ey("plan"),
     ey("apply"),
     ey("management_plan"),
@@ -2227,7 +2256,7 @@ const ns = e_({
     ey("reset_state"),
     ey("reconcile"),
     ey("retry")
-]), nm = eh([
+]), nb = eh([
     e_({
         operation_ids: ep(ea()),
         revision: en()
@@ -2249,12 +2278,12 @@ const ns = e_({
     eL
 ]);
 e_({
-    action: nh,
+    action: nf,
     target: en(),
     management: ew(es()),
     item: ew(en())
 });
-let nf = e_({
+let ny = e_({
     error: eh([
         en(),
         e_({
@@ -2263,32 +2292,32 @@ let nf = e_({
         })
     ])
 });
-class nb extends Error {
+class nv extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function ny(e) {
-    let t = nf.safeParse(e);
+function nw(e) {
+    let t = ny.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new nb("rpc", e) : new nb(e.code, e.message);
+        throw "string" == typeof e ? new nv("rpc", e) : new nv(e.code, e.message);
     }
     return e;
 }
-function nv(e) {
+function nx(e) {
     return {
         parse (t) {
-            let n = e.parse(ny(t));
-            if ("object" == typeof n && null !== n && "error" in n) throw ny(n), Error("Unexpected RPC error");
+            let n = e.parse(nw(t));
+            if ("object" == typeof n && null !== n && "error" in n) throw nw(n), Error("Unexpected RPC error");
             return n;
         }
     };
 }
-const nw = nv(tE), nx = nv(tL), nk = nv(tx), nz = nv(t$), nj = {
+const nk = nx(tN), nz = nx(tA), nj = nx(tz), nC = nx(tO), nS = {
     parse (e) {
-        let t = nm.parse(ny(e));
+        let t = nb.parse(nw(e));
         if ("error" in t) throw Error(t.error);
         return t;
     }
@@ -2303,17 +2332,17 @@ ef(en(), e_({
     })),
     stats: ew(ef(en(), ea()))
 }));
-const nC = {
+const nT = {
     getCapabilities: {
-        parse: (e)=>eD.parse(ny(e))
+        parse: (e)=>eD.parse(nw(e))
     },
-    opticalStatus: ni,
-    opticalSet: ni,
+    opticalStatus: no,
+    opticalSet: no,
     getStatus: {
-        parse: (e)=>ng.parse(ny(e))
+        parse: (e)=>nm.parse(nw(e))
     },
     getSync: {
-        parse: (e)=>to.parse(ny(e))
+        parse: (e)=>to.parse(nw(e))
     },
     configCheck: {
         parse (e) {
@@ -2321,55 +2350,55 @@ const nC = {
             return eU.parse(e);
         }
     },
-    npuStatus: t9,
+    npuStatus: nt,
     configReload: {
-        parse: (e)=>to.parse(ny(e))
+        parse: (e)=>to.parse(nw(e))
     },
     restartService: {
-        parse: (e)=>nl.parse(ny(e))
+        parse: (e)=>nd.parse(nw(e))
     },
     sync: {
-        parse: (e)=>nj.parse(ny(e))
+        parse: (e)=>nS.parse(nw(e))
     },
-    npuSet: t6,
+    npuSet: t9,
     mibStart: {
-        parse: (e)=>tU.parse(ny(e))
+        parse: (e)=>tI.parse(nw(e))
     },
     mibResult: {
-        parse: (e)=>tD.parse(ny(e))
+        parse: (e)=>tQ.parse(nw(e))
     },
     jobRelease: {
-        parse: (e)=>tQ.parse(ny(e))
+        parse: (e)=>tF.parse(nw(e))
     },
     hl202List: {
-        parse: (e)=>nw.parse(ny(e))
+        parse: (e)=>nk.parse(nw(e))
     },
     hl202Report: {
-        parse: (e)=>tU.parse(ny(e))
+        parse: (e)=>tI.parse(nw(e))
     },
     hl202AccountsStart: {
-        parse: (e)=>tU.parse(ny(e))
+        parse: (e)=>tI.parse(nw(e))
     },
     hl202AccountUpdate: {
-        parse: (e)=>tU.parse(ny(e))
+        parse: (e)=>tI.parse(nw(e))
     },
     hl202ExecStart: {
-        parse: (e)=>tU.parse(ny(e))
+        parse: (e)=>tI.parse(nw(e))
     },
     jobResult: {
-        parse: (e)=>tD.parse(ny(e))
+        parse: (e)=>tQ.parse(nw(e))
     },
     getCalibration: {
-        parse: (e)=>eM.parse(ny(e))
+        parse: (e)=>eM.parse(nw(e))
     },
     saveCalibration: {
-        parse: (e)=>eq.parse(ny(e))
+        parse: (e)=>eq.parse(nw(e))
     },
     applyCalibration: {
-        parse: (e)=>tU.parse(ny(e))
+        parse: (e)=>tI.parse(nw(e))
     }
 };
-function nS() {
+function n$() {
     var e;
     let n, r, a, i, s, o, l, c, d, p, u, g, h, m, f, b, y, v, w, x, k, z, j;
     return t ??= (e = L.rpc, n = e.declare({
@@ -2518,51 +2547,51 @@ function nS() {
         method: "apply_calibration",
         reject: !0
     }), {
-        getCapabilities: async ()=>nC.getCapabilities.parse(await n()),
-        opticalStatus: async ()=>nC.opticalStatus.parse(await r()),
-        opticalSet: async (e)=>nC.opticalSet.parse(await a(e.enabled)),
-        getStatus: async ()=>nC.getStatus.parse(await i()),
-        getSync: async ()=>nC.getSync.parse(await s()),
-        configCheck: async ()=>nC.configCheck.parse(await o()),
-        npuStatus: async ()=>nC.npuStatus.parse(await l()),
-        configReload: async ()=>nC.configReload.parse(await c()),
-        restartService: async ()=>nC.restartService.parse(await d()),
-        sync: async (e)=>nC.sync.parse(await p(e.action, e.target, e.management, e.item)),
-        npuSet: async (e)=>nC.npuSet.parse(await u(e.enabled, e.bridge, e.wan_upstream, e.wan_downstream, e.onu_bridge)),
-        mibStart: async (e)=>nC.mibStart.parse(await g(e.onu_id, e.optical_sn, e.tables)),
-        mibResult: async (e)=>nC.mibResult.parse(await h(e.job, e.chunk)),
-        jobRelease: async (e)=>nC.jobRelease.parse(await m(e.job)),
-        hl202List: async ()=>nC.hl202List.parse(await f()),
-        hl202Report: async (e)=>nC.hl202Report.parse(await b(e.target)),
-        hl202AccountsStart: async (e)=>nC.hl202AccountsStart.parse(await y(e.target)),
-        hl202AccountUpdate: async (e)=>nC.hl202AccountUpdate.parse(await v(e.target, e.kind, e.entry, e.password, e.active)),
-        hl202ExecStart: async (e)=>nC.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
-        jobResult: async (e)=>nC.jobResult.parse(await x(e.job, e.chunk)),
-        getCalibration: async ()=>nC.getCalibration.parse(await k()),
-        saveCalibration: async (e)=>nC.saveCalibration.parse(await z(e.data)),
-        applyCalibration: async ()=>nC.applyCalibration.parse(await j())
+        getCapabilities: async ()=>nT.getCapabilities.parse(await n()),
+        opticalStatus: async ()=>nT.opticalStatus.parse(await r()),
+        opticalSet: async (e)=>nT.opticalSet.parse(await a(e.enabled)),
+        getStatus: async ()=>nT.getStatus.parse(await i()),
+        getSync: async ()=>nT.getSync.parse(await s()),
+        configCheck: async ()=>nT.configCheck.parse(await o()),
+        npuStatus: async ()=>nT.npuStatus.parse(await l()),
+        configReload: async ()=>nT.configReload.parse(await c()),
+        restartService: async ()=>nT.restartService.parse(await d()),
+        sync: async (e)=>nT.sync.parse(await p(e.action, e.target, e.management, e.item)),
+        npuSet: async (e)=>nT.npuSet.parse(await u(e.enabled, e.bridge, e.wan_upstream, e.wan_downstream, e.onu_bridge)),
+        mibStart: async (e)=>nT.mibStart.parse(await g(e.onu_id, e.optical_sn, e.tables)),
+        mibResult: async (e)=>nT.mibResult.parse(await h(e.job, e.chunk)),
+        jobRelease: async (e)=>nT.jobRelease.parse(await m(e.job)),
+        hl202List: async ()=>nT.hl202List.parse(await f()),
+        hl202Report: async (e)=>nT.hl202Report.parse(await b(e.target)),
+        hl202AccountsStart: async (e)=>nT.hl202AccountsStart.parse(await y(e.target)),
+        hl202AccountUpdate: async (e)=>nT.hl202AccountUpdate.parse(await v(e.target, e.kind, e.entry, e.password, e.active)),
+        hl202ExecStart: async (e)=>nT.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
+        jobResult: async (e)=>nT.jobResult.parse(await x(e.job, e.chunk)),
+        getCalibration: async ()=>nT.getCalibration.parse(await k()),
+        saveCalibration: async (e)=>nT.saveCalibration.parse(await z(e.data)),
+        applyCalibration: async ()=>nT.applyCalibration.parse(await j())
     });
 }
-const nT = async ()=>nS().getCapabilities();
-async function n$(e) {
-    if (!(await nT()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
+const nE = async ()=>n$().getCapabilities();
+async function nO(e) {
+    if (!(await nE()).pages[e]) throw Error(_("This page is not supported by the installed FTTR build."));
 }
 _("Ready"), _("Online"), _("Success"), _("Offline"), _("Error"), _("Failed"), _("Timeout"), _("Pending"), _("Running"), _("Unavailable"), _("Disabled"), _("Enabled");
-const nE = (e)=>null == e || "" === e ? "\u2014" : String(e), nO = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
-function nN(e, t, n) {
+const nN = (e)=>null == e || "" === e ? "\u2014" : String(e), nP = (e)=>e ? new Date(1000 * e).toLocaleString() : "\u2014";
+function nR(e, t, n) {
     return o("span", {
         class: `hl202-badge hl202-badge-${e}`,
         title: n,
         children: t
     });
 }
-async function nP(e) {
-    let t, n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : ny, r = tU.parse(ny(e)), a = Date.now() + 330000, i = window.location.pathname, s = [], o = 0;
+async function nM(e) {
+    let t, n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : nw, r = tI.parse(nw(e)), a = Date.now() + 330000, i = window.location.pathname, s = [], o = 0;
     try {
         for(let e = 0; e < 128;){
-            if (window.location.pathname !== i) throw new nb("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
-            if (Date.now() > a) throw new nb("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
-            let l = await nS().jobResult({
+            if (window.location.pathname !== i) throw new nv("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
+            if (Date.now() > a) throw new nv("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
+            let l = await n$().jobResult({
                 job: r.job,
                 chunk: e
             });
@@ -2570,16 +2599,16 @@ async function nP(e) {
                 await new Promise((e)=>window.setTimeout(e, 1000));
                 continue;
             }
-            if (!Number.isInteger(l.chunks) || l.chunks < 1 || l.chunks > 128 || l.chunk !== e || !Number.isInteger(l.bytes) || l.bytes < 1 || l.bytes > 4194304 || l.data.length > 43692) throw new nb("transport", _("Invalid job result"));
-            if (t && (l.chunks !== t.chunks || l.bytes !== t.bytes)) throw new nb("transport", _("Inconsistent job result chunks"));
+            if (!Number.isInteger(l.chunks) || l.chunks < 1 || l.chunks > 128 || l.chunk !== e || !Number.isInteger(l.bytes) || l.bytes < 1 || l.bytes > 4194304 || l.data.length > 43692) throw new nv("transport", _("Invalid job result"));
+            if (t && (l.chunks !== t.chunks || l.bytes !== t.bytes)) throw new nv("transport", _("Inconsistent job result chunks"));
             t = {
                 chunks: l.chunks,
                 bytes: l.bytes
             };
             let c = Uint8Array.from(atob(l.data), (e)=>e.charCodeAt(0));
-            if (c.length > 32768 || o + c.length > l.bytes) throw new nb("transport", _("Job result exceeds the transport limit"));
+            if (c.length > 32768 || o + c.length > l.bytes) throw new nv("transport", _("Job result exceeds the transport limit"));
             if (s.push(c), o += c.length, ++e === l.chunks) {
-                if (o !== l.bytes) throw new nb("transport", _("Incomplete job result"));
+                if (o !== l.bytes) throw new nv("transport", _("Incomplete job result"));
                 let e = new Uint8Array(o), t = 0;
                 for (let n of s)e.set(n, t), t += n.length;
                 return n(JSON.parse(new TextDecoder("utf-8", {
@@ -2587,30 +2616,30 @@ async function nP(e) {
                 }).decode(e)));
             }
         }
-        throw new nb("transport", _("Too many result chunks"));
+        throw new nv("transport", _("Too many result chunks"));
     } finally{
-        await nS().jobRelease({
+        await n$().jobRelease({
             job: r.job
         }).catch(()=>{});
     }
 }
-const nR = async ()=>nS().hl202List(), nM = async (e)=>nx.parse(await nP(await nS().hl202Report({
+const nL = async ()=>n$().hl202List(), nq = async (e)=>nz.parse(await nM(await n$().hl202Report({
         target: e
-    }))), nL = async (e)=>nk.parse(await nP(await nS().hl202AccountsStart({
+    }))), nA = async (e)=>nj.parse(await nM(await n$().hl202AccountsStart({
         target: e
-    }))), nq = async (e, t)=>nk.parse(await nP(await nS().hl202AccountUpdate({
+    }))), nZ = async (e, t)=>nj.parse(await nM(await n$().hl202AccountUpdate({
         target: e,
         kind: "password" === t.kind ? "account_set_password" : "account_set_active",
         entry: t.entry,
         password: t.password,
         active: t.active
-    }))), nA = async (e, t, n)=>nz.parse(await nP(await nS().hl202ExecStart({
+    }))), nJ = async (e, t, n)=>nC.parse(await nM(await n$().hl202ExecStart({
         target: e,
         script: t,
         timeout_seconds: n
     })));
-let nZ = !1;
-function nJ() {
+let nD = !1;
+function nU() {
     var e, t;
     let n = null, r = o("div", {
         style: "margin:8px 0;display:flex;align-items:center;flex-wrap:wrap;gap:10px"
@@ -2631,14 +2660,14 @@ function nJ() {
             s.textContent = _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.");
             return;
         }
-        if (nZ) {
+        if (nD) {
             s.textContent = _("Another operation is in progress.");
             return;
         }
-        nZ = !0, l.disabled = !0, s.textContent = _("Waiting for device result\u2026");
+        nD = !0, l.disabled = !0, s.textContent = _("Waiting for device result\u2026");
         try {
             var c, d, p, u, g, h, m, f, b, y, v, w, x, k, z, j, C, S, T, $, O, N;
-            let e = await nM(t);
+            let e = await nq(t);
             if (JSON.stringify(t) !== JSON.stringify(n)) return;
             if (!e.report) {
                 r.replaceChildren(), a.replaceChildren(), i.replaceChildren(), s.textContent = _("No MQTT report has been parsed yet.");
@@ -2654,7 +2683,7 @@ function nJ() {
                             ":"
                         ]
                     }, o("span", c)),
-                    nN("info", `#${String(l.revision)}`)
+                    nR("info", `#${String(l.revision)}`)
                 ]
             }, o("span", d)), (g = {
                 children: [
@@ -2666,7 +2695,7 @@ function nJ() {
                         ]
                     }, o("span", p)),
                     (u = {
-                        children: nO("number" == typeof l.last_received ? l.last_received : void 0)
+                        children: nP("number" == typeof l.last_received ? l.last_received : void 0)
                     }, o("strong", u))
                 ]
             }, o("span", g)), (f = {
@@ -2679,7 +2708,7 @@ function nJ() {
                         ]
                     }, o("span", h)),
                     (m = {
-                        children: nO("number" == typeof l.last_good ? l.last_good : void 0)
+                        children: nP("number" == typeof l.last_good ? l.last_good : void 0)
                     }, o("strong", m))
                 ]
             }, o("span", f))), "string" == typeof l.error && r.append((b = {
@@ -2734,7 +2763,7 @@ function nJ() {
                                         (s = {
                                             children: (i = {
                                                 class: "hl202-badge hl202-badge-neutral",
-                                                children: nE(d.member)
+                                                children: nN(d.member)
                                             }, o("span", i))
                                         }, o("td", s))
                                     ]
@@ -2792,7 +2821,7 @@ function nJ() {
         } catch (e) {
             s.textContent = e instanceof Error ? e.message : _("Request failed");
         } finally{
-            nZ = !1, l.disabled = !n;
+            nD = !1, l.disabled = !n;
         }
     };
     return l.addEventListener("click", ()=>{
@@ -2823,11 +2852,11 @@ function nJ() {
         refresh: (e)=>c(e)
     };
 }
-let nD = L.view;
-if (!("extend" in nD) || "function" != typeof nD.extend) throw Error("LuCI view extension is unavailable");
-let main = Reflect.apply(nD.extend, nD, [
+let nQ = L.view;
+if (!("extend" in nQ) || "function" != typeof nQ.extend) throw Error("LuCI view extension is unavailable");
+let main = Reflect.apply(nQ.extend, nQ, [
     {
-        load: ()=>n$("hl202"),
+        load: ()=>nO("hl202"),
         render: function() {
             var e, t, n, r, a, i, s, l, c, d, p, u, g;
             let h, m, f, b, y, v = o("select", {
@@ -2900,7 +2929,7 @@ let main = Reflect.apply(nD.extend, nD, [
                     }, o("div", t)),
                     T
                 ]
-            }, o("div", n)), O = nJ(), N = (h = null, m = o("div", {
+            }, o("div", n)), O = nU(), N = (h = null, m = o("div", {
                 style: "font-size:88%;color:#888;margin:6px 0",
                 "aria-live": "polite"
             }), f = o("div", {
@@ -2914,14 +2943,14 @@ let main = Reflect.apply(nD.extend, nD, [
                     m.textContent = _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.");
                     return;
                 }
-                if (nZ) {
+                if (nD) {
                     m.textContent = _("Another operation is in progress.");
                     return;
                 }
-                nZ = !0, b.disabled = !0, m.textContent = _("Waiting for device result\u2026");
+                nD = !0, b.disabled = !0, m.textContent = _("Waiting for device result\u2026");
                 let e = h;
                 try {
-                    let g = await nL(e);
+                    let g = await nA(e);
                     if (JSON.stringify(e) !== JSON.stringify(h)) return;
                     f.replaceChildren();
                     let b = g.operation, y = b.result;
@@ -2954,15 +2983,15 @@ let main = Reflect.apply(nD.extend, nD, [
                                 "aria-live": "polite"
                             }, o("div", i));
                             w.addEventListener("click", async ()=>{
-                                if (!h || nZ || JSON.stringify(e) !== JSON.stringify(h)) return;
+                                if (!h || nD || JSON.stringify(e) !== JSON.stringify(h)) return;
                                 let t = v.value;
                                 if (!t) {
                                     k.textContent = _("Enter a non-empty password.");
                                     return;
                                 }
-                                v.value = "", nZ = !0, w.disabled = x.disabled = !0, k.textContent = _("Waiting for device result\u2026");
+                                v.value = "", nD = !0, w.disabled = x.disabled = !0, k.textContent = _("Waiting for device result\u2026");
                                 try {
-                                    let n = await nq(e, {
+                                    let n = await nZ(e, {
                                         entry: g,
                                         kind: "password",
                                         password: t,
@@ -2974,13 +3003,13 @@ let main = Reflect.apply(nD.extend, nD, [
                                 } catch (e) {
                                     k.textContent = e instanceof Error ? e.message : _("Request failed");
                                 } finally{
-                                    nZ = !1, w.disabled = x.disabled = !L.hasViewPermission();
+                                    nD = !1, w.disabled = x.disabled = !L.hasViewPermission();
                                 }
                             }), x.addEventListener("click", async ()=>{
-                                if (h && !nZ && JSON.stringify(e) === JSON.stringify(h)) {
-                                    nZ = !0, w.disabled = x.disabled = !0, k.textContent = _("Waiting for device result\u2026");
+                                if (h && !nD && JSON.stringify(e) === JSON.stringify(h)) {
+                                    nD = !0, w.disabled = x.disabled = !0, k.textContent = _("Waiting for device result\u2026");
                                     try {
-                                        let t = !b, n = await nq(e, {
+                                        let t = !b, n = await nZ(e, {
                                             entry: g,
                                             kind: "active",
                                             password: "",
@@ -2996,7 +3025,7 @@ let main = Reflect.apply(nD.extend, nD, [
                                     } catch (e) {
                                         k.textContent = e instanceof Error ? e.message : _("Request failed");
                                     } finally{
-                                        nZ = !1, w.disabled = x.disabled = !L.hasViewPermission();
+                                        nD = !1, w.disabled = x.disabled = !L.hasViewPermission();
                                     }
                                 }
                             }), m.push((u = {
@@ -3039,7 +3068,7 @@ let main = Reflect.apply(nD.extend, nD, [
                 } catch (e) {
                     m.textContent = e instanceof Error ? e.message : _("Request failed");
                 } finally{
-                    nZ = !1, b.disabled = !h || !L.hasViewPermission();
+                    nD = !1, b.disabled = !h || !L.hasViewPermission();
                 }
             }, b.addEventListener("click", ()=>{
                 y();
@@ -3124,7 +3153,7 @@ let main = Reflect.apply(nD.extend, nD, [
                         class: "alert-message warning",
                         children: _("This optical device has no fresh, unambiguous MQTT binding. Commands are unavailable.")
                     }));
-                    if (nZ) return void d.replaceChildren(o("div", {
+                    if (nD) return void d.replaceChildren(o("div", {
                         class: "alert-message warning",
                         children: _("Another operation is in progress.")
                     }));
@@ -3138,12 +3167,12 @@ let main = Reflect.apply(nD.extend, nD, [
                         class: "alert-message warning",
                         children: _("Enter a non-empty UTF-8 script up to 64 KiB without NUL characters.")
                     }));
-                    nZ = !0, c.disabled = !0, p.style.display = "block", p.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(a.optical_sn, String(w))}\n`, d.replaceChildren(nN("info", _("Waiting for device result\u2026")));
+                    nD = !0, c.disabled = !0, p.style.display = "block", p.textContent = `# [${new Date().toLocaleTimeString()}] ${_("Dispatching to %s (timeout: %s s)...").format(a.optical_sn, String(w))}\n`, d.replaceChildren(nR("info", _("Waiting for device result\u2026")));
                     let k = Date.now(), z = a;
                     try {
-                        let l = await nA(z, s.value, w);
+                        let l = await nJ(z, s.value, w);
                         if (JSON.stringify(z) !== JSON.stringify(a)) return;
-                        let c = ((Date.now() - k) / 1000).toFixed(2), v = l.operation, x = v.result, j = x.status, C = x.exit_code, S = v.binding_current && !x.error && "executed" === j && 0 === C, T = nN(S ? "success" : "timeout" === j ? "warning" : "danger", S ? _("Success") : "timeout" === j ? _("Timeout") : `${_("Exit code")} ${String(C ?? j)}`);
+                        let c = ((Date.now() - k) / 1000).toFixed(2), v = l.operation, x = v.result, j = x.status, C = x.exit_code, S = v.binding_current && !x.error && "executed" === j && 0 === C, T = nR(S ? "success" : "timeout" === j ? "warning" : "danger", S ? _("Success") : "timeout" === j ? _("Timeout") : `${_("Exit code")} ${String(C ?? j)}`);
                         d.replaceChildren(T, (n = {
                             children: [
                                 (e = {
@@ -3200,7 +3229,7 @@ let main = Reflect.apply(nD.extend, nD, [
                         v.binding_current || $.push(_("Device binding changed; this result is stale.")), ("timeout" === j || "dispatched" === j) && $.push(_("Execution outcome is unknown. Timeout does not cancel the remote command; do not automatically retry.")), "string" == typeof x.output && x.output.length && $.push(x.output), "string" == typeof x.error && x.error.length && $.push(`[STDERR]\n${x.error}`), !0 === x.output_truncated && $.push(`\n[!] ${_("Output was truncated at the byte limit.")}`), 0 === $.length && $.push(_("No output returned.")), p.textContent = $.join("\n");
                     } catch (t) {
                         let e = ((Date.now() - k) / 1000).toFixed(2);
-                        d.replaceChildren(nN("danger", _("Failed")), (v = {
+                        d.replaceChildren(nR("danger", _("Failed")), (v = {
                             children: [
                                 o("span", {
                                     style: "color:#888",
@@ -3221,7 +3250,7 @@ let main = Reflect.apply(nD.extend, nD, [
                             ]
                         })), p.textContent = `[ERROR] ${t instanceof Error ? t.message : _("Request failed")}`;
                     } finally{
-                        nZ = !1, c.disabled = !a || !L.hasViewPermission();
+                        nD = !1, c.disabled = !a || !L.hasViewPermission();
                     }
                 };
                 c.addEventListener("click", ()=>{
@@ -3480,7 +3509,7 @@ let main = Reflect.apply(nD.extend, nD, [
             }, B = async ()=>{
                 w.disabled = !0, x.textContent = _("Loading devices\u2026");
                 try {
-                    let t = await nR(), n = t.devices;
+                    let t = await nL(), n = t.devices;
                     V = n;
                     let r = n.map((e)=>`${e.optical_sn}:${e.onu_id}:${e.optical_online}:${e.can_execute}:${e.report_revision}:${e.mqtt?.binding_generation}`).join("|");
                     if (r !== W) {
@@ -3490,7 +3519,7 @@ let main = Reflect.apply(nD.extend, nD, [
                             var t;
                             return t = {
                                 value: e.optical_sn,
-                                children: nE(`${e.model} / ${e.optical_sn} / ONU ${e.onu_id} \u{2014} ${e.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${e.optical_online ? _("Optical online") : _("Optical offline")}`)
+                                children: nN(`${e.model} / ${e.optical_sn} / ONU ${e.onu_id} \u{2014} ${e.can_execute ? _("MQTT ready") : _("MQTT unavailable")}; ${e.optical_online ? _("Optical online") : _("Optical offline")}`)
                             }, o("option", t);
                         })), n.some((t)=>t.optical_sn === e) && (v.value = e);
                     }
@@ -3503,12 +3532,12 @@ let main = Reflect.apply(nD.extend, nD, [
                             binding_generation: n.binding_generation
                         }), R.append((e = {
                             value: n.mqtt_mac,
-                            children: nE(`${n.mqtt_mac} \u{2014} ${String(n.reason)}`)
+                            children: nN(`${n.mqtt_mac} \u{2014} ${String(n.reason)}`)
                         }, o("option", e)));
                     }
                     A = i, i.some((e)=>e.mqtt_mac === a) && (R.value = a), M.disabled = 0 === i.length, K();
                     let s = n.find((e)=>e.optical_sn === v.value);
-                    s?.can_execute && null !== s.report_revision && `${s.optical_sn}:${s.mqtt?.binding_generation}:${s.report_revision}` !== H && !nZ && (H = `${s.optical_sn}:${s.mqtt?.binding_generation}:${s.report_revision}`, O.refresh());
+                    s?.can_execute && null !== s.report_revision && `${s.optical_sn}:${s.mqtt?.binding_generation}:${s.report_revision}` !== H && !nD && (H = `${s.optical_sn}:${s.mqtt?.binding_generation}:${s.report_revision}`, O.refresh());
                 } catch (e) {
                     V = [], K(), x.textContent = e instanceof Error ? e.message : _("Request failed");
                 } finally{
@@ -3518,7 +3547,7 @@ let main = Reflect.apply(nD.extend, nD, [
             v.addEventListener("change", K), M.addEventListener("click", ()=>{
                 let e = A.find((e)=>e.mqtt_mac === R.value);
                 if (q.replaceChildren(), e) {
-                    let t = nJ();
+                    let t = nU();
                     t.setTarget(e), q.append(t.element), t.refresh(e);
                 }
             }), w.addEventListener("click", ()=>{

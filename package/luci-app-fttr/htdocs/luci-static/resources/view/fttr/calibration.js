@@ -757,11 +757,11 @@ function ef(e, t) {
         ...v(t)
     });
 }
-const eh = l("ZodMiniUnion", (e, t)=>{
+const e_ = l("ZodMiniUnion", (e, t)=>{
     J.init(e, t), ee.init(e, t);
 });
-function e_(e, t) {
-    return new eh({
+function eh(e, t) {
+    return new e_({
         type: "union",
         options: e,
         ...v(t)
@@ -799,10 +799,10 @@ function ew(e) {
         innerType: e
     });
 }
-const ex = e_([
+const ex = eh([
     ey("account_set_password"),
     ey("account_set_active")
-]), ek = e_([
+]), ek = eh([
     ey("waiting_transport"),
     ey("waiting_identity"),
     ey("reading"),
@@ -820,15 +820,15 @@ const ex = e_([
     ey("verifying_management_wan")
 ]), ez = ef({
     enabled: es(),
-    listen: e_([
+    listen: eh([
         er(),
         el()
     ]),
-    path: e_([
+    path: eh([
         er(),
         el()
     ]),
-    error: e_([
+    error: eh([
         er(),
         el()
     ])
@@ -841,7 +841,7 @@ const ex = e_([
     state: ek,
     optical_sn: er(),
     cwmp_id: er(),
-    mqtt_target: e_([
+    mqtt_target: eh([
         er(),
         el()
     ]),
@@ -853,50 +853,50 @@ const ex = e_([
     attempts: ei(),
     next_retry_at: ei(),
     updated_at: ei(),
-    settings_verified_at: e_([
+    settings_verified_at: eh([
         ei(),
         el()
     ]),
-    selected_vlan: e_([
+    selected_vlan: eh([
         ei(),
         el()
     ]),
-    last_inform: e_([
+    last_inform: eh([
         ei(),
         el()
     ]),
     expected_acs_url: er(),
-    last_error: e_([
+    last_error: eh([
         er(),
         el()
     ]),
     transport_epoch: ei(),
     completed_authorization: ei(),
-    connection_request_enabled: e_([
+    connection_request_enabled: eh([
         es(),
         el()
     ]),
     inflight: es(),
-    persistence_error: e_([
+    persistence_error: eh([
         er(),
         el()
     ]),
-    link_identity_error: e_([
+    link_identity_error: eh([
         er(),
         el()
     ]),
     listener: ez,
-    mqtt_last_seen: e_([
+    mqtt_last_seen: eh([
         ei(),
         el()
     ]),
     desired: ew(ej),
     endpoint_notice: ew(er()),
     manual_steps: ew(ep(er()))
-}), eC = e_([
+}), eC = eh([
     ey("pending"),
     ey("unavailable")
-]), eA = e_([
+]), eA = eh([
     eS,
     ef({
         state: eC,
@@ -911,7 +911,7 @@ const ex = e_([
     available: ep(er()),
     reason: er()
 }), eO = ef({
-    phase: e_([
+    phase: eh([
         ey("not_started"),
         ey("collecting_identity"),
         ey("retrying_identity"),
@@ -924,7 +924,7 @@ const ex = e_([
         ey("offline")
     ]),
     generation: ei(),
-    error: e_([
+    error: eh([
         er(),
         el()
     ])
@@ -932,7 +932,7 @@ const ex = e_([
     success: es(),
     output: ew(er()),
     error: ew(er())
-}), eT = e_([
+}), eT = eh([
     ey("factory"),
     ey("firmware"),
     ey("builtin")
@@ -959,7 +959,7 @@ const ex = e_([
 }), e$ = ef({
     error: er()
 });
-e_([
+eh([
     eR,
     e$
 ]);
@@ -969,7 +969,7 @@ const eZ = ef({
     size: ei(),
     sha256: er()
 });
-e_([
+eh([
     eZ,
     e$
 ]), ef({
@@ -982,7 +982,8 @@ const eD = ef({
     "device-hl202": es(),
     "device-hwtc": es(),
     "device-star": es(),
-    "device-zte": es()
+    "device-zte": es(),
+    "device-scty": es()
 }), eF = ef({
     optical: es(),
     bridge_offload: es(),
@@ -1006,7 +1007,7 @@ const eD = ef({
     functions: eF,
     pages: eL,
     adapters: ep(eP)
-}), eI = e_([
+}), eI = eh([
     ef({
         valid: ey(!0),
         revision: er(),
@@ -1015,20 +1016,20 @@ const eD = ef({
     ef({
         error: er()
     })
-]), eq = e_([
+]), eq = eh([
     ey("auto"),
     ey("manual")
 ]), eX = ey("diff"), eH = ef({
     state: er(),
     enabled: es(),
-    reason: ew(e_([
+    reason: ew(eh([
         er(),
         el()
     ])),
     revision: ew(er()),
     vlan: ew(ei()),
     updated_at: ew(ei())
-}), eV = e_([
+}), eV = eh([
     ey("online"),
     ey("waiting_inform"),
     ey("offline_or_stale"),
@@ -1037,15 +1038,15 @@ const eD = ef({
     cwmp_id: er(),
     state: eV,
     optical_online: es(),
-    last_inform: e_([
+    last_inform: eh([
         ei(),
         el()
     ]),
-    age_seconds: e_([
+    age_seconds: eh([
         ei(),
         el()
     ])
-}), eJ = e_([
+}), eJ = eh([
     ey("waiting"),
     ey("wan_reconciling"),
     ey("wan_verifying"),
@@ -1064,7 +1065,7 @@ const eD = ef({
     ey("recovering"),
     ey("waiting_management"),
     ey("waiting_task")
-]), eK = e_([
+]), eK = eh([
     ey("device_service"),
     ey("ssid"),
     ey("port_binding"),
@@ -1074,7 +1075,7 @@ const eD = ef({
     desired: er()
 }), eQ = ef({
     id: er(),
-    name: ew(e_([
+    name: ew(eh([
         er(),
         el()
     ])),
@@ -1086,13 +1087,13 @@ const eD = ef({
     current_revision: ew(es()),
     management_fresh: ew(es()),
     operation_id: ew(ei()),
-    task_id: ew(e_([
+    task_id: ew(eh([
         ei(),
         el()
     ])),
     updated_at: ew(ei()),
     changes: ew(ep(eG))
-}), eY = e_([
+}), eY = eh([
     ey("plan"),
     ey("apply")
 ]), e0 = ef({
@@ -1102,14 +1103,14 @@ const eD = ef({
 }), e1 = ef({
     state: er(),
     requested: er(),
-    contract: e_([
+    contract: eh([
         er(),
         el()
     ]),
     reason: er(),
     cache_hit: es(),
     schema: er(),
-    capabilities: e_([
+    capabilities: eh([
         e0,
         el()
     ])
@@ -1119,20 +1120,20 @@ const eD = ef({
     state: er(),
     service_list: er(),
     kind: er(),
-    baseline: e_([
+    baseline: eh([
         ep(ei()),
         el()
     ])
 }), e6 = ef({
     state: er(),
     reason: ew(er()),
-    task_id: ew(e_([
+    task_id: ew(eh([
         ei(),
         el()
     ])),
     instance: ew(ei()),
     cwmp_id: ew(er())
-}), e4 = e_([
+}), e4 = eh([
     ey("waiting"),
     ey("inventory"),
     ey("classifying"),
@@ -1149,15 +1150,15 @@ const eD = ef({
     ey("done")
 ]), e8 = ef({
     owned: ep(ei()),
-    pending: e_([
+    pending: eh([
         er(),
         el()
     ]),
-    pending_instance: e_([
+    pending_instance: eh([
         ei(),
         el()
     ])
-}), e5 = e_([
+}), e5 = eh([
     ey("waiting"),
     ey("inventory"),
     ey("adding"),
@@ -1169,7 +1170,7 @@ const eD = ef({
     ey("verifying_disable"),
     ey("next"),
     ey("done")
-]), e3 = e_([
+]), e3 = eh([
     ey("disable"),
     ey("preserve"),
     ey("delete")
@@ -1189,7 +1190,7 @@ const eD = ef({
     revision: ew(er()),
     mode: ew(eY),
     started_at: ew(ei()),
-    completed_at: ew(e_([
+    completed_at: ew(eh([
         ei(),
         el()
     ])),
@@ -1211,7 +1212,7 @@ const eD = ef({
     native_ownership: ew(eg(er(), e7)),
     write_performed: ew(es()),
     readback_verified: ew(es())
-}), te = e_([
+}), te = eh([
     ey("not_configured"),
     ey("stale_revision"),
     ey("stale_management"),
@@ -1223,30 +1224,30 @@ const eD = ef({
     ey("waiting_management")
 ]), tt = ef({
     device: er(),
-    name: e_([
+    name: eh([
         er(),
         el()
     ]),
-    group: e_([
+    group: eh([
         er(),
         el()
     ]),
-    group_name: e_([
+    group_name: eh([
         er(),
         el()
     ]),
-    template: e_([
+    template: eh([
         er(),
         el()
     ]),
-    template_name: e_([
+    template_name: eh([
         er(),
         el()
     ]),
     optical_sn: er(),
     adapter: er(),
     omci_management: eH,
-    management: e_([
+    management: eh([
         eW,
         el()
     ]),
@@ -1255,7 +1256,7 @@ const eD = ef({
     services: ep(eQ),
     ssids: ep(eQ),
     wifi_sync: te
-}), tr = e_([
+}), tr = eh([
     ey("discovering"),
     ey("comparing"),
     ey("planning"),
@@ -1285,44 +1286,44 @@ const eD = ef({
     value: ep(er())
 }), tn = ef({
     state: tr,
-    error: e_([
+    error: eh([
         er(),
         el()
     ]),
     inflight: es(),
     ready: es(),
-    desired_version: e_([
+    desired_version: eh([
         er(),
         el()
     ]),
-    applied_version: e_([
+    applied_version: eh([
         er(),
         el()
     ]),
     next_retry_at: ei(),
     attempts: ei(),
-    desired: e_([
+    desired: eh([
         ta,
         el()
     ]),
-    applied: e_([
+    applied: eh([
         ta,
         el()
     ]),
-    previous: e_([
+    previous: eh([
         ta,
         el()
     ]),
     plan: ep(ti)
 }), ts = ef({
-    desired: e_([
+    desired: eh([
         ej,
         el()
     ]),
     state: er()
 }), to = ef({
     id: er(),
-    name: e_([
+    name: eh([
         er(),
         el()
     ]),
@@ -1334,7 +1335,7 @@ const eD = ef({
     revision: er(),
     triggers: ep(er()),
     interval_minutes: ei(),
-    error: e_([
+    error: eh([
         er(),
         el()
     ]),
@@ -1344,63 +1345,63 @@ const eD = ef({
     groups: ep(to),
     pending_devices: ep(er()),
     onu_pins: ew(eg(er(), ei())),
-    config_error: ew(e_([
+    config_error: ew(eh([
         er(),
         el()
     ]))
 });
-e_([
+eh([
     tl,
     e$
 ]);
 const td = ef({
-    enabled: e_([
+    enabled: eh([
         es(),
         el()
     ]),
-    routed_enabled: e_([
+    routed_enabled: eh([
         es(),
         el()
     ]),
-    bridge_enabled: e_([
+    bridge_enabled: eh([
         es(),
         el()
     ]),
-    engine_attached: e_([
+    engine_attached: eh([
         es(),
         el()
     ]),
-    forwarding_verified: e_([
+    forwarding_verified: eh([
         es(),
         el()
     ])
 }), tc = ef({
     entity_id: ei(),
-    port_id: e_([
+    port_id: eh([
         ei(),
         el()
     ])
 }), tp = ef({
     entity_id: ei(),
-    filter_list_hex: e_([
+    filter_list_hex: eh([
         er(),
         el()
     ]),
-    forward_operation: e_([
+    forward_operation: eh([
         ei(),
         el()
     ]),
-    number_of_entries: e_([
+    number_of_entries: eh([
         ei(),
         el()
     ])
 }), tu = ef({
     entity_id: ei(),
-    received_frame_rules_hex: e_([
+    received_frame_rules_hex: eh([
         ep(er()),
         el()
     ]),
-    error: e_([
+    error: eh([
         er(),
         el()
     ])
@@ -1409,133 +1410,160 @@ const td = ef({
     gem_ports: ep(tc),
     vlan_filters: ep(tp),
     vlan_operations: ep(tu)
-}), th = ef({
+}), t_ = ef({
     source: er(),
     unit: er(),
-    reason: e_([
+    reason: eh([
         er(),
         el()
     ]),
-    raw: e_([
+    raw: eh([
         er(),
         el()
     ]),
-    age_seconds: e_([
+    age_seconds: eh([
         ei(),
         el()
     ])
-}), t_ = ef({
+}), th = ef({
     interface: er(),
-    gem_ports: e_([
+    gem_ports: eh([
         ep(ei()),
         el()
     ]),
-    vlan_id: e_([
+    vlan_id: eh([
         ei(),
         el()
     ]),
-    onu_inventory: e_([
+    onu_inventory: eh([
         tf,
         el()
     ]),
-    tx_bytes: e_([
+    tx_bytes: eh([
         ei(),
         el()
     ]),
-    rx_bytes: e_([
+    rx_bytes: eh([
         ei(),
         el()
     ]),
-    current_tx_kbps: e_([
+    current_tx_kbps: eh([
         ei(),
         el()
     ]),
-    current_rx_kbps: e_([
+    current_rx_kbps: eh([
         ei(),
         el()
     ]),
     olt_channel_gem: ew(ei()),
     forwarding_verified: ew(es()),
     offload: td,
-    measurements: eg(er(), th)
+    measurements: eg(er(), t_)
 });
 ef({});
 const tm = ef({
-    entry: e_([
+    entity_id: ei(),
+    interval_end_time: ei(),
+    corrected_bytes: ei(),
+    corrected_code_words: ei(),
+    uncorrectable_code_words: ei(),
+    total_code_words: ei(),
+    fec_seconds: ei()
+}), tg = ef({
+    ani_entity_id: eh([
+        ei(),
+        el()
+    ]),
+    control_supported: es(),
+    downstream_enabled: eh([
+        es(),
+        el()
+    ]),
+    upstream_enabled: eh([
+        es(),
+        el()
+    ]),
+    downstream_pm: eh([
+        tm,
+        el()
+    ]),
+    measurement: t_
+}), tb = ef({
+    entry: eh([
         ey(0),
         ey(1),
         ey(2)
     ]),
     username: er(),
     active: es()
-}), tg = ef({
+}), ty = ef({
     mqtt_mac: er(),
-    optical_sn: e_([
+    optical_sn: eh([
         er(),
         el()
     ]),
-    onu_id: e_([
+    onu_id: eh([
         ei(),
         el()
     ]),
     binding_generation: er(),
     last_seen: ei(),
     reason: er()
-}), tb = e_([
+}), tv = eh([
     ey("executed"),
     ey("dispatched"),
     ey("timeout"),
     ey("error")
-]), ty = ef({
+]), tw = ef({
     target: er(),
-    status: tb,
+    status: tv,
     request_id: ew(er()),
     exit_code: ew(ei()),
     output: ew(er()),
     output_truncated: es(),
     error: ew(er())
-}), tv = ef({
-    target: tg,
-    result: ty,
+}), tx = ef({
+    target: ty,
+    result: tw,
     binding_current: es()
-}), tw = e_([
+}), tk = eh([
     ey("not_applicable"),
     ey("accepted_and_saved"),
     ey("unconfirmed")
-]), tx = ef({
+]), tz = ef({
     code: er(),
     message: er()
 });
-e_([
+eh([
     ef({
         schema_version: ey(1),
-        operation: tv,
-        accounts: e_([
-            ep(tm),
+        operation: tx,
+        accounts: eh([
+            ep(tb),
             el()
         ]),
-        write_status: tw
+        write_status: tk
     }),
     ef({
         schema_version: ei(),
-        error: tx
+        error: tz
     })
 ]);
-const tk = ef({
+const tj = ef({
     optical_sn: er(),
     onu_id: ei(),
     binding_generation: er()
-}), tz = ef({
+}), tS = ef({
     mqtt_mac: er(),
     binding_generation: er()
-}), tj = e_([
-    tk,
-    tz
+}), tC = eh([
+    tj,
+    tS
 ]);
 ef({
-    target: tj
+    target: tC
 });
-const tS = e_([
+const tA = eh([
     ef({
         kind: ey("exec"),
         script: er(),
@@ -1554,186 +1582,186 @@ const tS = e_([
         entry: ei(),
         active: es()
     })
-]), tC = ef({
+]), tP = ef({
     schema_version: ei(),
-    target: tk,
-    action: tS
-}), tA = ef({
+    target: tj,
+    action: tA
+}), tU = ef({
     optical_sn: er(),
     onu_id: ei(),
     model: er(),
     optical_online: es(),
     can_execute: es(),
-    mqtt: e_([
-        tg,
+    mqtt: eh([
+        ty,
         el()
     ]),
-    report_revision: e_([
+    report_revision: eh([
         ei(),
         el()
     ])
 });
-e_([
+eh([
     ef({
         schema_version: ey(1),
-        operation: tv
+        operation: tx
     }),
     ef({
         schema_version: ei(),
-        error: tx
+        error: tz
     })
 ]), ef({
-    target: tj,
+    target: tC,
     script: er(),
     timeout_seconds: ei()
 });
-const tP = e_([
+const tO = eh([
     ef({
         schema_version: ey(1),
-        devices: ep(tA),
-        sources: ep(tg)
+        devices: ep(tU),
+        sources: ep(ty)
     }),
     ef({
         schema_version: ei(),
-        error: tx
+        error: tz
     })
 ]);
-e_([
+eh([
     ef({
         method: ey("list")
     }),
     ef({
         method: ey("report"),
-        target: tk
+        target: tj
     }),
     ef({
         method: ey("source_report"),
-        target: tz
+        target: tS
     }),
     ef({
         method: ey("run"),
-        request: tC
+        request: tP
     })
 ]);
-const tU = e_([
+const tE = eh([
     ey("received"),
     ey("report_unavailable")
-]), tO = ef({
+]), tT = ef({
     value: new ed({
         type: "unknown"
     }),
     member: er(),
-    unit: e_([
+    unit: eh([
         er(),
         el()
     ])
-}), tE = ef({
+}), tN = ef({
     name: er(),
     bytes: ei(),
     encoding: er(),
-    text: e_([
+    text: eh([
         er(),
         el()
     ]),
     text_omitted: es()
-}), tT = ef({
+}), tM = ef({
     schema_version: ei(),
     compressed_bytes: ei(),
     decompressed_bytes: ei(),
-    fields: eg(er(), tO),
-    members: ep(tE),
+    fields: eg(er(), tT),
+    members: ep(tN),
     errors: ep(er())
-}), tN = ef({
+}), tR = ef({
     revision: ei(),
     last_received: ei(),
-    last_processed_receipt: e_([
+    last_processed_receipt: eh([
         ei(),
         el()
     ]),
-    last_good: e_([
+    last_good: eh([
         ei(),
         el()
     ]),
-    error: e_([
+    error: eh([
         er(),
         el()
     ]),
-    report: e_([
-        tT,
+    report: eh([
+        tM,
         el()
     ])
 });
-e_([
+eh([
     ef({
         schema_version: ey(1),
-        target: tg,
-        report: e_([
-            tN,
+        target: ty,
+        report: eh([
+            tR,
             el()
         ]),
-        state: tU
+        state: tE
     }),
     ef({
         schema_version: ey(1),
-        target: tg,
-        report: e_([
-            tN,
+        target: ty,
+        report: eh([
+            tR,
             el()
         ]),
         read_only: ey(!0)
     }),
     ef({
         schema_version: ei(),
-        error: tx
+        error: tz
     })
 ]), ef({
-    target: tj
+    target: tC
 }), ef({
-    target: tj,
+    target: tC,
     kind: ex,
     entry: ei(),
     password: er(),
     active: es()
 });
-const tM = ef({
+const t$ = ef({
     accepted: ei(),
     rejected: ei(),
     read_errors: ei(),
     handled: ei(),
     max_intake_us: ei(),
     max_handler_us: ei()
-}), tR = ey("pending"), t$ = ef({
-    phase: e_([
+}), tZ = ey("pending"), tD = ef({
+    phase: eh([
         ey("starting"),
         ey("upload"),
         ey("tables")
     ]),
     received: ei(),
-    expected: e_([
+    expected: eh([
         ei(),
         el()
     ])
-}), tZ = ey("ready"), tD = e_([
-    ef({
-        status: tR,
-        progress: ew(t$)
-    }),
+}), tF = ey("ready"), tL = eh([
     ef({
         status: tZ,
+        progress: ew(tD)
+    }),
+    ef({
+        status: tF,
         chunk: ei(),
         chunks: ei(),
         bytes: ei(),
         data: er()
     })
 ]);
-e_([
-    tD,
+eh([
+    tL,
     e$
 ]);
-const tF = ef({
-    status: tR,
+const tB = ef({
+    status: tZ,
     job: er()
-}), tL = ef({
+}), tI = ef({
     released: es()
 });
 ef({
@@ -1741,11 +1769,11 @@ ef({
 }), ef({
     job: er(),
     chunk: ei()
-}), e_([
-    tF,
+}), eh([
+    tB,
     e$
 ]);
-const tB = ef({
+const tq = ef({
     accepting: es(),
     running: ei(),
     stored: ei(),
@@ -1754,23 +1782,23 @@ const tB = ef({
     stored_limit: ei(),
     bytes_limit: ei(),
     result_bytes_limit: ei()
-}), tI = ef({
+}), tX = ef({
     mac: er(),
     ip: er(),
     band: er(),
-    rssi_dbm: e_([
+    rssi_dbm: eh([
         ei(),
         el()
     ]),
-    rx_rate_mbps: e_([
+    rx_rate_mbps: eh([
         ei(),
         el()
     ]),
-    tx_rate_mbps: e_([
+    tx_rate_mbps: eh([
         ei(),
         el()
     ])
-}), tq = e_([
+}), tH = eh([
     ey("unknown"),
     ey("octets"),
     ey("string"),
@@ -1781,12 +1809,12 @@ const tB = ef({
     ey("bit_field"),
     ey("enumeration"),
     ey("counter")
-]), tX = ef({
+]), tV = ef({
     id: er(),
     url: er()
-}), tH = ef({
+}), tW = ef({
     name: er(),
-    kind: tq,
+    kind: tH,
     index: ei(),
     mask: ei(),
     size: ei(),
@@ -1796,12 +1824,12 @@ const tB = ef({
     avc: es(),
     optional: es(),
     deprecated: es(),
-    default_hex: e_([
+    default_hex: eh([
         er(),
         el()
     ]),
-    reference: tX
-}), tV = e_([
+    reference: tV
+}), tJ = eh([
     ef({
         type: ey("unsigned"),
         value: ei()
@@ -1816,7 +1844,7 @@ const tB = ef({
     }),
     ef({
         type: ey("text"),
-        value: e_([
+        value: eh([
             er(),
             el()
         ])
@@ -1829,51 +1857,51 @@ const tB = ef({
         type: ey("table_length"),
         bytes: ei()
     })
-]), tW = ef({
+]), tK = ef({
     raw_hex: er(),
-    value: tV,
+    value: tJ,
     sequences: ep(ei())
-}), tJ = ef({
-    definition: tH,
-    value: e_([
-        tV,
+}), tG = ef({
+    definition: tW,
+    value: eh([
+        tJ,
         el()
     ]),
-    observations: ep(tW)
-}), tK = e_([
+    observations: ep(tK)
+}), tQ = eh([
     ey("layout"),
     ey("name_only"),
     ey("unknown")
-]), tG = ef({
+]), tY = ef({
     class_id: ei(),
-    name: e_([
+    name: eh([
         er(),
         el()
     ]),
     entities: ei(),
     records: ei(),
-    support: tK
-}), tQ = ef({
+    support: tQ
+}), t0 = ef({
     code: er(),
     message: er(),
     offset: ei(),
     mask: ei()
-}), tY = ef({
+}), t1 = ef({
     class_id: ei(),
     entity_id: ei(),
-    name: e_([
+    name: eh([
         er(),
         el()
     ]),
-    support: tK,
-    reference: e_([
-        tX,
+    support: tQ,
+    reference: eh([
+        tV,
         el()
     ]),
     sequences: ep(ei()),
-    attributes: ep(tJ),
-    diagnostics: ep(tQ)
-}), t0 = ey("ready"), t1 = ef({
+    attributes: ep(tG),
+    diagnostics: ep(t0)
+}), t2 = ey("ready"), t6 = ef({
     class_id: ei(),
     entity_id: ei(),
     sequence: ei(),
@@ -1882,7 +1910,7 @@ const tB = ef({
     consumed: ei(),
     remaining_hex: er(),
     undecoded_mask: ei()
-}), t2 = ef({
+}), t4 = ef({
     raw_hex: er(),
     filter_outer_priority: ei(),
     filter_outer_vid: ei(),
@@ -1899,22 +1927,22 @@ const tB = ef({
     treatment_inner_vid: ei(),
     treatment_inner_tpid_dei: ei(),
     delete_entry: es()
-}), t6 = ef({
+}), t8 = ef({
     class_id: ei(),
     entity_id: ei(),
-    attribute: tH,
+    attribute: tW,
     collected: es(),
-    error: e_([
+    error: eh([
         er(),
         el()
     ]),
     raw_hex: er(),
     rows: ep(er()),
-    vlan_rules: ep(t2)
-}), t4 = ef({
+    vlan_rules: ep(t4)
+}), t5 = ef({
     schema_version: ey(1),
     reference_version: er(),
-    onu_id: e_([
+    onu_id: eh([
         ei(),
         el()
     ]),
@@ -1926,21 +1954,21 @@ const tB = ef({
     basic_records: ei(),
     tables_requested: es(),
     tables_collected: es(),
-    classes: ep(tG),
-    entities: ep(tY),
-    records: ep(t1),
-    tables: ep(t6),
-    diagnostics: ep(tQ)
+    classes: ep(tY),
+    entities: ep(t1),
+    records: ep(t6),
+    tables: ep(t8),
+    diagnostics: ep(t0)
 });
 ef({
-    status: t0,
-    report: t4
+    status: t2,
+    report: t5
 }), ef({
     onu_id: ei(),
     optical_sn: er(),
     tables: es()
 });
-const t8 = e_([
+const t3 = eh([
     ef({
         status: ey("success"),
         enabled: es()
@@ -1957,7 +1985,7 @@ ef({
     wan_downstream: es(),
     onu_bridge: es()
 });
-const t5 = ef({
+const t7 = ef({
     index: er(),
     state: er(),
     pkt_type: er(),
@@ -1970,7 +1998,7 @@ const t5 = ef({
     counters_valid: es(),
     packets_exact: er(),
     bytes_exact: er()
-}), t3 = ef({
+}), t9 = ef({
     sampled_at_ms: ei(),
     errors: ep(er()),
     config_valid: es(),
@@ -2002,102 +2030,102 @@ const t5 = ef({
     bound_ipv6_entries: ei(),
     total_packets: ei(),
     total_bytes: ei(),
-    bound_flows: ep(t5)
-}), t7 = ef({
-    equipment_id: e_([
+    bound_flows: ep(t7)
+}), re = ef({
+    equipment_id: eh([
         er(),
         el()
     ]),
-    hardware_version: e_([
+    hardware_version: eh([
         er(),
         el()
     ]),
     software_images: ep(er()),
-    omcc_version: e_([
+    omcc_version: eh([
         ei(),
         el()
     ]),
     errors: ep(er())
-}), t9 = ef({
+}), rt = ef({
     desired: eg(er(), ei()),
     active: eg(er(), ei()),
     pending_restart: es(),
     allocation_blocked: es(),
-    startup_error: e_([
+    startup_error: eh([
         er(),
         el()
     ]),
-    config_error: e_([
+    config_error: eh([
         er(),
         el()
     ])
-}), re = e_([
+}), rr = eh([
     ey("optical_on"),
     ey("optical_off"),
     ey("optical_status"),
     ey("optical_reload"),
     ey("optical_reinitialize"),
     ey("optical_shutdown")
-]), rt = e_([
+]), ra = eh([
     ey("success"),
     ey("error")
-]), rr = e_([
+]), ri = eh([
     ey("enabled"),
     ey("disabled"),
     ey("unknown")
-]), ra = ef({
+]), rn = ef({
     schema_version: ey(1),
-    status: rt,
-    action: re,
-    desired_enabled: e_([
+    status: ra,
+    action: rr,
+    desired_enabled: eh([
         es(),
         el()
     ]),
-    tx_enabled: e_([
+    tx_enabled: eh([
         es(),
         el()
     ]),
-    actor_state: rr,
+    actor_state: ri,
     hardware_ready: es(),
     discovery_active: es(),
     cleanup_pending: es(),
-    error: e_([
-        tx,
+    error: eh([
+        tz,
         el()
     ])
 });
 ef({
     enabled: es()
 });
-const ri = ef({
+const rs = ef({
     model: er(),
     wavelength_tx_nm: ei(),
     wavelength_rx_nm: ei(),
     phy_rate_downlink_gbps: ei(),
     phy_rate_uplink_gbps: ei(),
-    tx_power_dbm: e_([
+    tx_power_dbm: eh([
         ei(),
         el()
     ]),
-    laser_bias_current_ma: e_([
+    laser_bias_current_ma: eh([
         ei(),
         el()
     ]),
-    temperature_celsius: e_([
+    temperature_celsius: eh([
         ei(),
         el()
     ]),
-    vcc_voltage: e_([
+    vcc_voltage: eh([
         ei(),
         el()
     ]),
-    cdr_locked: e_([
+    cdr_locked: eh([
         es(),
         el()
     ]),
     tx_enabled: ew(es()),
-    measurements: eg(er(), th)
-}), rn = e_([
+    measurements: eg(er(), t_)
+}), ro = eh([
     ey("o1_initial"),
     ey("o2_standby"),
     ey("o3_serial_number"),
@@ -2105,15 +2133,15 @@ const ri = ef({
     ey("o5_operation"),
     ey("o6_intermittent_lods"),
     ey("o7_emergency_stop")
-]), rs = ef({
+]), rl = ef({
     restarting: ey(!0)
-}), ro = ef({
+}), rd = ef({
     calls: ei(),
     failures: ei(),
     last_us: ei(),
     max_us: ei(),
     total_us: ei()
-}), rl = ef({
+}), rc = ef({
     port: ei(),
     interface: er(),
     carrier: es(),
@@ -2122,104 +2150,105 @@ const ri = ef({
     onu_sn: ew(er()),
     link_state: er(),
     reserved_sn: ew(er())
-}), rd = ef({
-    channel_2g: e_([
+}), rp = ef({
+    channel_2g: eh([
         ei(),
         el()
     ]),
-    channel_5g: e_([
+    channel_5g: eh([
         ei(),
         el()
     ]),
-    bandwidth_5g: e_([
+    bandwidth_5g: eh([
         er(),
         el()
     ]),
-    tx_power_pct: e_([
+    tx_power_pct: eh([
         ei(),
         el()
     ]),
-    measurements: eg(er(), th)
-}), rc = ef({
+    measurements: eg(er(), t_)
+}), ru = ef({
     onu_id: ei(),
     vendor: er(),
     model: er(),
     serial_number: er(),
-    state: rn,
+    state: ro,
     business_status: eO,
-    management: e_([
+    management: eh([
         eW,
         el()
     ]),
-    provisioning: e_([
+    provisioning: eh([
         e9,
         el()
     ]),
     services: ep(eQ),
     ssids: ep(eQ),
     wifi_sync: te,
-    identity: e_([
-        t7,
+    identity: eh([
+        re,
         el()
     ]),
-    identity_age_seconds: e_([
+    identity_age_seconds: eh([
         ei(),
         el()
     ]),
     identity_current: es(),
-    fiber_distance_m: e_([
+    fiber_distance_m: eh([
         ei(),
         el()
     ]),
-    ranging_delay_rtd_ns: e_([
+    ranging_delay_rtd_ns: eh([
         ei(),
         el()
     ]),
-    equalization_delay_bits: e_([
+    equalization_delay_bits: eh([
         ei(),
         el()
     ]),
-    optical_rx_power_dbm: e_([
+    optical_rx_power_dbm: eh([
         ei(),
         el()
     ]),
-    optical_tx_power_dbm: e_([
+    optical_tx_power_dbm: eh([
         ei(),
         el()
     ]),
     firmware_version: er(),
     hardware_version: er(),
-    uptime_seconds: e_([
+    uptime_seconds: eh([
         ei(),
         el()
     ]),
-    data_path: t_,
-    wifi_mesh: rd,
-    connected_clients: e_([
-        ep(tI),
+    fec: ew(tg),
+    data_path: th,
+    wifi_mesh: rp,
+    connected_clients: eh([
+        ep(tX),
         el()
     ]),
-    measurements: eg(er(), th)
-}), rp = ef({
+    measurements: eg(er(), t_)
+}), rf = ef({
     id: er(),
     last_seen_sec_ago: ei(),
     last_payload_bytes: ei()
-}), ru = ef({
-    ubus: ew(eg(er(), ro)),
-    jobs: ew(tB),
-    onu_pinning: ew(t9),
+}), r_ = ef({
+    ubus: ew(eg(er(), rd)),
+    jobs: ew(tq),
+    onu_pinning: ew(rt),
     fpga_status: er(),
-    provisioning: e_([
+    provisioning: eh([
         tl,
         el()
     ]),
-    optical_transceiver: ri,
-    switch_ports: ep(rl),
-    sub_gateways: ep(rc),
-    telemetry_gateways: ep(rp),
-    npu: ew(t3),
-    ipc: ew(tM)
-}), rf = e_([
+    optical_transceiver: rs,
+    switch_ports: ep(rc),
+    sub_gateways: ep(ru),
+    telemetry_gateways: ep(rf),
+    npu: ew(t9),
+    ipc: ew(t$)
+}), rh = eh([
     ey("plan"),
     ey("apply"),
     ey("management_plan"),
@@ -2227,7 +2256,7 @@ const ri = ef({
     ey("reset_state"),
     ey("reconcile"),
     ey("retry")
-]), rh = e_([
+]), rm = eh([
     ef({
         operation_ids: ep(ei()),
         revision: er()
@@ -2249,13 +2278,13 @@ const ri = ef({
     e$
 ]);
 ef({
-    action: rf,
+    action: rh,
     target: er(),
     management: ew(es()),
     item: ew(er())
 });
-let r_ = ef({
-    error: e_([
+let rg = ef({
+    error: eh([
         er(),
         ef({
             code: er(),
@@ -2263,29 +2292,29 @@ let r_ = ef({
         })
     ])
 });
-class rm extends Error {
+class rb extends Error {
     code;
     constructor(e, t){
         super(t), this.code = e, this.name = "RpcError";
     }
 }
-function rg(e) {
-    let t = r_.safeParse(e);
+function ry(e) {
+    let t = rg.safeParse(e);
     if (t.success) {
         let e = t.data.error;
-        throw "string" == typeof e ? new rm("rpc", e) : new rm(e.code, e.message);
+        throw "string" == typeof e ? new rb("rpc", e) : new rb(e.code, e.message);
     }
     return e;
 }
-const rb = {
+const rv = {
     parse (e) {
-        let t = tP.parse(rg(e));
-        if ("object" == typeof t && null !== t && "error" in t) throw rg(t), Error("Unexpected RPC error");
+        let t = tO.parse(ry(e));
+        if ("object" == typeof t && null !== t && "error" in t) throw ry(t), Error("Unexpected RPC error");
         return t;
     }
-}, ry = {
+}, rw = {
     parse (e) {
-        let t = rh.parse(rg(e));
+        let t = rm.parse(ry(e));
         if ("error" in t) throw Error(t.error);
         return t;
     }
@@ -2300,17 +2329,17 @@ eg(er(), ef({
     })),
     stats: ew(eg(er(), ei()))
 }));
-const rv = {
+const rx = {
     getCapabilities: {
-        parse: (e)=>eB.parse(rg(e))
+        parse: (e)=>eB.parse(ry(e))
     },
-    opticalStatus: ra,
-    opticalSet: ra,
+    opticalStatus: rn,
+    opticalSet: rn,
     getStatus: {
-        parse: (e)=>ru.parse(rg(e))
+        parse: (e)=>r_.parse(ry(e))
     },
     getSync: {
-        parse: (e)=>tl.parse(rg(e))
+        parse: (e)=>tl.parse(ry(e))
     },
     configCheck: {
         parse (e) {
@@ -2318,55 +2347,55 @@ const rv = {
             return eI.parse(e);
         }
     },
-    npuStatus: t3,
+    npuStatus: t9,
     configReload: {
-        parse: (e)=>tl.parse(rg(e))
+        parse: (e)=>tl.parse(ry(e))
     },
     restartService: {
-        parse: (e)=>rs.parse(rg(e))
+        parse: (e)=>rl.parse(ry(e))
     },
     sync: {
-        parse: (e)=>ry.parse(rg(e))
+        parse: (e)=>rw.parse(ry(e))
     },
-    npuSet: t8,
+    npuSet: t3,
     mibStart: {
-        parse: (e)=>tF.parse(rg(e))
+        parse: (e)=>tB.parse(ry(e))
     },
     mibResult: {
-        parse: (e)=>tD.parse(rg(e))
+        parse: (e)=>tL.parse(ry(e))
     },
     jobRelease: {
-        parse: (e)=>tL.parse(rg(e))
+        parse: (e)=>tI.parse(ry(e))
     },
     hl202List: {
-        parse: (e)=>rb.parse(rg(e))
+        parse: (e)=>rv.parse(ry(e))
     },
     hl202Report: {
-        parse: (e)=>tF.parse(rg(e))
+        parse: (e)=>tB.parse(ry(e))
     },
     hl202AccountsStart: {
-        parse: (e)=>tF.parse(rg(e))
+        parse: (e)=>tB.parse(ry(e))
     },
     hl202AccountUpdate: {
-        parse: (e)=>tF.parse(rg(e))
+        parse: (e)=>tB.parse(ry(e))
     },
     hl202ExecStart: {
-        parse: (e)=>tF.parse(rg(e))
+        parse: (e)=>tB.parse(ry(e))
     },
     jobResult: {
-        parse: (e)=>tD.parse(rg(e))
+        parse: (e)=>tL.parse(ry(e))
     },
     getCalibration: {
-        parse: (e)=>eR.parse(rg(e))
+        parse: (e)=>eR.parse(ry(e))
     },
     saveCalibration: {
-        parse: (e)=>eZ.parse(rg(e))
+        parse: (e)=>eZ.parse(ry(e))
     },
     applyCalibration: {
-        parse: (e)=>tF.parse(rg(e))
+        parse: (e)=>tB.parse(ry(e))
     }
 };
-function rw() {
+function rk() {
     var e;
     let r, a, i, n, s, o, l, d, c, p, u, f, h, m, g, b, y, v, w, x, k, z, j;
     return t ??= (e = L.rpc, r = e.declare({
@@ -2515,38 +2544,38 @@ function rw() {
         method: "apply_calibration",
         reject: !0
     }), {
-        getCapabilities: async ()=>rv.getCapabilities.parse(await r()),
-        opticalStatus: async ()=>rv.opticalStatus.parse(await a()),
-        opticalSet: async (e)=>rv.opticalSet.parse(await i(e.enabled)),
-        getStatus: async ()=>rv.getStatus.parse(await n()),
-        getSync: async ()=>rv.getSync.parse(await s()),
-        configCheck: async ()=>rv.configCheck.parse(await o()),
-        npuStatus: async ()=>rv.npuStatus.parse(await l()),
-        configReload: async ()=>rv.configReload.parse(await d()),
-        restartService: async ()=>rv.restartService.parse(await c()),
-        sync: async (e)=>rv.sync.parse(await p(e.action, e.target, e.management, e.item)),
-        npuSet: async (e)=>rv.npuSet.parse(await u(e.enabled, e.bridge, e.wan_upstream, e.wan_downstream, e.onu_bridge)),
-        mibStart: async (e)=>rv.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
-        mibResult: async (e)=>rv.mibResult.parse(await h(e.job, e.chunk)),
-        jobRelease: async (e)=>rv.jobRelease.parse(await m(e.job)),
-        hl202List: async ()=>rv.hl202List.parse(await g()),
-        hl202Report: async (e)=>rv.hl202Report.parse(await b(e.target)),
-        hl202AccountsStart: async (e)=>rv.hl202AccountsStart.parse(await y(e.target)),
-        hl202AccountUpdate: async (e)=>rv.hl202AccountUpdate.parse(await v(e.target, e.kind, e.entry, e.password, e.active)),
-        hl202ExecStart: async (e)=>rv.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
-        jobResult: async (e)=>rv.jobResult.parse(await x(e.job, e.chunk)),
-        getCalibration: async ()=>rv.getCalibration.parse(await k()),
-        saveCalibration: async (e)=>rv.saveCalibration.parse(await z(e.data)),
-        applyCalibration: async ()=>rv.applyCalibration.parse(await j())
+        getCapabilities: async ()=>rx.getCapabilities.parse(await r()),
+        opticalStatus: async ()=>rx.opticalStatus.parse(await a()),
+        opticalSet: async (e)=>rx.opticalSet.parse(await i(e.enabled)),
+        getStatus: async ()=>rx.getStatus.parse(await n()),
+        getSync: async ()=>rx.getSync.parse(await s()),
+        configCheck: async ()=>rx.configCheck.parse(await o()),
+        npuStatus: async ()=>rx.npuStatus.parse(await l()),
+        configReload: async ()=>rx.configReload.parse(await d()),
+        restartService: async ()=>rx.restartService.parse(await c()),
+        sync: async (e)=>rx.sync.parse(await p(e.action, e.target, e.management, e.item)),
+        npuSet: async (e)=>rx.npuSet.parse(await u(e.enabled, e.bridge, e.wan_upstream, e.wan_downstream, e.onu_bridge)),
+        mibStart: async (e)=>rx.mibStart.parse(await f(e.onu_id, e.optical_sn, e.tables)),
+        mibResult: async (e)=>rx.mibResult.parse(await h(e.job, e.chunk)),
+        jobRelease: async (e)=>rx.jobRelease.parse(await m(e.job)),
+        hl202List: async ()=>rx.hl202List.parse(await g()),
+        hl202Report: async (e)=>rx.hl202Report.parse(await b(e.target)),
+        hl202AccountsStart: async (e)=>rx.hl202AccountsStart.parse(await y(e.target)),
+        hl202AccountUpdate: async (e)=>rx.hl202AccountUpdate.parse(await v(e.target, e.kind, e.entry, e.password, e.active)),
+        hl202ExecStart: async (e)=>rx.hl202ExecStart.parse(await w(e.target, e.script, e.timeout_seconds)),
+        jobResult: async (e)=>rx.jobResult.parse(await x(e.job, e.chunk)),
+        getCalibration: async ()=>rx.getCalibration.parse(await k()),
+        saveCalibration: async (e)=>rx.saveCalibration.parse(await z(e.data)),
+        applyCalibration: async ()=>rx.applyCalibration.parse(await j())
     });
 }
-async function rx(e) {
-    let t, r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : rg, a = tF.parse(rg(e)), i = Date.now() + 330000, n = window.location.pathname, s = [], o = 0;
+async function rz(e) {
+    let t, r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : ry, a = tB.parse(ry(e)), i = Date.now() + 330000, n = window.location.pathname, s = [], o = 0;
     try {
         for(let e = 0; e < 128;){
-            if (window.location.pathname !== n) throw new rm("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
-            if (Date.now() > i) throw new rm("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
-            let l = await rw().jobResult({
+            if (window.location.pathname !== n) throw new rb("navigation", _("Result polling stopped after leaving the page. The backend job is not cancelled."));
+            if (Date.now() > i) throw new rb("timeout", _("Job polling timed out; execution outcome is unknown. Do not automatically retry."));
+            let l = await rk().jobResult({
                 job: a.job,
                 chunk: e
             });
@@ -2554,16 +2583,16 @@ async function rx(e) {
                 await new Promise((e)=>window.setTimeout(e, 1000));
                 continue;
             }
-            if (!Number.isInteger(l.chunks) || l.chunks < 1 || l.chunks > 128 || l.chunk !== e || !Number.isInteger(l.bytes) || l.bytes < 1 || l.bytes > 4194304 || l.data.length > 43692) throw new rm("transport", _("Invalid job result"));
-            if (t && (l.chunks !== t.chunks || l.bytes !== t.bytes)) throw new rm("transport", _("Inconsistent job result chunks"));
+            if (!Number.isInteger(l.chunks) || l.chunks < 1 || l.chunks > 128 || l.chunk !== e || !Number.isInteger(l.bytes) || l.bytes < 1 || l.bytes > 4194304 || l.data.length > 43692) throw new rb("transport", _("Invalid job result"));
+            if (t && (l.chunks !== t.chunks || l.bytes !== t.bytes)) throw new rb("transport", _("Inconsistent job result chunks"));
             t = {
                 chunks: l.chunks,
                 bytes: l.bytes
             };
             let d = Uint8Array.from(atob(l.data), (e)=>e.charCodeAt(0));
-            if (d.length > 32768 || o + d.length > l.bytes) throw new rm("transport", _("Job result exceeds the transport limit"));
+            if (d.length > 32768 || o + d.length > l.bytes) throw new rb("transport", _("Job result exceeds the transport limit"));
             if (s.push(d), o += d.length, ++e === l.chunks) {
-                if (o !== l.bytes) throw new rm("transport", _("Incomplete job result"));
+                if (o !== l.bytes) throw new rb("transport", _("Incomplete job result"));
                 let e = new Uint8Array(o), t = 0;
                 for (let r of s)e.set(r, t), t += r.length;
                 return r(JSON.parse(new TextDecoder("utf-8", {
@@ -2571,9 +2600,9 @@ async function rx(e) {
                 }).decode(e)));
             }
         }
-        throw new rm("transport", _("Too many result chunks"));
+        throw new rb("transport", _("Too many result chunks"));
     } finally{
-        await rw().jobRelease({
+        await rk().jobRelease({
             job: a.job
         }).catch(()=>{});
     }
@@ -2586,21 +2615,21 @@ L.rpc.declare({
     },
     reject: !0
 });
-const rk = async ()=>rw().getCalibration(), rz = async (e)=>rw().saveCalibration({
+const rj = async ()=>rk().getCalibration(), rS = async (e)=>rk().saveCalibration({
         data: e
-    }), rj = async ()=>eE.parse(await rx(await rw().applyCalibration(), (e)=>{
+    }), rC = async ()=>eE.parse(await rz(await rk().applyCalibration(), (e)=>{
         let t = eE.safeParse(e);
-        return t.success ? t.data : rg(e);
+        return t.success ? t.data : ry(e);
     }));
-async function rS(e) {
+async function rA(e) {
     return window.crypto?.subtle ? Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", e))).map((e)=>e.toString(16).padStart(2, "0")).join("") : _("Unavailable");
 }
-function rC(e) {
+function rP(e) {
     let t = window.atob(e), r = t.length, a = new Uint8Array(r);
     for(let e = 0; e < r; e++)a[e] = t.charCodeAt(e);
     return a.buffer;
 }
-function rA(e, t) {
+function rU(e, t) {
     let r = new Uint8Array(e), a = r.byteLength;
     if (288 !== a && 56 !== a) return null;
     let i = new DataView(e), n = [];
@@ -2686,7 +2715,7 @@ function rA(e, t) {
         }(u)
     }, u;
 }
-function rP(e, t, r) {
+function rO(e, t, r) {
     var a, i, n, s, l, d, c, p, u, f, h, m, g, b, y, v, w, x, k, z, j, S, C, A, P, U, O, T, N, M, R, $, Z, D, F;
     let B = e.isStockHash ? o("span", {
         class: "fttr-badge fttr-badge-success",
@@ -3152,7 +3181,7 @@ function rP(e, t, r) {
     }, o("div", F);
 }
 let main = L.view.extend({
-    load: ()=>rk(),
+    load: ()=>rj(),
     render: (e)=>(function(e) {
             var t, r, a, i, n, s, l, d, c, p, u;
             let f = document.createElement("div");
@@ -3208,13 +3237,13 @@ let main = L.view.extend({
                 }, o("div", a)));
                 let C = null;
                 if (e.data) try {
-                    let t = rC(e.data);
-                    C = rA(t, e.sha256);
+                    let t = rP(e.data);
+                    C = rU(t, e.sha256);
                 } catch  {}
                 let A = null;
                 if (e.factory.has_data && e.factory.data) try {
-                    let t = rC(e.factory.data);
-                    A = rA(t, e.factory.sha256);
+                    let t = rP(e.factory.data);
+                    A = rU(t, e.factory.sha256);
                 } catch  {}
                 b.appendChild((S = {
                     class: "cbi-section",
@@ -3427,11 +3456,11 @@ let main = L.view.extend({
                         }, o("div", j)),
                         e.factory.has_data && A && o("div", {
                             style: "margin-top:16px",
-                            children: rP(A, _("Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)").format("0x2200"), "factory" === e.source ? _("Device: %s, length %s bytes (currently in use by the system)").format(e.factory.device, "288") : _("Device: %s, length %s bytes").format(e.factory.device, "288"))
+                            children: rO(A, _("Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)").format("0x2200"), "factory" === e.source ? _("Device: %s, length %s bytes (currently in use by the system)").format(e.factory.device, "288") : _("Device: %s, length %s bytes").format(e.factory.device, "288"))
                         }),
                         (!e.factory.has_data || "factory" !== e.source) && C && o("div", {
                             style: "margin-top:16px",
-                            children: rP(C, _("Currently active system calibration parameters (%s)").format(e.active_path), _("Active data size: %s bytes").format(String(e.size)))
+                            children: rO(C, _("Currently active system calibration parameters (%s)").format(e.active_path), _("Active data size: %s bytes").format(String(e.size)))
                         })
                     ]
                 }, o("div", S)));
@@ -3522,7 +3551,7 @@ let main = L.view.extend({
                 try {
                     let t = await e.arrayBuffer();
                     h = t;
-                    let r = await rS(t), f = rA(t, r);
+                    let r = await rA(t), f = rU(t, r);
                     if (!f) return void v.appendChild((n = {
                         class: "alert-message danger",
                         children: [
@@ -3562,7 +3591,7 @@ let main = L.view.extend({
                                 ]
                             }, o("p", p))
                         ]
-                    }, o("div", u))), y.appendChild(rP(f, _("Parameter preview for upload: %s").format(e.name)));
+                    }, o("div", u))), y.appendChild(rO(f, _("Parameter preview for upload: %s").format(e.name)));
                 } catch (e) {
                     v.appendChild((f = {
                         class: "alert-message danger",
@@ -3590,12 +3619,12 @@ let main = L.view.extend({
                             let t = "", r = new Uint8Array(e), a = r.byteLength;
                             for(let e = 0; e < a; e++)t += String.fromCharCode(r[e]);
                             return window.btoa(t);
-                        }(h), s = x.checked, l = await rz(n);
+                        }(h), s = x.checked, l = await rS(n);
                         if (!l.success) throw Error(_("Failed to save calibration file"));
                         let d = "";
                         if (s) {
                             k.textContent = _("Configuring BOSA optical transceiver hardware...");
-                            let e = await rj();
+                            let e = await rC();
                             d = e.success ? _(", and the optical transceiver hardware was reset and the register table was latched successfully (%s succeeded)").format("bosa-init") : _(", but optical transceiver hardware initialization reported a warning: %s").format(e.error || _("Unknown error"));
                         }
                         v.appendChild((i = {
@@ -3626,7 +3655,7 @@ let main = L.view.extend({
                                 }, o("p", a))
                             ]
                         }, o("div", i)));
-                        let c = await rk();
+                        let c = await rj();
                         w(c);
                     } catch (e) {
                         v.appendChild((n = {

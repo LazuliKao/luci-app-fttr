@@ -2436,3 +2436,8 @@ msgstr "写入中"
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
+msgid "Enable FEC support (experimental)"
+msgstr "启用 FEC 支持（实验性）"
+
+msgid "Enable downstream FEC statistics and diagnostics globally. Disabled by default. This does not enable FPGA error correction; hardware FEC state remains unknown."
+msgstr "全局启用下行 FEC 统计与诊断，默认关闭。此开关不会开启 FPGA 纠错，硬件 FEC 状态仍为未知。"
