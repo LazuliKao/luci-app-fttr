@@ -114,7 +114,7 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.default = "1";
 	option.rmempty = false;
 	option = field(p, L.form.Flag, "allow_unsupported_as_bridge", _("Allow unsupported ONUs as bridge"));
-	option.default = "0";
+	option.default = "1";
 	option.rmempty = false;
 	option.description = _(
 		"Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state.",

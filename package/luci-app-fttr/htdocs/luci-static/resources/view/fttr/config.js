@@ -3122,7 +3122,7 @@ let main = n5.extend({
                 ]
             ]))(i = c(a, L.form.Value, e, t)).default = n, i.rmempty = !1, i.depends("dhcp_enabled", "1");
             let s = e.taboption("basic", L.form.SectionValue, "_policy", L.form.NamedSection, n, "provisioning").subsection;
-            for (let [e, t] of (s.addremove = !1, s.anonymous = !1, (i = c(s, L.form.Flag, "enabled", _("Enable provisioning"))).default = "1", i.rmempty = !1, (i = c(s, L.form.Flag, "allow_unsupported_as_bridge", _("Allow unsupported ONUs as bridge"))).default = "0", i.rmempty = !1, i.description = _("Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state."), (i = u(s, "mode", _("Synchronization mode"), [
+            for (let [e, t] of (s.addremove = !1, s.anonymous = !1, (i = c(s, L.form.Flag, "enabled", _("Enable provisioning"))).default = "1", i.rmempty = !1, (i = c(s, L.form.Flag, "allow_unsupported_as_bridge", _("Allow unsupported ONUs as bridge"))).default = "1", i.rmempty = !1, i.description = _("Automatically provision standard G.988 transparent Layer 2 bridge for unrecognized or third-party GPON ONUs in O5 state."), (i = u(s, "mode", _("Synchronization mode"), [
                 [
                     "auto",
                     _("Automatic")
