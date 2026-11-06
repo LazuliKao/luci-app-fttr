@@ -8,8 +8,11 @@ const rootDir = process.cwd();
 const pkgJsonPath = path.join(rootDir, "package.json");
 const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
 
-// Determine version: CLI arg > GITHUB_REF_NAME (v0.1.0 -> 0.1.0) > package.json
-const rawVersion = process.argv[2] || process.env.GITHUB_REF_NAME || pkg.version;
+// Determine version: CLI arg > RELEASE_VERSION > GITHUB_REF_NAME > package.json
+let rawVersion = process.argv[2] || process.env.RELEASE_VERSION || process.env.GITHUB_REF_NAME || pkg.version;
+if (process.env.RELEASE_TYPE === "nightly" || rawVersion === "nightly") {
+	rawVersion = "nightly";
+}
 const version = rawVersion.replace(/^v/, "");
 
 console.log(`Packaging luci-app-fttr release tarball for version: ${version}`);

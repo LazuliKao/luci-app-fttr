@@ -2,8 +2,16 @@ name: Release Tarball
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type (nightly or release)'
+        required: false
+        default: 'nightly'
 
 permissions:
   contents: write
@@ -13,6 +21,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - id: meta
+        name: Determine Release Metadata
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "title=LuCI FTTR ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=nightly" >> "$GITHUB_OUTPUT"
+            echo "tag=nightly" >> "$GITHUB_OUTPUT"
+            echo "title=LuCI FTTR Nightly Build" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: pnpm/action-setup@v4
         with:
@@ -30,14 +54,16 @@ jobs:
         run: pnpm check
 
       - name: Build and package release tarball
-        run: pnpm pack:release
+        run: pnpm pack:release "${{ steps.meta.outputs.version }}"
 
-      - name: Create GitHub Release
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.title }}
+          prerelease: ${{ steps.meta.outputs.prerelease == 'true' }}
           files: |
             dist/*.tar.gz
             dist/*.tar.gz.sha256
           draft: false
-          prerelease: false
-          generate_release_notes: true
+          generate_release_notes: ${{ steps.meta.outputs.prerelease != 'true' }}
