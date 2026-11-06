@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-03 16:23+0800\n"
+"POT-Creation-Date: 2026-11-06 22:55+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -165,8 +165,8 @@ msgstr ""
 
 msgid ""
 "Admission allows eligible traffic to bind; it does not prove that packets "
-"are currently hardware-forwarded. The switch controls FTTR bridge admission, "
-"not the entire NPU or global routed offload policy."
+"are currently hardware-forwarded. The switch controls FTTR bridge and WAN "
+"admission, not the entire NPU or firewall offloading for other interfaces."
 msgstr ""
 
 msgid "Admitted"
@@ -265,6 +265,9 @@ msgstr ""
 msgid "Awaiting Apply"
 msgstr ""
 
+msgid "Awaiting OMCI preparation"
+msgstr ""
+
 msgid "Backend"
 msgstr ""
 
@@ -300,6 +303,12 @@ msgstr ""
 msgid "Binding"
 msgstr ""
 
+msgid "Binding change pending restart"
+msgstr ""
+
+msgid "Binding state"
+msgstr ""
+
 msgid "Bindings"
 msgstr ""
 
@@ -313,6 +322,9 @@ msgid "BOSA hardware register initialization table (first %s bytes, %s)"
 msgstr ""
 
 msgid "Bound hardware flows"
+msgstr ""
+
+msgid "Bound sub-gateways absent from live status"
 msgstr ""
 
 msgid "Bridge interface"
@@ -356,6 +368,9 @@ msgstr ""
 msgid "Cancel the fixed interface for this device?"
 msgstr ""
 
+msgid "CDR"
+msgstr ""
+
 msgid "CDR lock"
 msgstr ""
 
@@ -374,6 +389,11 @@ msgid ""
 msgstr ""
 
 msgid "Clear output"
+msgstr ""
+
+msgid ""
+"Click a device to select it, double-click to open its details. Drag to pan; "
+"use Ctrl + mouse wheel or pinch to zoom."
 msgstr ""
 
 msgid "Click to select or drag a %s file here"
@@ -398,8 +418,8 @@ msgid "Command in progress"
 msgstr ""
 
 msgid ""
-"Committed configuration has not been loaded. Check Configuration "
-"diagnostics; an active operation may have prevented reload."
+"Committed configuration has not been requested for loading. Apply the "
+"configuration to load it."
 msgstr ""
 
 msgid "Committed configuration is invalid: %s"
@@ -426,9 +446,15 @@ msgstr ""
 msgid "Configuration item"
 msgstr ""
 
+msgid "Configuration loaded; device synchronization is tracked below"
+msgstr ""
+
 msgid ""
 "Configuration saved. Waiting for driver admission readback; enabling may "
 "take several seconds and requires eligible ports and firewall policy."
+msgstr ""
+
+msgid "Configured mode"
 msgstr ""
 
 msgid "Configuring"
@@ -458,6 +484,24 @@ msgstr ""
 msgid "Controller hardware"
 msgstr ""
 
+msgid "Controller Tx power"
+msgstr ""
+
+msgid ""
+"Controls GPON downstream 1490 nm optical emission. Turning it off removes "
+"the downstream optical signal and disconnects ONUs."
+msgstr ""
+
+msgid ""
+"Controls GPON downstream FEC encoding. When downstream transmission is "
+"enabled, ONU-side OMCI FEC performance monitoring is also enabled."
+msgstr ""
+
+msgid ""
+"Controls optical module reset and ONU discovery. Turning it off resets the "
+"module and disconnects all ONUs."
+msgstr ""
+
 msgid "Conversion formula"
 msgstr ""
 
@@ -476,10 +520,21 @@ msgstr ""
 msgid "Correct the invalid fields before saving."
 msgstr ""
 
+msgid "Corrected bytes"
+msgstr ""
+
+msgid "Corrected code words"
+msgstr ""
+
 msgid ""
 "Counters cover only currently bound flows and may decrease when flows "
 "expire. Driver-exported zeroes are not proof of no traffic. AN7581 native "
 "L2B counters are unavailable; — means unavailable, not zero."
+msgstr ""
+
+msgid ""
+"Counters describe the last completed 15-minute PM interval, not live or "
+"cumulative traffic."
 msgstr ""
 
 msgid "CPE Connection Request password"
@@ -681,15 +736,6 @@ msgstr ""
 msgid "Discovering"
 msgstr ""
 
-msgid "Discovery active"
-msgstr ""
-
-msgid "Discovery paused"
-msgstr ""
-
-msgid "Discovery state: unknown"
-msgstr ""
-
 msgid "Dispatching to %s (timeout: %s s)..."
 msgstr ""
 
@@ -707,12 +753,18 @@ msgstr ""
 msgid "Downloading MIB snapshot"
 msgstr ""
 
+msgid "Downstream FEC hardware state"
+msgstr ""
+
 msgid ""
 "Downstream optical calibration parameters extracted from the 1MB Factory "
 "partition (offset %s)"
 msgstr ""
 
 msgid "Downstream ports"
+msgstr ""
+
+msgid "Downstream transmitter"
 msgstr ""
 
 msgid "Driver debug logging"
@@ -738,7 +790,7 @@ msgstr ""
 msgid "Enable ACS"
 msgstr ""
 
-msgid "Enable FTTR bridge hardware offload"
+msgid "Enable FTTR hardware offload"
 msgstr ""
 
 msgid "Enable management DHCP"
@@ -747,7 +799,16 @@ msgstr ""
 msgid "Enable management network"
 msgstr ""
 
+msgid "Enable ONU bridge offload"
+msgstr ""
+
 msgid "Enable provisioning"
+msgstr ""
+
+msgid "Enable WAN downstream offload (experimental)"
+msgstr ""
+
+msgid "Enable WAN upstream offload (experimental)"
 msgstr ""
 
 msgid "Enabled"
@@ -839,9 +900,6 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
-msgid "Failed to change laser output"
-msgstr ""
-
 msgid "Failed to parse calibration file"
 msgstr ""
 
@@ -852,6 +910,12 @@ msgid "Failed to save interface setting:"
 msgstr ""
 
 msgid "Failed to save NPU configuration"
+msgstr ""
+
+msgid "FEC seconds"
+msgstr ""
+
+msgid "Fiber distance"
 msgstr ""
 
 msgid "Field"
@@ -881,7 +945,16 @@ msgstr ""
 msgid "Firmware version"
 msgstr ""
 
+msgid "Fit"
+msgstr ""
+
+msgid "Fit topology to view"
+msgstr ""
+
 msgid "Fix this device to its current interface?"
+msgstr ""
+
+msgid "Fixed fttr%d"
 msgstr ""
 
 msgid "Fixed interface"
@@ -890,12 +963,21 @@ msgstr ""
 msgid "Fixed interface changes pending FTTR restart."
 msgstr ""
 
+msgid "Fixed interface error"
+msgstr ""
+
 msgid ""
 "Flow table is unavailable. A failed read must not be interpreted as an empty "
 "table."
 msgstr ""
 
+msgid "FPGA"
+msgstr ""
+
 msgid "FPGA identifier"
+msgstr ""
+
+msgid "FPGA master switch"
 msgstr ""
 
 msgid "FPGA status"
@@ -916,6 +998,9 @@ msgstr ""
 msgid "FTTR configuration check failed"
 msgstr ""
 
+msgid "FTTR controller"
+msgstr ""
+
 msgid ""
 "FTTR controller daemon, OMCI & CWMP TR-069 provisioning backend service, and "
 "fttrctl CLI utility."
@@ -928,6 +1013,18 @@ msgid "FTTR overview"
 msgstr ""
 
 msgid "FTTR synchronization"
+msgstr ""
+
+msgid "FTTR Topology"
+msgstr ""
+
+msgid "FTTR topology graph"
+msgstr ""
+
+msgid "fttr%d → fttr%d after restart"
+msgstr ""
+
+msgid "fttr%d after restart"
 msgstr ""
 
 msgid "G.988 encoded field values"
@@ -948,6 +1045,12 @@ msgstr ""
 msgid "GitHub Repositories"
 msgstr ""
 
+msgid "GPON downstream FEC encoding"
+msgstr ""
+
+msgid "GPON downstream optical emission"
+msgstr ""
+
 msgid "Group"
 msgstr ""
 
@@ -955,6 +1058,9 @@ msgid "Group is used by devices. Reassign those devices before deleting it."
 msgstr ""
 
 msgid "Groups"
+msgstr ""
+
+msgid "Hardware"
 msgstr ""
 
 msgid "Hardware specifications and firmware images"
@@ -996,6 +1102,9 @@ msgstr ""
 msgid "Identity age"
 msgstr ""
 
+msgid "Identity conflict"
+msgstr ""
+
 msgid ""
 "Identity information is read-only and limited to fields provided by fttrctl "
 "status."
@@ -1005,6 +1114,9 @@ msgid "Identity read errors"
 msgstr ""
 
 msgid "Identity source"
+msgstr ""
+
+msgid "Identity warning"
 msgstr ""
 
 msgid "Inactive"
@@ -1053,10 +1165,16 @@ msgstr ""
 msgid "Interface configuration changed. Refresh the page and try again."
 msgstr ""
 
+msgid "Interface details unavailable; link states may be incomplete."
+msgstr ""
+
 msgid "Interface setting saved. Restart FTTR for it to take effect."
 msgstr ""
 
 msgid "Interrupted"
+msgstr ""
+
+msgid "Interval"
 msgstr ""
 
 msgid "Interval (minutes)"
@@ -1083,13 +1201,10 @@ msgstr ""
 msgid "Kernel log"
 msgstr ""
 
+msgid "Known: %s"
+msgstr ""
+
 msgid "LAN / WLAN port bindings"
-msgstr ""
-
-msgid "Laser control"
-msgstr ""
-
-msgid "Laser output"
 msgstr ""
 
 msgid "Last backend check result"
@@ -1107,6 +1222,9 @@ msgstr ""
 msgid "Last received"
 msgstr ""
 
+msgid "Last refresh failed: %s"
+msgstr ""
+
 msgid "Last successful sample"
 msgstr ""
 
@@ -1116,10 +1234,16 @@ msgstr ""
 msgid "Last update / task"
 msgstr ""
 
+msgid "Last updated: %s"
+msgstr ""
+
 msgid "Latest report error"
 msgstr ""
 
 msgid "Leave unchanged"
+msgstr ""
+
+msgid "link down"
 msgstr ""
 
 msgid "Link down"
@@ -1137,13 +1261,28 @@ msgid ""
 "when adding a new device."
 msgstr ""
 
+msgid "Live"
+msgstr ""
+
 msgid "Live NPU data is unavailable. Previous readings are stale."
+msgstr ""
+
+msgid "Live sub-gateways in O5 operation state"
+msgstr ""
+
+msgid "Live sub-gateways not yet in O5 operation state"
+msgstr ""
+
+msgid "Live sub-gateways plus offline devices known from fixed interface bindings"
 msgstr ""
 
 msgid "Load"
 msgstr ""
 
 msgid "Loading devices…"
+msgstr ""
+
+msgid "Loading FTTR status…"
 msgstr ""
 
 msgid "Loading…"
@@ -1306,6 +1445,9 @@ msgstr ""
 msgid "No bound hardware flows in this snapshot."
 msgstr ""
 
+msgid "No data interface"
+msgstr ""
+
 msgid "No desired items configured."
 msgstr ""
 
@@ -1316,6 +1458,9 @@ msgid "No entities recorded for this ME class."
 msgstr ""
 
 msgid "No HL202 optical devices were found."
+msgstr ""
+
+msgid "No known sub-gateways."
 msgstr ""
 
 msgid "No matching ME classes"
@@ -1365,6 +1510,9 @@ msgstr ""
 msgid "Not factory default (self-calibrated)"
 msgstr ""
 
+msgid "Not pinned"
+msgstr ""
+
 msgid "Not ready"
 msgstr ""
 
@@ -1375,6 +1523,9 @@ msgid "Not started"
 msgstr ""
 
 msgid "Not Started"
+msgstr ""
+
+msgid "Not yet updated"
 msgstr ""
 
 msgid "Note: Register"
@@ -1422,22 +1573,40 @@ msgstr ""
 msgid "O7 Emergency Stop"
 msgstr ""
 
-msgid "Off (TX disabled)"
+msgid "Official factory baseline match"
 msgstr ""
 
-msgid "Official factory baseline match"
+msgid "offline"
 msgstr ""
 
 msgid "Offline"
 msgstr ""
 
+msgid "Offline (bound)"
+msgstr ""
+
+msgid "Offline device"
+msgstr ""
+
 msgid "Offline or stale"
+msgstr ""
+
+msgid "Offline: %s"
 msgstr ""
 
 msgid "Offset O"
 msgstr ""
 
 msgid "OMCC version"
+msgstr ""
+
+msgid "OMCI FEC monitoring paused"
+msgstr ""
+
+msgid "OMCI FEC monitoring ready"
+msgstr ""
+
+msgid "OMCI status"
 msgstr ""
 
 msgid "Online"
@@ -1449,16 +1618,31 @@ msgstr ""
 msgid "ONU allocation blocked by invalid startup configuration."
 msgstr ""
 
-msgid "ONU cleanup pending"
+msgid "ONU bridge offload"
+msgstr ""
+
+msgid "ONU FEC monitoring"
+msgstr ""
+
+msgid "ONU FEC monitoring details"
 msgstr ""
 
 msgid "ONU ID"
+msgstr ""
+
+msgid "ONU receive power (downstream)"
+msgstr ""
+
+msgid "ONU Rx"
 msgstr ""
 
 msgid "Open optical status and ONU/MIB details"
 msgstr ""
 
 msgid "Open Synchronization"
+msgstr ""
+
+msgid "Open the details of the selected sub-gateway"
 msgstr ""
 
 msgid ""
@@ -1498,6 +1682,9 @@ msgid "Optical RX power"
 msgstr ""
 
 msgid "Optical serial"
+msgstr ""
+
+msgid "Optical serial missing; identity is tied to the ONU ID"
 msgstr ""
 
 msgid "Optical transceiver"
@@ -1555,6 +1742,9 @@ msgstr ""
 msgid "Pending configuration changes"
 msgstr ""
 
+msgid "Pending FTTR restart"
+msgstr ""
+
 msgid "Pending restart"
 msgstr ""
 
@@ -1595,6 +1785,9 @@ msgid "PPE flow snapshot"
 msgstr ""
 
 msgid "Preparing JSON download…"
+msgstr ""
+
+msgid "Presence"
 msgstr ""
 
 msgid "Preview differences (read-only)"
@@ -1649,11 +1842,6 @@ msgid "Raw JSON"
 msgstr ""
 
 msgid "Raw source observations (JSON)"
-msgstr ""
-
-msgid ""
-"Re-enable the 1490nm downlink laser? Discovery resumes and sub-gateways can "
-"register again."
 msgstr ""
 
 msgid ""
@@ -1742,16 +1930,46 @@ msgstr ""
 msgid "Refresh failed"
 msgstr ""
 
+msgid "Refresh failed; showing the last successful data. %s"
+msgstr ""
+
 msgid "Refresh interval: 3 seconds"
 msgstr ""
 
+msgid "Refresh topology"
+msgstr ""
+
 msgid "Refresh users to read the current state."
+msgstr ""
+
+msgid "Refreshing…"
 msgstr ""
 
 msgid "Register %s: %s (%s)"
 msgstr ""
 
 msgid "Register offset"
+msgstr ""
+
+msgid "Registered %d / %d"
+msgstr ""
+
+msgid "Registered sub-gateways"
+msgstr ""
+
+msgid "Registered, business in progress"
+msgstr ""
+
+msgid "Registered, business verified"
+msgstr ""
+
+msgid "Registered: %s"
+msgstr ""
+
+msgid "Registering or business warning"
+msgstr ""
+
+msgid "Registering: %s"
 msgstr ""
 
 msgid "Registration"
@@ -1806,6 +2024,9 @@ msgstr ""
 msgid "Restart"
 msgstr ""
 
+msgid "Retry"
+msgstr ""
+
 msgid "Retrying"
 msgstr ""
 
@@ -1830,12 +2051,18 @@ msgstr ""
 msgid "RX wavelength"
 msgstr ""
 
+msgid "Save & Apply"
+msgstr ""
+
 msgid "Save NPU configuration"
 msgstr ""
 
 msgid ""
 "Save returned success, but configuration readback could not be confirmed. "
 "Refresh before retrying."
+msgstr ""
+
+msgid "Saved"
 msgstr ""
 
 msgid "Saved configuration"
@@ -1847,16 +2074,13 @@ msgid ""
 "their saved values."
 msgstr ""
 
-msgid "Saved setting: off"
-msgstr ""
-
-msgid "Saved setting: on"
-msgstr ""
-
-msgid "Saved setting: unknown"
-msgstr ""
-
 msgid "Saved, but configuration reload or status refresh failed:"
+msgstr ""
+
+msgid "Saved; applying hardware configuration"
+msgstr ""
+
+msgid "Saved; waiting to load automatically"
 msgstr ""
 
 msgid ""
@@ -1884,6 +2108,9 @@ msgid "Security"
 msgstr ""
 
 msgid "Segment threshold: %s °C"
+msgstr ""
+
+msgid "Select a device in the topology to show its summary."
 msgstr ""
 
 msgid "Select a device to inspect reports and run operations."
@@ -1921,10 +2148,16 @@ msgstr ""
 msgid "Select SSIDs belonging to this network's template."
 msgstr ""
 
+msgid "Selected device"
+msgstr ""
+
 msgid "Selected file:"
 msgstr ""
 
 msgid "Self-heal / retry"
+msgstr ""
+
+msgid "Serial unavailable"
 msgstr ""
 
 msgid "Service IP / Netmask"
@@ -1937,6 +2170,12 @@ msgid "Settings verified"
 msgstr ""
 
 msgid "Settling"
+msgstr ""
+
+msgid "Several devices claim the same data interface"
+msgstr ""
+
+msgid "Several live ONUs report the same optical serial"
 msgstr ""
 
 msgid "SHA-256 checksum"
@@ -1974,7 +2213,13 @@ msgstr ""
 msgid "SSIDs"
 msgstr ""
 
+msgid "stale"
+msgstr ""
+
 msgid "Stale"
+msgstr ""
+
+msgid "Stale data"
 msgstr ""
 
 msgid "Stale management"
@@ -2005,6 +2250,9 @@ msgid "Status"
 msgstr ""
 
 msgid "Status refresh failed: %s"
+msgstr ""
+
+msgid "Sub-gateway"
 msgstr ""
 
 msgid "Sub-gateway %s — %s"
@@ -2097,6 +2345,9 @@ msgstr ""
 msgid "This device already has an active synchronization operation"
 msgstr ""
 
+msgid "This disconnects all ONUs on this PON. Apply these settings?"
+msgstr ""
+
 msgid "This field is required."
 msgstr ""
 
@@ -2148,6 +2399,18 @@ msgstr ""
 msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
 msgstr ""
 
+msgid "Topology"
+msgstr ""
+
+msgid "Topology controls"
+msgstr ""
+
+msgid "Topology graph error: %s"
+msgstr ""
+
+msgid "Total code words"
+msgstr ""
+
 msgid "TR069 VLANs"
 msgstr ""
 
@@ -2175,27 +2438,12 @@ msgstr ""
 msgid "Triggers"
 msgstr ""
 
-msgid "Turn laser off"
-msgstr ""
-
-msgid "Turn laser on"
-msgstr ""
-
-msgid ""
-"Turn off the 1490nm downlink laser? All sub-gateways are gracefully "
-"disconnected and cannot register until the laser is re-enabled. This setting "
-"is saved and reapplied after a reboot."
-msgstr ""
-
 msgid ""
 "Tutorial and instructions for pairing and configuring downstream FTTR "
 "sub-gateways."
 msgstr ""
 
 msgid "Tutorial Coming Soon"
-msgstr ""
-
-msgid "TX enabled (reset readback)"
 msgstr ""
 
 msgid "TX power"
@@ -2210,15 +2458,27 @@ msgstr ""
 msgid "Typical raw simulated value"
 msgstr ""
 
+msgid "Unable to load FTTR status: %s"
+msgstr ""
+
 msgid ""
 "Unable to parse the calibration file structure. Please check the file's "
 "integrity."
+msgstr ""
+
+msgid "Unable to render the topology graph: %s"
+msgstr ""
+
+msgid "unavailable"
 msgstr ""
 
 msgid "Unavailable"
 msgstr ""
 
 msgid "Unconfigured WLANs"
+msgstr ""
+
+msgid "Uncorrectable code words"
 msgstr ""
 
 msgid "Unexpected MIB response"
@@ -2228,9 +2488,6 @@ msgid "Unknown"
 msgstr ""
 
 msgid "Unknown class"
-msgstr ""
-
-msgid "unknown error"
 msgstr ""
 
 msgid "Unknown error"
@@ -2243,6 +2500,9 @@ msgid "Unlocked"
 msgstr ""
 
 msgid "Unpin"
+msgstr ""
+
+msgid "Unpin fttr%d after restart"
 msgstr ""
 
 msgid "Unpin interface"
@@ -2355,6 +2615,9 @@ msgstr ""
 msgid "Waiting"
 msgstr ""
 
+msgid "Waiting for device reset recovery"
+msgstr ""
+
 msgid "Waiting for device result…"
 msgstr ""
 
@@ -2376,10 +2639,28 @@ msgstr ""
 msgid "WAN / WLAN lifecycle results"
 msgstr ""
 
+msgid ""
+"WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge "
+"offload before enabling WAN directions."
+msgstr ""
+
+msgid ""
+"WAN and ONU bridge offload use exclusive port modes. Disable ONU bridge "
+"offload before enabling either WAN direction."
+msgstr ""
+
+msgid ""
+"WAN directions require software and hardware flow offloading in the firewall "
+"settings. Saving here does not change those global settings."
+msgstr ""
+
 msgid "WAN pending"
 msgstr ""
 
 msgid "WAN reconciling"
+msgstr ""
+
+msgid "WAN routed offload"
 msgstr ""
 
 msgid "WAN service"
@@ -2420,6 +2701,12 @@ msgid "Write settings and execution"
 msgstr ""
 
 msgid "Writing"
+msgstr ""
+
+msgid "Zoom in"
+msgstr ""
+
+msgid "Zoom out"
 msgstr ""
 
 msgid "速度：%s Mbit/s，双工：%s"

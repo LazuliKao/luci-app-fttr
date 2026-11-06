@@ -4,6 +4,7 @@ declare global {
 		interface IntrinsicElements {
 			details: JSXElement<HTMLDetailsElement>;
 			summary: JSXElement<HTMLElement>;
+			section: JSXElement<HTMLElement>;
 		}
 	}
 }

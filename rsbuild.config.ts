@@ -4,6 +4,7 @@ export default defineConfig({
 	source: {
 		entry: {
 			index: "./src/view/index.tsx",
+			topology: "./src/view/topology.tsx",
 			config: "./src/view/config.tsx",
 			hardware: "./src/view/hardware.tsx",
 			npu: "./src/view/npu.tsx",
@@ -43,6 +44,11 @@ export default defineConfig({
 		},
 		rspack: (config) => {
 			config.output = config.output || {};
+			config.output.library = {
+				type: "var",
+				name: "main",
+				export: "main",
+			};
 			config.optimization = config.optimization || {};
 			config.optimization.splitChunks = false;
 			config.optimization.runtimeChunk = false;
@@ -57,7 +63,7 @@ export default defineConfig({
 					},
 				}),
 			];
-			config.optimization.avoidEntryIife = true;
+			config.optimization.avoidEntryIife = false;
 			config.plugins = config.plugins || [];
 			config.plugins.push(
 				new rspack.BannerPlugin({

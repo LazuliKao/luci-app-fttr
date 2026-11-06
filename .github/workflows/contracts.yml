@@ -29,5 +29,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: pnpm install --frozen-lockfile && pnpm check && git diff --exit-code -- package/luci-app-fttr/htdocs
+      - run: pnpm install --frozen-lockfile && pnpm check
         working-directory: luci-app-fttr

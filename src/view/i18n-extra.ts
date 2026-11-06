@@ -8,6 +8,7 @@
 // Top menu entries (root/usr/share/luci/menu.d/luci-app-fttr.json)
 _("FTTR");
 _("Status");
+_("Topology");
 _("Configuration");
 _("Synchronization");
 _("Hardware status");

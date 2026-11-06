@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-03 16:24+0800\n"
+"POT-Creation-Date: 2026-11-06 22:55+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -13,93 +13,6 @@ msgstr ""
 
 msgid "—"
 msgstr "—"
-
-msgid "FPGA master switch"
-msgstr "FPGA总开关"
-
-msgid "ONU FEC monitoring"
-msgstr "ONU FEC 监测"
-
-msgid "Downstream FEC hardware state"
-msgstr "下行 FEC 硬件状态"
-
-msgid "Saved"
-msgstr "已保存"
-
-msgid "Hardware"
-msgstr "硬件"
-
-msgid "Interval"
-msgstr "统计周期"
-
-msgid "Corrected bytes"
-msgstr "已纠正字节"
-
-msgid "Corrected code words"
-msgstr "已纠正码字"
-
-msgid "Uncorrectable code words"
-msgstr "不可纠正码字"
-
-msgid "Total code words"
-msgstr "总码字"
-
-msgid "FEC seconds"
-msgstr "FEC 秒数"
-
-msgid "GPON downstream optical emission"
-msgstr "GPON下行发光"
-
-msgid "GPON downstream FEC encoding"
-msgstr "GPON下行FEC编码"
-
-msgid "Controls optical module reset and ONU discovery. Turning it off resets the module and disconnects all ONUs."
-msgstr "控制光模块复位与ONU发现流程。关闭后光模块复位，所有ONU连接中断。"
-
-msgid "Controls GPON downstream 1490 nm optical emission. Turning it off removes the downstream optical signal and disconnects ONUs."
-msgstr "控制GPON下行1490 nm光信号发射。关闭后ONU将失去下行光信号并离线。"
-
-msgid "Controls GPON downstream FEC encoding. When downstream transmission is enabled, ONU-side OMCI FEC performance monitoring is also enabled."
-msgstr "控制GPON下行FEC编码；下行发射开启时，同时采集ONU侧OMCI FEC性能数据。"
-
-msgid "Hardware readback"
-msgstr "硬件读回"
-
-msgid "Saved; applying hardware configuration"
-msgstr "已保存，正在应用硬件配置"
-
-msgid "This disconnects all ONUs on this PON. Apply these settings?"
-msgstr "此操作会断开本PON的所有ONU，是否应用？"
-
-msgid "OMCI FEC monitoring ready"
-msgstr "OMCI FEC监测已就绪"
-
-msgid "OMCI FEC monitoring paused"
-msgstr "OMCI FEC监测已暂停"
-
-msgid "ONU FEC monitoring details"
-msgstr "ONU FEC监测详情"
-
-msgid "Counters describe the last completed 15-minute PM interval, not live or cumulative traffic."
-msgstr "计数来自最近完成的15分钟PM区间，并非实时或累计流量。"
-
-msgid "OMCI status"
-msgstr "OMCI状态"
-
-msgid "Awaiting OMCI preparation"
-msgstr "等待OMCI准备"
-
-msgid "Saved; waiting to load automatically"
-msgstr "已保存，等待自动加载"
-
-msgid "Configuration loaded; device synchronization is tracked below"
-msgstr "配置已加载，设备同步进度见下方"
-
-msgid "Waiting for device reset recovery"
-msgstr "等待设备重置恢复"
-
-msgid "Committed configuration has not been requested for loading. Apply the configuration to load it."
-msgstr "已提交的配置尚未请求加载，请应用配置以加载。"
 
 msgid ""
 ", and the optical transceiver hardware was reset and the register table was "
@@ -252,9 +165,9 @@ msgstr "地址"
 
 msgid ""
 "Admission allows eligible traffic to bind; it does not prove that packets "
-"are currently hardware-forwarded. The switch controls FTTR bridge admission, "
-"not the entire NPU or global routed offload policy."
-msgstr "准入仅允许合格流量建立绑定，并不证明此刻正由硬件转发。开关控制 FTTR 桥接准入，不控制整个 NPU 或全局路由卸载策略。"
+"are currently hardware-forwarded. The switch controls FTTR bridge and WAN "
+"admission, not the entire NPU or firewall offloading for other interfaces."
+msgstr ""
 
 msgid "Admitted"
 msgstr "已准入"
@@ -352,6 +265,9 @@ msgstr "为处于 O5 状态的未识别或第三方 GPON ONU 自动配置标准�
 msgid "Awaiting Apply"
 msgstr "等待应用"
 
+msgid "Awaiting OMCI preparation"
+msgstr "等待OMCI准备"
+
 msgid "Backend"
 msgstr "后端"
 
@@ -387,6 +303,12 @@ msgstr "二进制成员，无可用文本。"
 msgid "Binding"
 msgstr "绑定"
 
+msgid "Binding change pending restart"
+msgstr "绑定变更待重启生效"
+
+msgid "Binding state"
+msgstr "绑定状态"
+
 msgid "Bindings"
 msgstr "绑定"
 
@@ -401,6 +323,9 @@ msgstr "BOSA 硬件寄存器初始化表（前 %s 字节，%s）"
 
 msgid "Bound hardware flows"
 msgstr "硬件绑定流数"
+
+msgid "Bound sub-gateways absent from live status"
+msgstr "已绑定但未在实时状态中出现的从网关"
 
 msgid "Bridge interface"
 msgstr "桥接接口"
@@ -443,6 +368,9 @@ msgstr "取消"
 msgid "Cancel the fixed interface for this device?"
 msgstr "确定取消此设备的固定接口？"
 
+msgid "CDR"
+msgstr "CDR"
+
 msgid "CDR lock"
 msgstr "CDR 锁定状态"
 
@@ -462,6 +390,11 @@ msgstr "设备恢复出厂设置后，清除旧任务和受管对象记录。下
 
 msgid "Clear output"
 msgstr "清空输出"
+
+msgid ""
+"Click a device to select it, double-click to open its details. Drag to pan; "
+"use Ctrl + mouse wheel or pinch to zoom."
+msgstr ""
 
 msgid "Click to select or drag a %s file here"
 msgstr "点击选择或将 %s 文件拖放到此处"
@@ -485,9 +418,9 @@ msgid "Command in progress"
 msgstr "命令执行中"
 
 msgid ""
-"Committed configuration has not been loaded. Check Configuration "
-"diagnostics; an active operation may have prevented reload."
-msgstr "已提交的配置尚未加载。请检查配置诊断；当前活动的后台操作可能阻止了重新加载。"
+"Committed configuration has not been requested for loading. Apply the "
+"configuration to load it."
+msgstr "已提交的配置尚未请求加载，请应用配置以加载。"
 
 msgid "Committed configuration is invalid: %s"
 msgstr "已提交的配置无效：%s"
@@ -513,10 +446,16 @@ msgstr "无法打开此配置的编辑器。"
 msgid "Configuration item"
 msgstr "配置项"
 
+msgid "Configuration loaded; device synchronization is tracked below"
+msgstr "配置已加载，设备同步进度见下方"
+
 msgid ""
 "Configuration saved. Waiting for driver admission readback; enabling may "
 "take several seconds and requires eligible ports and firewall policy."
 msgstr "配置已保存。请查看驱动准入回读；启用可能需要数秒，且须满足端口及防火墙策略条件。"
+
+msgid "Configured mode"
+msgstr "配置模式"
 
 msgid "Configuring"
 msgstr "配置中"
@@ -545,6 +484,24 @@ msgstr "控制器与光收发器"
 msgid "Controller hardware"
 msgstr "控制器硬件"
 
+msgid "Controller Tx power"
+msgstr "主网关发光功率"
+
+msgid ""
+"Controls GPON downstream 1490 nm optical emission. Turning it off removes "
+"the downstream optical signal and disconnects ONUs."
+msgstr "控制GPON下行1490 nm光信号发射。关闭后ONU将失去下行光信号并离线。"
+
+msgid ""
+"Controls GPON downstream FEC encoding. When downstream transmission is "
+"enabled, ONU-side OMCI FEC performance monitoring is also enabled."
+msgstr "控制GPON下行FEC编码；下行发射开启时，同时采集ONU侧OMCI FEC性能数据。"
+
+msgid ""
+"Controls optical module reset and ONU discovery. Turning it off resets the "
+"module and disconnects all ONUs."
+msgstr "控制光模块复位与ONU发现流程。关闭后光模块复位，所有ONU连接中断。"
+
 msgid "Conversion formula"
 msgstr "转换公式"
 
@@ -563,11 +520,22 @@ msgstr "为 FTTR 系统提供支持的核心组件与开源代码仓库。"
 msgid "Correct the invalid fields before saving."
 msgstr "请先修正无效字段，再保存。"
 
+msgid "Corrected bytes"
+msgstr "已纠正字节"
+
+msgid "Corrected code words"
+msgstr "已纠正码字"
+
 msgid ""
 "Counters cover only currently bound flows and may decrease when flows "
 "expire. Driver-exported zeroes are not proof of no traffic. AN7581 native "
 "L2B counters are unavailable; — means unavailable, not zero."
 msgstr "计数仅涵盖当前绑定流，流老化后可能下降。驱动返回零值不代表没有流量。AN7581 原生 L2B 计数不可用；— 表示不可用，并非零。"
+
+msgid ""
+"Counters describe the last completed 15-minute PM interval, not live or "
+"cumulative traffic."
+msgstr "计数来自最近完成的15分钟PM区间，并非实时或累计流量。"
 
 msgid "CPE Connection Request password"
 msgstr "CPE 连接请求密码"
@@ -770,15 +738,6 @@ msgstr "已断开"
 msgid "Discovering"
 msgstr "发现中"
 
-msgid "Discovery active"
-msgstr "发现中"
-
-msgid "Discovery paused"
-msgstr "发现已暂停"
-
-msgid "Discovery state: unknown"
-msgstr "发现状态：未知"
-
 msgid "Dispatching to %s (timeout: %s s)..."
 msgstr "正在下发至 %s（超时：%s 秒）..."
 
@@ -796,6 +755,9 @@ msgstr "下载 JSON"
 msgid "Downloading MIB snapshot"
 msgstr "正在下载 MIB 快照"
 
+msgid "Downstream FEC hardware state"
+msgstr "下行 FEC 硬件状态"
+
 msgid ""
 "Downstream optical calibration parameters extracted from the 1MB Factory "
 "partition (offset %s)"
@@ -803,6 +765,9 @@ msgstr "从 1MB Factory 分区提取的下行光路校准参数（偏移 %s）"
 
 msgid "Downstream ports"
 msgstr "下联端口"
+
+msgid "Downstream transmitter"
+msgstr "下行光发射机"
 
 msgid "Driver debug logging"
 msgstr "驱动调试日志"
@@ -827,8 +792,8 @@ msgstr "启用"
 msgid "Enable ACS"
 msgstr "启用 ACS"
 
-msgid "Enable FTTR bridge hardware offload"
-msgstr "启用 FTTR 桥接硬件卸载"
+msgid "Enable FTTR hardware offload"
+msgstr "启用 FTTR 硬件加速"
 
 msgid "Enable management DHCP"
 msgstr "启用管理 DHCP"
@@ -836,8 +801,17 @@ msgstr "启用管理 DHCP"
 msgid "Enable management network"
 msgstr "启用管理网络"
 
+msgid "Enable ONU bridge offload"
+msgstr "启用从网关桥接硬件加速"
+
 msgid "Enable provisioning"
 msgstr "启用配置下发"
+
+msgid "Enable WAN downstream offload (experimental)"
+msgstr "启用 WAN 下行加速（实验性）"
+
+msgid "Enable WAN upstream offload (experimental)"
+msgstr "启用 WAN 上行加速（实验性）"
 
 msgid "Enabled"
 msgstr "已启用"
@@ -928,9 +902,6 @@ msgstr "原厂工具"
 msgid "Failed"
 msgstr "失败"
 
-msgid "Failed to change laser output"
-msgstr "激光输出切换失败"
-
 msgid "Failed to parse calibration file"
 msgstr "校准文件解析失败"
 
@@ -942,6 +913,12 @@ msgstr "保存接口设置失败："
 
 msgid "Failed to save NPU configuration"
 msgstr "保存 NPU 配置失败"
+
+msgid "FEC seconds"
+msgstr "FEC 秒数"
+
+msgid "Fiber distance"
+msgstr "光纤距离"
 
 msgid "Field"
 msgstr "字段"
@@ -970,8 +947,17 @@ msgstr "固件路径"
 msgid "Firmware version"
 msgstr "固件版本"
 
+msgid "Fit"
+msgstr "适应"
+
+msgid "Fit topology to view"
+msgstr "适应画布视图"
+
 msgid "Fix this device to its current interface?"
 msgstr "确定将此设备固定到当前接口？"
+
+msgid "Fixed fttr%d"
+msgstr "固定接口 fttr%d"
 
 msgid "Fixed interface"
 msgstr "固定接口"
@@ -979,13 +965,22 @@ msgstr "固定接口"
 msgid "Fixed interface changes pending FTTR restart."
 msgstr "固定接口修改将在重启 FTTR 后生效。"
 
+msgid "Fixed interface error"
+msgstr "固定接口错误"
+
 msgid ""
 "Flow table is unavailable. A failed read must not be interpreted as an empty "
 "table."
 msgstr "流表不可用。读取失败不应被视为空表。"
 
+msgid "FPGA"
+msgstr "FPGA"
+
 msgid "FPGA identifier"
 msgstr "FPGA 标识"
+
+msgid "FPGA master switch"
+msgstr "FPGA总开关"
 
 msgid "FPGA status"
 msgstr "FPGA 状态"
@@ -1005,6 +1000,9 @@ msgstr "FTTR 配置"
 msgid "FTTR configuration check failed"
 msgstr "FTTR 配置检查失败"
 
+msgid "FTTR controller"
+msgstr "FTTR 主网关"
+
 msgid ""
 "FTTR controller daemon, OMCI & CWMP TR-069 provisioning backend service, and "
 "fttrctl CLI utility."
@@ -1018,6 +1016,18 @@ msgstr "FTTR 概览"
 
 msgid "FTTR synchronization"
 msgstr "FTTR 配置同步"
+
+msgid "FTTR Topology"
+msgstr "FTTR 拓扑图"
+
+msgid "FTTR topology graph"
+msgstr "FTTR 拓扑图画布"
+
+msgid "fttr%d → fttr%d after restart"
+msgstr "重启后切换为 fttr%d → fttr%d"
+
+msgid "fttr%d after restart"
+msgstr "重启后绑定到 fttr%d"
 
 msgid "G.988 encoded field values"
 msgstr "G.988 编码字段值"
@@ -1037,6 +1047,12 @@ msgstr "GitHub"
 msgid "GitHub Repositories"
 msgstr "GitHub 代码仓库"
 
+msgid "GPON downstream FEC encoding"
+msgstr "GPON下行FEC编码"
+
+msgid "GPON downstream optical emission"
+msgstr "GPON下行发光"
+
 msgid "Group"
 msgstr "分组"
 
@@ -1045,6 +1061,9 @@ msgstr "该组仍被设备使用。请先将这些设备分配到其他组，再
 
 msgid "Groups"
 msgstr "分组管理"
+
+msgid "Hardware"
+msgstr "硬件"
 
 msgid "Hardware specifications and firmware images"
 msgstr "硬件规格与固件镜像"
@@ -1085,6 +1104,9 @@ msgstr "HTTP Basic 用户名"
 msgid "Identity age"
 msgstr "标识留存时长"
 
+msgid "Identity conflict"
+msgstr "标识冲突"
+
 msgid ""
 "Identity information is read-only and limited to fields provided by fttrctl "
 "status."
@@ -1095,6 +1117,9 @@ msgstr "标识读取错误"
 
 msgid "Identity source"
 msgstr "标识来源"
+
+msgid "Identity warning"
+msgstr "标识告警"
 
 msgid "Inactive"
 msgstr "未使用"
@@ -1146,11 +1171,17 @@ msgstr "此接口已被其他设备预留。"
 msgid "Interface configuration changed. Refresh the page and try again."
 msgstr "接口配置已发生变化，请刷新页面后重试。"
 
+msgid "Interface details unavailable; link states may be incomplete."
+msgstr "网络接口信息不可用，链路状态可能不完整。"
+
 msgid "Interface setting saved. Restart FTTR for it to take effect."
 msgstr "接口设置已保存，重启 FTTR 后生效。"
 
 msgid "Interrupted"
 msgstr "已中断"
+
+msgid "Interval"
+msgstr "统计周期"
 
 msgid "Interval (minutes)"
 msgstr "间隔（分钟）"
@@ -1176,14 +1207,11 @@ msgstr "保持当前密钥"
 msgid "Kernel log"
 msgstr "内核日志"
 
+msgid "Known: %s"
+msgstr "已知：%s"
+
 msgid "LAN / WLAN port bindings"
 msgstr "LAN / WLAN 端口绑定"
-
-msgid "Laser control"
-msgstr "激光控制"
-
-msgid "Laser output"
-msgstr "激光输出"
 
 msgid "Last backend check result"
 msgstr "上次后端检查结果"
@@ -1200,6 +1228,9 @@ msgstr "最后通知：%s"
 msgid "Last received"
 msgstr "最后接收时间"
 
+msgid "Last refresh failed: %s"
+msgstr "上次刷新失败：%s"
+
 msgid "Last successful sample"
 msgstr "最近成功采样"
 
@@ -1209,11 +1240,17 @@ msgstr "最后遥测时间"
 msgid "Last update / task"
 msgstr "最后更新 / 任务"
 
+msgid "Last updated: %s"
+msgstr "上次更新：%s"
+
 msgid "Latest report error"
 msgstr "最新报告错误"
 
 msgid "Leave unchanged"
 msgstr "保持不变"
+
+msgid "link down"
+msgstr "链路中断"
 
 msgid "Link down"
 msgstr "链路断开"
@@ -1230,14 +1267,29 @@ msgid ""
 "when adding a new device."
 msgstr "列出在光纤链路上注册的受支持设备，包括尚未发送 ACS Inform 的设备。添加新设备时会自动忽略已配置的设备。"
 
+msgid "Live"
+msgstr "在线"
+
 msgid "Live NPU data is unavailable. Previous readings are stale."
 msgstr "无法获取 NPU 实时数据，先前读数已失效。"
+
+msgid "Live sub-gateways in O5 operation state"
+msgstr "处于 O5 操作状态的在线从网关"
+
+msgid "Live sub-gateways not yet in O5 operation state"
+msgstr "尚未进入 O5 操作状态的在线从网关"
+
+msgid "Live sub-gateways plus offline devices known from fixed interface bindings"
+msgstr "在线从网关及通过固定接口绑定已知的离线设备总数"
 
 msgid "Load"
 msgstr "负载"
 
 msgid "Loading devices…"
 msgstr "正在加载设备…"
+
+msgid "Loading FTTR status…"
+msgstr "正在加载 FTTR 状态…"
 
 msgid "Loading…"
 msgstr "正在载入…"
@@ -1401,6 +1453,9 @@ msgstr "%d 秒后进行下次自愈重试"
 msgid "No bound hardware flows in this snapshot."
 msgstr "本次快照中没有硬件绑定流。"
 
+msgid "No data interface"
+msgstr "无数据接口"
+
 msgid "No desired items configured."
 msgstr "尚未配置目标项目。"
 
@@ -1412,6 +1467,9 @@ msgstr "该 ME 类无实体记录。"
 
 msgid "No HL202 optical devices were found."
 msgstr "未找到 HL202 光设备。"
+
+msgid "No known sub-gateways."
+msgstr "暂无已知从网关。"
 
 msgid "No matching ME classes"
 msgstr "无匹配的 ME 类"
@@ -1460,6 +1518,9 @@ msgstr "未配置"
 msgid "Not factory default (self-calibrated)"
 msgstr "非原厂默认值（自行校准）"
 
+msgid "Not pinned"
+msgstr "未绑定固定接口"
+
 msgid "Not ready"
 msgstr "未就绪"
 
@@ -1471,6 +1532,9 @@ msgstr "未开始"
 
 msgid "Not Started"
 msgstr "未开始"
+
+msgid "Not yet updated"
+msgstr "尚未更新"
 
 msgid "Note: Register"
 msgstr "注意：寄存器"
@@ -1517,23 +1581,41 @@ msgstr "O6 间歇性 LODS"
 msgid "O7 Emergency Stop"
 msgstr "O7 紧急停止"
 
-msgid "Off (TX disabled)"
-msgstr "已关闭（TX_DIS）"
-
 msgid "Official factory baseline match"
 msgstr "与官方原厂基准一致"
+
+msgid "offline"
+msgstr "离线"
 
 msgid "Offline"
 msgstr "离线"
 
+msgid "Offline (bound)"
+msgstr "离线（已绑定）"
+
+msgid "Offline device"
+msgstr "离线设备"
+
 msgid "Offline or stale"
 msgstr "离线或过期"
+
+msgid "Offline: %s"
+msgstr "离线：%s"
 
 msgid "Offset O"
 msgstr "偏移量 O"
 
 msgid "OMCC version"
 msgstr "OMCC 版本"
+
+msgid "OMCI FEC monitoring paused"
+msgstr "OMCI FEC监测已暂停"
+
+msgid "OMCI FEC monitoring ready"
+msgstr "OMCI FEC监测已就绪"
+
+msgid "OMCI status"
+msgstr "OMCI状态"
 
 msgid "Online"
 msgstr "在线"
@@ -1544,17 +1626,32 @@ msgstr "ONU"
 msgid "ONU allocation blocked by invalid startup configuration."
 msgstr "启动配置无效，已暂停 ONU 分配。"
 
-msgid "ONU cleanup pending"
-msgstr "ONU 清理待处理"
+msgid "ONU bridge offload"
+msgstr "从网关桥接加速"
+
+msgid "ONU FEC monitoring"
+msgstr "ONU FEC 监测"
+
+msgid "ONU FEC monitoring details"
+msgstr "ONU FEC监测详情"
 
 msgid "ONU ID"
 msgstr "ONU ID"
+
+msgid "ONU receive power (downstream)"
+msgstr "从网关收光功率（下行）"
+
+msgid "ONU Rx"
+msgstr "从网关收光"
 
 msgid "Open optical status and ONU/MIB details"
 msgstr "打开光路状态与 ONU/MIB 详情"
 
 msgid "Open Synchronization"
 msgstr "打开同步页面"
+
+msgid "Open the details of the selected sub-gateway"
+msgstr "查看所选从网关详情"
 
 msgid ""
 "Open-source Fiber-To-The-Room (FTTR) solution for OpenWrt, providing unified "
@@ -1596,6 +1693,9 @@ msgstr "接收光功率"
 
 msgid "Optical serial"
 msgstr "光纤 SN"
+
+msgid "Optical serial missing; identity is tied to the ONU ID"
+msgstr "缺少光序列号；设备标识临时绑定到 ONU ID"
 
 msgid "Optical transceiver"
 msgstr "光收发器"
@@ -1652,6 +1752,9 @@ msgstr "等待应用"
 msgid "Pending configuration changes"
 msgstr "待应用的配置变更"
 
+msgid "Pending FTTR restart"
+msgstr "等待 FTTR 服务重启"
+
 msgid "Pending restart"
 msgstr "待重启生效"
 
@@ -1693,6 +1796,9 @@ msgstr "PPE 流表快照"
 
 msgid "Preparing JSON download…"
 msgstr "准备 JSON 下载…"
+
+msgid "Presence"
+msgstr "在线状态"
 
 msgid "Preview differences (read-only)"
 msgstr "预览差异变更（只读）"
@@ -1747,11 +1853,6 @@ msgstr "原始 JSON"
 
 msgid "Raw source observations (JSON)"
 msgstr "原始来源观测记录（JSON）"
-
-msgid ""
-"Re-enable the 1490nm downlink laser? Discovery resumes and sub-gateways can "
-"register again."
-msgstr "重新启用 1490nm 下行激光？发现流程将恢复，子网关可以重新注册。"
 
 msgid ""
 "Read current device parameters and auto-verify matching settings without "
@@ -1839,17 +1940,47 @@ msgstr "刷新设备列表"
 msgid "Refresh failed"
 msgstr "刷新失败"
 
+msgid "Refresh failed; showing the last successful data. %s"
+msgstr "刷新失败，正在显示上次成功获取的数据：%s"
+
 msgid "Refresh interval: 3 seconds"
 msgstr "刷新间隔：3 秒"
 
+msgid "Refresh topology"
+msgstr "刷新拓扑"
+
 msgid "Refresh users to read the current state."
 msgstr "请刷新用户列表以读取当前状态。"
+
+msgid "Refreshing…"
+msgstr "正在刷新…"
 
 msgid "Register %s: %s (%s)"
 msgstr "寄存器 %s：%s（%s）"
 
 msgid "Register offset"
 msgstr "寄存器偏移"
+
+msgid "Registered %d / %d"
+msgstr "已注册 %d / %d"
+
+msgid "Registered sub-gateways"
+msgstr "已注册从网关"
+
+msgid "Registered, business in progress"
+msgstr "已注册，业务配置中"
+
+msgid "Registered, business verified"
+msgstr "已注册，业务已验证"
+
+msgid "Registered: %s"
+msgstr "已注册：%s"
+
+msgid "Registering or business warning"
+msgstr "注册中或业务告警"
+
+msgid "Registering: %s"
+msgstr "注册中：%s"
 
 msgid "Registration"
 msgstr "注册状态"
@@ -1903,6 +2034,9 @@ msgstr "重置同步状态"
 msgid "Restart"
 msgstr "重启"
 
+msgid "Retry"
+msgstr "重试"
+
 msgid "Retrying"
 msgstr "重试中"
 
@@ -1927,6 +2061,9 @@ msgstr "运行中"
 msgid "RX wavelength"
 msgstr "接收波长"
 
+msgid "Save & Apply"
+msgstr "保存并应用"
+
 msgid "Save NPU configuration"
 msgstr "保存 NPU 配置"
 
@@ -1934,6 +2071,9 @@ msgid ""
 "Save returned success, but configuration readback could not be confirmed. "
 "Refresh before retrying."
 msgstr "保存操作返回成功，但配置回读未能确认。请刷新后再重试。"
+
+msgid "Saved"
+msgstr "已保存"
 
 msgid "Saved configuration"
 msgstr "已保存配置"
@@ -1944,17 +2084,14 @@ msgid ""
 "their saved values."
 msgstr "禁用连接请求或选择后端默认值时，已保存的自定义值仍会保留。保持这些字段不变即可保留其已保存的值。"
 
-msgid "Saved setting: off"
-msgstr "已保存设置：关闭"
-
-msgid "Saved setting: on"
-msgstr "已保存设置：开启"
-
-msgid "Saved setting: unknown"
-msgstr "已保存设置：未知"
-
 msgid "Saved, but configuration reload or status refresh failed:"
 msgstr "已保存，但配置重载或状态刷新失败："
+
+msgid "Saved; applying hardware configuration"
+msgstr "已保存，正在应用硬件配置"
+
+msgid "Saved; waiting to load automatically"
+msgstr "已保存，等待自动加载"
 
 msgid ""
 "Saving configuration does not synchronize devices in Manual mode. After Save "
@@ -1982,6 +2119,9 @@ msgstr "安全加密"
 
 msgid "Segment threshold: %s °C"
 msgstr "分段阈值：%s °C"
+
+msgid "Select a device in the topology to show its summary."
+msgstr "在拓扑图中点击设备以查看摘要信息。"
 
 msgid "Select a device to inspect reports and run operations."
 msgstr "请选择设备以查看报告并执行操作。"
@@ -2018,11 +2158,17 @@ msgstr "请选择设备。"
 msgid "Select SSIDs belonging to this network's template."
 msgstr "请选择属于此网络模板的 SSID。"
 
+msgid "Selected device"
+msgstr "当前选中设备"
+
 msgid "Selected file:"
 msgstr "已选文件："
 
 msgid "Self-heal / retry"
 msgstr "自愈 / 重试"
+
+msgid "Serial unavailable"
+msgstr "序列号不可用"
 
 msgid "Service IP / Netmask"
 msgstr "服务 IP / 子网掩码"
@@ -2035,6 +2181,12 @@ msgstr "设置已校验"
 
 msgid "Settling"
 msgstr "稳定中"
+
+msgid "Several devices claim the same data interface"
+msgstr "多个设备占用了相同的数据接口"
+
+msgid "Several live ONUs report the same optical serial"
+msgstr "多个在线 ONU 上报了相同的光序列号"
 
 msgid "SHA-256 checksum"
 msgstr "SHA-256 校验和"
@@ -2073,8 +2225,14 @@ msgstr "SSID 长度必须为 1–32 字节。"
 msgid "SSIDs"
 msgstr "SSID 列表"
 
+msgid "stale"
+msgstr "已过期"
+
 msgid "Stale"
 msgstr "已过期"
+
+msgid "Stale data"
+msgstr "数据陈旧"
 
 msgid "Stale management"
 msgstr "管理过期"
@@ -2105,6 +2263,9 @@ msgstr "状态"
 
 msgid "Status refresh failed: %s"
 msgstr "状态刷新失败：%s"
+
+msgid "Sub-gateway"
+msgstr "从网关"
 
 msgid "Sub-gateway %s — %s"
 msgstr "从网关 %s — %s"
@@ -2196,6 +2357,9 @@ msgstr "此操作还会删除该模板的 SSID 和网络。正在被分组使用
 msgid "This device already has an active synchronization operation"
 msgstr "此设备已有正在进行的同步操作"
 
+msgid "This disconnects all ONUs on this PON. Apply these settings?"
+msgstr "此操作会断开本PON的所有ONU，是否应用？"
+
 msgid "This field is required."
 msgstr "此字段为必填项。"
 
@@ -2247,6 +2411,18 @@ msgstr "以提交所有变更。"
 msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
 msgstr "，以确保激光发射功率和 ADC 诊断读数准确。"
 
+msgid "Topology"
+msgstr "拓扑图"
+
+msgid "Topology controls"
+msgstr "拓扑控制栏"
+
+msgid "Topology graph error: %s"
+msgstr "拓扑图渲染错误：%s"
+
+msgid "Total code words"
+msgstr "总码字"
+
 msgid "TR069 VLANs"
 msgstr "TR069 VLAN 列表"
 
@@ -2274,18 +2450,6 @@ msgstr "发送数据包数"
 msgid "Triggers"
 msgstr "触发机制"
 
-msgid "Turn laser off"
-msgstr "关闭激光"
-
-msgid "Turn laser on"
-msgstr "开启激光"
-
-msgid ""
-"Turn off the 1490nm downlink laser? All sub-gateways are gracefully "
-"disconnected and cannot register until the laser is re-enabled. This setting "
-"is saved and reapplied after a reboot."
-msgstr "关闭 1490nm 下行激光？所有子网关将被平滑断开，在激光重新启用前无法注册。该设置会被保存，并在重启后自动重新应用。"
-
 msgid ""
 "Tutorial and instructions for pairing and configuring downstream FTTR "
 "sub-gateways."
@@ -2293,9 +2457,6 @@ msgstr "配对并配置下联 FTTR 从网关的操作指南与说明。"
 
 msgid "Tutorial Coming Soon"
 msgstr "教程编写中"
-
-msgid "TX enabled (reset readback)"
-msgstr "TX 已启用（重置读回）"
 
 msgid "TX power"
 msgstr "发送功率"
@@ -2309,16 +2470,28 @@ msgstr "类型"
 msgid "Typical raw simulated value"
 msgstr "典型原始值模拟结果"
 
+msgid "Unable to load FTTR status: %s"
+msgstr "无法加载 FTTR 状态：%s"
+
 msgid ""
 "Unable to parse the calibration file structure. Please check the file's "
 "integrity."
 msgstr "无法解析校准文件结构，请检查文件完整性。"
+
+msgid "Unable to render the topology graph: %s"
+msgstr "无法渲染拓扑图：%s"
+
+msgid "unavailable"
+msgstr "不可用"
 
 msgid "Unavailable"
 msgstr "不可用"
 
 msgid "Unconfigured WLANs"
 msgstr "未配置的 WLAN"
+
+msgid "Uncorrectable code words"
+msgstr "不可纠正码字"
 
 msgid "Unexpected MIB response"
 msgstr "异常的 MIB 响应"
@@ -2328,9 +2501,6 @@ msgstr "未知"
 
 msgid "Unknown class"
 msgstr "未知类型 (Class)"
-
-msgid "unknown error"
-msgstr "未知错误"
 
 msgid "Unknown error"
 msgstr "未知错误"
@@ -2343,6 +2513,9 @@ msgstr "未锁定"
 
 msgid "Unpin"
 msgstr "取消固定"
+
+msgid "Unpin fttr%d after restart"
+msgstr "重启后解除 fttr%d 绑定"
 
 msgid "Unpin interface"
 msgstr "取消固定接口"
@@ -2454,6 +2627,9 @@ msgstr "电压"
 msgid "Waiting"
 msgstr "等待中"
 
+msgid "Waiting for device reset recovery"
+msgstr "等待设备重置恢复"
+
 msgid "Waiting for device result…"
 msgstr "正在等待设备结果…"
 
@@ -2475,11 +2651,29 @@ msgstr "等待任务"
 msgid "WAN / WLAN lifecycle results"
 msgstr "WAN / WLAN 生命周期结果"
 
+msgid ""
+"WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge "
+"offload before enabling WAN directions."
+msgstr ""
+
+msgid ""
+"WAN and ONU bridge offload use exclusive port modes. Disable ONU bridge "
+"offload before enabling either WAN direction."
+msgstr ""
+
+msgid ""
+"WAN directions require software and hardware flow offloading in the firewall "
+"settings. Saving here does not change those global settings."
+msgstr ""
+
 msgid "WAN pending"
 msgstr "WAN 等待中"
 
 msgid "WAN reconciling"
 msgstr "WAN 调谐中"
+
+msgid "WAN routed offload"
+msgstr "WAN 路由加速"
 
 msgid "WAN service"
 msgstr "WAN 业务"
@@ -2521,28 +2715,11 @@ msgstr "写入设置与执行"
 msgid "Writing"
 msgstr "写入中"
 
+msgid "Zoom in"
+msgstr "放大"
+
+msgid "Zoom out"
+msgstr "缩小"
+
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
-msgid "Enable FEC support (experimental)"
-msgstr "启用 FEC 支持（实验性）"
-
-msgid "GPON downstream transmission (Bit 1)"
-msgstr "GPON 下行发送（Bit 1）"
-
-msgid "GPON downstream FEC (Bit 3)"
-msgstr "GPON 下行纠错（Bit 3）"
-
-msgid "Saved setting"
-msgstr "保存配置"
-
-msgid "Enable downstream FEC statistics and diagnostics globally. Disabled by default. The GPON downstream FEC switch controls hardware separately."
-msgstr "全局启用下行 FEC 统计与诊断，默认关闭。GPON 下行纠错开关独立控制硬件。"
-
-msgid "Controls register 0x01000004 bit 1. Disabling disconnects all ONUs on this PON; this is separate from the optical laser reset."
-msgstr "控制寄存器 0x01000004 的 Bit 1。关闭会断开此 PON 上所有 ONU，与激光器复位开关独立。"
-
-msgid "Controls register 0x01000004 bit 3, preserving transmission and other bits. Disabled by default. This does not enable upstream FEC."
-msgstr "控制寄存器 0x01000004 的 Bit 3，保留发送及其他位。默认关闭，不开启上行 FEC。"
-
-msgid "Enable downstream FEC statistics and diagnostics globally. Disabled by default. This does not enable FPGA error correction; hardware FEC state remains unknown."
-msgstr "全局启用下行 FEC 统计与诊断，默认关闭。此开关不会开启 FPGA 纠错，硬件 FEC 状态仍为未知。"

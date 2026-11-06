@@ -17,6 +17,14 @@
 			"path": "fttr/index"
 		}
 	},
+	"admin/network/fttr/topology": {
+		"title": "Topology",
+		"order": 15,
+		"action": {
+			"type": "view",
+			"path": "fttr/topology"
+		}
+	},
 	"admin/network/fttr/config": {
 		"depends": { "fs": { "/var/run/fttr-capabilities/config": "file" } },
 		"title": "Configuration",
