@@ -60,7 +60,14 @@ function renderStatus(npu: NpuStatus): HTMLElement {
 						_("Port admission"),
 						flag(admissionMask !== 0, admissionValid, _("Admitted"), _("Not admitted")),
 					)}
-					{row(_("Configured mode"), routed ? _("WAN routed offload") : _("ONU bridge offload"))}
+					{row(
+						_("Configured mode"),
+						routed && npu.onu_bridge
+							? `${_("WAN routed offload")} + ${_("ONU bridge offload")}`
+							: routed
+								? _("WAN routed offload")
+								: _("ONU bridge offload"),
+					)}
 					{row(_("Managed bridge"), npu.config_valid ? npu.bridge : "—")}
 					{row(_("Bridge offload mask"), maskText(npu.bridge_offload_mask, npu.mask_valid))}
 					{row(_("Admitted ports"), admissionValid ? npu.active_ports.join(", ") || _("None") : "—")}
@@ -180,6 +187,8 @@ function renderPage(): HTMLElement {
 		<input
 			id="fttr-npu-bridge"
 			type="text"
+			class="cbi-input-text"
+			placeholder="br-lan"
 			maxLength={15}
 			disabled
 			oninput={() => {
@@ -187,7 +196,7 @@ function renderPage(): HTMLElement {
 			}}
 		/>
 	) as HTMLInputElement;
-	const feedback = <p aria-live="polite" />;
+	const feedback = <p aria-live="polite" class="fttr-npu-feedback" />;
 	const direction = (id: string) =>
 		(
 			<input
@@ -280,12 +289,6 @@ function renderPage(): HTMLElement {
 		const requestedDownstream = wanDownstream.checked;
 		const requestedOnuBridge = onuBridge.checked;
 		let saved = false;
-		if (requestedEnabled && requestedOnuBridge && (requestedUpstream || requestedDownstream)) {
-			feedback.textContent = _(
-				"WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge offload before enabling WAN directions.",
-			);
-			return;
-		}
 		if (!/^[a-zA-Z0-9_.-]{1,15}$/.test(name)) {
 			feedback.textContent = _(
 				"Use a bridge interface name of 1–15 letters, digits, dots, underscores or hyphens.",
@@ -335,41 +338,94 @@ function renderPage(): HTMLElement {
 	};
 	const root = (
 		<div class="cbi-map fttr-npu">
-			<style>{`.fttr-npu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.fttr-npu-row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px dashed #8884}.fttr-npu-row strong{text-align:right;overflow-wrap:anywhere}.fttr-npu-note{opacity:.75;font-size:90%;line-height:1.5}.fttr-npu-state{padding:2px 6px;border:1px solid #8886;border-radius:4px}.fttr-npu-state.ready{color:#2b8;border-color:#2b86}.fttr-npu-state.pending{color:#d90;border-color:#d906}.fttr-npu label{display:inline-flex;gap:8px;align-items:center;margin:8px 20px 8px 0}.fttr-npu-flows{font-size:85%}.fttr-npu-flows td{overflow-wrap:anywhere}`}</style>
+			<style>{`.fttr-npu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.fttr-npu-row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px dashed #8884}.fttr-npu-row strong{text-align:right;overflow-wrap:anywhere}.fttr-npu-note{opacity:.75;font-size:90%;line-height:1.5}.fttr-npu-state{padding:2px 6px;border:1px solid #8886;border-radius:4px}.fttr-npu-state.ready{color:#2b8;border-color:#2b86}.fttr-npu-state.pending{color:#d90;border-color:#d906}.fttr-npu-flows{font-size:85%}.fttr-npu-flows td{overflow-wrap:anywhere}
+.fttr-npu-card{padding:14px 16px;border:1px solid rgba(127,140,141,.25);border-radius:6px;background:rgba(127,140,141,.04);margin-bottom:14px}
+.fttr-npu-field-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.fttr-npu-bridge-row{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(127,140,141,.2)}
+.fttr-npu-checkbox-label{display:inline-flex;align-items:center;gap:10px;cursor:pointer;margin:0;user-select:none}
+.fttr-npu-checkbox-label input[type="checkbox"]{margin:0;cursor:pointer;width:17px;height:17px;flex-shrink:0}
+.fttr-npu-label-text{font-weight:600;font-size:0.95em}
+.fttr-npu-input-wrap input{width:200px;max-width:100%;font-family:monospace;font-size:0.95em;padding:4px 8px}
+.fttr-npu-dir-header{margin:16px 0 10px}
+.fttr-npu-dir-header h4{margin:0;font-size:1.02em;font-weight:600;opacity:.9}
+.fttr-npu-dir-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-bottom:14px}
+.fttr-npu-dir-card{padding:12px 14px;border:1px solid rgba(127,140,141,.25);border-radius:6px;background:rgba(127,140,141,.04);display:flex;flex-direction:column;justify-content:space-between;min-width:0;transition:border-color .2s ease,background .2s ease}
+.fttr-npu-dir-card:hover{border-color:rgba(127,140,141,.45);background:rgba(127,140,141,.07)}
+.fttr-npu-card-desc{margin-top:6px;margin-left:27px;font-size:82%;line-height:1.4;opacity:.8}
+.fttr-npu-notes-box{padding:10px 14px;border-left:3px solid #3498db;background:rgba(52,152,219,.08);border-radius:0 4px 4px 0;margin-bottom:14px;font-size:88%;line-height:1.55}
+.fttr-npu-notes-box p{margin:4px 0}
+.fttr-npu-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.fttr-npu-feedback:not(:empty){margin-top:10px;padding:8px 12px;border-radius:4px;background:rgba(127,140,141,.1);font-weight:500}`}</style>
 			<h2>{_("NPU hardware acceleration")}</h2>
 			<div class="cbi-section">
 				<h3>{_("NPU configuration")}</h3>
-				<label htmlFor="fttr-npu-enabled">
-					{enabled}
-					{_("Enable FTTR hardware offload")}
-				</label>
-				<label htmlFor="fttr-npu-bridge">
-					{_("Bridge interface")}
-					{bridge}
-				</label>
-				<label htmlFor="fttr-npu-wan-upstream">
-					{wanUpstream}
-					{_("Enable WAN upstream offload (experimental)")}
-				</label>
-				<label htmlFor="fttr-npu-wan-downstream">
-					{wanDownstream}
-					{_("Enable WAN downstream offload (experimental)")}
-				</label>
-				<label htmlFor="fttr-npu-onu-bridge">
-					{onuBridge}
-					{_("Enable ONU bridge offload")}
-				</label>
-				<p class="fttr-npu-note">
-					{_(
-						"WAN and ONU bridge offload use exclusive port modes. Disable ONU bridge offload before enabling either WAN direction.",
-					)}
-				</p>
-				<p class="fttr-npu-note">
-					{_(
-						"WAN directions require software and hardware flow offloading in the firewall settings. Saving here does not change those global settings.",
-					)}
-				</p>
-				<div>
+
+				<div class="fttr-npu-card">
+					<div class="fttr-npu-field-row">
+						<div>
+							<label class="fttr-npu-checkbox-label" htmlFor="fttr-npu-enabled">
+								{enabled}
+								<span class="fttr-npu-label-text">{_("Enable FTTR hardware offload")}</span>
+							</label>
+							<div class="cbi-value-description fttr-npu-card-desc">
+								{_("Master switch for FTTR port NPU hardware acceleration admission")}
+							</div>
+						</div>
+					</div>
+					<div class="fttr-npu-field-row fttr-npu-bridge-row">
+						<label class="fttr-npu-label-text" htmlFor="fttr-npu-bridge">
+							<span>{_("Bridge interface")}</span>
+							<div class="cbi-value-description" style="font-weight:normal;margin-top:2px">
+								{_("Managed bridge interface for FTTR logical devices (default: br-lan)")}
+							</div>
+						</label>
+						<div class="fttr-npu-input-wrap">{bridge}</div>
+					</div>
+				</div>
+
+				<div class="fttr-npu-dir-header">
+					<h4>{_("Directional offload modes")}</h4>
+				</div>
+				<div class="fttr-npu-dir-grid">
+					<div class="fttr-npu-dir-card">
+						<label class="fttr-npu-checkbox-label" htmlFor="fttr-npu-wan-upstream">
+							{wanUpstream}
+							<span class="fttr-npu-label-text">{_("Enable WAN upstream offload (experimental)")}</span>
+						</label>
+						<div class="cbi-value-description fttr-npu-card-desc">
+							{_("FTTR ONU → WAN NAT44 and routed hardware acceleration")}
+						</div>
+					</div>
+					<div class="fttr-npu-dir-card">
+						<label class="fttr-npu-checkbox-label" htmlFor="fttr-npu-wan-downstream">
+							{wanDownstream}
+							<span class="fttr-npu-label-text">{_("Enable WAN downstream offload (experimental)")}</span>
+						</label>
+						<div class="cbi-value-description fttr-npu-card-desc">
+							{_("WAN → FTTR ONU routed and inbound NAT hardware acceleration")}
+						</div>
+					</div>
+					<div class="fttr-npu-dir-card">
+						<label class="fttr-npu-checkbox-label" htmlFor="fttr-npu-onu-bridge">
+							{onuBridge}
+							<span class="fttr-npu-label-text">{_("Enable ONU bridge offload")}</span>
+						</label>
+						<div class="cbi-value-description fttr-npu-card-desc">
+							{_("Layer 2 hardware bridging between FTTR ONUs on the same bridge")}
+						</div>
+					</div>
+				</div>
+
+				<div class="fttr-npu-notes-box">
+					<p class="fttr-npu-note">
+						<strong>{_("Firewall requirements")}: </strong>
+						{_(
+							"WAN directions require software and hardware flow offloading in the firewall settings. Saving here does not change those global settings.",
+						)}
+					</p>
+				</div>
+
+				<div class="fttr-npu-actions">
 					{save} {refresh}
 				</div>
 				{feedback}

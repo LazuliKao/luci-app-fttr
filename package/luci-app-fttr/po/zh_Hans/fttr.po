@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-07 15:56+0800\n"
+"POT-Creation-Date: 2026-11-08 00:13+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -749,6 +749,9 @@ msgstr "DHCP 起始偏移"
 msgid "Diagnostic measurement channel"
 msgstr "诊断测量通道"
 
+msgid "Directional offload modes"
+msgstr "流向加速模式"
+
 msgid "Disable"
 msgstr "禁用"
 
@@ -986,6 +989,9 @@ msgstr "文件已写入"
 msgid "Firewall hooks"
 msgstr "防火墙钩子"
 
+msgid "Firewall requirements"
+msgstr "防火墙配置要求"
+
 msgid "Firmware"
 msgstr "固件"
 
@@ -1055,6 +1061,9 @@ msgstr "FTTR 控制器守护进程、OMCI 与 CWMP TR-069 配置管理后端服�
 
 msgid "FTTR hardware status"
 msgstr "FTTR 硬件状态"
+
+msgid "FTTR ONU → WAN NAT44 and routed hardware acceleration"
+msgstr "FTTR ONU → WAN NAT44 与路由硬件加速"
 
 msgid "FTTR overview"
 msgstr "FTTR 概览"
@@ -1294,6 +1303,9 @@ msgstr "最后更新 / 任务"
 msgid "Latest report error"
 msgstr "最新报告错误"
 
+msgid "Layer 2 hardware bridging between FTTR ONUs on the same bridge"
+msgstr "同一网桥下从网关之间的二层硬件桥接"
+
 msgid "Learned"
 msgstr "已学习"
 
@@ -1402,6 +1414,9 @@ msgstr ""
 msgid "Managed bridge"
 msgstr "管理桥接接口"
 
+msgid "Managed bridge interface for FTTR logical devices (default: br-lan)"
+msgstr "FTTR 逻辑接口挂载的目标网桥（默认：br-lan）"
+
 msgid "Managed objects and lifecycle intent"
 msgstr "受管对象与生命周期意图"
 
@@ -1449,6 +1464,9 @@ msgstr "手动模式仅保存配置；请在“同步”页面中点击“应用
 
 msgid "Manual synchronization"
 msgstr "手动同步"
+
+msgid "Master switch for FTTR port NPU hardware acceleration admission"
+msgstr "FTTR 端口 NPU 硬件加速与流表绑定的总准入开关"
 
 msgid "Matched"
 msgstr "已匹配"
@@ -1651,6 +1669,9 @@ msgstr "未开始"
 
 msgid "Note: Register"
 msgstr "注意：寄存器"
+
+msgid "Notice"
+msgstr "注意事项"
 
 msgid "NPU configuration"
 msgstr "NPU 配置"
@@ -2817,6 +2838,9 @@ msgstr "等待任务"
 
 msgid "WAN / WLAN lifecycle results"
 msgstr "WAN / WLAN 生命周期结果"
+
+msgid "WAN → FTTR ONU routed and inbound NAT hardware acceleration"
+msgstr "WAN → FTTR ONU 路由与反向 NAT 硬件加速"
 
 msgid ""
 "WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge "

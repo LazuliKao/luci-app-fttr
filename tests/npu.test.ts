@@ -69,9 +69,8 @@ test("NPU page preserves edits, invalidates pre-save polls, rejects failed opera
 	assert.equal(wanDownstream.checked, false);
 	assert.equal(onuBridge.checked, true);
 	wanUpstream.checked = true; wanUpstream.listeners.change();
-	set = async () => { assert.fail("conflicting port modes must not be submitted"); };
-	await save.onclick!();
-	assert.match(root.textContent, /cannot be enabled together/);
+	assert.equal(wanUpstream.checked, true);
+	assert.equal(onuBridge.checked, true);
 	onuBridge.checked = false; onuBridge.listeners.change();
 	assert.match(root.textContent, /9,007,199,254,740,993/);
 	bridge.value = "br-fttr";

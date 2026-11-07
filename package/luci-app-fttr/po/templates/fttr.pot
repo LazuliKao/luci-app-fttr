@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-07 15:52+0800\n"
+"POT-Creation-Date: 2026-11-08 00:13+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -749,6 +749,9 @@ msgstr ""
 msgid "Diagnostic measurement channel"
 msgstr ""
 
+msgid "Directional offload modes"
+msgstr ""
+
 msgid "Disable"
 msgstr ""
 
@@ -984,6 +987,9 @@ msgstr ""
 msgid "Firewall hooks"
 msgstr ""
 
+msgid "Firewall requirements"
+msgstr ""
+
 msgid "Firmware"
 msgstr ""
 
@@ -1052,6 +1058,9 @@ msgid ""
 msgstr ""
 
 msgid "FTTR hardware status"
+msgstr ""
+
+msgid "FTTR ONU → WAN NAT44 and routed hardware acceleration"
 msgstr ""
 
 msgid "FTTR overview"
@@ -1288,6 +1297,9 @@ msgstr ""
 msgid "Latest report error"
 msgstr ""
 
+msgid "Layer 2 hardware bridging between FTTR ONUs on the same bridge"
+msgstr ""
+
 msgid "Learned"
 msgstr ""
 
@@ -1394,6 +1406,9 @@ msgstr ""
 msgid "Managed bridge"
 msgstr ""
 
+msgid "Managed bridge interface for FTTR logical devices (default: br-lan)"
+msgstr ""
+
 msgid "Managed objects and lifecycle intent"
 msgstr ""
 
@@ -1440,6 +1455,9 @@ msgid ""
 msgstr ""
 
 msgid "Manual synchronization"
+msgstr ""
+
+msgid "Master switch for FTTR port NPU hardware acceleration admission"
 msgstr ""
 
 msgid "Matched"
@@ -1642,6 +1660,9 @@ msgid "Not Started"
 msgstr ""
 
 msgid "Note: Register"
+msgstr ""
+
+msgid "Notice"
 msgstr ""
 
 msgid "NPU configuration"
@@ -2804,6 +2825,9 @@ msgid "Waiting Task"
 msgstr ""
 
 msgid "WAN / WLAN lifecycle results"
+msgstr ""
+
+msgid "WAN → FTTR ONU routed and inbound NAT hardware acceleration"
 msgstr ""
 
 msgid ""
