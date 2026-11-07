@@ -1,242 +1,217 @@
 // SPDX-License-Identifier: Apache-2.0
 import assert from "node:assert/strict";
-import { test } from "node:test";
-import type { FttrStatus, SubGateway } from "../src/view/contracts/status";
-import {
-	buildTopology,
-	CONTROLLER_ID,
-	diffTopology,
-	edgeId,
-	gridPositions,
-	MEASUREMENT_STALE_SECONDS,
-	normalizeSerial,
-	shortSerial,
-} from "../src/view/topology/model";
+import test from "node:test";
+import { readFileSync } from "node:fs";
+import { fttrValidators } from "../src/api/client";
+import { createFttrClient } from "../src/api/generated/luci-client";
+import { TopologyReplySchema, TopologyClientsReplySchema } from "../src/api/generated/schemas";
+import type { TopologyClient, TopologyClientsReply, TopologyNode, TopologyNodeReply, TopologyReply } from "../src/api/generated/types";
+import { CLIENT_PREVIEW_LIMIT, clientKey, counts, layout, linkFor, measurementAge, nodeAddresses } from "../src/view/topology/model";
+import { type TopologyApi, TopologyStore } from "../src/view/topology/store";
 
-// Placeholder serials only; never use real device serial numbers in tests.
-const SN_A = "TEST0000000A";
-const SN_B = "TEST0000000B";
-const SN_C = "TEST0000000C";
-
-function onu(onuId: number, serial: string, extra: Partial<SubGateway> = {}): SubGateway {
-	return {
-		onu_id: onuId,
-		vendor: "TEST",
-		model: "Model-X",
-		serial_number: serial,
-		state: "o5_operation",
-		business_status: { phase: "verified", generation: 1, error: null },
-		management: null,
-		provisioning: null,
-		services: [],
-		ssids: [],
-		wifi_sync: "not_configured",
-		identity: null,
-		identity_age_seconds: null,
-		identity_current: true,
-		fiber_distance_m: null,
-		ranging_delay_rtd_ns: null,
-		equalization_delay_bits: null,
-		optical_rx_power_dbm: null,
-		optical_tx_power_dbm: null,
-		firmware_version: "",
-		hardware_version: "",
-		uptime_seconds: null,
-		data_path: { interface: `fttr${onuId}`, measurements: {} } as unknown as SubGateway["data_path"],
-		wifi_mesh: {} as SubGateway["wifi_mesh"],
-		connected_clients: null,
-		measurements: {},
-		...extra,
-	};
+// Synthetic identities and documentation addresses only.
+const ONU = "onu:TEST0000000A";
+function gateway(id = ONU, onuId: number | null = 0): TopologyNode {
+	return { id, label: "测试子网关", detail: {
+		kind: "onu", serial_number: "TEST0000000A", onu_id: onuId, vendor: "TEST", model: "Test-ONU", hardware_version: null, firmware_version: null,
+		registration: onuId === null ? null : "o5_operation", business: null, management: null, provisioning: null, services: [], ssids: [], wifi_sync: null,
+		identity: null, identity_current: false, identity_age_seconds: null, uptime_seconds: 0, fec: null,
+		binding: { active_onu_id: 0, desired_onu_id: 0, state: "effective", pending_restart: false }, extensions: { hl202: null }, measurements: {},
+	} };
+}
+function snapshot(id = "snapshot-1"): TopologyReply {
+	return { schema_version: 1, snapshot_id: id, generated_at: 100, snapshot_ttl_seconds: 30,
+		nodes: [{ id: "controller", label: "Test controller", detail: { kind: "controller", model: "Test", firmware_version: null, uptime_seconds: 0, fpga_status: "ready", interfaces: [], uplinks: [], optical: {
+			model: "Test module", wavelength_tx_nm: 1490, wavelength_rx_nm: 1310, nominal_downlink_gbps: 2.488, nominal_uplink_gbps: 1.244, tx_power_dbm: 0, laser_bias_current_ma: null, temperature_celsius: null, vcc_voltage: null, tx_enabled: false, measurements: {},
+		} } }, gateway()],
+		links: [{ id: "pon:test", source: "controller", target: ONU, relation: "pon_logical", data_interface: "fttr1", carrier: null, onu_rx_power_dbm: 0, onu_tx_power_dbm: null, equalization_delay_bits: 0, data_path: null, measurements: {} }],
+		sources: [{ id: "fttr.status", state: "ok", sampled_at: 98, reason: null }], issues: [] };
+}
+function client(extra: Partial<TopologyClient> = {}): TopologyClient {
+	return { id: "learned:02:00:00:00:00:01", mac: "02:00:00:00:00:01", hostname: "测试终端", addresses: ["192.0.2.2"], relation: "learned_behind", source: "bridge.fdb", interface: "fttr1", ...extra };
+}
+function clients(nodeId: string, snapshotId = "snapshot-1", values: TopologyClient[] = []): Extract<TopologyClientsReply, {status: "ok"}> {
+	return { status: "ok", snapshot_id: snapshotId, parent_node_id: nodeId, clients: values, associated_client_count: null, learned_host_count: null, complete: false, next_cursor: null, sources: [] };
+}
+function api(overrides: Partial<TopologyApi> = {}): TopologyApi {
+	return { getTopology: async () => snapshot(), getTopologyNode: async (r) => ({ status: "ok", snapshot_id: r.snapshot_id!, node: gateway(r.node_id) }), getTopologyClients: async (r) => clients(r.node_id, r.snapshot_id), ...overrides };
+}
+function deferred<T>() {
+	let resolve!: (value: T) => void;
+	let reject!: (error: Error) => void;
+	const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
+	return { promise, resolve, reject };
 }
 
-function status(subGateways: SubGateway[], extra: Partial<FttrStatus> = {}): FttrStatus {
-	return {
-		fpga_status: "ready",
-		provisioning: null,
-		optical_transceiver: {
-			model: "TEST-OPT",
-			wavelength_tx_nm: 1577,
-			wavelength_rx_nm: 1270,
-			phy_rate_downlink_gbps: 10,
-			phy_rate_uplink_gbps: 10,
-			tx_power_dbm: null,
-			laser_bias_current_ma: null,
-			temperature_celsius: null,
-			vcc_voltage: null,
-			cdr_locked: true,
-			measurements: {},
-		},
-		switch_ports: [],
-		sub_gateways: subGateways,
-		telemetry_gateways: [],
-		...extra,
-	};
-}
-
-function pinning(active: Record<string, number>, desired: Record<string, number>): FttrStatus["onu_pinning"] {
-	return {
-		active,
-		desired,
-		pending_restart: JSON.stringify(active) !== JSON.stringify(desired),
-		allocation_blocked: false,
-		startup_error: null,
-		config_error: null,
-	};
-}
-
-test("node IDs stay stable when ONU IDs and interfaces change", () => {
-	const first = buildTopology(status([onu(1, SN_A), onu(2, SN_B)]));
-	const second = buildTopology(status([onu(7, SN_B), onu(3, SN_A)]));
-	const ids = (model: typeof first) => model.subGateways.map((node) => node.id).sort();
-	assert.deepEqual(ids(first), ids(second));
-	assert.deepEqual(ids(first), [`sg:${SN_A}`, `sg:${SN_B}`]);
-	assert.equal(second.subGateways.find((node) => node.serial === SN_A)?.onuId, 3);
-	assert.deepEqual(diffTopology(first, second), { added: [], removed: [], kept: [`sg:${SN_A}`, `sg:${SN_B}`] });
+test("generated tagged topology schemas retain both tag and payload, null and zero", () => {
+	const data = snapshot();
+	assert.deepEqual(TopologyReplySchema.parse(data), data);
+	const malformed = structuredClone(data);
+	(malformed.nodes[0].detail as {kind: string}).kind = "unknown";
+	assert.equal(TopologyReplySchema.safeParse(malformed).success, false);
+	const missing = structuredClone(data);
+	delete (missing.nodes[0].detail as Partial<typeof missing.nodes[0]["detail"]>).kind;
+	assert.equal(TopologyReplySchema.safeParse(missing).success, false);
+	assert.equal(TopologyReplySchema.safeParse({ ...data, nodes: [{ id: "bad", label: "bad", detail: {kind: "onu"} }] }).success, false);
+	assert.deepEqual(TopologyClientsReplySchema.parse(clients(ONU)), clients(ONU));
+	assert.equal(TopologyClientsReplySchema.safeParse({ ...clients(ONU), complete: "false" }).success, false);
 });
 
-test("serials are case-normalized across live status and bindings", () => {
-	assert.equal(normalizeSerial("  test0000000a "), SN_A);
-	assert.equal(normalizeSerial("   "), null);
-	const model = buildTopology(
-		status([onu(1, SN_A.toLowerCase())], { onu_pinning: pinning({ [SN_A]: 1 }, { [SN_A.toLowerCase()]: 1 }) }),
-	);
-	assert.equal(model.subGateways.length, 1);
-	assert.equal(model.subGateways[0].id, `sg:${SN_A}`);
-	assert.equal(model.subGateways[0].binding.kind, "effective");
+test("topology SDK maps only the three read methods with exact snapshot and pagination parameters", async () => {
+	const calls: Array<{method: string; args: unknown[]}> = [];
+	const rpc = { declare: (options: { method: string }) => async (...args: unknown[]) => {
+		calls.push({ method: options.method, args });
+		return options.method === "get_topology" ? snapshot() : options.method === "get_topology_node" ? { status: "ok", snapshot_id: "snapshot-1", node: gateway() } : clients(ONU);
+	} } as unknown as typeof L.rpc;
+	const sdk = createFttrClient(rpc, fttrValidators);
+	await sdk.getTopology();
+	await sdk.getTopologyNode({ node_id: ONU, snapshot_id: "snapshot-1" });
+	await sdk.getTopologyClients({ node_id: ONU, snapshot_id: "snapshot-1", cursor: "opaque", limit: 100 });
+	assert.deepEqual(calls, [
+		{ method: "get_topology", args: [] },
+		{ method: "get_topology_node", args: [ONU, "snapshot-1"] },
+		{ method: "get_topology_clients", args: [ONU, "snapshot-1", "opaque", 100] },
+	]);
+	const page = readFileSync(new URL("../src/view/topology.tsx", import.meta.url), "utf8");
+	assert.doesNotMatch(page, /getStatus|getNetworkDevices|showOnuDetails|contracts\/api/);
 });
 
-test("bound devices absent from live status become offline placeholders", () => {
-	const model = buildTopology(
-		status([onu(1, SN_A)], {
-			onu_pinning: pinning({ [SN_B]: 4 }, { [SN_B]: 4 }),
-			switch_ports: [
-				{ port: 4, interface: "fttr4", carrier: false, status: "down", link_state: "down", reserved_sn: SN_B },
-			],
-		}),
-	);
-	const offline = model.subGateways.find((node) => node.serial === SN_B);
-	assert.ok(offline);
-	assert.equal(offline.present, false);
-	assert.equal(offline.registered, false);
-	assert.equal(offline.onu, null);
-	assert.equal(offline.dataInterface?.name, "fttr4");
-	assert.equal(offline.dataInterface?.carrier, false);
-	assert.equal(offline.rxPower.value, null);
-	assert.deepEqual(model.counts, { known: 2, registered: 1, registering: 0, offline: 1 });
-	assert.deepEqual(
-		model.edges.map((edge) => edge.id),
-		model.subGateways.map((node) => edgeId(node.id)),
-	);
-	assert.ok(model.edges.every((edge) => edge.source === CONTROLLER_ID));
+test("backend identity and binding-only observations remain authoritative", () => {
+	const data = snapshot();
+	data.nodes.push(gateway("backend:binding-id", null));
+	assert.deepEqual(counts(data), { known: 2, registered: 1, boundOnly: 1 });
+	assert.equal(linkFor(data, ONU)?.data_interface, "fttr1");
+	assert.equal(linkFor(data, "backend:binding-id"), undefined);
+	const bound = layout(data, new Map()).positions.find((p) => p.id === "backend:binding-id");
+	assert.equal(bound?.parent, null, "no synthetic link when the backend has not supplied one");
+	data.nodes[1] = gateway(ONU, 15);
+	assert.equal(layout(data, new Map()).positions[1].id, ONU, "ONU ID changes never rebuild the backend's stable ID");
 });
 
-test("pending bindings are distinguished from effective bindings", () => {
-	const model = buildTopology(
-		status([], {
-			onu_pinning: pinning({ [SN_A]: 1, [SN_B]: 2, [SN_C]: 3 }, { [SN_A]: 1, [SN_B]: 5, "TEST0000000D": 6 }),
-		}),
-	);
-	const kind = (serial: string) => model.subGateways.find((node) => node.serial === serial)?.binding.kind;
-	assert.equal(kind(SN_A), "effective");
-	assert.equal(kind(SN_B), "pending_change");
-	assert.equal(kind(SN_C), "pending_remove");
-	assert.equal(kind("TEST0000000D"), "pending_add");
-	// A desired-only binding is not yet in force, so it has no data interface.
-	assert.equal(model.subGateways.find((node) => node.serial === "TEST0000000D")?.dataInterface, null);
-	assert.equal(model.controller.pendingRestart, true);
+test("three-column layout keeps local AP objects on the controller and bounds previews", () => {
+	const data = snapshot();
+	const learned = Array.from({length: 12}, (_, i) => client({id: `object-${i}`}));
+	const associated = client({relation: "associated_with", interface: "phy0-ap0"});
+	const groups = new Map([[ONU, {clients: learned}], ["controller", {clients: [associated]}]]);
+	const result = layout(data, groups);
+	assert.equal(result.positions.filter((p) => p.parent === ONU).length, CLIENT_PREVIEW_LIMIT);
+	assert.equal(result.positions.find((p) => p.id === clientKey("controller", associated))?.parent, "controller");
+	assert.notEqual(clientKey("controller", associated), clientKey(ONU, associated));
+	for (const node of result.positions) { assert.ok(node.x >= 0); assert.ok(node.y >= 0); assert.ok(node.x + node.width <= result.width); }
 });
 
-test("missing measurements stay unavailable while zero values are preserved", () => {
-	const model = buildTopology(
-		status([
-			onu(1, SN_A, {
-				optical_rx_power_dbm: 0,
-				fiber_distance_m: 0,
-				measurements: { optical_rx_power_dbm: { source: "omci", unit: "dBm", reason: null, raw: null, age_seconds: 2 } },
-			}),
-			onu(2, SN_B),
-			onu(3, SN_C, {
-				optical_rx_power_dbm: -18.5,
-				measurements: {
-					optical_rx_power_dbm: {
-						source: "omci",
-						unit: "dBm",
-						reason: null,
-						raw: null,
-						age_seconds: MEASUREMENT_STALE_SECONDS + 1,
-					},
-				},
-			}),
-		]),
-	);
-	const [a, b, c] = model.subGateways;
-	assert.equal(a.rxPower.value, 0);
-	assert.equal(a.rxPower.stale, false);
-	assert.equal(a.distance.value, 0);
-	assert.equal(b.rxPower.value, null);
-	assert.equal(b.rxPower.stale, false);
-	assert.equal(c.rxPower.value, -18.5);
-	assert.equal(c.rxPower.stale, true);
+test("measurement age uses the core source timestamp and extensions supply only observed addresses", () => {
+	const data = snapshot();
+	assert.equal(measurementAge(data, 3, 105), 10);
+	assert.equal(measurementAge(data, null, 105), null);
+	assert.equal(measurementAge(data, 0, 90), 0);
+	assert.deepEqual(nodeAddresses(data.nodes[1]), []);
 });
 
-test("readings from devices not in operation state are not presented as live", () => {
-	const model = buildTopology(status([onu(1, SN_A, { state: "o6_intermittent_lods", optical_rx_power_dbm: -20 })]));
-	const [node] = model.subGateways;
-	assert.equal(node.registered, false);
-	assert.equal(node.rxPower.stale, true);
-	assert.deepEqual(model.counts, { known: 1, registered: 0, registering: 1, offline: 0 });
+test("refresh has no reentry and keeps a successful graph and object inventory on RPC failure", async () => {
+	const next = deferred<TopologyReply>();
+	let calls = 0;
+	const store = new TopologyStore(api({ getTopology: () => { calls++; return next.promise; } }), () => {}, snapshot());
+	await store.refresh(true);
+	const previousClients = store.clients;
+	const first = store.refresh();
+	assert.equal(store.refresh(), first);
+	assert.equal(store.refreshing, true);
+	next.reject(new Error("backend unavailable"));
+	await first;
+	assert.equal(calls, 1);
+	assert.equal(store.snapshot?.snapshot_id, "snapshot-1");
+	assert.equal(store.clients, previousClients);
+	assert.equal(store.error, "backend unavailable");
+	assert.equal(store.refreshing, false);
 });
 
-test("node and edge additions/removals change the structure key", () => {
-	const before = buildTopology(status([onu(1, SN_A), onu(2, SN_B)]));
-	const same = buildTopology(status([onu(1, SN_A, { optical_rx_power_dbm: -17 }), onu(2, SN_B)]));
-	const after = buildTopology(status([onu(2, SN_B), onu(3, SN_C)]));
-	assert.equal(before.structureKey, same.structureKey);
-	assert.notEqual(before.structureKey, after.structureKey);
-	assert.deepEqual(diffTopology(before, after), { added: [`sg:${SN_C}`], removed: [`sg:${SN_A}`], kept: [`sg:${SN_B}`] });
-	assert.deepEqual(diffTopology(null, after).added, [`sg:${SN_B}`, `sg:${SN_C}`]);
+test("partial client failure does not reject the snapshot or invent an empty successful inventory", async () => {
+	const store = new TopologyStore(api({ getTopologyClients: async (r) => {
+		if (r.node_id === ONU) throw new Error("source unavailable");
+		return { ...clients(r.node_id), associated_client_count: 0 };
+	} }), () => {});
+	await store.refresh();
+	assert.equal(store.error, null);
+	assert.equal(store.clients.get(ONU)?.result, null);
+	assert.equal(store.clients.get(ONU)?.error, "source unavailable");
+	assert.equal(store.clients.get("controller")?.result?.associated_client_count, 0);
+	assert.equal(store.clients.get("controller")?.result?.learned_host_count, null);
 });
 
-test("conflicting identities are flagged instead of merged", () => {
-	const model = buildTopology(
-		status([onu(1, SN_A), onu(2, SN_A.toLowerCase()), onu(3, ""), onu(4, SN_B, { data_path: { interface: "fttr1" } as SubGateway["data_path"] })]),
-	);
-	assert.equal(model.subGateways.length, 4);
-	assert.equal(new Set(model.subGateways.map((node) => node.id)).size, 4);
-	const duplicates = model.subGateways.filter((node) => node.issues.includes("duplicate_serial"));
-	assert.equal(duplicates.length, 2);
-	const missing = model.subGateways.find((node) => node.issues.includes("missing_serial"));
-	assert.equal(missing?.id, "onu:3");
-	assert.equal(missing?.serial, null);
-	const portConflicts = model.subGateways.filter((node) => node.issues.includes("port_conflict"));
-	assert.deepEqual(portConflicts.map((node) => node.onuId).sort(), [1, 4]);
+test("pagination carries the same snapshot and cursor, deduplicates pages and retains null counts", async () => {
+	const requests: unknown[] = [];
+	const store = new TopologyStore(api({ getTopologyClients: async (r) => {
+		requests.push(r);
+		if (r.cursor) return clients(r.node_id, r.snapshot_id, [client(), client({id: "second"})]);
+		return { ...clients(r.node_id, r.snapshot_id, [client()]), next_cursor: "opaque" };
+	} }), () => {}, snapshot());
+	await store.loadClients(ONU);
+	await store.loadClients(ONU, true);
+	assert.deepEqual(requests, [{node_id: ONU, snapshot_id: "snapshot-1", limit: 100}, {node_id: ONU, snapshot_id: "snapshot-1", limit: 100, cursor: "opaque"}]);
+	assert.equal(store.clients.get(ONU)?.clients.length, 2);
+	assert.equal(store.clients.get(ONU)?.result?.learned_host_count, null);
+	assert.equal(store.clients.get(ONU)?.result?.complete, false);
 });
 
-test("ordering follows effective port assignment with serial fallback", () => {
-	const model = buildTopology(
-		status([
-			onu(1, SN_C, { data_path: { interface: "fttr9" } as SubGateway["data_path"] }),
-			onu(2, SN_B, { data_path: { interface: "" } as SubGateway["data_path"] }),
-			onu(3, SN_A, { data_path: { interface: "" } as SubGateway["data_path"] }),
-			onu(4, "TEST0000000D", { data_path: { interface: "fttr2" } as SubGateway["data_path"] }),
-		]),
-	);
-	assert.deepEqual(
-		model.subGateways.map((node) => node.serial),
-		["TEST0000000D", SN_C, SN_A, SN_B],
-	);
+test("an expired or mismatched page is explicit and never silently creates a new snapshot", async () => {
+	let overviewCalls = 0;
+	const store = new TopologyStore(api({ getTopology: async () => { overviewCalls++; return snapshot(); }, getTopologyClients: async () => ({ status: "error", code: "snapshot_expired" }) }), () => {}, snapshot());
+	await store.loadClients(ONU);
+	assert.equal(store.clients.get(ONU)?.error, "snapshot_expired");
+	assert.equal(store.clients.get(ONU)?.result, null);
+	assert.equal(overviewCalls, 0);
+	const mismatched = new TopologyStore(api({getTopologyClients: async () => clients("another-parent")}), () => {}, snapshot());
+	await mismatched.loadClients(ONU);
+	assert.equal(mismatched.clients.get(ONU)?.error, "snapshot_mismatch");
 });
 
-test("layout helpers are deterministic", () => {
-	assert.deepEqual(
-		gridPositions(10, 8).map(({ row, column, columns }) => [row, column, columns]),
-		[
-			[0, 0, 8], [0, 1, 8], [0, 2, 8], [0, 3, 8], [0, 4, 8], [0, 5, 8], [0, 6, 8], [0, 7, 8],
-			[1, 0, 2], [1, 1, 2],
-		],
-	);
-	assert.equal(shortSerial(SN_A), SN_A);
-	assert.equal(shortSerial("ABCDEFGHIJKLMNOPQRST"), "ABCD…JKLMNOPQRST");
-	assert.equal(shortSerial(null), null);
+test("late node replies cannot overwrite newer registration snapshots", async () => {
+	const oldNode = deferred<TopologyNodeReply>();
+	const newer = snapshot("snapshot-2");
+	newer.nodes[1].label = "New registration";
+	const store = new TopologyStore(api({getTopology: async () => newer, getTopologyNode: () => oldNode.promise}), () => {}, snapshot());
+	const detail = store.loadNode(ONU);
+	await store.refresh();
+	oldNode.resolve({status: "ok", snapshot_id: "snapshot-1", node: {...gateway(), label: "Old registration"}});
+	await detail;
+	assert.equal(store.snapshot?.nodes[1].label, "New registration");
+	assert.equal(store.details.get(ONU), undefined);
+});
+
+test("late pagination cannot attach old clients to a refreshed node", async () => {
+	const page = deferred<TopologyClientsReply>();
+	const store = new TopologyStore(api({getTopology: async () => snapshot("snapshot-2"), getTopologyClients: (r) => r.snapshot_id === "snapshot-1" ? page.promise : Promise.resolve(clients(r.node_id, r.snapshot_id))}), () => {}, snapshot());
+	const pending = store.loadClients(ONU);
+	await store.refresh();
+	page.resolve(clients(ONU, "snapshot-1", [client()]));
+	await pending;
+	assert.equal(store.clients.get(ONU)?.result?.snapshot_id, "snapshot-2");
+	assert.equal(store.clients.get(ONU)?.clients.length, 0);
+});
+
+test("detail requests are deduplicated, validate node identity and expose expired snapshots", async () => {
+	const response = deferred<TopologyNodeReply>();
+	let calls = 0;
+	const store = new TopologyStore(api({getTopologyNode: () => {calls++; return response.promise;}}), () => {}, snapshot());
+	const first = store.loadNode(ONU);
+	assert.equal(store.loadNode(ONU), first);
+	response.resolve({status: "error", code: "snapshot_expired"});
+	await first;
+	assert.equal(calls, 1);
+	assert.equal(store.details.get(ONU)?.error, "snapshot_expired");
+	assert.equal(store.snapshot?.nodes[1].label, "测试子网关");
+});
+
+test("destroyed pages ignore in-flight responses and never emit further renders", async () => {
+	const pending = deferred<TopologyReply>();
+	let renders = 0;
+	const store = new TopologyStore(api({getTopology: () => pending.promise}), () => {renders++;});
+	const task = store.refresh();
+	store.destroy();
+	const before = renders;
+	pending.resolve(snapshot());
+	await task;
+	assert.equal(store.snapshot, null);
+	assert.equal(renders, before);
 });

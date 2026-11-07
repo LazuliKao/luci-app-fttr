@@ -153,6 +153,30 @@ export const StatusReplySchema = z.object({ "ubus": z.optional(z.record(z.string
 export const SyncActionSchema = z.union([z.literal("plan"), z.literal("apply"), z.literal("management_plan"), z.literal("management_apply"), z.literal("reset_state"), z.literal("reconcile"), z.literal("retry")]) satisfies z.ZodMiniType<wire.SyncAction>;
 export const SyncReplySchema = z.union([z.object({ "operation_ids": z.array(z.number()), "revision": z.string() }), z.object({ "started": z.literal(true), "mode": OperationModeSchema }), z.object({ "reset": z.literal(true), "device": z.string() }), z.object({ "operation_ids": z.array(z.number()), "mode": OperationModeSchema, "reconcile": z.optional(z.boolean()), "retry": z.optional(z.boolean()) }), CommandErrorSchema]) satisfies z.ZodMiniType<wire.SyncReply>;
 export const SyncRequestSchema = z.object({ "action": SyncActionSchema, "target": z.string(), "management": z.optional(z.boolean()), "item": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.SyncRequest>;
+export const TopologyBindingStateSchema = z.union([z.literal("none"), z.literal("effective"), z.literal("pending_add"), z.literal("pending_change"), z.literal("pending_remove")]) satisfies z.ZodMiniType<wire.TopologyBindingState>;
+export const TopologyBindingSchema = z.object({ "active_onu_id": z.union([z.number(), z.null()]), "desired_onu_id": z.union([z.number(), z.null()]), "state": TopologyBindingStateSchema, "pending_restart": z.boolean() }) satisfies z.ZodMiniType<wire.TopologyBinding>;
+export const TopologyRelationSchema = z.union([z.literal("pon_logical"), z.literal("associated_with"), z.literal("learned_behind")]) satisfies z.ZodMiniType<wire.TopologyRelation>;
+export const TopologyClientSchema = z.object({ "id": z.string(), "mac": z.string(), "hostname": z.union([z.string(), z.null()]), "addresses": z.array(z.string()), "relation": TopologyRelationSchema, "source": z.string(), "interface": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.TopologyClient>;
+export const TopologySourceStateSchema = z.union([z.literal("ok"), z.literal("partial"), z.literal("unavailable")]) satisfies z.ZodMiniType<wire.TopologySourceState>;
+export const TopologySourceSchema = z.object({ "id": z.string(), "state": TopologySourceStateSchema, "sampled_at": z.number(), "reason": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.TopologySource>;
+export const TopologyQueryErrorSchema = z.union([z.literal("snapshot_expired"), z.literal("node_not_found"), z.literal("invalid_cursor")]) satisfies z.ZodMiniType<wire.TopologyQueryError>;
+export const TopologyClientsReplySchema = z.union([z.object({ "status": z.literal("ok"), "snapshot_id": z.string(), "parent_node_id": z.string(), "clients": z.array(TopologyClientSchema), "associated_client_count": z.union([z.number(), z.null()]), "learned_host_count": z.union([z.number(), z.null()]), "complete": z.boolean(), "next_cursor": z.union([z.string(), z.null()]), "sources": z.array(TopologySourceSchema) }), z.object({ "status": z.literal("error"), "code": TopologyQueryErrorSchema })]) satisfies z.ZodMiniType<wire.TopologyClientsReply>;
+export const TopologyClientsRequestSchema = z.object({ "node_id": z.string(), "snapshot_id": z.optional(z.string()), "cursor": z.optional(z.string()), "limit": z.optional(z.number()) }) satisfies z.ZodMiniType<wire.TopologyClientsRequest>;
+export const TopologyOpticalModuleSchema = z.object({ "model": z.string(), "wavelength_tx_nm": z.number(), "wavelength_rx_nm": z.number(), "nominal_downlink_gbps": z.number(), "nominal_uplink_gbps": z.number(), "tx_power_dbm": z.union([z.number(), z.null()]), "laser_bias_current_ma": z.union([z.number(), z.null()]), "temperature_celsius": z.union([z.number(), z.null()]), "vcc_voltage": z.union([z.number(), z.null()]), "tx_enabled": z.union([z.boolean(), z.null()]), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.TopologyOpticalModule>;
+export const TopologyInterfaceSchema = z.object({ "name": z.string(), "mac": z.union([z.string(), z.null()]), "carrier": z.union([z.boolean(), z.null()]), "speed_mbps": z.union([z.number(), z.null()]), "duplex": z.union([z.string(), z.null()]), "bridge_members": z.array(z.string()), "addresses": z.array(z.string()) }) satisfies z.ZodMiniType<wire.TopologyInterface>;
+export const TopologyUplinkSchema = z.object({ "interface": z.string(), "device": z.union([z.string(), z.null()]), "protocol": z.union([z.string(), z.null()]), "up": z.boolean(), "addresses": z.array(z.string()) }) satisfies z.ZodMiniType<wire.TopologyUplink>;
+export const TopologyControllerSchema = z.object({ "model": z.union([z.string(), z.null()]), "firmware_version": z.union([z.string(), z.null()]), "uptime_seconds": z.union([z.number(), z.null()]), "fpga_status": z.string(), "optical": TopologyOpticalModuleSchema, "interfaces": z.array(TopologyInterfaceSchema), "uplinks": z.array(TopologyUplinkSchema) }) satisfies z.ZodMiniType<wire.TopologyController>;
+export const TopologyDataPathSchema = z.object({ "observer_node_id": z.string(), "rx_bytes": z.union([z.number(), z.null()]), "tx_bytes": z.union([z.number(), z.null()]), "current_rx_kbps": z.union([z.number(), z.null()]), "current_tx_kbps": z.union([z.number(), z.null()]), "onu_inventory": z.union([OnuOmciInventorySchema, z.null()]), "offload": DataPathOffloadStatusSchema, "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.TopologyDataPath>;
+export const TopologyHl202Schema = z.object({ "report_revision": z.number(), "binding_generation": z.string(), "age_seconds": z.number(), "ip": z.union([z.string(), z.null()]), "bridge_ip": z.union([z.string(), z.null()]), "mac": z.union([z.string(), z.null()]), "connection_type_raw": z.union([z.string(), z.null()]), "uptime_seconds": z.union([z.number(), z.null()]), "cpu_usage_raw": z.union([z.number(), z.null()]), "memory_usage_raw": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.TopologyHl202>;
+export const TopologyExtensionsSchema = z.object({ "hl202": z.union([TopologyHl202Schema, z.null()]) }) satisfies z.ZodMiniType<wire.TopologyExtensions>;
+export const TopologyIssueSchema = z.object({ "code": z.string(), "node_id": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.TopologyIssue>;
+export const TopologyLinkSchema = z.object({ "id": z.string(), "source": z.string(), "target": z.string(), "relation": TopologyRelationSchema, "data_interface": z.union([z.string(), z.null()]), "carrier": z.union([z.boolean(), z.null()]), "onu_rx_power_dbm": z.union([z.number(), z.null()]), "onu_tx_power_dbm": z.union([z.number(), z.null()]), "equalization_delay_bits": z.union([z.number(), z.null()]), "data_path": z.union([TopologyDataPathSchema, z.null()]), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.TopologyLink>;
+export const TopologyOnuSchema = z.object({ "serial_number": z.union([z.string(), z.null()]), "onu_id": z.union([z.number(), z.null()]), "vendor": z.union([z.string(), z.null()]), "model": z.union([z.string(), z.null()]), "hardware_version": z.union([z.string(), z.null()]), "firmware_version": z.union([z.string(), z.null()]), "registration": z.union([RegistrationStateSchema, z.null()]), "business": z.union([BusinessStatusSchema, z.null()]), "management": z.union([ManagementStatusSchema, z.null()]), "provisioning": z.union([ProvisioningStatusSchema, z.null()]), "services": z.array(SyncItemSchema), "ssids": z.array(SyncItemSchema), "wifi_sync": z.union([WifiSyncSchema, z.null()]), "identity": z.union([OnuIdentitySchema, z.null()]), "identity_current": z.boolean(), "identity_age_seconds": z.union([z.number(), z.null()]), "uptime_seconds": z.union([z.number(), z.null()]), "fec": z.union([FecStatusSchema, z.null()]), "binding": TopologyBindingSchema, "extensions": TopologyExtensionsSchema, "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.TopologyOnu>;
+export const TopologyNodeDetailSchema = z.union([z.intersection(z.object({ "kind": z.literal("controller") }), TopologyControllerSchema), z.intersection(z.object({ "kind": z.literal("onu") }), TopologyOnuSchema)]) satisfies z.ZodMiniType<wire.TopologyNodeDetail>;
+export const TopologyNodeSchema = z.object({ "id": z.string(), "label": z.string(), "detail": TopologyNodeDetailSchema }) satisfies z.ZodMiniType<wire.TopologyNode>;
+export const TopologyNodeReplySchema = z.union([z.object({ "status": z.literal("ok"), "snapshot_id": z.string(), "node": TopologyNodeSchema }), z.object({ "status": z.literal("error"), "code": TopologyQueryErrorSchema })]) satisfies z.ZodMiniType<wire.TopologyNodeReply>;
+export const TopologyNodeRequestSchema = z.object({ "node_id": z.string(), "snapshot_id": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.TopologyNodeRequest>;
+export const TopologyReplySchema = z.object({ "schema_version": z.literal(1), "snapshot_id": z.string(), "generated_at": z.number(), "snapshot_ttl_seconds": z.number(), "nodes": z.array(TopologyNodeSchema), "links": z.array(TopologyLinkSchema), "sources": z.array(TopologySourceSchema), "issues": z.array(TopologyIssueSchema) }) satisfies z.ZodMiniType<wire.TopologyReply>;
 
 // Both directions are checked: schema narrowing and contract widening fail compilation.
 type Assert<T extends true> = T;
@@ -459,4 +483,52 @@ export type SchemaContracts = [
 	Assert<[wire.SyncReply] extends [z.infer<typeof SyncReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof SyncRequestSchema>] extends [wire.SyncRequest] ? true : false>,
 	Assert<[wire.SyncRequest] extends [z.infer<typeof SyncRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyBindingStateSchema>] extends [wire.TopologyBindingState] ? true : false>,
+	Assert<[wire.TopologyBindingState] extends [z.infer<typeof TopologyBindingStateSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyBindingSchema>] extends [wire.TopologyBinding] ? true : false>,
+	Assert<[wire.TopologyBinding] extends [z.infer<typeof TopologyBindingSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyRelationSchema>] extends [wire.TopologyRelation] ? true : false>,
+	Assert<[wire.TopologyRelation] extends [z.infer<typeof TopologyRelationSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyClientSchema>] extends [wire.TopologyClient] ? true : false>,
+	Assert<[wire.TopologyClient] extends [z.infer<typeof TopologyClientSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologySourceStateSchema>] extends [wire.TopologySourceState] ? true : false>,
+	Assert<[wire.TopologySourceState] extends [z.infer<typeof TopologySourceStateSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologySourceSchema>] extends [wire.TopologySource] ? true : false>,
+	Assert<[wire.TopologySource] extends [z.infer<typeof TopologySourceSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyQueryErrorSchema>] extends [wire.TopologyQueryError] ? true : false>,
+	Assert<[wire.TopologyQueryError] extends [z.infer<typeof TopologyQueryErrorSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyClientsReplySchema>] extends [wire.TopologyClientsReply] ? true : false>,
+	Assert<[wire.TopologyClientsReply] extends [z.infer<typeof TopologyClientsReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyClientsRequestSchema>] extends [wire.TopologyClientsRequest] ? true : false>,
+	Assert<[wire.TopologyClientsRequest] extends [z.infer<typeof TopologyClientsRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyOpticalModuleSchema>] extends [wire.TopologyOpticalModule] ? true : false>,
+	Assert<[wire.TopologyOpticalModule] extends [z.infer<typeof TopologyOpticalModuleSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyInterfaceSchema>] extends [wire.TopologyInterface] ? true : false>,
+	Assert<[wire.TopologyInterface] extends [z.infer<typeof TopologyInterfaceSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyUplinkSchema>] extends [wire.TopologyUplink] ? true : false>,
+	Assert<[wire.TopologyUplink] extends [z.infer<typeof TopologyUplinkSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyControllerSchema>] extends [wire.TopologyController] ? true : false>,
+	Assert<[wire.TopologyController] extends [z.infer<typeof TopologyControllerSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyDataPathSchema>] extends [wire.TopologyDataPath] ? true : false>,
+	Assert<[wire.TopologyDataPath] extends [z.infer<typeof TopologyDataPathSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyHl202Schema>] extends [wire.TopologyHl202] ? true : false>,
+	Assert<[wire.TopologyHl202] extends [z.infer<typeof TopologyHl202Schema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyExtensionsSchema>] extends [wire.TopologyExtensions] ? true : false>,
+	Assert<[wire.TopologyExtensions] extends [z.infer<typeof TopologyExtensionsSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyIssueSchema>] extends [wire.TopologyIssue] ? true : false>,
+	Assert<[wire.TopologyIssue] extends [z.infer<typeof TopologyIssueSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyLinkSchema>] extends [wire.TopologyLink] ? true : false>,
+	Assert<[wire.TopologyLink] extends [z.infer<typeof TopologyLinkSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyOnuSchema>] extends [wire.TopologyOnu] ? true : false>,
+	Assert<[wire.TopologyOnu] extends [z.infer<typeof TopologyOnuSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyNodeDetailSchema>] extends [wire.TopologyNodeDetail] ? true : false>,
+	Assert<[wire.TopologyNodeDetail] extends [z.infer<typeof TopologyNodeDetailSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyNodeSchema>] extends [wire.TopologyNode] ? true : false>,
+	Assert<[wire.TopologyNode] extends [z.infer<typeof TopologyNodeSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyNodeReplySchema>] extends [wire.TopologyNodeReply] ? true : false>,
+	Assert<[wire.TopologyNodeReply] extends [z.infer<typeof TopologyNodeReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyNodeRequestSchema>] extends [wire.TopologyNodeRequest] ? true : false>,
+	Assert<[wire.TopologyNodeRequest] extends [z.infer<typeof TopologyNodeRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof TopologyReplySchema>] extends [wire.TopologyReply] ? true : false>,
+	Assert<[wire.TopologyReply] extends [z.infer<typeof TopologyReplySchema>] ? true : false>,
 ];

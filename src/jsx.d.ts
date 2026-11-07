@@ -5,6 +5,13 @@ declare global {
 			details: JSXElement<HTMLDetailsElement>;
 			summary: JSXElement<HTMLElement>;
 			section: JSXElement<HTMLElement>;
+			aside: JSXElement<HTMLElement>;
+			header: JSXElement<HTMLElement>;
+			footer: JSXElement<HTMLElement>;
+			i: JSXElement<HTMLElement>;
+			dl: JSXElement<HTMLDListElement>;
+			dt: JSXElement<HTMLElement>;
+			dd: JSXElement<HTMLElement>;
 		}
 	}
 }

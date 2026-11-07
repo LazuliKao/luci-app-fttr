@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import ts from "typescript";
 import { renderSchemas } from "../scripts/schema-codegen.mjs";
 
 test("schema generation is ordered by dependencies, deterministic and matches committed output", () => {
 	const types = readFileSync(new URL("../src/api/generated/types.ts", import.meta.url), "utf8");
 	const expected = readFileSync(new URL("../src/api/generated/schemas.ts", import.meta.url), "utf8");
 	assert.equal(renderSchemas(types), expected);
-	assert.equal(renderSchemas(types.split("\n").reverse().join("\n")), expected);
+	const parsed = ts.createSourceFile("types.ts", types, ts.ScriptTarget.Latest, true);
+	assert.equal(renderSchemas([...parsed.statements].reverse().map((node) => node.getText(parsed)).join("\n")), expected);
 	const schema = renderSchemas(
 		'export type A = { next?: B, values: { [key in string]: number } }; export type B = "pending" | null;',
 	);
@@ -34,4 +36,12 @@ test("unsupported syntax and broken references fail closed rather than accepting
 	]) {
 		assert.throws(() => renderSchemas(source), undefined, source);
 	}
+});
+
+test("internally tagged object intersections preserve both tag and payload validation", () => {
+	const schema = renderSchemas('export type Payload = { value: number | null }; export type Node = { kind: "onu" } & Payload;');
+	assert.match(schema, /z.intersection\(z.object\(\{ "kind": z.literal\("onu"\) \}\), PayloadSchema\)/);
+	assert.ok(schema.indexOf("export const PayloadSchema") < schema.indexOf("export const NodeSchema"));
+	assert.throws(() => renderSchemas('export type A = { kind: "onu" } & Missing;'));
+	assert.throws(() => renderSchemas('export type A = { kind: "onu" } & A;'));
 });

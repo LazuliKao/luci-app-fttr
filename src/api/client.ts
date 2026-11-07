@@ -3,6 +3,7 @@ import { deviceList } from "../view/contracts/hl202";
 import { actionResult, configCheck, restartReply, syncStatus } from "../view/contracts/provisioning";
 import { nativeNpuStatus, status } from "../view/contracts/status";
 import { createFttrClient } from "./generated/luci-client";
+import { TopologyClientsReplySchema, TopologyNodeReplySchema, TopologyReplySchema } from "./generated/schemas";
 import {
 	calibrationInfo,
 	capabilities,
@@ -18,6 +19,9 @@ export const fttrValidators = {
 	opticalStatus: opticalReply,
 	opticalSet: opticalReply,
 	getStatus: { parse: (value: unknown) => status.parse(checked(value)) },
+	getTopology: { parse: (value: unknown) => TopologyReplySchema.parse(checked(value)) },
+	getTopologyNode: { parse: (value: unknown) => TopologyNodeReplySchema.parse(checked(value)) },
+	getTopologyClients: { parse: (value: unknown) => TopologyClientsReplySchema.parse(checked(value)) },
 	getSync: { parse: (value: unknown) => syncStatus.parse(checked(value)) },
 	configCheck,
 	npuStatus: nativeNpuStatus,

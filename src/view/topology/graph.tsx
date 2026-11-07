@@ -1,0 +1,299 @@
+// SPDX-License-Identifier: Apache-2.0
+// LuCI-owned card graph: semantic buttons, explicit layout and a pan/zoom viewport.
+import type { TopologyReply } from "../../api/generated/types";
+import { CLIENT_PREVIEW_LIMIT, clientKey, layout, type Selection } from "./model";
+import { badge, clientCard, nodeCard, nodeState, nodeTone, relationText } from "./presentation";
+import type { ClientState } from "./store";
+
+export interface TopologyGraph {
+	update(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientState>, selected: Selection): void;
+	fit(): void;
+	zoom(factor: number): void;
+	destroy(): void;
+}
+
+export function createTopologyGraph(container: HTMLElement, onSelect: (selection: Selection) => void): TopologyGraph {
+	const world = <div class="topo-world" />;
+	container.replaceChildren(world);
+	let dimensions = { width: 1000, height: 600 };
+	let position = { x: 0, y: 0, scale: 1 };
+	let adjusted = false;
+	let dead = false;
+	let structure = "";
+	let initialized = false;
+	let gesture: { x: number; y: number; distance: number } | null = null;
+	const pointers = new Map<number, { x: number; y: number }>();
+
+	function transform() {
+		world.style.transform = `translate(${position.x}px, ${position.y}px) scale(${position.scale})`;
+	}
+	function fit(full = true) {
+		if (dead || !container.clientWidth || !container.clientHeight) return;
+		adjusted = false;
+		const scale = Math.max(
+			full ? 0.15 : 0.6,
+			Math.min(
+				1,
+				(container.clientWidth - 40) / dimensions.width,
+				(container.clientHeight - 40) / dimensions.height,
+			),
+		);
+		position = {
+			scale,
+			x: Math.max(12, (container.clientWidth - dimensions.width * scale) / 2),
+			y: Math.max(12, (container.clientHeight - dimensions.height * scale) / 2),
+		};
+		transform();
+	}
+	function zoomAt(factor: number, x = container.clientWidth / 2, y = container.clientHeight / 2) {
+		const scale = Math.max(0.15, Math.min(2, position.scale * factor));
+		const ratio = scale / position.scale;
+		position = { scale, x: x - (x - position.x) * ratio, y: y - (y - position.y) * ratio };
+		adjusted = true;
+		transform();
+	}
+	function centerGesture() {
+		const points = [...pointers.values()];
+		if (!points.length) return null;
+		return {
+			x: points.reduce((sum, p) => sum + p.x, 0) / points.length,
+			y: points.reduce((sum, p) => sum + p.y, 0) / points.length,
+			distance: points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y) : 0,
+		};
+	}
+	const down = (event: PointerEvent) => {
+		if ((event.target as Element).closest("button") || (event.pointerType === "mouse" && event.button !== 0))
+			return;
+		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+		container.setPointerCapture(event.pointerId);
+		gesture = centerGesture();
+		container.classList.add("is-panning");
+	};
+	const move = (event: PointerEvent) => {
+		if (!pointers.has(event.pointerId)) return;
+		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+		const next = centerGesture();
+		if (gesture && next) {
+			position.x += next.x - gesture.x;
+			position.y += next.y - gesture.y;
+			if (next.distance > 0 && gesture.distance > 0) {
+				const box = container.getBoundingClientRect();
+				zoomAt(next.distance / gesture.distance, next.x - box.left, next.y - box.top);
+			}
+			adjusted = true;
+			transform();
+		}
+		gesture = next;
+	};
+	const up = (event: PointerEvent) => {
+		pointers.delete(event.pointerId);
+		gesture = centerGesture();
+		if (!pointers.size) container.classList.remove("is-panning");
+	};
+	const wheel = (event: WheelEvent) => {
+		if (!event.ctrlKey && !event.metaKey) return;
+		event.preventDefault();
+		const box = container.getBoundingClientRect();
+		zoomAt(Math.exp(-event.deltaY * 0.002), event.clientX - box.left, event.clientY - box.top);
+	};
+	const focus = (event: FocusEvent) => {
+		const button = (event.target as Element).closest<HTMLElement>(".topo-graph-card");
+		if (!button) return;
+		const node = button.getBoundingClientRect();
+		const box = container.getBoundingClientRect();
+		if (node.left < box.left || node.right > box.right || node.top < box.top || node.bottom > box.bottom) {
+			position.x += box.left + box.width / 2 - (node.left + node.width / 2);
+			position.y += box.top + box.height / 2 - (node.top + node.height / 2);
+			adjusted = true;
+			transform();
+		}
+	};
+	container.addEventListener("pointerdown", down);
+	container.addEventListener("pointermove", move);
+	container.addEventListener("pointerup", up);
+	container.addEventListener("pointercancel", up);
+	container.addEventListener("lostpointercapture", up);
+	container.addEventListener("wheel", wheel, { passive: false });
+	container.addEventListener("focusin", focus);
+	const observer = new ResizeObserver(() => {
+		if (!dead && !adjusted) fit(false);
+	});
+	observer.observe(container);
+
+	return {
+		update(snapshot, clients, selected) {
+			if (dead) return;
+			const data = layout(snapshot, clients);
+			dimensions = data;
+			const byId = new Map(data.positions.map((p) => [p.id, p]));
+			const objects = new Map(
+				[...clients].flatMap(([parent, state]) =>
+					state.clients
+						.slice(0, CLIENT_PREVIEW_LIMIT)
+						.map((client) => [clientKey(parent, client), { parent, client }] as const),
+				),
+			);
+			const selectedId = selected.id;
+			const nodes = new Map(snapshot.nodes.map((n) => [n.id, n]));
+			const parts: HTMLElement[] = [];
+			const highlight = (id: string | null) => {
+				for (const wire of world.querySelectorAll<HTMLElement>("[data-target]")) {
+					wire.classList.toggle(
+						"is-hovered",
+						id !== null && (wire.dataset.target === id || wire.dataset.source === id),
+					);
+				}
+			};
+			for (const target of data.positions) {
+				const source = target.parent ? byId.get(target.parent) : null;
+				if (!source) continue;
+				const object = objects.get(target.id);
+				const dashed = object?.client.relation === "learned_behind";
+				const dotted = object?.client.relation === "associated_with";
+				const selectLink = () =>
+					onSelect(
+						object
+							? { kind: "client", parent: object.parent, id: target.id }
+							: { kind: "node", id: target.id },
+					);
+				const label = `${object ? relationText(object.client) : _("Logical PON link")} · ${nodes.get(target.id)?.label ?? object?.client.hostname ?? object?.client.mac ?? target.id}`;
+				const segment = (vertical: boolean, x: number, y: number, length: number, accessible = false) => (
+					<button
+						type="button"
+						class={`topo-wire-hit ${vertical ? "is-vertical" : "is-horizontal"}`}
+						style={`left:${x}px;top:${y}px;${vertical ? "height" : "width"}:${Math.max(length, 2)}px`}
+						tabIndex={accessible ? 0 : -1}
+						aria-label={label}
+						title={label}
+						data-key={accessible ? `link:${target.id}` : undefined}
+						onclick={selectLink}
+					/>
+				);
+				if (target.x === source.x) {
+					const sx = source.x + source.width / 2,
+						sy = source.y + source.height;
+					const tx = target.x + target.width / 2,
+						ty = target.y,
+						middle = (sy + ty) / 2;
+					parts.push(
+						<div
+							class={`topo-wire ${dotted ? "is-associated" : "is-learned"} ${selectedId === target.id || selectedId === source.id ? "is-selected" : ""}`}
+							data-source={source.id}
+							data-target={target.id}
+						>
+							{segment(true, sx, sy, middle - sy)}
+							{segment(false, Math.min(sx, tx), middle, Math.abs(tx - sx))}
+							{segment(true, tx, middle, ty - middle, true)}
+						</div>,
+					);
+					continue;
+				}
+				const sx = source.x + source.width,
+					sy = source.y + source.height / 2;
+				const tx = target.x,
+					ty = target.y + target.height / 2,
+					middle = (sx + tx) / 2;
+				const wire = (
+					<div
+						class={`topo-wire ${dashed ? "is-learned" : dotted ? "is-associated" : "is-pon"} ${selectedId === target.id || selectedId === source.id ? "is-selected" : ""}`}
+						data-source={source.id}
+						data-target={target.id}
+						title={object ? relationText(object.client) : _("Logical PON link")}
+					/>
+				);
+				wire.append(
+					segment(false, sx, sy, middle - sx),
+					segment(true, middle, Math.min(sy, ty), Math.abs(ty - sy)),
+					segment(false, middle, ty, tx - middle, true),
+				);
+				parts.push(wire);
+			}
+			for (const p of data.positions) {
+				const node = nodes.get(p.id);
+				const object = objects.get(p.id);
+				if (!node && !object) continue;
+				const tone = node ? nodeTone(node, snapshot) : "neutral";
+				const button = (
+					<button
+						type="button"
+						class={`topo-graph-card topo-${tone} ${node?.detail.kind === "controller" ? "is-controller" : object ? "is-client" : "is-onu"} ${selectedId === p.id ? "is-selected" : ""}`}
+						style={`left:${p.x}px;top:${p.y}px;width:${p.width}px;height:${p.height}px`}
+						data-key={p.id}
+						onpointerenter={() => highlight(p.id)}
+						onpointerleave={() => highlight(null)}
+						onfocus={() => highlight(p.id)}
+						onblur={() => highlight(null)}
+						aria-pressed={String(selectedId === p.id)}
+						aria-label={
+							node
+								? `${node.label} · ${nodeState(node)}`
+								: `${object?.client.hostname ?? object?.client.mac} · ${object ? relationText(object.client) : ""}`
+						}
+						onclick={() =>
+							onSelect(
+								node
+									? { kind: "node", id: node.id }
+									: { kind: "client", parent: object?.parent ?? "", id: p.id },
+							)
+						}
+					>
+						{node ? nodeCard(node, snapshot) : object ? clientCard(object.client) : null}
+					</button>
+				);
+				parts.push(button);
+				if (node) {
+					const state = clients.get(node.id);
+					if (state && (state.clients.length > CLIENT_PREVIEW_LIMIT || state.result?.next_cursor)) {
+						parts.push(
+							<button
+								type="button"
+								class="topo-graph-more"
+								style={`left:${p.x}px;top:${p.y + p.height + 4}px;width:${p.width}px`}
+								onclick={() => onSelect({ kind: "node", id: node.id })}
+							>
+								{_("View all observed objects")} · {state.clients.length}
+								{state.result?.next_cursor ? "+" : ""}
+							</button>,
+						);
+					} else if (state?.error)
+						parts.push(
+							<div
+								class="topo-graph-note"
+								style={`left:${p.x}px;top:${p.y + p.height + 4}px;width:${p.width}px`}
+							>
+								{badge(_("Objects unavailable"), "warning")}
+							</div>,
+						);
+				}
+			}
+			const focused =
+				document.activeElement instanceof HTMLElement && world.contains(document.activeElement)
+					? document.activeElement.dataset.key
+					: null;
+			world.replaceChildren(...parts);
+			if (focused)
+				[...world.querySelectorAll<HTMLElement>("[data-key]")]
+					.find((n) => n.dataset.key === focused)
+					?.focus({ preventScroll: true });
+			const nextStructure = JSON.stringify(data.positions.map((p) => [p.id, p.x, p.y]));
+			if (!initialized || (structure !== nextStructure && !adjusted)) fit(false);
+			structure = nextStructure;
+			initialized = true;
+		},
+		fit: () => fit(),
+		zoom: (factor) => zoomAt(factor),
+		destroy() {
+			dead = true;
+			observer.disconnect();
+			container.removeEventListener("pointerdown", down);
+			container.removeEventListener("pointermove", move);
+			container.removeEventListener("pointerup", up);
+			container.removeEventListener("pointercancel", up);
+			container.removeEventListener("lostpointercapture", up);
+			container.removeEventListener("wheel", wheel);
+			container.removeEventListener("focusin", focus);
+			pointers.clear();
+			world.remove();
+		},
+	};
+}

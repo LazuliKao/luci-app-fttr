@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-06 22:55+0800\n"
+"POT-Creation-Date: 2026-11-07 15:52+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -109,6 +109,9 @@ msgstr ""
 msgid "2. Firmware file path (second priority)"
 msgstr ""
 
+msgid "A default route does not prove Internet reachability."
+msgstr ""
+
 msgid ""
 "A missing group means a device points to a deleted group. Edit the device "
 "and select an existing group. If no suitable group exists, close this dialog "
@@ -154,6 +157,9 @@ msgstr ""
 msgid "Active hardware offload flows (PPE FOE Bound)"
 msgstr ""
 
+msgid "Actual OMCI GEM / VLAN inventory"
+msgstr ""
+
 msgid "ADC diagnostic polynomial conversion coefficients (offsets %s)"
 msgstr ""
 
@@ -161,6 +167,12 @@ msgid "Add this device on the configuration page before fixing its interface."
 msgstr ""
 
 msgid "Address"
+msgstr ""
+
+msgid "Address unavailable"
+msgstr ""
+
+msgid "Addresses"
 msgstr ""
 
 msgid ""
@@ -179,6 +191,9 @@ msgid "Advanced diagnostics / Raw configuration (JSON)"
 msgstr ""
 
 msgid "Advanced Settings"
+msgstr ""
+
+msgid "ago"
 msgstr ""
 
 msgid "All devices"
@@ -225,6 +240,12 @@ msgid "Apply to hardware immediately"
 msgstr ""
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
+msgstr ""
+
+msgid "Associated"
+msgstr ""
+
+msgid "Associated and learned objects"
 msgstr ""
 
 msgid "Attached"
@@ -276,6 +297,9 @@ msgid ""
 "these readings."
 msgstr ""
 
+msgid "Backend topology issues"
+msgstr ""
+
 msgid "Band"
 msgstr ""
 
@@ -303,10 +327,7 @@ msgstr ""
 msgid "Binding"
 msgstr ""
 
-msgid "Binding change pending restart"
-msgstr ""
-
-msgid "Binding state"
+msgid "Binding only"
 msgstr ""
 
 msgid "Bindings"
@@ -324,10 +345,18 @@ msgstr ""
 msgid "Bound hardware flows"
 msgstr ""
 
-msgid "Bound sub-gateways absent from live status"
+msgid "Bridge interface"
 msgstr ""
 
-msgid "Bridge interface"
+msgid "Bridge IP"
+msgstr ""
+
+msgid ""
+"Bridge learning shows a device behind this gateway, not direct Ethernet or "
+"Wi-Fi attachment."
+msgstr ""
+
+msgid "Bridge members"
 msgstr ""
 
 msgid "Bridge offload mask"
@@ -368,7 +397,13 @@ msgstr ""
 msgid "Cancel the fixed interface for this device?"
 msgstr ""
 
-msgid "CDR"
+msgid "Carrier"
+msgstr ""
+
+msgid "Carrier down"
+msgstr ""
+
+msgid "Carrier up"
 msgstr ""
 
 msgid "CDR lock"
@@ -389,11 +424,6 @@ msgid ""
 msgstr ""
 
 msgid "Clear output"
-msgstr ""
-
-msgid ""
-"Click a device to select it, double-click to open its details. Drag to pan; "
-"use Ctrl + mouse wheel or pinch to zoom."
 msgstr ""
 
 msgid "Click to select or drag a %s file here"
@@ -475,6 +505,9 @@ msgstr ""
 msgid "Connected device"
 msgstr ""
 
+msgid "Connection type (raw)"
+msgstr ""
+
 msgid "Controller"
 msgstr ""
 
@@ -482,9 +515,6 @@ msgid "Controller & optical transceiver"
 msgstr ""
 
 msgid "Controller hardware"
-msgstr ""
-
-msgid "Controller Tx power"
 msgstr ""
 
 msgid ""
@@ -544,6 +574,9 @@ msgid "CPE Connection Request port"
 msgstr ""
 
 msgid "CPE Connection Request username"
+msgstr ""
+
+msgid "CPU usage (raw)"
 msgstr ""
 
 msgid ""
@@ -617,6 +650,9 @@ msgstr ""
 msgid "Data size"
 msgstr ""
 
+msgid "Data sources"
+msgstr ""
+
 msgid "Decoded"
 msgstr ""
 
@@ -671,6 +707,9 @@ msgstr ""
 msgid "Device identification"
 msgstr ""
 
+msgid "Device identity"
+msgstr ""
+
 msgid "Device is offline or no longer registered; refresh status and retry."
 msgstr ""
 
@@ -678,6 +717,9 @@ msgid "Device is offline; reopen details after registration."
 msgstr ""
 
 msgid "Device online"
+msgstr ""
+
+msgid "Device type"
 msgstr ""
 
 msgid "Device: %s, length %s bytes"
@@ -744,6 +786,9 @@ msgid ""
 "the source at compile time."
 msgstr ""
 
+msgid "Down"
+msgstr ""
+
 msgid "Downlink PHY rate"
 msgstr ""
 
@@ -764,10 +809,13 @@ msgstr ""
 msgid "Downstream ports"
 msgstr ""
 
-msgid "Downstream transmitter"
+msgid "Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details"
 msgstr ""
 
 msgid "Driver debug logging"
+msgstr ""
+
+msgid "Duplex"
 msgstr ""
 
 msgid "Duplicate VLAN IDs are not allowed."
@@ -840,6 +888,9 @@ msgid ""
 msgstr ""
 
 msgid "Entity"
+msgstr ""
+
+msgid "Equalization delay"
 msgstr ""
 
 msgid "Equalization delay (EQD)"
@@ -915,9 +966,6 @@ msgstr ""
 msgid "FEC seconds"
 msgstr ""
 
-msgid "Fiber distance"
-msgstr ""
-
 msgid "Field"
 msgstr ""
 
@@ -954,16 +1002,13 @@ msgstr ""
 msgid "Fix this device to its current interface?"
 msgstr ""
 
-msgid "Fixed fttr%d"
+msgid "Fixed binding"
 msgstr ""
 
 msgid "Fixed interface"
 msgstr ""
 
 msgid "Fixed interface changes pending FTTR restart."
-msgstr ""
-
-msgid "Fixed interface error"
 msgstr ""
 
 msgid ""
@@ -986,6 +1031,9 @@ msgstr ""
 msgid "Fresh discovery"
 msgstr ""
 
+msgid "From ONU (controller RX)"
+msgstr ""
+
 msgid "Frontend"
 msgstr ""
 
@@ -996,9 +1044,6 @@ msgid "FTTR configuration"
 msgstr ""
 
 msgid "FTTR configuration check failed"
-msgstr ""
-
-msgid "FTTR controller"
 msgstr ""
 
 msgid ""
@@ -1019,12 +1064,6 @@ msgid "FTTR Topology"
 msgstr ""
 
 msgid "FTTR topology graph"
-msgstr ""
-
-msgid "fttr%d → fttr%d after restart"
-msgstr ""
-
-msgid "fttr%d after restart"
 msgstr ""
 
 msgid "G.988 encoded field values"
@@ -1084,6 +1123,9 @@ msgstr ""
 msgid "HL202 management"
 msgstr ""
 
+msgid "HL202 report extension"
+msgstr ""
+
 msgid "HL202 sub-gateway management"
 msgstr ""
 
@@ -1102,7 +1144,7 @@ msgstr ""
 msgid "Identity age"
 msgstr ""
 
-msgid "Identity conflict"
+msgid "Identity current"
 msgstr ""
 
 msgid ""
@@ -1116,13 +1158,13 @@ msgstr ""
 msgid "Identity source"
 msgstr ""
 
-msgid "Identity warning"
-msgstr ""
-
 msgid "Inactive"
 msgstr ""
 
 msgid "Incomplete MIB snapshot"
+msgstr ""
+
+msgid "Independent device states"
 msgstr ""
 
 msgid ""
@@ -1165,10 +1207,16 @@ msgstr ""
 msgid "Interface configuration changed. Refresh the page and try again."
 msgstr ""
 
-msgid "Interface details unavailable; link states may be incomplete."
+msgid "Interface down"
 msgstr ""
 
 msgid "Interface setting saved. Restart FTTR for it to take effect."
+msgstr ""
+
+msgid "Interface up"
+msgstr ""
+
+msgid "Interfaces and uplinks"
 msgstr ""
 
 msgid "Interrupted"
@@ -1189,6 +1237,9 @@ msgstr ""
 msgid "Invalid MIB snapshot size"
 msgstr ""
 
+msgid "Inventory unavailable for this node."
+msgstr ""
+
 msgid "Isolated TR069 management network"
 msgstr ""
 
@@ -1201,10 +1252,13 @@ msgstr ""
 msgid "Kernel log"
 msgstr ""
 
-msgid "Known: %s"
+msgid "Known ONUs"
 msgstr ""
 
 msgid "LAN / WLAN port bindings"
+msgstr ""
+
+msgid "Laser bias current"
 msgstr ""
 
 msgid "Last backend check result"
@@ -1222,9 +1276,6 @@ msgstr ""
 msgid "Last received"
 msgstr ""
 
-msgid "Last refresh failed: %s"
-msgstr ""
-
 msgid "Last successful sample"
 msgstr ""
 
@@ -1234,16 +1285,16 @@ msgstr ""
 msgid "Last update / task"
 msgstr ""
 
-msgid "Last updated: %s"
-msgstr ""
-
 msgid "Latest report error"
 msgstr ""
 
-msgid "Leave unchanged"
+msgid "Learned"
 msgstr ""
 
-msgid "link down"
+msgid "Learned behind gateway"
+msgstr ""
+
+msgid "Leave unchanged"
 msgstr ""
 
 msgid "Link down"
@@ -1261,28 +1312,31 @@ msgid ""
 "when adding a new device."
 msgstr ""
 
-msgid "Live"
-msgstr ""
-
 msgid "Live NPU data is unavailable. Previous readings are stale."
-msgstr ""
-
-msgid "Live sub-gateways in O5 operation state"
-msgstr ""
-
-msgid "Live sub-gateways not yet in O5 operation state"
-msgstr ""
-
-msgid "Live sub-gateways plus offline devices known from fixed interface bindings"
 msgstr ""
 
 msgid "Load"
 msgstr ""
 
+msgid "Load more"
+msgstr ""
+
 msgid "Loading devices…"
 msgstr ""
 
-msgid "Loading FTTR status…"
+msgid "Loading node details…"
+msgstr ""
+
+msgid "Loading object…"
+msgstr ""
+
+msgid "Loading objects for the current snapshot…"
+msgstr ""
+
+msgid "Loading objects…"
+msgstr ""
+
+msgid "Loading topology…"
 msgstr ""
 
 msgid "Loading…"
@@ -1291,7 +1345,27 @@ msgstr ""
 msgid "Local ACS listener"
 msgstr ""
 
+msgid "Local interfaces"
+msgstr ""
+
 msgid "Locked"
+msgstr ""
+
+msgid ""
+"Logical interface, not a physical splitter port. Counters do not prove "
+"current end-to-end connectivity."
+msgstr ""
+
+msgid "Logical link and traffic"
+msgstr ""
+
+msgid "Logical PON"
+msgstr ""
+
+msgid "Logical PON connections and observed devices"
+msgstr ""
+
+msgid "Logical PON link"
 msgstr ""
 
 msgid "LuCI FTTR App"
@@ -1302,7 +1376,13 @@ msgid ""
 "configuration, and optical calibration."
 msgstr ""
 
+msgid "MAC"
+msgstr ""
+
 msgid "MAC address"
+msgstr ""
+
+msgid "Main gateway"
 msgstr ""
 
 msgid ""
@@ -1368,6 +1448,9 @@ msgstr ""
 msgid "Memory"
 msgstr ""
 
+msgid "Memory usage (raw)"
+msgstr ""
+
 msgid "Method"
 msgstr ""
 
@@ -1386,7 +1469,16 @@ msgstr ""
 msgid "Model"
 msgstr ""
 
+msgid "Module"
+msgstr ""
+
 msgid "Module model"
+msgstr ""
+
+msgid "Module Tx"
+msgstr ""
+
+msgid "More identity information"
 msgstr ""
 
 msgid "MQTT ready"
@@ -1411,6 +1503,9 @@ msgid "Name is required."
 msgstr ""
 
 msgid "Network"
+msgstr ""
+
+msgid "Network overview"
 msgstr ""
 
 msgid "Networks"
@@ -1442,10 +1537,13 @@ msgstr ""
 msgid "Next self-healing retry in %d seconds"
 msgstr ""
 
+msgid "No"
+msgstr ""
+
 msgid "No bound hardware flows in this snapshot."
 msgstr ""
 
-msgid "No data interface"
+msgid "No default-route uplink reported."
 msgstr ""
 
 msgid "No desired items configured."
@@ -1460,13 +1558,19 @@ msgstr ""
 msgid "No HL202 optical devices were found."
 msgstr ""
 
-msgid "No known sub-gateways."
+msgid "No known sub-gateways in this snapshot."
 msgstr ""
 
 msgid "No matching ME classes"
 msgstr ""
 
 msgid "No MQTT report has been parsed yet."
+msgstr ""
+
+msgid "No nodes reported in this snapshot."
+msgstr ""
+
+msgid "No objects observed in this snapshot."
 msgstr ""
 
 msgid "No output returned."
@@ -1486,10 +1590,22 @@ msgstr ""
 msgid "No sub-gateways are currently registered."
 msgstr ""
 
+msgid "No successful snapshot yet"
+msgstr ""
+
 msgid "No valid calibration data was found in the"
 msgstr ""
 
 msgid "No valid data"
+msgstr ""
+
+msgid "Node and link details"
+msgstr ""
+
+msgid "Nominal downstream / upstream"
+msgstr ""
+
+msgid "Nominal PON capacity"
 msgstr ""
 
 msgid "None"
@@ -1523,9 +1639,6 @@ msgid "Not started"
 msgstr ""
 
 msgid "Not Started"
-msgstr ""
-
-msgid "Not yet updated"
 msgstr ""
 
 msgid "Note: Register"
@@ -1567,31 +1680,37 @@ msgstr ""
 msgid "O5 (Operation)"
 msgstr ""
 
+msgid "O5 registered"
+msgstr ""
+
 msgid "O6 Intermittent LODS"
 msgstr ""
 
 msgid "O7 Emergency Stop"
 msgstr ""
 
-msgid "Official factory baseline match"
+msgid "Object"
 msgstr ""
 
-msgid "offline"
+msgid "Objects unavailable"
+msgstr ""
+
+msgid "Observation interface"
+msgstr ""
+
+msgid "Observed identity and relationship"
+msgstr ""
+
+msgid "Observed object"
+msgstr ""
+
+msgid "Official factory baseline match"
 msgstr ""
 
 msgid "Offline"
 msgstr ""
 
-msgid "Offline (bound)"
-msgstr ""
-
-msgid "Offline device"
-msgstr ""
-
 msgid "Offline or stale"
-msgstr ""
-
-msgid "Offline: %s"
 msgstr ""
 
 msgid "Offset O"
@@ -1630,7 +1749,7 @@ msgstr ""
 msgid "ONU ID"
 msgstr ""
 
-msgid "ONU receive power (downstream)"
+msgid "ONU optical diagnostics"
 msgstr ""
 
 msgid "ONU Rx"
@@ -1640,9 +1759,6 @@ msgid "Open optical status and ONU/MIB details"
 msgstr ""
 
 msgid "Open Synchronization"
-msgstr ""
-
-msgid "Open the details of the selected sub-gateway"
 msgstr ""
 
 msgid ""
@@ -1669,6 +1785,9 @@ msgstr ""
 msgid "Optical module"
 msgstr ""
 
+msgid "Optical module diagnostics"
+msgstr ""
+
 msgid "Optical offline"
 msgstr ""
 
@@ -1684,7 +1803,7 @@ msgstr ""
 msgid "Optical serial"
 msgstr ""
 
-msgid "Optical serial missing; identity is tied to the ONU ID"
+msgid "Optical sub-gateway"
 msgstr ""
 
 msgid "Optical transceiver"
@@ -1716,7 +1835,16 @@ msgstr ""
 msgid "Parameter preview for upload: %s"
 msgstr ""
 
+msgid "Parent gateway"
+msgstr ""
+
 msgid "Partial"
+msgstr ""
+
+msgid "partial / unavailable"
+msgstr ""
+
+msgid "Partial inventory"
 msgstr ""
 
 msgid "Password"
@@ -1742,9 +1870,6 @@ msgstr ""
 msgid "Pending configuration changes"
 msgstr ""
 
-msgid "Pending FTTR restart"
-msgstr ""
-
 msgid "Pending restart"
 msgstr ""
 
@@ -1752,6 +1877,9 @@ msgid "Periodic"
 msgstr ""
 
 msgid "Periodic synchronization interval (minutes)"
+msgstr ""
+
+msgid "Physical link speed"
 msgstr ""
 
 msgid "Physical rates and diagnostics"
@@ -1764,6 +1892,9 @@ msgid "Pin current interface"
 msgstr ""
 
 msgid "Pin interface"
+msgstr ""
+
+msgid "Pinned ONU ID"
 msgstr ""
 
 msgid "PONWrt Firmware"
@@ -1785,9 +1916,6 @@ msgid "PPE flow snapshot"
 msgstr ""
 
 msgid "Preparing JSON download…"
-msgstr ""
-
-msgid "Presence"
 msgstr ""
 
 msgid "Preview differences (read-only)"
@@ -1815,6 +1943,12 @@ msgid "Provision management VLAN and ACS via OMCI"
 msgstr ""
 
 msgid "Provisioning"
+msgstr ""
+
+msgid "Provisioning and synchronization"
+msgstr ""
+
+msgid "Provisioning details"
 msgstr ""
 
 msgid "Provisioning is disabled"
@@ -1897,6 +2031,9 @@ msgstr ""
 msgid "Receive optical power"
 msgstr ""
 
+msgid "Receive power (downstream)"
+msgstr ""
+
 msgid "Received bytes"
 msgstr ""
 
@@ -1930,13 +2067,10 @@ msgstr ""
 msgid "Refresh failed"
 msgstr ""
 
-msgid "Refresh failed; showing the last successful data. %s"
+msgid "Refresh failed; keeping the last successful snapshot."
 msgstr ""
 
 msgid "Refresh interval: 3 seconds"
-msgstr ""
-
-msgid "Refresh topology"
 msgstr ""
 
 msgid "Refresh users to read the current state."
@@ -1951,31 +2085,13 @@ msgstr ""
 msgid "Register offset"
 msgstr ""
 
-msgid "Registered %d / %d"
-msgstr ""
-
-msgid "Registered sub-gateways"
-msgstr ""
-
-msgid "Registered, business in progress"
-msgstr ""
-
-msgid "Registered, business verified"
-msgstr ""
-
-msgid "Registered: %s"
-msgstr ""
-
-msgid "Registering or business warning"
-msgstr ""
-
-msgid "Registering: %s"
-msgstr ""
-
 msgid "Registration"
 msgstr ""
 
 msgid "Registration freshness unavailable"
+msgstr ""
+
+msgid "Relationship"
 msgstr ""
 
 msgid "Reload"
@@ -1990,6 +2106,24 @@ msgstr ""
 msgid ""
 "Repairs are staged in LuCI. Close this dialog, use Save & Apply, then run "
 "Check again to verify the applied configuration."
+msgstr ""
+
+msgid "Report age"
+msgstr ""
+
+msgid "Report revision"
+msgstr ""
+
+msgid "Reported IP"
+msgstr ""
+
+msgid "Reported issues"
+msgstr ""
+
+msgid "Reported MAC"
+msgstr ""
+
+msgid "Reported uptime"
 msgstr ""
 
 msgid "Request failed"
@@ -2051,6 +2185,9 @@ msgstr ""
 msgid "RX wavelength"
 msgstr ""
 
+msgid "Sampled"
+msgstr ""
+
 msgid "Save & Apply"
 msgstr ""
 
@@ -2110,13 +2247,13 @@ msgstr ""
 msgid "Segment threshold: %s °C"
 msgstr ""
 
-msgid "Select a device in the topology to show its summary."
-msgstr ""
-
 msgid "Select a device to inspect reports and run operations."
 msgstr ""
 
 msgid "Select a registered O5 device first."
+msgstr ""
+
+msgid "Select a topology device"
 msgstr ""
 
 msgid "Select a wireless band."
@@ -2148,16 +2285,10 @@ msgstr ""
 msgid "Select SSIDs belonging to this network's template."
 msgstr ""
 
-msgid "Selected device"
-msgstr ""
-
 msgid "Selected file:"
 msgstr ""
 
 msgid "Self-heal / retry"
-msgstr ""
-
-msgid "Serial unavailable"
 msgstr ""
 
 msgid "Service IP / Netmask"
@@ -2172,13 +2303,13 @@ msgstr ""
 msgid "Settling"
 msgstr ""
 
-msgid "Several devices claim the same data interface"
-msgstr ""
-
-msgid "Several live ONUs report the same optical serial"
-msgstr ""
-
 msgid "SHA-256 checksum"
+msgstr ""
+
+msgid "Shared downstream capacity"
+msgstr ""
+
+msgid "Shared nominal PON capacity, not per-device negotiated speed."
 msgstr ""
 
 msgid ""
@@ -2189,10 +2320,19 @@ msgstr ""
 msgid "Size:"
 msgstr ""
 
+msgid "Snapshot"
+msgstr ""
+
+msgid "Snapshot expired. Refresh the topology to continue."
+msgstr ""
+
 msgid "Software images"
 msgstr ""
 
 msgid "Some data sources are unavailable"
+msgstr ""
+
+msgid "Source"
 msgstr ""
 
 msgid "Source member"
@@ -2213,19 +2353,16 @@ msgstr ""
 msgid "SSIDs"
 msgstr ""
 
-msgid "stale"
-msgstr ""
-
 msgid "Stale"
-msgstr ""
-
-msgid "Stale data"
 msgstr ""
 
 msgid "Stale management"
 msgstr ""
 
 msgid "Stale revision"
+msgstr ""
+
+msgid "Stale snapshot"
 msgstr ""
 
 msgid "Standard %s bytes"
@@ -2252,9 +2389,6 @@ msgstr ""
 msgid "Status refresh failed: %s"
 msgstr ""
 
-msgid "Sub-gateway"
-msgstr ""
-
 msgid "Sub-gateway %s — %s"
 msgstr ""
 
@@ -2265,6 +2399,9 @@ msgid "Sub-gateways & optical links"
 msgstr ""
 
 msgid "Success"
+msgstr ""
+
+msgid "Supply voltage"
 msgstr ""
 
 msgid "Supply voltage (Vcc)"
@@ -2320,6 +2457,9 @@ msgstr ""
 msgid "Text omitted at the shared byte limit."
 msgstr ""
 
+msgid "The continuation is no longer valid. Refresh the topology."
+msgstr ""
+
 msgid "The file must be exactly %s bytes."
 msgstr ""
 
@@ -2329,6 +2469,12 @@ msgid ""
 msgstr ""
 
 msgid "The path must start with '/'."
+msgstr ""
+
+msgid "The response belongs to another snapshot. Refresh the topology."
+msgstr ""
+
+msgid "The selected node is no longer present."
 msgstr ""
 
 msgid "The state file path must be absolute."
@@ -2354,6 +2500,12 @@ msgstr ""
 msgid ""
 "This is a lightweight preview. Download JSON to save the complete MIB "
 "snapshot."
+msgstr ""
+
+msgid "This node is no longer in the snapshot."
+msgstr ""
+
+msgid "This object was not observed in the current snapshot."
 msgstr ""
 
 msgid ""
@@ -2399,13 +2551,19 @@ msgstr ""
 msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
 msgstr ""
 
+msgid "To ONU (controller TX)"
+msgstr ""
+
 msgid "Topology"
+msgstr ""
+
+msgid "Topology canvas. Use Tab to select devices and the toolbar to zoom or fit."
 msgstr ""
 
 msgid "Topology controls"
 msgstr ""
 
-msgid "Topology graph error: %s"
+msgid "Topology is not available yet."
 msgstr ""
 
 msgid "Total code words"
@@ -2429,10 +2587,19 @@ msgstr ""
 msgid "Transmit optical power (Tx Power)"
 msgstr ""
 
+msgid "Transmit power"
+msgstr ""
+
+msgid "Transmit power (upstream)"
+msgstr ""
+
 msgid "Transmitted bytes"
 msgstr ""
 
 msgid "Transmitted packets"
+msgstr ""
+
+msgid "Transmitter"
 msgstr ""
 
 msgid "Triggers"
@@ -2444,6 +2611,9 @@ msgid ""
 msgstr ""
 
 msgid "Tutorial Coming Soon"
+msgstr ""
+
+msgid "Tx / Rx wavelength"
 msgstr ""
 
 msgid "TX power"
@@ -2458,18 +2628,12 @@ msgstr ""
 msgid "Typical raw simulated value"
 msgstr ""
 
-msgid "Unable to load FTTR status: %s"
+msgid "Unable to load topology"
 msgstr ""
 
 msgid ""
 "Unable to parse the calibration file structure. Please check the file's "
 "integrity."
-msgstr ""
-
-msgid "Unable to render the topology graph: %s"
-msgstr ""
-
-msgid "unavailable"
 msgstr ""
 
 msgid "Unavailable"
@@ -2502,9 +2666,6 @@ msgstr ""
 msgid "Unpin"
 msgstr ""
 
-msgid "Unpin fttr%d after restart"
-msgstr ""
-
 msgid "Unpin interface"
 msgstr ""
 
@@ -2515,6 +2676,9 @@ msgid "Unverified"
 msgstr ""
 
 msgid "Unverified candidate"
+msgstr ""
+
+msgid "Up"
 msgstr ""
 
 msgid "Uplink PHY rate"
@@ -2595,6 +2759,9 @@ msgid "Verified"
 msgstr ""
 
 msgid "Verifying"
+msgstr ""
+
+msgid "View all observed objects"
 msgstr ""
 
 msgid "View OMCI / MIB details"
@@ -2687,6 +2854,9 @@ msgstr ""
 msgid "Wi-Fi sync"
 msgstr ""
 
+msgid "Wireless association"
+msgstr ""
+
 msgid ""
 "with automatic fallback to built-in static defaults if neither source has "
 "valid data."
@@ -2701,6 +2871,9 @@ msgid "Write settings and execution"
 msgstr ""
 
 msgid "Writing"
+msgstr ""
+
+msgid "Yes"
 msgstr ""
 
 msgid "Zoom in"

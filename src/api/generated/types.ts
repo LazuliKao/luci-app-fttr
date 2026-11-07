@@ -142,6 +142,74 @@ export type SyncReply = { operation_ids: Array<number>, revision: string, } | { 
 export type SyncRequest = { action: SyncAction, target: string, management?: boolean, item?: string, };
 export type SyncStatusReply = { enabled: boolean, mode: SyncMode, method: SyncMethod, revision: string, triggers: Array<string>, interval_minutes: number, error: string | null, devices: Array<DeviceSync>, management_network: ManagementNetwork, omci_management: OmciManagement, groups: Array<SyncGroup>, pending_devices: Array<string>, onu_pins?: { [key in string]: number }, config_error?: string | null, config_load?: ConfigLoadStatus, };
 export type TelemetryGatewayInfo = { id: string, last_seen_sec_ago: number, last_payload_bytes: number, };
+export type TopologyBinding = { active_onu_id: number | null, desired_onu_id: number | null, state: TopologyBindingState, pending_restart: boolean, };
+export type TopologyBindingState = "none" | "effective" | "pending_add" | "pending_change" | "pending_remove";
+export type TopologyClient = { id: string, mac: string, hostname: string | null, addresses: Array<string>, relation: TopologyRelation, source: string, interface: string | null, };
+export type TopologyClientsReply = { "status": "ok", snapshot_id: string, parent_node_id: string, clients: Array<TopologyClient>, 
+/**
+ * None when that inventory was not successfully read.
+ */
+associated_client_count: number | null, learned_host_count: number | null, 
+/**
+ * FDB/host hints cannot establish an exhaustive terminal inventory.
+ */
+complete: boolean, next_cursor: string | null, sources: Array<TopologySource>, } | { "status": "error", code: TopologyQueryError, };
+export type TopologyClientsRequest = { node_id: string, snapshot_id?: string, 
+/**
+ * Opaque cursor returned by the preceding page; requires snapshot_id.
+ */
+cursor?: string, limit?: number, };
+export type TopologyController = { model: string | null, firmware_version: string | null, uptime_seconds: number | null, fpga_status: string, optical: TopologyOpticalModule, interfaces: Array<TopologyInterface>, 
+/**
+ * Interfaces with an observed default route; not Internet reachability.
+ */
+uplinks: Array<TopologyUplink>, };
+export type TopologyDataPath = { 
+/**
+ * RX is ONU -> controller; TX is controller -> ONU.
+ */
+observer_node_id: string, rx_bytes: number | null, tx_bytes: number | null, current_rx_kbps: number | null, current_tx_kbps: number | null, onu_inventory: OnuOmciInventory | null, offload: DataPathOffloadStatus, measurements: { [key in string]: MeasurementEvidence }, };
+export type TopologyExtensions = { hl202: TopologyHl202 | null, };
+export type TopologyHl202 = { report_revision: number, binding_generation: string, age_seconds: number, ip: string | null, bridge_ip: string | null, mac: string | null, connection_type_raw: string | null, uptime_seconds: number | null, 
+/**
+ * Unit/percentage semantics are not verified; preserve device integers.
+ */
+cpu_usage_raw: number | null, memory_usage_raw: number | null, };
+export type TopologyInterface = { name: string, mac: string | null, carrier: boolean | null, 
+/**
+ * Only physical interfaces; unknown/negative speeds are null.
+ */
+speed_mbps: number | null, duplex: string | null, bridge_members: Array<string>, addresses: Array<string>, };
+export type TopologyIssue = { code: string, node_id: string | null, };
+export type TopologyLink = { id: string, source: string, target: string, relation: TopologyRelation, 
+/**
+ * A logical interface, never a claim about physical splitter/port layout.
+ */
+data_interface: string | null, carrier: boolean | null, onu_rx_power_dbm: number | null, onu_tx_power_dbm: number | null, equalization_delay_bits: number | null, data_path: TopologyDataPath | null, measurements: { [key in string]: MeasurementEvidence }, };
+export type TopologyNode = { id: string, label: string, detail: TopologyNodeDetail, };
+export type TopologyNodeDetail = { "kind": "controller" } & TopologyController | { "kind": "onu" } & TopologyOnu;
+export type TopologyNodeReply = { "status": "ok", snapshot_id: string, node: TopologyNode, } | { "status": "error", code: TopologyQueryError, };
+export type TopologyNodeRequest = { node_id: string, snapshot_id?: string, };
+export type TopologyOnu = { serial_number: string | null, onu_id: number | null, vendor: string | null, model: string | null, hardware_version: string | null, firmware_version: string | null, 
+/**
+ * None means a binding-only placeholder, not an invented O1 observation.
+ */
+registration: RegistrationState | null, business: BusinessStatus | null, management: ManagementStatus | null, provisioning: ProvisioningStatus | null, services: Array<SyncItem>, ssids: Array<SyncItem>, wifi_sync: WifiSync | null, identity: OnuIdentity | null, identity_current: boolean, identity_age_seconds: number | null, uptime_seconds: number | null, fec: FecStatus | null, binding: TopologyBinding, extensions: TopologyExtensions, measurements: { [key in string]: MeasurementEvidence }, };
+export type TopologyOpticalModule = { model: string, wavelength_tx_nm: number, wavelength_rx_nm: number, 
+/**
+ * Shared nominal PON capacity, not per-ONU negotiated or measured speed.
+ */
+nominal_downlink_gbps: number, nominal_uplink_gbps: number, tx_power_dbm: number | null, laser_bias_current_ma: number | null, temperature_celsius: number | null, vcc_voltage: number | null, tx_enabled: boolean | null, measurements: { [key in string]: MeasurementEvidence }, };
+export type TopologyQueryError = "snapshot_expired" | "node_not_found" | "invalid_cursor";
+export type TopologyRelation = "pon_logical" | "associated_with" | "learned_behind";
+export type TopologyReply = { schema_version: 1, snapshot_id: string, generated_at: number, snapshot_ttl_seconds: number, nodes: Array<TopologyNode>, links: Array<TopologyLink>, sources: Array<TopologySource>, issues: Array<TopologyIssue>, };
+export type TopologySource = { id: string, state: TopologySourceState, 
+/**
+ * Unix time at which this source was sampled (not a promise of atomicity).
+ */
+sampled_at: number, reason: string | null, };
+export type TopologySourceState = "ok" | "partial" | "unavailable";
+export type TopologyUplink = { interface: string, device: string | null, protocol: string | null, up: boolean, addresses: Array<string>, };
 export type UbusMethodStats = { calls: number, failures: number, last_us: number, max_us: number, total_us: number, };
 export type WanOwned = { parent: number, connection: number, state: string, service_list: string, kind: string, baseline: Array<number> | null, };
 export type WanStage = "waiting" | "inventory" | "classifying" | "adding_parent" | "child_names" | "adding_child" | "delete_guard" | "deleting" | "verify_delete" | "empty_parent" | "deleting_parent" | "verify_parent_delete" | "next" | "done";

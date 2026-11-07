@@ -54,6 +54,22 @@ export function renderSchemas(source) {
 			return fail(node);
 		}
 		if (ts.isUnionTypeNode(node)) return `z.union([${node.types.map(schema).join(", ")}])`;
+		if (ts.isIntersectionTypeNode(node)) {
+			// ts-rs represents internally tagged struct variants as { kind } & Payload.
+			// Only object intersections are part of the wire language.
+			const isObject = (part, seen = new Set()) => {
+				if (ts.isParenthesizedTypeNode(part)) return isObject(part.type, seen);
+				if (ts.isTypeLiteralNode(part)) return true;
+				if (ts.isTypeReferenceNode(part) && !part.typeArguments?.length) {
+					const name = part.typeName.getText(file);
+					if (!aliases.has(name) || seen.has(name)) return false;
+					return isObject(aliases.get(name), new Set([...seen, name]));
+				}
+				return ts.isIntersectionTypeNode(part) && part.types.every((p) => isObject(p, seen));
+			};
+			if (!node.types.every((part) => isObject(part))) return fail(node);
+			return node.types.map(schema).reduce((left, right) => `z.intersection(${left}, ${right})`);
+		}
 		if (ts.isArrayTypeNode(node)) return `z.array(${schema(node.elementType)})`;
 		if (ts.isTypeReferenceNode(node)) {
 			const name = node.typeName.getText(file);

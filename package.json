@@ -44,8 +44,5 @@
 		"tsx": "^4.22.4",
 		"typescript": "^6.0.3",
 		"zod": "4.3.6"
-	},
-	"dependencies": {
-		"@antv/g6": "5.1.1"
 	}
 }
