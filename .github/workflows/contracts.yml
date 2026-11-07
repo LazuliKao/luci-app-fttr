@@ -18,6 +18,8 @@ jobs:
         with:
           path: luci-app-fttr
       - uses: actions/checkout@v4
+        id: checkout-backend
+        continue-on-error: true
         with:
           repository: LazuliKao/openwrt-fttr
           ref: ${{ inputs.backend_ref || vars.FTTR_BACKEND_REF || 'main' }}
