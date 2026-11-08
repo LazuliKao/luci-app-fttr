@@ -14,3 +14,5 @@ LUCI_MAINTAINER:=LazuliKao
 LUCI_MINIFY_JS:=0
 
 include $(TOPDIR)/feeds/luci/luci.mk
+
+# call BuildPackage - OpenWrt buildroot signature
