@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -14,6 +14,16 @@ if (process.env.RELEASE_TYPE === "nightly" || rawVersion === "nightly") {
 	rawVersion = "nightly";
 }
 const version = rawVersion.replace(/^v/, "");
+if (!/^(nightly|\d+(?:\.\d+)*)$/.test(version)) {
+	throw new Error(`Unsupported release version: ${version}`);
+}
+
+const git = (...args) => execFileSync("git", args, { encoding: "utf-8" }).trim();
+const sourceCommit = git("rev-parse", "HEAD");
+const sourceTimestamp = new Date(git("show", "-s", "--format=%cI", "HEAD")).toISOString();
+const packageVersion = version === "nightly"
+	? sourceTimestamp.slice(0, 19).replace(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/, "$1.$2.$3.$4$5$6")
+	: version;
 
 console.log(`Packaging luci-app-fttr release tarball for version: ${version}`);
 
@@ -25,10 +35,34 @@ const htdocsDir = path.join(rootDir, "package", "luci-app-fttr", "htdocs");
 const rootPkgDir = path.join(rootDir, "package", "luci-app-fttr", "root");
 const poDir = path.join(rootDir, "package", "luci-app-fttr", "po");
 
-if (!fs.existsSync(htdocsDir)) {
-	console.error(`Error: htdocs directory not found at ${htdocsDir}`);
-	process.exit(1);
+function requireFile(filePath) {
+	if (!fs.statSync(filePath).isFile() || fs.statSync(filePath).size === 0) {
+		throw new Error(`Missing or empty release file: ${filePath}`);
+	}
 }
+
+const menuPath = path.join(rootPkgDir, "usr/share/luci/menu.d/luci-app-fttr.json");
+const aclPath = path.join(rootPkgDir, "usr/share/rpcd/acl.d/luci-app-fttr.json");
+requireFile(menuPath);
+requireFile(aclPath);
+const menu = JSON.parse(fs.readFileSync(menuPath, "utf-8"));
+const acl = JSON.parse(fs.readFileSync(aclPath, "utf-8"));
+if (!menu["admin/network/fttr"] || !acl["luci-app-fttr"]) {
+	throw new Error("Release is missing the FTTR menu or ACL group");
+}
+requireFile(path.join(htdocsDir, "luci-static/resources/view/fttr/index.js"));
+for (const entry of Object.values(menu)) {
+	if (entry.action?.type === "view") {
+		const view = entry.action.path;
+		if (!/^fttr\/[a-zA-Z0-9_-]+$/.test(view)) throw new Error(`Invalid FTTR view: ${view}`);
+		requireFile(path.join(htdocsDir, "luci-static/resources/view", `${view}.js`));
+	}
+}
+requireFile(path.join(poDir, "templates/fttr.pot"));
+const languages = fs.readdirSync(poDir, { withFileTypes: true })
+	.filter((entry) => entry.isDirectory() && entry.name !== "templates");
+if (languages.length === 0) throw new Error("Release has no translations");
+for (const language of languages) requireFile(path.join(poDir, language.name, "fttr.po"));
 
 // 2. Prepare staging directory
 const distDir = path.join(rootDir, "dist");
@@ -54,8 +88,15 @@ function copyDirSync(src, dest) {
 
 console.log("Copying package files into staging directory...");
 copyDirSync(htdocsDir, path.join(bundleDir, "htdocs"));
-if (fs.existsSync(rootPkgDir)) copyDirSync(rootPkgDir, path.join(bundleDir, "root"));
-if (fs.existsSync(poDir)) copyDirSync(poDir, path.join(bundleDir, "po"));
+copyDirSync(rootPkgDir, path.join(bundleDir, "root"));
+copyDirSync(poDir, path.join(bundleDir, "po"));
+fs.writeFileSync(path.join(bundleDir, "build-info.json"), `${JSON.stringify({
+	schemaVersion: 1,
+	sourceCommit,
+	sourceTimestamp,
+	packageVersion,
+	releaseType: version === "nightly" ? "nightly" : "release",
+}, null, 2)}\n`);
 
 // 3. Create tar.gz archive using native tar (available on Linux, macOS, and modern Windows)
 const tarballName = `luci-app-fttr-${version}.tar.gz`;
