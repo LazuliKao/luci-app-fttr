@@ -57,7 +57,7 @@ export default defineConfig({
 				new rspack.SwcJsMinimizerRspackPlugin({
 					minimizerOptions: {
 						module: false,
-						minify: false,
+						minify: true,
 						compress: { toplevel: true, top_retain: ["main"] },
 						mangle: { toplevel: true, reserved: ["main"] },
 					},
@@ -70,9 +70,6 @@ export default defineConfig({
 					// LuCI injects dependency aliases as parameters; avoid bundled local names.
 					banner: [
 						"'use strict';",
-						...["view", "rpc", "ui", "uci", "form", "poll", "dom"].map(
-							(name) => `'require ${name} as __fttr_${name}';`,
-						),
 					].join("\n"),
 					raw: true,
 					entryOnly: true,
