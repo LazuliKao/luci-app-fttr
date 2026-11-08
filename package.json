@@ -18,12 +18,13 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit",
 		"sdk:check": "node scripts/check-sdk.mjs",
 		"sdk:generate": "node scripts/check-sdk.mjs --generate",
-		"check": "pnpm sdk:check && pnpm typecheck && pnpm test && pnpm build",
+		"check": "pnpm sdk:check && pnpm typecheck && pnpm test && pnpm test:package && pnpm build",
 		"test": "tsx --test tests/config.test.ts tests/npu.test.ts tests/optical.test.ts tests/fec-monitor.test.ts tests/topology.test.ts tests/sdk.test.ts tests/schema-codegen.test.mjs",
 		"test:luci": "tsx --test tests/luci-form.test.ts",
 		"test:device": "tsx --test tests/device-contracts.test.ts",
 		"dev:remote": "dotenvx run -- luci-types dev",
-		"pack:release": "node scripts/pack-release.mjs",
+		"package:generate": "node scripts/generate-package.mjs",
+		"test:package": "node --test tests/package.test.mjs",
 		"prepare": "husky"
 	},
 	"lint-staged": {

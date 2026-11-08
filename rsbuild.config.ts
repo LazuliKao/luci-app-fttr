@@ -22,7 +22,7 @@ export default defineConfig({
 		filename: { js: "[name].js" },
 		assetPrefix: "",
 		minify: true,
-		cleanDistPath: false,
+		cleanDistPath: true,
 	},
 	tools: {
 		htmlPlugin: false,

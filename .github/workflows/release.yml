@@ -1,73 +1,95 @@
-name: Release Tarball
+name: Build and publish OpenWrt package
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
-      release_type:
-        description: 'Release type (nightly or release)'
+      backend_ref:
+        description: Backend revision paired with this frontend
         required: false
-        default: 'nightly'
 
 permissions:
-  contents: write
-
-concurrency:
-  group: luci-release-${{ github.ref }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - id: meta
-        name: Determine Release Metadata
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            VERSION="${GITHUB_REF_NAME#v}"
-            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-            echo "title=LuCI FTTR ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-            echo "prerelease=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=nightly" >> "$GITHUB_OUTPUT"
-            echo "tag=nightly" >> "$GITHUB_OUTPUT"
-            echo "title=LuCI FTTR Nightly Build" >> "$GITHUB_OUTPUT"
-            echo "prerelease=true" >> "$GITHUB_OUTPUT"
-          fi
-
+        with:
+          path: luci-app-fttr
+      - uses: actions/checkout@v4
+        with:
+          repository: LazuliKao/openwrt-fttr
+          ref: ${{ inputs.backend_ref || vars.FTTR_BACKEND_REF || 'main' }}
+          path: openwrt-fttr
+      - uses: dtolnay/rust-toolchain@stable
       - uses: pnpm/action-setup@v4
         with:
-          package_json_file: package.json
-
+          package_json_file: luci-app-fttr/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run verification checks
-        run: pnpm check
-
-      - name: Build and package release tarball
-        run: pnpm pack:release "${{ steps.meta.outputs.version }}"
-
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+          cache: pnpm
+          cache-dependency-path: luci-app-fttr/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: luci-app-fttr
+      - run: pnpm check
+        working-directory: luci-app-fttr
+      - name: Generate complete OpenWrt package
+        working-directory: luci-app-fttr
+        env:
+          PACKAGE_VERSION: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || '' }}
+        run: |
+          if [[ -n "$PACKAGE_VERSION" ]]; then
+            pnpm package:generate "$PACKAGE_VERSION"
+          else
+            pnpm package:generate
+          fi
+      - uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          name: ${{ steps.meta.outputs.title }}
-          prerelease: ${{ steps.meta.outputs.prerelease == 'true' }}
-          files: |
-            dist/*.tar.gz
-            dist/*.tar.gz.sha256
-          draft: false
-          generate_release_notes: ${{ steps.meta.outputs.prerelease != 'true' }}
+          name: openwrt-package
+          path: luci-app-fttr/dist/package/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: publish-openwrt-package
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: openwrt-package
+          path: dist/package
+      - run: bash scripts/publish-package.sh
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: openwrt-package
+          path: package
+      - name: Archive complete tagged package
+        run: tar -czf "luci-app-fttr-${GITHUB_REF_NAME#v}.tar.gz" -C package .
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: luci-app-fttr-*.tar.gz
+          generate_release_notes: true

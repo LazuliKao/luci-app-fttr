@@ -21,18 +21,54 @@ requires a backend build that includes `device-hl202` support.
 
 ## Build the OpenWrt package
 
-Add `package/luci-app-fttr/` to an OpenWrt source tree or SDK as
-`package/luci-app-fttr/`. Ensure the build tree provides the package dependencies,
-then select **LuCI → Applications → luci-app-fttr** in `menuconfig` and compile:
+The generated `package` branch contains a complete OpenWrt package at its root:
+`Makefile`, built `htdocs/`, menu/ACL `root/`, and real `po/` catalogs. Clone it
+directly into an OpenWrt tree or SDK; Node.js and pnpm are not needed there:
 
 ```sh
+git clone --single-branch --branch package https://github.com/LazuliKao/luci-app-fttr.git package/luci-app-fttr
 make menuconfig
 make package/luci-app-fttr/compile V=s
 ```
 
-These commands build the package; deploy the resulting package to a router using
-your normal OpenWrt package installation process. The backend package
-`h3c-fttr-tools` must also be installed on the router.
+Select **LuCI → Applications → luci-app-fttr** and optionally the Simplified Chinese
+translation. The backend `h3c-fttr-tools` comes from
+[openwrt-fttr](https://github.com/LazuliKao/openwrt-fttr) and must be available in
+the build tree and installed on the router. Translations use native `luci.mk`
+rules and remain independent `luci-i18n-fttr-*` packages.
+
+For reproducible firmware builds, pin a commit from the `package` branch.
+Deploy the resulting packages using the normal OpenWrt installation process.
+
+### Package publication
+
+`main` keeps frontend sources and the Makefile template. On a `main` push, CI runs
+the checks/build, generates `dist/package/`, then commits those files to `package`.
+The package commit and README identify the source commit. Rolling versions use
+that source commit's UTC timestamp (`YYYY.MM.DD.HHMMSS`); translation and main
+package versions match. Publication preserves history, skips unchanged output,
+removes obsolete files, and skips stale builds when `main` has advanced.
+
+PRs validate/generate the package without publishing. Manual runs publish only
+from current `main`. Version tags (`v1.2.3`) produce a complete, versioned package
+archive in GitHub Releases without moving the rolling `package` branch. Nightly
+tarballs, download hashes, and cross-repository translation synchronization are
+no longer used. Ensure `package` has been published before switching firmware
+imports away from the old backend feed package.
+
+For local generation after editing the frontend:
+
+```sh
+pnpm check
+pnpm package:generate
+# Optional explicit version: pnpm package:generate 1.2.3
+```
+
+Copy `dist/package/` into the build tree as `package/luci-app-fttr/`. Generation
+does not rebuild: it uses the assets just verified by `pnpm check`. Do not copy
+the source Makefile template alone (its development version is `0.0.0`).
+`pnpm test:package` covers package generation and completeness and is included
+in `pnpm check`.
 
 ## Use the application
 
@@ -117,10 +153,10 @@ that live traffic is hardware-forwarded.
 
 ## Develop
 
-The repository root is the frontend project. TSX sources are under `src/view/`;
-the OpenWrt package recipe and install payload are under `package/luci-app-fttr/`.
-Generated LuCI JavaScript is committed in the package so building the OpenWrt
-package does not require Node.js or pnpm.
+The repository root on `main` is the frontend project. TSX sources are under
+`src/view/`; the Makefile template, menu/ACL and translations live under
+`package/luci-app-fttr/`. Generated JavaScript is ignored on `main` and committed
+only to the generated `package` branch.
 
 Requirements: Node.js 18 or later and pnpm 10.12.4.
 
@@ -148,7 +184,8 @@ Backend status, HL202 protocol/telemetry and calibration producers use the same
 types from `src/api/generated/types` and validators from `src/api/generated/schemas`
 instead of creating another frontend model. UI-only form and display models stay local.
 
-Both repositories run the pipeline in CI and reject stale package JavaScript.
+Both repositories run the API contract pipeline in CI. Package publication uses
+the freshly built JavaScript from the same checked source revision.
 Use `FTTR_BACKEND_REF` / `FTTR_FRONTEND_REF` repository variables (or manual workflow
 inputs) to select the paired repository revision; pin a commit SHA for repeatable CI.
 
