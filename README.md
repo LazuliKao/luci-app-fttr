@@ -1,7 +1,7 @@
 # luci-app-fttr — OpenWrt package
 
-Generated from [c246ec68f5b0cbb11ac17d5db4421d09435c3964](https://github.com/LazuliKao/luci-app-fttr/commit/c246ec68f5b0cbb11ac17d5db4421d09435c3964).
-Version: 2026.11.08.074654.
+Generated from [854a4b58e9352d9bf7422d3c77323ad4956609c9](https://github.com/LazuliKao/luci-app-fttr/commit/854a4b58e9352d9bf7422d3c77323ad4956609c9).
+Version: 2026.11.08.085010.
 
 Copy this directory into an OpenWrt tree as `package/luci-app-fttr`.
 Select `luci-app-fttr` and optionally `luci-i18n-fttr-zh-cn`, then compile
