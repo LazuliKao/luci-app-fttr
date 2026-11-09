@@ -7,7 +7,7 @@ PKG_LICENSE:=Apache-2.0
 PKG_PO_VERSION:=$(PKG_VERSION)-r$(PKG_RELEASE)
 
 LUCI_TITLE:=FTTR management interface
-LUCI_DEPENDS:=+luci-base +rpcd +h3c-fttr-tools
+LUCI_DEPENDS:=+luci-base +rpcd +openwrt-fttr
 LUCI_DESCRIPTION:=LuCI overview for the FTTR controller and downstream ONUs.
 LUCI_MAINTAINER:=LazuliKao
 # Rsbuild already minifies modern JS that the legacy jsmin cannot parse.

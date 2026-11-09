@@ -16,7 +16,7 @@ synchronization, hardware status, and HL202 management views.
 - **HL202 management:** Inspect MQTT reports, manage supported device accounts,
   and run scripts on a selected sub-gateway.
 
-The package depends on LuCI, rpcd, ucode, and `h3c-fttr-tools`. HL202 management
+The package depends on LuCI, rpcd, ucode, and `openwrt-fttr`. HL202 management
 requires a backend build that includes `device-hl202` support.
 
 ## Build the OpenWrt package
@@ -32,7 +32,7 @@ make package/luci-app-fttr/compile V=s
 ```
 
 Select **LuCI → Applications → luci-app-fttr** and optionally the Simplified Chinese
-translation. The backend `h3c-fttr-tools` comes from
+translation. The backend `openwrt-fttr` comes from
 [openwrt-fttr](https://github.com/LazuliKao/openwrt-fttr) and must be available in
 the build tree and installed on the router. Translations use native `luci.mk`
 rules and remain independent `luci-i18n-fttr-*` packages.
