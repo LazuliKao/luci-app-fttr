@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-fttr
-PKG_VERSION:=2026.11.08.114333
+PKG_VERSION:=2026.11.09.023704
 PKG_RELEASE:=1
 PKG_LICENSE:=Apache-2.0
 PKG_PO_VERSION:=$(PKG_VERSION)-r$(PKG_RELEASE)
 
 LUCI_TITLE:=FTTR management interface
-LUCI_DEPENDS:=+luci-base +rpcd +h3c-fttr-tools
+LUCI_DEPENDS:=+luci-base +rpcd +openwrt-fttr
 LUCI_DESCRIPTION:=LuCI overview for the FTTR controller and downstream ONUs.
 LUCI_MAINTAINER:=LazuliKao
 # Rsbuild already minifies modern JS that the legacy jsmin cannot parse.
