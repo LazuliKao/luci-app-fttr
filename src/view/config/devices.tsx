@@ -143,10 +143,10 @@ export function addDevices(
 		provisioningAdapter.default = "none";
 		omciAdapter.description = _("Select the OMCI profile used to read and configure this device.");
 		bootstrapAdapter.description = _(
-			"Select how ACS settings are established. Manual ACS, OMCI ACS and HL202 MQTT ACS are independent of business provisioning.",
+			"Select how ACS settings are established. Bootstrap runs independently, including when business provisioning is disabled or uses MQTT.",
 		);
 		provisioningAdapter.description = _(
-			"Select the transport and CWMP contract for business configuration. Unsupported candidates remain unavailable and are not selected automatically.",
+			"Select the transport and contract for business configuration. None disables business delivery only. ACS uses current CWMP reachability; bootstrap status is shown separately. Candidate contracts require discovery and verified write support.",
 		);
 		const setRecommendations = (id: string, value: string): void => {
 			const selected = selectionFor(bySerial.get(value), supportedAdapters);
@@ -195,12 +195,7 @@ export function addDevices(
 				return _("Selected ACS bootstrap is unavailable in this build.");
 			if (!supportedAdapters.provisioning.has(selectedProvisioning))
 				return _("Selected business provisioning option is unavailable in this build.");
-			const provisioningUsesAcs = selectedProvisioning !== "none" && selectedProvisioning !== "hl202-mqtt";
-			return (selectedBootstrap === "none") === !provisioningUsesAcs
-				? true
-				: _(
-						"ACS provisioning requires an ACS bootstrap selection; MQTT or disabled provisioning requires none.",
-					);
+			return true;
 		};
 		bootstrapAdapter.validate = validateSelection;
 		provisioningAdapter.validate = validateSelection;

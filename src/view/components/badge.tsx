@@ -177,6 +177,7 @@ export function CwmpBadge(props: { management?: SubGateway["management"] }): HTM
 // ---------------------------------------------------------------------------
 
 export const PROVISIONING_STATE_LABELS: Record<string, string> = {
+	disabled: _("Disabled"),
 	waiting: _("Waiting"),
 	wan_reconciling: _("WAN reconciling"),
 	wan_verifying: _("WAN verifying"),
@@ -228,6 +229,7 @@ export function getProvisioningBadgeSpec(
 	if (!state || state === "not_started") {
 		return { tone: "neutral", label: PROVISIONING_STATE_LABELS.not_started, title };
 	}
+	if (state === "disabled") return { tone: "neutral", label: PROVISIONING_STATE_LABELS.disabled };
 	if (state === "completed" || state === "verified") {
 		return {
 			tone: "success",
@@ -280,6 +282,7 @@ export function ProvisioningBadge(props: {
 // ---------------------------------------------------------------------------
 
 export const WIFI_SYNC_STATE_LABELS: Record<string, string> = {
+	disabled: _("Disabled"),
 	not_configured: _("Not configured"),
 	stale_revision: _("Stale revision"),
 	stale_management: _("Stale management"),
@@ -299,6 +302,7 @@ export function getWifiSyncBadgeSpec(state?: string): {
 	if (!state || state === "not_configured") {
 		return { tone: "neutral", label: WIFI_SYNC_STATE_LABELS.not_configured };
 	}
+	if (state === "disabled") return { tone: "neutral", label: WIFI_SYNC_STATE_LABELS.disabled };
 	if (state === "verified") {
 		return { tone: "success", label: WIFI_SYNC_STATE_LABELS.verified };
 	}

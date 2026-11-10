@@ -105,7 +105,16 @@ const dom = { elem: () => false, findClassInstance: (node: any) => node?.instanc
 const L: any = {
 	uci,
 	ui,
-	rpc: { declare: () => async () => ({ schema_version: 1, version: "0.1.0", features: {}, functions: {}, pages: {}, adapters: { omci: [], bootstrap: [], provisioning: [] } }) },
+	rpc: {
+		declare: () => async () => ({
+			schema_version: 1,
+			version: "0.1.0",
+			features: {},
+			functions: {},
+			pages: {},
+			adapters: { omci: [], bootstrap: [], provisioning: [] },
+		}),
+	},
 	hasViewPermission: () => true,
 	bind: (fn: Function, self: unknown, ...args: unknown[]) => fn.bind(self, ...args),
 	toArray: (value: unknown) => (value == null ? [] : Array.isArray(value) ? value : [value]),
@@ -419,11 +428,10 @@ test("device editor modal configures general, cwmp, and advanced tabs", () => {
 	const adapterOptions = deviceGrid.children.filter((opt: any) =>
 		["omci_adapter", "bootstrap_adapter", "provisioning_adapter"].includes(opt.option),
 	);
-	assert.deepEqual(adapterOptions.map((option: any) => option.title), [
-		"OMCI adapter",
-		"ACS bootstrap",
-		"Business provisioning",
-	]);
+	assert.deepEqual(
+		adapterOptions.map((option: any) => option.title),
+		["OMCI adapter", "ACS bootstrap", "Business provisioning"],
+	);
 	assert.ok(adapterOptions.every((option: any) => !/^[ABC] ·/.test(option.title)));
 	assert.ok(general.includes("group"));
 	assert.ok(general.includes("onu_id"));
@@ -440,6 +448,7 @@ test("device editor modal configures general, cwmp, and advanced tabs", () => {
 
 test("device editor presents adapter functions and recommends selections from capabilities", () => {
 	const map = new L.form.Map("fttr");
+	map.findElement = () => null;
 	const root = map.section(L.form.NamedSection, "main", "main");
 	const capabilities: any = {
 		schema_version: 1,
@@ -447,13 +456,23 @@ test("device editor presents adapter functions and recommends selections from ca
 		features: { acs: true, mqtt: true, "device-hl202": true, "device-hwtc": true },
 		functions: { optical: true, omci_mib: true, mqtt_telemetry: true, hl202_management: true, cwmp: true },
 		pages: { status: true, config: true, sync: true, hl202: true, hardware: true, calibration: true, about: true },
-		adapters: { omci: [
-			{ id: "hl202", name: "H3C HL202" },
-			{ id: "hwtc", name: "Huawei HWTC" },
-			{ id: "star", name: "STAR SG631" },
-			{ id: "generic", name: "Generic G.988 Bridge" },
-		], bootstrap: [{ id: "none", name: "None" }, { id: "manual-acs", name: "Manual ACS" }],
-		provisioning: [{ id: "none", name: "None" }, { id: "hl202-mqtt", name: "HL202 MQTT" }, { id: "hwtc-hw", name: "HWTC ACS" }] },
+		adapters: {
+			omci: [
+				{ id: "hl202", name: "H3C HL202" },
+				{ id: "hwtc", name: "Huawei HWTC" },
+				{ id: "star", name: "STAR SG631" },
+				{ id: "generic", name: "Generic G.988 Bridge" },
+			],
+			bootstrap: [
+				{ id: "none", name: "None" },
+				{ id: "manual-acs", name: "Manual ACS" },
+			],
+			provisioning: [
+				{ id: "none", name: "None" },
+				{ id: "hl202-mqtt", name: "HL202 MQTT" },
+				{ id: "hwtc-hw", name: "HWTC ACS" },
+			],
+		},
 	};
 	const connected = [
 		{ serial_number: "H3CT12345678", model: "HL202-DU-C", vendor: "H3CT", state: "o5_operation", onu_id: 0 },
@@ -462,9 +481,11 @@ test("device editor presents adapter functions and recommends selections from ca
 	];
 	addDevices(root, connected, undefined, capabilities);
 	const deviceGrid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
-	assert.ok(["omci_adapter", "bootstrap_adapter", "provisioning_adapter"].every((name) =>
-		deviceGrid.children.some((option: any) => option.option === name),
-	));
+	assert.ok(
+		["omci_adapter", "bootstrap_adapter", "provisioning_adapter"].every((name) =>
+			deviceGrid.children.some((option: any) => option.option === name),
+		),
+	);
 	const choices = (name: string): string[] =>
 		deviceGrid.children.find((option: any) => option.option === name).keylist;
 	assert.deepEqual(choices("omci_adapter"), ["hl202", "hwtc", "star", "generic"]);
@@ -498,4 +519,14 @@ test("device editor presents adapter functions and recommends selections from ca
 	rows.get("dev1")!.bootstrap_adapter = "manual-acs";
 	serialOpt.write("dev1", "H3CT12345678");
 	assert.equal(rows.get("dev1")?.bootstrap_adapter, "manual-acs");
+
+	// Bootstrap and business transport are independently configurable.
+	const bootstrap = deviceGrid.children.find((opt: any) => opt.option === "bootstrap_adapter");
+	for (const bootstrapId of choices("bootstrap_adapter")) {
+		for (const provisioningId of choices("provisioning_adapter")) {
+			rows.get("dev1")!.bootstrap_adapter = bootstrapId;
+			rows.get("dev1")!.provisioning_adapter = provisioningId;
+			assert.equal(bootstrap.validate("dev1"), true, `${bootstrapId} + ${provisioningId}`);
+		}
+	}
 });

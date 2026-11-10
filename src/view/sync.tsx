@@ -13,6 +13,20 @@ const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | 
 	completed: { label: _("Completed"), type: "success" },
 	applied: { label: _("Applied"), type: "success" },
 	waiting_inform: { label: _("Waiting Inform"), type: "warning" },
+	waiting_transport: { label: _("Waiting transport"), type: "warning" },
+	waiting_identity: { label: _("Waiting identity"), type: "warning" },
+	offline_or_stale: { label: _("Offline or stale"), type: "warning" },
+	manual_required: { label: _("Manual setup required"), type: "warning" },
+	not_configured: { label: _("Not configured"), type: "warning" },
+	not_required: { label: _("Not required"), type: "neutral" },
+	waiting_acs: { label: _("Waiting ACS listener"), type: "warning" },
+	reading: { label: _("Reading settings"), type: "info" },
+	configuring: { label: _("Configuring settings"), type: "info" },
+	verifying: { label: _("Verifying settings"), type: "info" },
+	retry_wait: { label: _("Waiting to retry"), type: "warning" },
+	discovering_management_wan: { label: _("Discovering management WAN"), type: "info" },
+	configuring_management_wan: { label: _("Configuring management WAN"), type: "info" },
+	verifying_management_wan: { label: _("Verifying management WAN"), type: "info" },
 	pending: { label: _("Pending"), type: "warning" },
 	awaiting_apply: { label: _("Awaiting Apply"), type: "warning" },
 	syncing: { label: _("Syncing"), type: "info" },
@@ -264,7 +278,7 @@ function bootstrapCard(
 						</button>{" "}
 						<span style="font-size:85%;color:#666">
 							{_(
-								"Required after management drift or service restart; verifies the child ACS settings before business synchronization.",
+								"Authorizes recovery of the child ACS settings after management drift or service restart. Business synchronization uses its own transport readiness.",
 							)}
 						</span>
 					</div>
@@ -315,7 +329,8 @@ function deviceCard(
 	busy: boolean,
 ): HTMLElement {
 	const op = device.provisioning;
-	const operationActive = !["completed", "not_started", "interrupted"].includes(op.state);
+	const businessEnabled = device.provisioning_adapter !== "none";
+	const operationActive = !["completed", "not_started", "interrupted", "disabled"].includes(op.state);
 	const lifecycle = [
 		...Object.entries(op.wan_lifecycle ?? {}).map(([id, item]) => ({
 			...item,
@@ -365,14 +380,6 @@ function deviceCard(
 						<span class="fttr-badge fttr-badge-neutral" title={_("Business provisioning")}>
 							Provisioning: {device.provisioning_adapter}
 						</span>
-						<span style="font-size:85%;color:#666">
-							OMCI: {renderStateBadge(device.omci_management?.state)}
-							{device.omci_management?.reason ? (
-								<span style="margin-left:4px;color:#888" title={device.omci_management.reason}>
-									({device.omci_management.reason})
-								</span>
-							) : null}
-						</span>
 					</div>
 				</div>
 				{L.hasViewPermission() ? (
@@ -383,9 +390,9 @@ function deviceCard(
 						<button
 							type="button"
 							class="cbi-button cbi-button-positive"
-							disabled={busy || operationActive || !provisioningEnabled}
+							disabled={busy || operationActive || !provisioningEnabled || !businessEnabled}
 							title={
-								!provisioningEnabled
+								!provisioningEnabled || !businessEnabled
 									? _("Provisioning is disabled")
 									: operationActive
 										? _("This device already has an active synchronization operation")
@@ -410,7 +417,7 @@ function deviceCard(
 				) : null}
 			</div>
 
-			<div class="fttr-device-status-strip">
+			<section class="fttr-device-status-strip" aria-label={_("Transport observations")}>
 				<div class="fttr-status-pill-group">
 					<span>
 						<span class="fttr-pill-label">CWMP:</span>{" "}
@@ -426,130 +433,147 @@ function deviceCard(
 						)}
 					</span>
 					<span>
-						<span class="fttr-pill-label">{_("Synchronization")}:</span> {renderStateBadge(op.state)}
-					</span>
-					<span>
-						<span class="fttr-pill-label">Wi-Fi:</span> {renderStateBadge(device.wifi_sync)}
+						<span class="fttr-pill-label">MQTT:</span> {renderStateBadge(device.mqtt?.state)}
 					</span>
 				</div>
-				<div class="fttr-status-op-info">
-					<span>
-						{_("Operation")}: <strong>{text(op.operation_id)}</strong> ({text(op.mode)})
-					</span>
-					<span>·</span>
-					<span>
-						{_("Started")}: {date(op.started_at)}
-					</span>
-					<span>·</span>
-					<span>
-						{_("Revision")}: <code>{text(op.revision)}</code>
-					</span>
-					{op.attempts ? (
-						<>
-							<span>·</span>
-							<span style="color:#e67e22">
-								{_("Attempts")}: <strong>{op.attempts}</strong>
-							</span>
-						</>
-					) : null}
-					{op.next_retry_at && op.next_retry_at > Math.floor(Date.now() / 1000) ? (
-						<>
-							<span>·</span>
-							<span style="color:#d35400">
-								{_("Next self-healing retry in %d seconds").replace(
-									"%d",
-									String(op.next_retry_at - Math.floor(Date.now() / 1000)),
-								)}
-							</span>
-						</>
-					) : null}
-				</div>
-			</div>
+			</section>
 
-			{op.reconcile_reason ? (
-				<div class="alert-message info" style="margin:8px 0;font-size:85%">
-					{op.reconcile_reason}
-				</div>
-			) : null}
+			<section aria-label={_("ACS bootstrap")}>
+				{bootstrapCard(device.acs_bootstrap, applyManagement, managementApplyDisabled)}
+				{device.bootstrap_adapter === "omci-acs" ? (
+					<p>
+						{_("OMCI ACS association")}: {renderStateBadge(device.omci_management?.state)}{" "}
+						{device.omci_management?.reason}
+					</p>
+				) : null}
+			</section>
 
-			{itemTable(op.items ?? [])}
-
-			{op.cwmp_contract ? (
-				<div style="margin-top:1.2em">
-					<h4 style="margin-bottom:0.5em">{_("CWMP contract")}</h4>
-					<div class="fttr-card">
-						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
-							<div>
-								<span>{text(op.cwmp_contract.requested)}</span> →{" "}
-								<code>{text(op.cwmp_contract.contract)}</code>
-							</div>
-							<div>{renderStateBadge(op.cwmp_contract.state)}</div>
-						</div>
-						<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:6px;font-size:90%">
-							<span>
-								<span style="color:#888">WAN:</span>{" "}
-								{renderStateBadge(op.cwmp_contract.capabilities?.wan)}
-							</span>
-							<span>
-								<span style="color:#888">WLAN:</span>{" "}
-								{renderStateBadge(op.cwmp_contract.capabilities?.wlan)}
-							</span>
-							<span>
-								<span style="color:#888">{_("Bindings")}:</span>{" "}
-								{renderStateBadge(op.cwmp_contract.capabilities?.binding)}
-							</span>
-							<span>
-								<span style="color:#888">{_("Cache")}:</span>{" "}
-								<span class="fttr-badge fttr-badge-info" style="font-size:80%">
-									{op.cwmp_contract.cache_hit ? _("Matched") : _("Fresh discovery")}
+			<section aria-label={_("Business provisioning")}>
+				<h4 style="margin-top:1.2em">{_("Business provisioning")}</h4>
+				<div class="fttr-device-status-strip">
+					<div class="fttr-status-pill-group">
+						<span>
+							<span class="fttr-pill-label">{_("Synchronization")}:</span> {renderStateBadge(op.state)}
+						</span>
+						<span>
+							<span class="fttr-pill-label">Wi-Fi:</span> {renderStateBadge(device.wifi_sync)}
+						</span>
+					</div>
+					<div class="fttr-status-op-info">
+						<span>
+							{_("Operation")}: <strong>{text(op.operation_id)}</strong> ({text(op.mode)})
+						</span>
+						<span>·</span>
+						<span>
+							{_("Started")}: {date(op.started_at)}
+						</span>
+						<span>·</span>
+						<span>
+							{_("Revision")}: <code>{text(op.revision)}</code>
+						</span>
+						{op.attempts ? (
+							<>
+								<span>·</span>
+								<span style="color:#e67e22">
+									{_("Attempts")}: <strong>{op.attempts}</strong>
 								</span>
+							</>
+						) : null}
+						{op.next_retry_at && op.next_retry_at > Math.floor(Date.now() / 1000) ? (
+							<>
+								<span>·</span>
+								<span style="color:#d35400">
+									{_("Next self-healing retry in %d seconds").replace(
+										"%d",
+										String(op.next_retry_at - Math.floor(Date.now() / 1000)),
+									)}
+								</span>
+							</>
+						) : null}
+					</div>
+				</div>
+
+				{op.reconcile_reason ? (
+					<div class="alert-message info" style="margin:8px 0;font-size:85%">
+						{op.reconcile_reason}
+					</div>
+				) : null}
+
+				{itemTable(op.items ?? [])}
+
+				{op.cwmp_contract ? (
+					<div style="margin-top:1.2em">
+						<h4 style="margin-bottom:0.5em">{_("CWMP contract")}</h4>
+						<div class="fttr-card">
+							<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+								<div>
+									<span>{text(op.cwmp_contract.requested)}</span> →{" "}
+									<code>{text(op.cwmp_contract.contract)}</code>
+								</div>
+								<div>{renderStateBadge(op.cwmp_contract.state)}</div>
+							</div>
+							<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:6px;font-size:90%">
+								<span>
+									<span style="color:#888">WAN:</span>{" "}
+									{renderStateBadge(op.cwmp_contract.capabilities?.wan)}
+								</span>
+								<span>
+									<span style="color:#888">WLAN:</span>{" "}
+									{renderStateBadge(op.cwmp_contract.capabilities?.wlan)}
+								</span>
+								<span>
+									<span style="color:#888">{_("Bindings")}:</span>{" "}
+									{renderStateBadge(op.cwmp_contract.capabilities?.binding)}
+								</span>
+								<span>
+									<span style="color:#888">{_("Cache")}:</span>{" "}
+									<span class="fttr-badge fttr-badge-info" style="font-size:80%">
+										{op.cwmp_contract.cache_hit ? _("Matched") : _("Fresh discovery")}
+									</span>
+								</span>
+							</div>
+							{op.cwmp_contract.schema ? (
+								<div style="font-size:85%;color:#666">
+									{_("Schema")}: <code>{op.cwmp_contract.schema}</code>
+								</div>
+							) : null}
+							{op.cwmp_contract.reason ? (
+								<div style="font-size:85%;margin-top:4px;color:#e67e22">{op.cwmp_contract.reason}</div>
+							) : null}
+						</div>
+					</div>
+				) : null}
+
+				{lifecycle.length ? (
+					<div style="margin-top:1.2em">
+						<h4 style="margin-bottom:0.5em">{_("WAN / WLAN lifecycle results")}</h4>
+						{itemTable(lifecycle)}
+					</div>
+				) : null}
+
+				<details data-device={device.device} open={opened} style="margin-top:1em">
+					<summary style="cursor:pointer;user-select:none;font-weight:600">
+						{_("Managed objects and lifecycle intent")}
+					</summary>
+					<div style="padding:8px 0">
+						<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:90%;margin-bottom:6px">
+							<span>
+								<span style="color:#888">{_("Wi-Fi cleanup policy")}:</span> {text(op.wifi_cleanup)}
+							</span>
+							<span>
+								<span style="color:#888">{_("Wi-Fi stage")}:</span> {text(op.wifi_stage)}
 							</span>
 						</div>
-						{op.cwmp_contract.schema ? (
-							<div style="font-size:85%;color:#666">
-								{_("Schema")}: <code>{op.cwmp_contract.schema}</code>
-							</div>
-						) : null}
-						{op.cwmp_contract.reason ? (
-							<div style="font-size:85%;margin-top:4px;color:#e67e22">{op.cwmp_contract.reason}</div>
-						) : null}
+						<pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:85%;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;max-height:240px;overflow-y:auto">
+							{JSON.stringify(
+								{ wan_objects: op.wan_objects ?? {}, wifi_objects: op.wifi_objects ?? {} },
+								null,
+								2,
+							)}
+						</pre>
 					</div>
-				</div>
-			) : null}
-
-			{op.backend?.effective === "command"
-				? null
-				: bootstrapCard(device.acs_bootstrap, applyManagement, managementApplyDisabled)}
-
-			{lifecycle.length ? (
-				<div style="margin-top:1.2em">
-					<h4 style="margin-bottom:0.5em">{_("WAN / WLAN lifecycle results")}</h4>
-					{itemTable(lifecycle)}
-				</div>
-			) : null}
-
-			<details data-device={device.device} open={opened} style="margin-top:1em">
-				<summary style="cursor:pointer;user-select:none;font-weight:600">
-					{_("Managed objects and lifecycle intent")}
-				</summary>
-				<div style="padding:8px 0">
-					<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:90%;margin-bottom:6px">
-						<span>
-							<span style="color:#888">{_("Wi-Fi cleanup policy")}:</span> {text(op.wifi_cleanup)}
-						</span>
-						<span>
-							<span style="color:#888">{_("Wi-Fi stage")}:</span> {text(op.wifi_stage)}
-						</span>
-					</div>
-					<pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:85%;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;max-height:240px;overflow-y:auto">
-						{JSON.stringify(
-							{ wan_objects: op.wan_objects ?? {}, wifi_objects: op.wifi_objects ?? {} },
-							null,
-							2,
-						)}
-					</pre>
-				</div>
-			</details>
+				</details>
+			</section>
 		</div>
 	);
 }
@@ -566,9 +590,11 @@ const main = L.view.extend({
 		const target = (
 			<select class="cbi-input-select">
 				<option value="all">{_("All devices")}</option>
-				{(initial.devices ?? []).map((d) => (
-					<option value={d.device}>{d.name || d.device}</option>
-				))}
+				{(initial.devices ?? [])
+					.filter((d) => d.provisioning_adapter !== "none")
+					.map((d) => (
+						<option value={d.device}>{d.name || d.device}</option>
+					))}
 			</select>
 		) as HTMLSelectElement;
 		const content = <div />;
@@ -1031,12 +1057,11 @@ const main = L.view.extend({
 			error.hidden = !messages.length;
 			error.textContent = messages.join(" — ");
 
+			const businessDevices = (status.devices ?? []).filter((d) => d.provisioning_adapter !== "none");
 			const names = [
 				"all",
-				...Array.from(new Set((status.devices ?? []).map((d) => d.group).filter(Boolean))).map(
-					(g) => `group:${g}`,
-				),
-				...(status.devices ?? []).map((d) => d.device),
+				...Array.from(new Set(businessDevices.map((d) => d.group).filter(Boolean))).map((g) => `group:${g}`),
+				...businessDevices.map((d) => d.device),
 			];
 			if (
 				Array.from(target.options)
@@ -1060,12 +1085,15 @@ const main = L.view.extend({
 			}
 
 			manual.hidden = status.mode !== "manual" || !L.hasViewPermission();
-			const active = (status.devices ?? [])
+			const active = businessDevices
 				.filter(
 					(d) => target.value === "all" || d.device === target.value || `group:${d.group}` === target.value,
 				)
 				.some(
-					(d) => !["completed", "not_started", "interrupted"].includes(d.provisioning.state ?? "not_started"),
+					(d) =>
+						!["completed", "not_started", "interrupted", "disabled"].includes(
+							d.provisioning.state ?? "not_started",
+						),
 				);
 			plan.disabled =
 				busy ||
@@ -1073,7 +1101,7 @@ const main = L.view.extend({
 				status.config_load?.state === "waiting" ||
 				"error" in committed ||
 				(!!committed.revision && committed.revision !== status.revision) ||
-				!(status.devices ?? []).length;
+				!businessDevices.length;
 			apply.disabled = plan.disabled || !status.enabled;
 
 			const host = status.management_network;
@@ -1269,4 +1297,4 @@ const main = L.view.extend({
 	handleReset: null,
 });
 
-export { main };
+export { deviceCard, main };
