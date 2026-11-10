@@ -2,6 +2,7 @@ import { getFttrClient } from "../../api/client";
 import type {
 	CalibrationApplied,
 	CalibrationInfo,
+	CalibrationMode,
 	CalibrationSaved,
 	NpuSetReply,
 	NpuSetRequest,
@@ -39,6 +40,8 @@ export const getNpuStatus = async (): Promise<NpuStatus> => getFttrClient().npuS
 export const setNpu = async (request: NpuSetRequest): Promise<NpuReply> => getFttrClient().npuSet(request);
 export const sync = async (action: SyncAction, target: string) => getFttrClient().sync({ action, target });
 export const getCalibration = async (): Promise<CalibrationInfo> => getFttrClient().getCalibration();
+export const selectCalibration = async (source: CalibrationMode): Promise<CalibrationInfo> =>
+	getFttrClient().selectCalibration({ source });
 export const saveCalibration = async (data: string): Promise<SaveCalibrationResult> =>
 	getFttrClient().saveCalibration({ data });
 export const applyCalibration = async (): Promise<ApplyCalibrationResult> =>

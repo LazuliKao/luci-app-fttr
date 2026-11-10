@@ -39,6 +39,7 @@ export const fttrValidators = {
 	hl202ExecStart: { parse: (value: unknown) => jobStart.parse(checked(value)) },
 	jobResult: { parse: (value: unknown) => jobChunk.parse(checked(value)) },
 	getCalibration: { parse: (value: unknown) => calibrationInfo.parse(checked(value)) },
+	selectCalibration: { parse: (value: unknown) => calibrationInfo.parse(checked(value)) },
 	saveCalibration: { parse: (value: unknown) => saveCalibrationResult.parse(checked(value)) },
 	applyCalibration: { parse: (value: unknown) => jobStart.parse(checked(value)) },
 };

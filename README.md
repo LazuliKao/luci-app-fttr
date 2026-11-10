@@ -121,6 +121,28 @@ Wi-Fi cleanup can include unconfigured factory or mesh WLANs. Review the
 preserved instance lists before deleting WLANs. Available WLAN slots and K155
 port bindings are constrained by the verified device contract.
 
+### Optical calibration
+
+The calibration page separates **Upload and save**, **Save source selection**, and
+**Apply selected calibration**. Saving a file does not select it or alter live
+hardware. Select `firmware` explicitly to use an uploaded file when valid Factory
+data is also present. The default `auto` selection prefers valid Factory data,
+then the firmware file, then built-in historical defaults. Explicit selections
+fail instead of silently falling back.
+
+Review the candidate and last initialized version, their raw/effective SHA-256,
+`hardware_applied`, and pending state. Applying while optics are disabled leaves
+them disabled and defers loading until the next enable. A completed job without
+an applied version is not displayed as hardware success. Refresh status to review
+the owner's temperature compensation check/write times, ADC value, table index,
+target code and errors.
+
+288-byte files include coefficients and the 84-entry table. A 56-byte register-only
+file uses explicitly supplemented built-in telemetry coefficients and disables
+temperature compensation. Previews follow the backend's floating-point telemetry
+and integer table indexing, but are not live optical measurements. RESET_N, MAC TX
+and actual light emission are separate; table codes are not dBm targets.
+
 ### HL202 management
 
 The page uses current MQTT and optical-device information to identify a target;

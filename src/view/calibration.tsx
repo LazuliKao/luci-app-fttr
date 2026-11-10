@@ -1,6 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
-import { applyCalibration, type CalibrationInfo, getCalibration, saveCalibration } from "./contracts/api";
+import type { CalibrationMode, CalibrationState, CalibrationVersion } from "../api/generated/types";
+import {
+	calibratedAdc,
+	calibratedTemperature,
+	calibratedTx,
+	calibrationApplyOutcome,
+	temperatureTarget,
+} from "./components/calibration-model";
+import {
+	applyCalibration,
+	type CalibrationInfo,
+	getCalibration,
+	saveCalibration,
+	selectCalibration,
+} from "./contracts/api";
 
 const view = L.view;
 
@@ -17,10 +31,12 @@ interface ParsedCalibration {
 	voltage: { n: number; d: number; o: number };
 	bias: { n: number; d: number; o: number };
 	txPower: { n: number; d: number; o: number };
+	table: number[];
+	tableEnabled: boolean;
 	simulated: {
-		temp: number;
-		voltage: number;
-		bias: number;
+		temp: number | null;
+		voltage: number | null;
+		bias: number | null;
 		txPower: number | null;
 	};
 }
@@ -52,45 +68,6 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
 		bytes[i] = binaryString.charCodeAt(i);
 	}
 	return bytes.buffer;
-}
-
-function calcTemp(raw: number, cal: ParsedCalibration): number {
-	const { n, d, o } = cal.tempPrimary;
-	const div = d === 0 ? 4096 : d;
-	const scaled = Math.floor((raw * n) / div) + o;
-	const temp = scaled / 256.0;
-	if (temp <= cal.tempThreshold) {
-		const { n: nAlt, d: dAlt, o: oAlt } = cal.tempAlt;
-		const divAlt = dAlt === 0 ? 4096 : dAlt;
-		const scaledAlt = Math.floor((raw * nAlt) / divAlt) + oAlt;
-		return Number((scaledAlt / 256.0).toFixed(2));
-	}
-	return Number(temp.toFixed(2));
-}
-
-function calcVolt(raw: number, cal: ParsedCalibration): number {
-	const { n, d, o } = cal.voltage;
-	const div = d === 0 ? 1024 : d;
-	const scaled = Math.floor((raw * n) / div) + o;
-	return Number((scaled / 10000.0).toFixed(2));
-}
-
-function calcBias(raw: number, cal: ParsedCalibration): number {
-	const { n, d, o } = cal.bias;
-	const div = d === 0 ? 1024 : d;
-	const scaled = Math.floor((raw * n) / div) + o;
-	return Number((scaled / 500.0).toFixed(2));
-}
-
-function calcTx(raw: number, cal: ParsedCalibration): number | null {
-	const { n, d, o } = cal.txPower;
-	const div = d === 0 ? 256 : d;
-	const pUw = Math.floor((raw * n) / div) + o;
-	const pMw = pUw / 10000.0;
-	if (pMw > 0) {
-		return Number((10.0 * Math.log10(pMw)).toFixed(2));
-	}
-	return null;
 }
 
 function parseCalibrationBuffer(buffer: ArrayBuffer, sha256Hex: string): ParsedCalibration | null {
@@ -131,7 +108,16 @@ function parseCalibrationBuffer(buffer: ArrayBuffer, sha256Hex: string): ParsedC
 			? { n: view.getUint16(0x58, false), d: view.getUint16(0x5a, false), o: view.getInt16(0x5c, false) }
 			: { n: 7372, d: 4096, o: -26735 };
 
-	const tempThreshold = size >= 0x60 ? view.getInt16(0x5e, false) : 35;
+	const tempThreshold = size >= 0x60 ? view.getUint16(0x5e, false) : 35;
+	const table = size === 288 ? Array.from({ length: 84 }, (_, i) => view.getUint16(0x70 + i * 2, false)) : [];
+	const tableEnabled = size === 288 && bytes[0x60] === 1;
+	if (
+		bytes.every((v) => v === 0) ||
+		bytes.every((v) => v === 255) ||
+		(size === 288 && bytes[0x60] > 1) ||
+		(tableEnabled && (tempPrimary.d === 0 || table.some((code) => code > 1023)))
+	)
+		return null;
 
 	const partial: ParsedCalibration = {
 		size,
@@ -144,14 +130,18 @@ function parseCalibrationBuffer(buffer: ArrayBuffer, sha256Hex: string): ParsedC
 		voltage,
 		bias,
 		txPower,
+		table,
+		tableEnabled,
 		simulated: { temp: 0, voltage: 0, bias: 0, txPower: null },
 	};
 
+	const voltageValue = calibratedAdc(0x8880, voltage);
+	const biasValue = calibratedAdc(0x1f40, bias);
 	partial.simulated = {
-		temp: calcTemp(0x5980, partial),
-		voltage: calcVolt(0x8880, partial),
-		bias: calcBias(0x1f40, partial),
-		txPower: calcTx(0x2440, partial),
+		temp: calibratedTemperature(0x5980, tempPrimary, tempAlt, tempThreshold),
+		voltage: voltageValue === null ? null : Math.fround(voltageValue / 10000),
+		bias: biasValue === null ? null : Math.fround(biasValue / 500),
+		txPower: calibratedTx(0x2440, txPower),
 	};
 
 	return partial;
@@ -226,7 +216,7 @@ function renderRegisterGrid(registers: number[]): HTMLElement {
 
 function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: string): HTMLElement {
 	const hashBadge = cal.isStockHash ? (
-		<span class="fttr-badge fttr-badge-success">{_("Official factory baseline match")}</span>
+		<span class="fttr-badge fttr-badge-info">{_("Historical stock sample match")}</span>
 	) : (
 		<span class="fttr-badge fttr-badge-info">{_("Custom calibration data")}</span>
 	);
@@ -270,12 +260,12 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 				</div>
 				<div class="fttr-card">
 					<div class="fttr-kv-label" style="font-size:85%">
-						{_("Factory baseline consistency")}
+						{_("Historical sample comparison (not device-specific validation)")}
 					</div>
 					<div style="margin-top:2px">
 						{cal.isStockHash
 							? _("Exact match (%s)").format("a9447a8...")
-							: _("Not factory default (self-calibrated)")}
+							: _("Different from the historical sample")}
 					</div>
 				</div>
 			</div>
@@ -390,13 +380,50 @@ function renderParametersCard(cal: ParsedCalibration, title: string, subtitle?: 
 				{_("BOSA hardware register initialization table (first %s bytes, %s)").format("56", "0x00 ~ 0x37")}
 			</h5>
 			{renderRegisterGrid(cal.registers)}
+			<h5>{_("Temperature compensation table (84 entries, 10-bit hardware codes)")}</h5>
+			<p>
+				{cal.size === 56
+					? _(
+							"Register-only file: telemetry coefficients are supplemented from built-in data; temperature compensation is disabled.",
+						)
+					: cal.tableEnabled
+						? _("Mod_Lut_EN is enabled. This table controls registers 0x06/0x07; it is not a dBm target.")
+						: _("Mod_Lut_EN is disabled.")}
+			</p>
+			{cal.table.length > 0 && (
+				<table class="table">
+					<thead>
+						<tr>
+							<th>{_("Index")}</th>
+							<th>{_("Temperature index bin (°C)")}</th>
+							<th>{_("Code")}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{cal.table.map((code, index) => (
+							<tr>
+								<td>{index}</td>
+								<td>
+									{index * 2 - 40} ~ {index * 2 - 39}
+								</td>
+								<td>{code}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			)}
+			{cal.tableEnabled && (
+				<p>
+					{_("Offline example at raw 0x5980:")}{" "}
+					{JSON.stringify(temperatureTarget(0x5980, cal.tempPrimary, cal.table))}
+				</p>
+			)}
 		</div>
 	);
 }
 
 function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
-	const root = document.createElement("div");
-	root.className = "fttr-calibration";
+	const root = <div class="fttr-calibration" />;
 
 	let uploadedBuffer: ArrayBuffer | null = null;
 	let parsedUpload: ParsedCalibration | null = null;
@@ -405,6 +432,122 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	const statusMount = <div />;
 	const previewMount = <div />;
 	const alertMount = <div />;
+	const runtimeMount = <div />;
+	const sourceSelect = (
+		<select aria-label={_("Calibration source")}>
+			{(["auto", "factory", "firmware", "builtin"] as const).map((mode) => (
+				<option value={mode}>{mode}</option>
+			))}
+		</select>
+	) as HTMLSelectElement;
+	sourceSelect.value = currentInfo.state?.selected ?? "auto";
+	const sourceButton = (
+		<button type="button" class="cbi-button cbi-button-action">
+			{_("Save source selection")}
+		</button>
+	) as HTMLButtonElement;
+	const applyButton = (
+		<button type="button" class="cbi-button cbi-button-apply">
+			{_("Apply selected calibration")}
+		</button>
+	) as HTMLButtonElement;
+	const refreshButton = (
+		<button type="button" class="cbi-button">
+			{_("Refresh status")}
+		</button>
+	) as HTMLButtonElement;
+	let busy = false;
+	let sourceSupported = Boolean(currentInfo.state);
+	function setBusy(value: boolean) {
+		busy = value;
+		sourceSelect.disabled = value || !sourceSupported || !L.hasViewPermission();
+		sourceButton.disabled = sourceSelect.disabled;
+		applyButton.disabled = sourceSelect.disabled;
+		refreshButton.disabled = value;
+		uploadButton.disabled = value || !parsedUpload || !L.hasViewPermission();
+	}
+	function renderVersion(version: CalibrationVersion | null | undefined): HTMLElement {
+		return version ? (
+			<div>
+				<strong>{version.source}</strong> · {version.size} {_("bytes")}
+				<div>
+					{_("Raw SHA-256:")} <code style="word-break:break-all">{version.raw_sha256}</code>
+				</div>
+				<div>
+					{_("Effective SHA-256:")} <code style="word-break:break-all">{version.effective_sha256}</code>
+				</div>
+				{version.supplemented && (
+					<p>
+						{_(
+							"56-byte register image supplemented with built-in telemetry coefficients; temperature compensation disabled.",
+						)}
+					</p>
+				)}
+			</div>
+		) : (
+			<span>{_("Unavailable")}</span>
+		);
+	}
+	function renderRuntime(state: CalibrationState | undefined) {
+		sourceSupported = Boolean(state);
+		if (!state) {
+			runtimeMount.replaceChildren(
+				<p class="alert-message warning">
+					{_(
+						"This backend does not expose versioned calibration state. Update the backend before selecting or applying a source.",
+					)}
+				</p>,
+			);
+			return;
+		}
+		const t = state.temperature_compensation;
+		const time = (unix: number | null) => (unix === null ? _("Never") : new Date(unix * 1000).toLocaleString());
+		runtimeMount.replaceChildren(
+			<div class="fttr-card">
+				<h3>{_("Selection and applied runtime version")}</h3>
+				<p>
+					{_("Saved selection:")} <strong>{state.selected}</strong> ·{" "}
+					{state.pending ? _("Pending / not applied") : _("Candidate matches the applied version")}
+				</p>
+				{state.candidate_error && <p class="alert-message danger">{state.candidate_error}</p>}
+				<div class="fttr-grid-2">
+					<div>
+						<h4>{_("Candidate (next enable / apply)")}</h4>
+						{renderVersion(state.candidate)}
+					</div>
+					<div>
+						<h4>{_("Last successfully initialized version")}</h4>
+						{renderVersion(state.active)}
+						<p>
+							{state.hardware_applied
+								? _("Owner reports calibration applied")
+								: _("Hardware calibration is not currently verified as applied")}
+						</p>
+					</div>
+				</div>
+				<h4>{_("Owner temperature compensation")}</h4>
+				<p>
+					{t.enabled ? _("Enabled") : _("Disabled")} · <code>{t.reason}</code>
+				</p>
+				<p>
+					{_("Calibration SHA-256:")} <code style="word-break:break-all">{t.calibration_sha256 ?? "—"}</code>
+				</p>
+				<p>
+					{_("Raw / index / target code:")} {t.raw_temperature ?? "—"} / {t.table_index ?? "—"} /{" "}
+					{t.target_code ?? "—"}
+				</p>
+				<p>
+					{_("Last check:")} {time(t.last_check_unix)} · {_("Last write:")} {time(t.last_write_unix)}
+				</p>
+				{t.error && <p class="alert-message danger">{t.error}</p>}
+				<p>
+					{_(
+						"RESET_N, GPON MAC TX and measured optical emission are separate states. Compensation codes are not dBm targets.",
+					)}
+				</p>
+			</div>,
+		);
+	}
 
 	function renderActiveSourceBadge(source: "factory" | "firmware" | "builtin"): HTMLElement {
 		switch (source) {
@@ -422,29 +565,25 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	}
 
 	function refreshCurrentStatus(info: CalibrationInfo) {
-		warningMount.innerHTML = "";
-		statusMount.innerHTML = "";
+		warningMount.replaceChildren();
+		statusMount.replaceChildren();
+		renderRuntime(info.state);
 
 		// 1. Fallback Warning Banner
-		if (info.source === "builtin") {
+		if (info.source === "builtin" && !info.state?.candidate_error) {
 			warningMount.appendChild(
 				<div class="alert-message warning" style="margin-bottom:16px">
-					<h4 style="margin:0 0 6px">
-						{_("Currently running in fallback mode with built-in static defaults")}
-					</h4>
+					<h4 style="margin:0 0 6px">{_("Candidate uses a built-in historical calibration sample")}</h4>
 					<p style="margin:0 0 4px">
-						{_("No valid calibration data was found in the")}{" "}
-						<strong>{_("1MB Factory UBI partition (offset %s)").format("0x2200")}</strong>{" "}
-						{_("and the firmware file")} <code>/lib/firmware/modified_UX3326.bin</code>{" "}
 						{_(
-							"does not exist. The optical module is currently using parameters embedded in the source at compile time.",
+							"Built-in data may be explicitly selected or chosen by automatic fallback. A sample hash does not establish calibration accuracy for this device.",
 						)}
 					</p>
 					<p style="margin:0;font-size:90%;opacity:0.85">
 						{_("Use the form below to upload the %s-byte").format("288")} <code>modified_UX3326.bin</code>{" "}
 						{_("calibration file extracted from the factory backup to")}{" "}
 						<code>/lib/firmware/modified_UX3326.bin</code>{" "}
-						{_("to ensure accurate laser transmit power and ADC diagnostic readings.")}
+						{_("then select Firmware and apply it separately.")}
 					</p>
 				</div>,
 			);
@@ -477,23 +616,23 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			<div class="cbi-section" style="margin-bottom:16px">
 				<div class="fttr-card">
 					<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-						<h3 style="margin:0;font-size:110%">{_("Currently active system calibration data")}</h3>
+						<h3 style="margin:0;font-size:110%">{_("Candidate calibration data and source inventory")}</h3>
 						<div style="display:flex;align-items:center;gap:8px">
-							<span class="fttr-kv-label">{_("Active data source:")}</span>
-							{renderActiveSourceBadge(info.source)}
+							<span class="fttr-kv-label">{_("Candidate source:")}</span>
+							{info.state?.candidate_error ? _("Unavailable") : renderActiveSourceBadge(info.source)}
 						</div>
 					</div>
 
 					<div class="fttr-grid-3" style="margin-bottom:12px">
 						<div class="fttr-card">
 							<div class="fttr-kv-label" style="font-size:85%">
-								{_("Currently active path")}
+								{_("Candidate path")}
 							</div>
 							<strong style="word-break:break-all;font-size:95%">{info.active_path}</strong>
 						</div>
 						<div class="fttr-card">
 							<div class="fttr-kv-label" style="font-size:85%">
-								{_("Active data size")}
+								{_("Effective data size")}
 							</div>
 							<div style="font-size:110%;font-weight:600;margin-top:2px">
 								{_("%s bytes").format(String(info.size))}
@@ -513,10 +652,10 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<div class="fttr-grid-2">
 						<div class="fttr-card">
 							<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-								<strong>{_("1. 1MB Factory partition (highest priority)")}</strong>
+								<strong>{_("1. Factory partition (first in Auto mode)")}</strong>
 								{info.factory.has_data ? (
 									<span class="fttr-badge fttr-badge-success">
-										{_("Valid data (%s bytes)").format("288")}
+										{_("Data present (%s bytes)").format("288")}
 									</span>
 								) : (
 									<span class="fttr-badge fttr-badge-neutral">{_("No valid data")}</span>
@@ -529,8 +668,10 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{_("Usage status")}</span>
 								<span>
-									{info.source === "factory" ? (
-										<span class="fttr-badge fttr-badge-success">{_("Currently in use")}</span>
+									{info.state?.hardware_applied && info.state.active?.source === "factory" ? (
+										<span class="fttr-badge fttr-badge-success">
+											{_("Applied source (see version above)")}
+										</span>
 									) : (
 										<span style="opacity:0.7">{_("Inactive")}</span>
 									)}
@@ -540,7 +681,7 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 
 						<div class="fttr-card">
 							<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-								<strong>{_("2. Firmware file path (second priority)")}</strong>
+								<strong>{_("2. Firmware file (second in Auto mode)")}</strong>
 								{info.firmware.exists ? (
 									<span class="fttr-badge fttr-badge-info">
 										{_("Exists (%s bytes)").format(String(info.firmware.size))}
@@ -556,11 +697,13 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 							<div class="fttr-kv-row">
 								<span class="fttr-kv-label">{_("Usage status")}</span>
 								<span>
-									{info.source === "firmware" ? (
-										<span class="fttr-badge fttr-badge-info">{_("Currently in use")}</span>
+									{info.state?.hardware_applied && info.state.active?.source === "firmware" ? (
+										<span class="fttr-badge fttr-badge-info">
+											{_("Applied source (see version above)")}
+										</span>
 									) : info.firmware.exists ? (
 										<span class="fttr-badge fttr-badge-neutral">
-											{_("Ready (overridden by Factory)")}
+											{_("Stored file (selection and application are separate)")}
 										</span>
 									) : (
 										<span style="opacity:0.7">{_("Not ready")}</span>
@@ -580,10 +723,7 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 								"Downstream optical calibration parameters extracted from the 1MB Factory partition (offset %s)",
 							).format("0x2200"),
 							info.source === "factory"
-								? _("Device: %s, length %s bytes (currently in use by the system)").format(
-										info.factory.device,
-										"288",
-									)
+								? _("Device: %s, length %s bytes (candidate)").format(info.factory.device, "288")
 								: _("Device: %s, length %s bytes").format(info.factory.device, "288"),
 						)}
 					</div>
@@ -594,8 +734,8 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<div style="margin-top:16px">
 						{renderParametersCard(
 							activeParsed,
-							_("Currently active system calibration parameters (%s)").format(info.active_path),
-							_("Active data size: %s bytes").format(String(info.size)),
+							_("Candidate calibration parameters (%s)").format(info.active_path),
+							_("Effective data size: %s bytes").format(String(info.size)),
 						)}
 					</div>
 				)}
@@ -606,10 +746,6 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	refreshCurrentStatus(currentInfo);
 
 	// Upload form components
-	const applyHardwareCheckbox = (
-		<input id="fttr-cal-apply-hw" type="checkbox" checked style="margin-right:6px" />
-	) as HTMLInputElement;
-
 	const uploadButton = (
 		<button type="button" class="cbi-button cbi-button-action" disabled style="margin-right:8px">
 			{_("Upload and save to %s").format("/lib/firmware/modified_UX3326.bin")}
@@ -627,7 +763,10 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 				{_("Click to select or drag a %s file here").format("UX3326.bin")}
 			</div>
 			<div style="font-size:85%;opacity:0.75">
-				{_("Supported file:")} <code>modified_UX3326.bin</code> {_("(must be exactly %s bytes)").format("288")}
+				{_("Supported file:")} <code>modified_UX3326.bin</code>{" "}
+				{_(
+					"(exactly 288 bytes, or 56 register bytes with supplemented telemetry and no temperature compensation)",
+				)}
 			</div>
 		</div>
 	) as HTMLElement;
@@ -655,8 +794,11 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	});
 
 	async function handleFile(file: File) {
-		alertMount.innerHTML = "";
-		previewMount.innerHTML = "";
+		if (busy) return;
+		uploadedBuffer = null;
+		parsedUpload = null;
+		alertMount.replaceChildren();
+		previewMount.replaceChildren();
 		uploadButton.disabled = true;
 
 		const size = file.size;
@@ -667,11 +809,14 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 				<div class="alert-message danger">
 					<h4 style="margin:0 0 6px">{_("File size validation failed")}</h4>
 					<p style="margin:0">
-						{_("A standard Semtech UX3326 BOSA calibration file must be exactly")}{" "}
+						{_("A full UX3326 BOSA calibration file must be exactly")}{" "}
 						<strong>{_("%s bytes").format("288")}</strong>{" "}
 						{_(
 							"(the first %s bytes configure registers, followed by ADC diagnostic conversion coefficients from %s).",
 						).format("56", "0x40")}
+						{_(
+							"A 56-byte register-only file is also accepted with supplemented telemetry and temperature compensation disabled.",
+						)}
 						<br />
 						{_("Selected file:")} <strong>{file.name}</strong> {_("Size:")}{" "}
 						<strong>{_("%s bytes").format(String(size))}</strong> {_("Upload blocked.")}
@@ -681,9 +826,9 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 			return;
 		}
 
+		setBusy(true);
 		try {
 			const buffer = await file.arrayBuffer();
-			uploadedBuffer = buffer;
 			const hash = await computeSha256(buffer);
 			const parsed = parseCalibrationBuffer(buffer, hash);
 
@@ -699,8 +844,8 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 				return;
 			}
 
+			uploadedBuffer = buffer;
 			parsedUpload = parsed;
-			uploadButton.disabled = false;
 
 			// Show validation passed banner
 			alertMount.appendChild(
@@ -711,8 +856,8 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<p style="margin:0">
 						SHA-256: <code>{hash}</code>{" "}
 						{parsed.isStockHash
-							? _("(exact match with the official factory baseline)")
-							: _("(custom/self-calibrated table)")}
+							? _("(historical sample match, not device-specific validation)")
+							: _("(different from historical sample)")}
 						<br />
 						{_(
 							"All parameters were parsed successfully and are previewed below. Verify them, then click the button below to upload to",
@@ -732,40 +877,24 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<p style="margin:0">{_("Error reading file: %s").format(String(err))}</p>
 				</div>,
 			);
+		} finally {
+			setBusy(false);
 		}
 	}
 
 	uploadButton.addEventListener("click", async () => {
-		if (!uploadedBuffer || !parsedUpload) return;
+		if (busy || !L.hasViewPermission() || !uploadedBuffer || !parsedUpload) return;
 
-		uploadButton.disabled = true;
+		setBusy(true);
 		uploadButton.textContent = _("Uploading to %s...").format("/lib/firmware/modified_UX3326.bin");
-		alertMount.innerHTML = "";
+		alertMount.replaceChildren();
 
 		try {
 			const base64Data = arrayBufferToBase64(uploadedBuffer);
-			const shouldApply = applyHardwareCheckbox.checked;
-
 			// Step 1: Save strictly to /lib/firmware/modified_UX3326.bin
 			const saveRes = await saveCalibration(base64Data);
 			if (!saveRes.success) {
 				throw new Error(_("Failed to save calibration file"));
-			}
-
-			let applyMsg = "";
-			// Step 2: Apply to transceiver if checked
-			if (shouldApply) {
-				uploadButton.textContent = _("Configuring BOSA optical transceiver hardware...");
-				const applyRes = await applyCalibration();
-				if (!applyRes.success) {
-					applyMsg = _(", but optical transceiver hardware initialization reported a warning: %s").format(
-						applyRes.error || _("Unknown error"),
-					);
-				} else {
-					applyMsg = _(
-						", and the optical transceiver hardware was reset and the register table was latched successfully (%s succeeded)",
-					).format("bosa-init");
-				}
 			}
 
 			alertMount.appendChild(
@@ -773,7 +902,10 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 					<h4 style="margin:0 0 6px">{_("Calibration data saved successfully!")}</h4>
 					<p style="margin:0">
 						{_("File written to")} <code>{saveRes.path}</code> ({_("%s bytes").format(String(saveRes.size))}
-						, SHA-256: <code>{saveRes.sha256}</code>){applyMsg}.
+						, SHA-256: <code>{saveRes.sha256}</code>).
+						{_(
+							"Saving does not switch the source or apply hardware. Select Firmware explicitly, then apply the selected calibration when ready.",
+						)}
 					</p>
 				</div>,
 			);
@@ -789,10 +921,68 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 				</div>,
 			);
 		} finally {
-			uploadButton.disabled = false;
+			setBusy(false);
 			uploadButton.textContent = _("Upload and save to %s").format("/lib/firmware/modified_UX3326.bin");
 		}
 	});
+
+	async function action(operation: () => Promise<void>) {
+		if (busy) return;
+		setBusy(true);
+		alertMount.replaceChildren();
+		try {
+			await operation();
+		} catch (error) {
+			alertMount.replaceChildren(<p class="alert-message danger">{String(error)}</p>);
+		} finally {
+			setBusy(false);
+		}
+	}
+	sourceButton.addEventListener("click", () =>
+		action(async () => {
+			if (!L.hasViewPermission() || !sourceSupported) return;
+			const info = await selectCalibration(sourceSelect.value as CalibrationMode);
+			refreshCurrentStatus(info);
+			alertMount.replaceChildren(
+				<p class="alert-message success">
+					{_(
+						"Source selection saved. Existing hardware and telemetry remain on the applied version until apply or the next enable.",
+					)}
+				</p>,
+			);
+		}),
+	);
+	applyButton.addEventListener("click", () =>
+		action(async () => {
+			if (!L.hasViewPermission() || !sourceSupported) return;
+			const result = await applyCalibration();
+			const outcome = calibrationApplyOutcome(result);
+			refreshCurrentStatus(await getCalibration());
+			if (outcome === "failed") throw new Error(result.error ?? _("Calibration application failed"));
+			const message =
+				outcome === "applied"
+					? _("The selected version was applied by the optical owner.")
+					: outcome === "deferred"
+						? _(
+								"Calibration is pending. Disabled optics remain disabled; the selected version will load on the next enable. Check candidate and active hashes above.",
+							)
+						: _(
+								"The operation completed without version confirmation. Refresh status before interpreting the outcome.",
+							);
+			alertMount.replaceChildren(
+				<p class={`alert-message ${outcome === "applied" ? "success" : "warning"}`}>
+					{message}
+					{result.output && <span> {result.output}</span>}
+				</p>,
+			);
+		}),
+	);
+	refreshButton.addEventListener("click", () =>
+		action(async () => {
+			refreshCurrentStatus(await getCalibration());
+		}),
+	);
+	setBusy(false);
 
 	root.appendChild(
 		<div>
@@ -935,22 +1125,33 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 
 			<h2 style="margin-bottom:6px">{_("BOSA downstream optical calibration management (UX3326)")}</h2>
 			<p class="cbi-section-descr" style="margin-bottom:16px">
-				{_(
-					"Manage calibration data for the Semtech UX3326 BOSA optical transceiver attached to the HM2004-DU Micro-OLT FPGA subsystem. Calibration data is read in priority order from",
-				)}{" "}
+				{_("Manage HM2004-DU UX3326 calibration snapshots. Auto selects the first valid source in this order:")}{" "}
 				<strong>{_("1MB Factory UBI partition (offset %s)").format("0x2200")}</strong>,{" "}
 				<strong>/lib/firmware/modified_UX3326.bin</strong>{" "}
-				{_("with automatic fallback to built-in static defaults if neither source has valid data.")}
+				{_(
+					"then built-in historical data. Explicit sources never silently fall back. Upload, source selection and application are separate operations.",
+				)}
 			</p>
 
 			{warningMount}
+			<div class="fttr-card">
+				<div>
+					{_("Source for the next apply / enable:")} {sourceSelect}
+				</div>
+				<p>
+					{sourceButton} {applyButton} {refreshButton}
+				</p>
+			</div>
+			{runtimeMount}
 			{statusMount}
 
 			<div class="cbi-section">
 				<h3>{_("Upload a new UX3326 calibration file")}</h3>
 				<p style="font-size:90%;opacity:0.75;margin-top:0;margin-bottom:12px">
 					{_("New calibration tables are always saved to")} <code>/lib/firmware/modified_UX3326.bin</code>.{" "}
-					{_("The file must be exactly %s bytes.").format("288")}
+					{_(
+						"The file must contain 288 bytes, or 56 register bytes with supplemented telemetry and no temperature compensation.",
+					)}
 				</p>
 				{dropZone}
 				{fileInput}
@@ -964,19 +1165,6 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 							{_("Target storage path")}
 						</span>
 						<code>/lib/firmware/modified_UX3326.bin</code>
-					</div>
-					<div class="fttr-kv-row" style="margin-bottom:16px">
-						<span class="fttr-kv-label" style="min-width:160px">
-							{_("Apply to hardware immediately")}
-						</span>
-						<label htmlFor="fttr-cal-apply-hw" style="display:flex;align-items:center;cursor:pointer">
-							{applyHardwareCheckbox}
-							<span>
-								{_(
-									"Write %s registers to the BOSA hardware and commit the latch immediately after saving (%s)",
-								).format("56", "bosa-init")}
-							</span>
-						</label>
 					</div>
 					<div>{uploadButton}</div>
 				</div>

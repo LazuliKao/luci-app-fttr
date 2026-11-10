@@ -10,7 +10,7 @@ if (args.some((arg) => arg !== "--generate") || args.length > 1) {
 	throw new Error("Usage: node scripts/check-sdk.mjs [--generate]");
 }
 const mode = args.includes("--generate") ? "--generate" : "--check";
-const cargoManifest = resolve(backend, "fttr-tools/src/crates/fttr-api/Cargo.toml");
+const cargoManifest = resolve(backend, "fttr/src/crates/fttr-api/Cargo.toml");
 
 if (existsSync(cargoManifest)) {
 	const result = spawnSync(

@@ -13,16 +13,21 @@ export const AdapterCapabilitySchema = z.object({ "id": z.string(), "name": z.st
 export const BackendStatusSchema = z.object({ "configured": z.string(), "effective": z.string(), "available": z.array(z.string()), "reason": z.string() }) satisfies z.ZodMiniType<wire.BackendStatus>;
 export const BusinessPhaseSchema = z.union([z.literal("not_started"), z.literal("collecting_identity"), z.literal("retrying_identity"), z.literal("unsupported"), z.literal("configuring"), z.literal("verifying"), z.literal("wan_bootstrap_pending"), z.literal("verified"), z.literal("retrying"), z.literal("offline")]) satisfies z.ZodMiniType<wire.BusinessPhase>;
 export const BusinessStatusSchema = z.object({ "phase": BusinessPhaseSchema, "generation": z.number(), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.BusinessStatus>;
-export const CalibrationAppliedSchema = z.object({ "success": z.boolean(), "output": z.optional(z.string()), "error": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.CalibrationApplied>;
+export const CalibrationModeSchema = z.union([z.literal("auto"), z.literal("factory"), z.literal("firmware"), z.literal("builtin")]) satisfies z.ZodMiniType<wire.CalibrationMode>;
 export const CalibrationSourceSchema = z.union([z.literal("factory"), z.literal("firmware"), z.literal("builtin")]) satisfies z.ZodMiniType<wire.CalibrationSource>;
+export const CalibrationVersionSchema = z.object({ "source": CalibrationSourceSchema, "raw_sha256": z.string(), "effective_sha256": z.string(), "size": z.number(), "supplemented": z.boolean(), "temperature_compensation_enabled": z.boolean() }) satisfies z.ZodMiniType<wire.CalibrationVersion>;
+export const TemperatureCompensationStatusSchema = z.object({ "enabled": z.boolean(), "reason": z.string(), "calibration_sha256": z.union([z.string(), z.null()]), "raw_temperature": z.union([z.number(), z.null()]), "table_index": z.union([z.number(), z.null()]), "target_code": z.union([z.number(), z.null()]), "last_check_unix": z.union([z.number(), z.null()]), "last_write_unix": z.union([z.number(), z.null()]), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.TemperatureCompensationStatus>;
+export const CalibrationStateSchema = z.object({ "selected": CalibrationModeSchema, "candidate": z.union([CalibrationVersionSchema, z.null()]), "candidate_error": z.union([z.string(), z.null()]), "active": z.union([CalibrationVersionSchema, z.null()]), "hardware_applied": z.boolean(), "pending": z.boolean(), "temperature_compensation": TemperatureCompensationStatusSchema }) satisfies z.ZodMiniType<wire.CalibrationState>;
+export const CalibrationAppliedSchema = z.object({ "success": z.boolean(), "state": z.optional(CalibrationStateSchema), "output": z.optional(z.string()), "error": z.optional(z.string()) }) satisfies z.ZodMiniType<wire.CalibrationApplied>;
 export const FactoryCalibrationSchema = z.object({ "detected": z.boolean(), "device": z.string(), "has_data": z.boolean(), "sha256": z.string(), "data": z.string() }) satisfies z.ZodMiniType<wire.FactoryCalibration>;
 export const FirmwareCalibrationSchema = z.object({ "exists": z.boolean(), "path": z.string(), "size": z.number(), "sha256": z.string(), "data": z.string() }) satisfies z.ZodMiniType<wire.FirmwareCalibration>;
-export const CalibrationInfoSchema = z.object({ "source": CalibrationSourceSchema, "active_path": z.string(), "size": z.number(), "sha256": z.string(), "data": z.string(), "factory": FactoryCalibrationSchema, "firmware": FirmwareCalibrationSchema }) satisfies z.ZodMiniType<wire.CalibrationInfo>;
+export const CalibrationInfoSchema = z.object({ "source": CalibrationSourceSchema, "active_path": z.string(), "size": z.number(), "sha256": z.string(), "data": z.string(), "factory": FactoryCalibrationSchema, "firmware": FirmwareCalibrationSchema, "state": z.optional(CalibrationStateSchema) }) satisfies z.ZodMiniType<wire.CalibrationInfo>;
 export const CommandErrorSchema = z.object({ "error": z.string() }) satisfies z.ZodMiniType<wire.CommandError>;
 export const CalibrationInfoReplySchema = z.union([CalibrationInfoSchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.CalibrationInfoReply>;
 export const CalibrationSavedSchema = z.object({ "success": z.boolean(), "path": z.string(), "size": z.number(), "sha256": z.string() }) satisfies z.ZodMiniType<wire.CalibrationSaved>;
 export const CalibrationSaveReplySchema = z.union([CalibrationSavedSchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.CalibrationSaveReply>;
 export const CalibrationSaveRequestSchema = z.object({ "data": z.string() }) satisfies z.ZodMiniType<wire.CalibrationSaveRequest>;
+export const CalibrationSelectRequestSchema = z.object({ "source": CalibrationModeSchema }) satisfies z.ZodMiniType<wire.CalibrationSelectRequest>;
 export const CapabilityFeaturesSchema = z.object({ "acs": z.boolean(), "mqtt": z.boolean(), "npu": z.boolean(), "device-hl202": z.boolean(), "device-hwtc": z.boolean(), "device-star": z.boolean(), "device-zte": z.boolean(), "device-scty": z.boolean() }) satisfies z.ZodMiniType<wire.CapabilityFeatures>;
 export const CapabilityFunctionsSchema = z.object({ "optical": z.boolean(), "bridge_offload": z.boolean(), "omci_mib": z.boolean(), "mqtt_telemetry": z.boolean(), "hl202_management": z.boolean(), "cwmp": z.boolean(), "command_provisioning": z.boolean() }) satisfies z.ZodMiniType<wire.CapabilityFunctions>;
 export const CapabilityPagesSchema = z.object({ "status": z.boolean(), "config": z.boolean(), "sync": z.boolean(), "hardware": z.boolean(), "calibration": z.boolean(), "hl202": z.boolean(), "about": z.boolean() }) satisfies z.ZodMiniType<wire.CapabilityPages>;
@@ -141,7 +146,7 @@ export const PonMacStatusSchema = z.object({ "desired_tx_enabled": z.boolean(), 
 export const ReplyStatusSchema = z.union([z.literal("success"), z.literal("error")]) satisfies z.ZodMiniType<wire.ReplyStatus>;
 export const OpticalStateSchema = z.union([z.literal("enabled"), z.literal("disabled"), z.literal("unknown")]) satisfies z.ZodMiniType<wire.OpticalState>;
 export const OpticalReplySchema = z.object({ "settings": z.optional(OpticalSettingsSchema), "pon_mac": z.optional(PonMacStatusSchema), "schema_version": z.literal(1), "status": ReplyStatusSchema, "action": OpticalActionSchema, "desired_enabled": z.union([z.boolean(), z.null()]), "tx_enabled": z.union([z.boolean(), z.null()]), "actor_state": OpticalStateSchema, "hardware_ready": z.boolean(), "discovery_active": z.boolean(), "cleanup_pending": z.boolean(), "error": z.union([OpticalErrorSchema, z.null()]) }) satisfies z.ZodMiniType<wire.OpticalReply>;
-export const OpticalTransceiverStatusSchema = z.object({ "model": z.string(), "wavelength_tx_nm": z.number(), "wavelength_rx_nm": z.number(), "phy_rate_downlink_gbps": z.number(), "phy_rate_uplink_gbps": z.number(), "tx_power_dbm": z.union([z.number(), z.null()]), "laser_bias_current_ma": z.union([z.number(), z.null()]), "temperature_celsius": z.union([z.number(), z.null()]), "vcc_voltage": z.union([z.number(), z.null()]), "cdr_locked": z.union([z.boolean(), z.null()]), "tx_enabled": z.optional(z.boolean()), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.OpticalTransceiverStatus>;
+export const OpticalTransceiverStatusSchema = z.object({ "calibration_sha256": z.optional(z.string()), "calibration_applied": z.boolean(), "model": z.string(), "wavelength_tx_nm": z.number(), "wavelength_rx_nm": z.number(), "phy_rate_downlink_gbps": z.number(), "phy_rate_uplink_gbps": z.number(), "tx_power_dbm": z.union([z.number(), z.null()]), "laser_bias_current_ma": z.union([z.number(), z.null()]), "temperature_celsius": z.union([z.number(), z.null()]), "vcc_voltage": z.union([z.number(), z.null()]), "cdr_locked": z.union([z.boolean(), z.null()]), "tx_enabled": z.optional(z.boolean()), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.OpticalTransceiverStatus>;
 export const RegistrationStateSchema = z.union([z.literal("o1_initial"), z.literal("o2_standby"), z.literal("o3_serial_number"), z.literal("o4_ranging"), z.literal("o5_operation"), z.literal("o6_intermittent_lods"), z.literal("o7_emergency_stop")]) satisfies z.ZodMiniType<wire.RegistrationState>;
 export const RestartReplySchema = z.object({ "restarting": z.literal(true) }) satisfies z.ZodMiniType<wire.RestartReply>;
 export const UbusMethodStatsSchema = z.object({ "calls": z.number(), "failures": z.number(), "last_us": z.number(), "max_us": z.number(), "total_us": z.number() }) satisfies z.ZodMiniType<wire.UbusMethodStats>;
@@ -203,10 +208,18 @@ export type SchemaContracts = [
 	Assert<[wire.BusinessPhase] extends [z.infer<typeof BusinessPhaseSchema>] ? true : false>,
 	Assert<[z.infer<typeof BusinessStatusSchema>] extends [wire.BusinessStatus] ? true : false>,
 	Assert<[wire.BusinessStatus] extends [z.infer<typeof BusinessStatusSchema>] ? true : false>,
-	Assert<[z.infer<typeof CalibrationAppliedSchema>] extends [wire.CalibrationApplied] ? true : false>,
-	Assert<[wire.CalibrationApplied] extends [z.infer<typeof CalibrationAppliedSchema>] ? true : false>,
+	Assert<[z.infer<typeof CalibrationModeSchema>] extends [wire.CalibrationMode] ? true : false>,
+	Assert<[wire.CalibrationMode] extends [z.infer<typeof CalibrationModeSchema>] ? true : false>,
 	Assert<[z.infer<typeof CalibrationSourceSchema>] extends [wire.CalibrationSource] ? true : false>,
 	Assert<[wire.CalibrationSource] extends [z.infer<typeof CalibrationSourceSchema>] ? true : false>,
+	Assert<[z.infer<typeof CalibrationVersionSchema>] extends [wire.CalibrationVersion] ? true : false>,
+	Assert<[wire.CalibrationVersion] extends [z.infer<typeof CalibrationVersionSchema>] ? true : false>,
+	Assert<[z.infer<typeof TemperatureCompensationStatusSchema>] extends [wire.TemperatureCompensationStatus] ? true : false>,
+	Assert<[wire.TemperatureCompensationStatus] extends [z.infer<typeof TemperatureCompensationStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof CalibrationStateSchema>] extends [wire.CalibrationState] ? true : false>,
+	Assert<[wire.CalibrationState] extends [z.infer<typeof CalibrationStateSchema>] ? true : false>,
+	Assert<[z.infer<typeof CalibrationAppliedSchema>] extends [wire.CalibrationApplied] ? true : false>,
+	Assert<[wire.CalibrationApplied] extends [z.infer<typeof CalibrationAppliedSchema>] ? true : false>,
 	Assert<[z.infer<typeof FactoryCalibrationSchema>] extends [wire.FactoryCalibration] ? true : false>,
 	Assert<[wire.FactoryCalibration] extends [z.infer<typeof FactoryCalibrationSchema>] ? true : false>,
 	Assert<[z.infer<typeof FirmwareCalibrationSchema>] extends [wire.FirmwareCalibration] ? true : false>,
@@ -223,6 +236,8 @@ export type SchemaContracts = [
 	Assert<[wire.CalibrationSaveReply] extends [z.infer<typeof CalibrationSaveReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof CalibrationSaveRequestSchema>] extends [wire.CalibrationSaveRequest] ? true : false>,
 	Assert<[wire.CalibrationSaveRequest] extends [z.infer<typeof CalibrationSaveRequestSchema>] ? true : false>,
+	Assert<[z.infer<typeof CalibrationSelectRequestSchema>] extends [wire.CalibrationSelectRequest] ? true : false>,
+	Assert<[wire.CalibrationSelectRequest] extends [z.infer<typeof CalibrationSelectRequestSchema>] ? true : false>,
 	Assert<[z.infer<typeof CapabilityFeaturesSchema>] extends [wire.CapabilityFeatures] ? true : false>,
 	Assert<[wire.CapabilityFeatures] extends [z.infer<typeof CapabilityFeaturesSchema>] ? true : false>,
 	Assert<[z.infer<typeof CapabilityFunctionsSchema>] extends [wire.CapabilityFunctions] ? true : false>,

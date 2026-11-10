@@ -185,6 +185,7 @@ test("generated nested contracts reject drift and preserve unknown measurements 
 		vcc_voltage: null,
 		cdr_locked: null,
 		measurements: {},
+		calibration_applied: false,
 	};
 	assert.deepEqual(schemas.OpticalTransceiverStatusSchema.parse(optical), optical);
 	assert.throws(() => schemas.OpticalTransceiverStatusSchema.parse({ ...optical, tx_power_dbm: "unknown" }));
