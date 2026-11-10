@@ -26,6 +26,24 @@ function adapterFor(device?: ConnectedDevice, supported?: Set<string>): string {
 	return "generic";
 }
 
+function selectionFor(
+	device: ConnectedDevice | undefined,
+	supported: {
+		omci: Set<string>;
+		bootstrap: Set<string>;
+		provisioning: Set<string>;
+	},
+): { omci: string; bootstrap: string; provisioning: string } {
+	const omci = adapterFor(device, supported.omci);
+	if (omci === "hl202" && supported.provisioning.has("hl202-mqtt")) {
+		return { omci, bootstrap: "none", provisioning: "hl202-mqtt" };
+	}
+	if (omci === "hwtc" && supported.bootstrap.has("manual-acs") && supported.provisioning.has("hwtc-hw")) {
+		return { omci, bootstrap: "manual-acs", provisioning: "hwtc-hw" };
+	}
+	return { omci, bootstrap: "none", provisioning: "none" };
+}
+
 export function addDevices(
 	section: any,
 	connected: ConnectedDevice[],
@@ -33,12 +51,18 @@ export function addDevices(
 	capabilities?: Capabilities,
 ): void {
 	const bySerial = new Map(connected.map((device) => [device.serial_number, device]));
-	const adapterChoices = adaptersFromCapabilities(capabilities);
-	const supportedAdapters = new Set(adapterChoices.map(([key]) => key));
+	const supportedAdapters = {
+		omci: new Set(adaptersFromCapabilities(capabilities, "omci").map(([key]) => key)),
+		bootstrap: new Set(adaptersFromCapabilities(capabilities, "bootstrap").map(([key]) => key)),
+		provisioning: new Set(adaptersFromCapabilities(capabilities, "provisioning").map(([key]) => key)),
+	};
+	const omciChoices = adaptersFromCapabilities(capabilities, "omci");
+	const bootstrapChoices = adaptersFromCapabilities(capabilities, "bootstrap");
+	const provisioningChoices = adaptersFromCapabilities(capabilities, "provisioning");
 	const label = (serial: string): string => {
 		const device = bySerial.get(serial);
 		const configured = L.uci.sections("fttr", "device").find((item) => item.optical_sn === serial);
-		const model = device?.model || String(configured?.adapter || _("Unknown model"));
+		const model = device?.model || String(configured?.model || _("Unknown model"));
 		return `${model} · ${serial} · ${device?.state === "o5_operation" ? _("Connected") : _("Offline")}${device?.onu_id != null ? ` · ONU ${device.onu_id}` : ""}`;
 	};
 	section.tab("devices", _("Devices & groups"));
@@ -92,7 +116,7 @@ export function addDevices(
 			for (const device of connected)
 				if (
 					device.state === "o5_operation" &&
-					adapterFor(device, supportedAdapters) &&
+					adapterFor(device, supportedAdapters.omci) &&
 					!used.has(device.serial_number)
 				)
 					this.value(device.serial_number, label(device.serial_number));
@@ -100,11 +124,37 @@ export function addDevices(
 			const selected = configured || current || this.keylist[0] || "";
 			return render.call(this, id, index, selected);
 		};
-		serial.onchange = (_event: Event, id: string, value: string): void => {
-			const target = bySerial.get(value);
-			const recommended = adapterFor(target, supportedAdapters);
-			adapterField.getUIElement(id)?.setValue(recommended);
+		const omciAdapter = tabchoice(s, "general", "omci_adapter", _("OMCI adapter"), omciChoices);
+		const bootstrapAdapter = tabchoice(s, "general", "bootstrap_adapter", _("ACS bootstrap"), bootstrapChoices);
+		const provisioningAdapter = tabchoice(
+			s,
+			"general",
+			"provisioning_adapter",
+			_("Business provisioning"),
+			provisioningChoices,
+		);
+		for (const option of [omciAdapter, bootstrapAdapter, provisioningAdapter]) {
+			option.modalonly = true;
+			option.rmempty = false;
+			option.retain = true;
+		}
+		omciAdapter.default = "generic";
+		bootstrapAdapter.default = "none";
+		provisioningAdapter.default = "none";
+		omciAdapter.description = _("Select the OMCI profile used to read and configure this device.");
+		bootstrapAdapter.description = _(
+			"Select how ACS settings are established. Manual ACS, OMCI ACS and HL202 MQTT ACS are independent of business provisioning.",
+		);
+		provisioningAdapter.description = _(
+			"Select the transport and CWMP contract for business configuration. Unsupported candidates remain unavailable and are not selected automatically.",
+		);
+		const setRecommendations = (id: string, value: string): void => {
+			const selected = selectionFor(bySerial.get(value), supportedAdapters);
+			omciAdapter.getUIElement(id)?.setValue(selected.omci);
+			bootstrapAdapter.getUIElement(id)?.setValue(selected.bootstrap);
+			provisioningAdapter.getUIElement(id)?.setValue(selected.provisioning);
 		};
+		serial.onchange = (_event: Event, id: string, value: string): void => setRecommendations(id, value);
 		serial.validate = (id: string, value: string): boolean | string => {
 			if (!value) return _("Select device.");
 			return L.uci.sections("fttr", "device").some((item) => item[".name"] !== id && item.optical_sn === value)
@@ -112,44 +162,48 @@ export function addDevices(
 				: true;
 		};
 		serial.write = (id: string, value: string): void => {
+			const previous = String(L.uci.get("fttr", id, "optical_sn") || "");
 			L.uci.set("fttr", id, "optical_sn", value);
-			const target = bySerial.get(value);
-			const adapter = adapterFor(target, supportedAdapters);
-			if (!L.uci.get("fttr", id, "adapter")) L.uci.set("fttr", id, "adapter", adapter);
-		};
-		const adapterField = tabchoice(s, "general", "adapter", _("Device adapter"), adapterChoices);
-		adapterField.modalonly = true;
-		adapterField.default = "generic";
-		adapterField.rmempty = false;
-		const adapterRender = adapterField.renderWidget;
-		adapterField.renderWidget = function (id: string, index: number, configured: string | null): any {
-			const currentSerial = String(L.uci.get("fttr", id, "optical_sn") || "");
-			const target = bySerial.get(currentSerial);
-			const recommended = adapterFor(target, supportedAdapters);
-			const selected = configured || L.uci.get("fttr", id, "adapter") || recommended;
-			if (selected && !this.keylist.includes(selected)) {
-				this.value(selected, selected);
+			const selection = selectionFor(bySerial.get(value), supportedAdapters);
+			const changed = previous !== value;
+			for (const [option, recommended] of [
+				["omci_adapter", selection.omci],
+				["bootstrap_adapter", selection.bootstrap],
+				["provisioning_adapter", selection.provisioning],
+			] as const) {
+				if (changed || !L.uci.get("fttr", id, option)) L.uci.set("fttr", id, option, recommended);
 			}
-			return adapterRender.call(this, id, index, selected);
 		};
-		adapterField.write = (id: string, value: string): void => {
-			const currentSerial = String(L.uci.get("fttr", id, "optical_sn") || "");
-			const target = bySerial.get(currentSerial);
-			const recommended = adapterFor(target, supportedAdapters);
-			const finalValue = value || recommended || "generic";
-			L.uci.set("fttr", id, "adapter", finalValue);
+		for (const option of [omciAdapter, bootstrapAdapter, provisioningAdapter]) {
+			const renderOption = option.renderWidget;
+			option.renderWidget = function (id: string, index: number, configured: string | null): any {
+				const selected = configured || String(L.uci.get("fttr", id, option.option) || "");
+				if (selected && !this.keylist.includes(selected))
+					this.value(selected, `${selected} (${_("unavailable")})`);
+				return renderOption.call(this, id, index, selected || option.default);
+			};
+		}
+		const validateSelection = (id: string): boolean | string => {
+			const current = (option: any): string =>
+				String(option.formvalue(id) ?? L.uci.get("fttr", id, option.option) ?? "");
+			const selectedOmci = current(omciAdapter);
+			const selectedBootstrap = current(bootstrapAdapter);
+			const selectedProvisioning = current(provisioningAdapter);
+			if (!supportedAdapters.omci.has(selectedOmci))
+				return _("Selected OMCI adapter is unavailable in this build.");
+			if (!supportedAdapters.bootstrap.has(selectedBootstrap))
+				return _("Selected ACS bootstrap is unavailable in this build.");
+			if (!supportedAdapters.provisioning.has(selectedProvisioning))
+				return _("Selected business provisioning option is unavailable in this build.");
+			const provisioningUsesAcs = selectedProvisioning !== "none" && selectedProvisioning !== "hl202-mqtt";
+			return (selectedBootstrap === "none") === !provisioningUsesAcs
+				? true
+				: _(
+						"ACS provisioning requires an ACS bootstrap selection; MQTT or disabled provisioning requires none.",
+					);
 		};
-		const method = tabchoice(s, "general", "provisioning_method", _("Provisioning method"), [
-			["", _("Automatic (HL202 command, otherwise ACS)")],
-			["command", _("Command (MQTT / tcapi)")],
-			["acs", _("ACS (CWMP)")],
-		]);
-		method.modalonly = true;
-		method.retain = true;
-		method.depends("adapter", "hl202");
-		method.description = _(
-			"HL202 defaults to native command provisioning with readback verification. Builds without MQTT use ACS. Transport failures require reconciliation and do not switch to ACS automatically.",
-		);
+		bootstrapAdapter.validate = validateSelection;
+		provisioningAdapter.validate = validateSelection;
 		tabreference(s, "general", "group", _("Group"), "group").modalonly = true;
 		const pin = tabchoice(
 			s,
@@ -198,21 +252,6 @@ export function addDevices(
 				? _("Interface already reserved by another device.")
 				: true;
 		};
-		const contract = tabchoice(s, "cwmp", "cwmp_contract", _("CWMP contract"), [
-			["auto", _("Automatic (read-only capability discovery)")],
-			["hl202-cu", "HL202 · CU"],
-			["hwtc-hw", "HWTC · HW"],
-			["vendor-cu-parent-vlan", `CU · ${_("Unverified candidate")}`],
-			["vendor-hw-connection-vlan", `HW · ${_("Unverified candidate")}`],
-			["vendor-cm-candidate", `CM · ${_("Unverified candidate")}`],
-			["vendor-ct-candidate", `CT · ${_("Unverified candidate")}`],
-		]);
-		contract.modalonly = true;
-		contract.default = "auto";
-		contract.rmempty = false;
-		contract.description = _(
-			"Independent of the optical adapter. Parameter paths, types and writable evidence are discovered before synchronization. Unverified candidates do not authorize writes.",
-		);
 		const connectionRequest = tabfield(
 			s,
 			"cwmp",
@@ -293,19 +332,6 @@ export function addDevices(
 		requestPort.rmempty = false;
 		requestPort.retain = true;
 		requestPort.depends({ connection_request: "1", connection_request_defaults: "0" });
-		const omci = tabfield(
-			s,
-			"advanced",
-			L.form.Flag,
-			"omci_management",
-			_("Provision management VLAN and ACS via OMCI"),
-		);
-		omci.modalonly = true;
-		omci.default = "0";
-		omci.rmempty = false;
-		omci.description = _(
-			"Disabled by default. Uses the global management VLAN, priority and ACS URL for this device only, subject to management application authorization. Disabling skips future OMCI management writes and retains existing ONU settings. ME readback does not prove WAN creation or successful Inform; K155 may clear its local ACS URL when enabled.",
-		);
 		const cleanup = tabchoice(s, "advanced", "wifi_cleanup", _("Unconfigured WLANs"), [
 			["disable", _("Disable (keep the WLAN object)")],
 			["preserve", _("Leave unchanged")],

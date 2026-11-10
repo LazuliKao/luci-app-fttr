@@ -344,16 +344,8 @@ function deviceCard(
 		<div class="cbi-section fttr-device-card">
 			<div class="fttr-card-header">
 				<div class="fttr-card-title-group">
-					<h3 style="margin:0">
-						{device.name || device.optical_sn}{" "}
-						<small style="font-size:75%;font-weight:normal;color:#888">({device.adapter})</small>
-					</h3>
+					<h3 style="margin:0">{device.name || device.optical_sn}</h3>
 					<div class="fttr-card-meta-tags">
-						{op.backend ? (
-							<span class="fttr-badge fttr-badge-info" title={op.backend.reason}>
-								{_("Provisioning method")}: {op.backend.configured} → {op.backend.effective}
-							</span>
-						) : null}
 						{device.group_name ? (
 							<span class="fttr-badge fttr-badge-neutral" title={_("Group")}>
 								{device.group_name}
@@ -364,6 +356,15 @@ function deviceCard(
 								{device.template_name}
 							</span>
 						) : null}
+						<span class="fttr-badge fttr-badge-neutral" title={_("OMCI adapter")}>
+							OMCI: {device.omci_adapter}
+						</span>
+						<span class="fttr-badge fttr-badge-neutral" title={_("ACS bootstrap")}>
+							ACS bootstrap: {device.bootstrap_adapter}
+						</span>
+						<span class="fttr-badge fttr-badge-neutral" title={_("Business provisioning")}>
+							Provisioning: {device.provisioning_adapter}
+						</span>
 						<span style="font-size:85%;color:#666">
 							OMCI: {renderStateBadge(device.omci_management?.state)}
 							{device.omci_management?.reason ? (

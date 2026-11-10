@@ -5,8 +5,11 @@ import type { Capabilities } from "../../api/generated/types";
 
 export type { Capabilities } from "../../api/generated/types";
 
-export function adaptersFromCapabilities(capabilities?: Capabilities): Array<[string, string]> {
-	return (capabilities?.adapters ?? []).map((item) => [
+export function adaptersFromCapabilities(
+	capabilities?: Capabilities,
+	layer: keyof Capabilities["adapters"] = "omci",
+): Array<[string, string]> {
+	return (capabilities?.adapters[layer] ?? []).map((item) => [
 		item.id,
 		item.id === "generic" ? _("Generic G.988 Bridge") : item.name,
 	]);

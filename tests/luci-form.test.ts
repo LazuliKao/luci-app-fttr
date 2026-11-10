@@ -105,7 +105,7 @@ const dom = { elem: () => false, findClassInstance: (node: any) => node?.instanc
 const L: any = {
 	uci,
 	ui,
-	rpc: { declare: () => async () => ({ schema_version: 1, version: "0.1.0", features: {}, functions: {}, pages: {}, adapters: [] }) },
+	rpc: { declare: () => async () => ({ schema_version: 1, version: "0.1.0", features: {}, functions: {}, pages: {}, adapters: { omci: [], bootstrap: [], provisioning: [] } }) },
 	hasViewPermission: () => true,
 	bind: (fn: Function, self: unknown, ...args: unknown[]) => fn.bind(self, ...args),
 	toArray: (value: unknown) => (value == null ? [] : Array.isArray(value) ? value : [value]),
@@ -413,59 +413,89 @@ test("device editor modal configures general, cwmp, and advanced tabs", () => {
 	const advanced = deviceGrid.children.filter((opt: any) => opt.tab === "advanced").map((opt: any) => opt.option);
 
 	assert.ok(general.includes("optical_sn"));
-	assert.ok(general.includes("adapter"));
-	assert.ok(general.includes("provisioning_method"));
+	assert.ok(general.includes("omci_adapter"));
+	assert.ok(general.includes("bootstrap_adapter"));
+	assert.ok(general.includes("provisioning_adapter"));
+	const adapterOptions = deviceGrid.children.filter((opt: any) =>
+		["omci_adapter", "bootstrap_adapter", "provisioning_adapter"].includes(opt.option),
+	);
+	assert.deepEqual(adapterOptions.map((option: any) => option.title), [
+		"OMCI adapter",
+		"ACS bootstrap",
+		"Business provisioning",
+	]);
+	assert.ok(adapterOptions.every((option: any) => !/^[ABC] ·/.test(option.title)));
 	assert.ok(general.includes("group"));
 	assert.ok(general.includes("onu_id"));
 	assert.ok(general.includes("_pin_current"));
 
-	assert.ok(cwmp.includes("cwmp_contract"));
 	assert.ok(cwmp.includes("connection_request"));
 	assert.ok(cwmp.includes("connection_request_defaults"));
 	assert.ok(cwmp.includes("connection_request_username"));
 	assert.ok(cwmp.includes("connection_request_password"));
 	assert.ok(cwmp.includes("connection_request_port"));
 
-	assert.ok(advanced.includes("omci_management"));
 	assert.ok(advanced.includes("wifi_cleanup"));
 });
 
-test("device editor obtains candidate adapters from capabilities and persists selected adapter", () => {
+test("device editor presents adapter functions and recommends selections from capabilities", () => {
 	const map = new L.form.Map("fttr");
 	const root = map.section(L.form.NamedSection, "main", "main");
 	const capabilities: any = {
 		schema_version: 1,
 		version: "0.1.0",
-		features: { acs: true, mqtt: true, "device-hl202": true, "device-hwtc": false },
+		features: { acs: true, mqtt: true, "device-hl202": true, "device-hwtc": true },
 		functions: { optical: true, omci_mib: true, mqtt_telemetry: true, hl202_management: true, cwmp: true },
 		pages: { status: true, config: true, sync: true, hl202: true, hardware: true, calibration: true, about: true },
-		adapters: [
+		adapters: { omci: [
 			{ id: "hl202", name: "H3C HL202" },
+			{ id: "hwtc", name: "Huawei HWTC" },
 			{ id: "star", name: "STAR SG631" },
 			{ id: "generic", name: "Generic G.988 Bridge" },
-		],
+		], bootstrap: [{ id: "none", name: "None" }, { id: "manual-acs", name: "Manual ACS" }],
+		provisioning: [{ id: "none", name: "None" }, { id: "hl202-mqtt", name: "HL202 MQTT" }, { id: "hwtc-hw", name: "HWTC ACS" }] },
 	};
 	const connected = [
 		{ serial_number: "H3CT12345678", model: "HL202-DU-C", vendor: "H3CT", state: "o5_operation", onu_id: 0 },
 		{ serial_number: "STAR12345678", model: "SG631Z-C", vendor: "STAR", state: "o5_operation", onu_id: 1 },
+		{ serial_number: "HWTC12345678", model: "K155", vendor: "HWTC", state: "o5_operation", onu_id: 2 },
 	];
 	addDevices(root, connected, undefined, capabilities);
 	const deviceGrid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
-	const adapterOpt = deviceGrid.children.find((opt: any) => opt.option === "adapter");
-	assert.deepEqual(adapterOpt.keylist, ["hl202", "star", "generic"]);
+	assert.ok(["omci_adapter", "bootstrap_adapter", "provisioning_adapter"].every((name) =>
+		deviceGrid.children.some((option: any) => option.option === name),
+	));
+	const choices = (name: string): string[] =>
+		deviceGrid.children.find((option: any) => option.option === name).keylist;
+	assert.deepEqual(choices("omci_adapter"), ["hl202", "hwtc", "star", "generic"]);
+	assert.deepEqual(choices("bootstrap_adapter"), ["none", "manual-acs"]);
+	assert.deepEqual(choices("provisioning_adapter"), ["none", "hl202-mqtt", "hwtc-hw"]);
 
-	// Write device and verify adapter is populated and stored into UCI
+	// Save a newly assigned HL202; the editor fills internal choices automatically.
 	const serialOpt = deviceGrid.children.find((opt: any) => opt.option === "optical_sn");
 	rows.set("dev1", { ".name": "dev1", ".type": "device" });
 	serialOpt.write("dev1", "H3CT12345678");
-	adapterOpt.write("dev1", "hl202");
 	assert.equal(rows.get("dev1")?.optical_sn, "H3CT12345678");
-	assert.equal(rows.get("dev1")?.adapter, "hl202");
+	assert.equal(rows.get("dev1")?.omci_adapter, "hl202");
+	assert.equal(rows.get("dev1")?.bootstrap_adapter, "none");
+	assert.equal(rows.get("dev1")?.provisioning_adapter, "hl202-mqtt");
 
-	// For a STAR device, adapter automatically selects star and persists
+	// Unknown business contracts stay disabled while OMCI uses the known vendor adapter.
 	rows.set("dev2", { ".name": "dev2", ".type": "device" });
 	serialOpt.write("dev2", "STAR12345678");
-	adapterOpt.write("dev2", "");
 	assert.equal(rows.get("dev2")?.optical_sn, "STAR12345678");
-	assert.equal(rows.get("dev2")?.adapter, "star");
+	assert.equal(rows.get("dev2")?.omci_adapter, "star");
+	assert.equal(rows.get("dev2")?.bootstrap_adapter, "none");
+	assert.equal(rows.get("dev2")?.provisioning_adapter, "none");
+
+	rows.set("dev3", { ".name": "dev3", ".type": "device" });
+	serialOpt.write("dev3", "HWTC12345678");
+	assert.equal(rows.get("dev3")?.omci_adapter, "hwtc");
+	assert.equal(rows.get("dev3")?.bootstrap_adapter, "manual-acs");
+	assert.equal(rows.get("dev3")?.provisioning_adapter, "hwtc-hw");
+
+	// Existing internal choices survive saves when the serial is unchanged.
+	rows.get("dev1")!.bootstrap_adapter = "manual-acs";
+	serialOpt.write("dev1", "H3CT12345678");
+	assert.equal(rows.get("dev1")?.bootstrap_adapter, "manual-acs");
 });

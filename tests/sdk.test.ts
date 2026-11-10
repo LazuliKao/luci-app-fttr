@@ -79,7 +79,7 @@ test("generated wire validation retains required false flags, nullable progress 
 			hl202: false,
 			about: false,
 		},
-		adapters: [],
+        adapters: { omci: [], bootstrap: [], provisioning: [] },
 	};
 	assert.deepEqual(CapabilitiesSchema.parse(flags), flags);
 	assert.equal(CapabilitiesSchema.safeParse({ ...flags, features: {} }).success, false);
