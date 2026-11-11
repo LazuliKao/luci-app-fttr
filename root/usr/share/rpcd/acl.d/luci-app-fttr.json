@@ -5,6 +5,7 @@
 			"ubus": {
 				"fttr": [
 					"get_capabilities",
+					"get_platform_info",
 					"optical_status",
 					"get_status",
 					"get_topology",
