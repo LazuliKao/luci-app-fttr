@@ -149,6 +149,11 @@ export const ReplyStatusSchema = z.union([z.literal("success"), z.literal("error
 export const OpticalStateSchema = z.union([z.literal("enabled"), z.literal("disabled"), z.literal("unknown")]) satisfies z.ZodMiniType<wire.OpticalState>;
 export const OpticalReplySchema = z.object({ "settings": z.optional(OpticalSettingsSchema), "pon_mac": z.optional(PonMacStatusSchema), "schema_version": z.literal(1), "status": ReplyStatusSchema, "action": OpticalActionSchema, "desired_enabled": z.union([z.boolean(), z.null()]), "tx_enabled": z.union([z.boolean(), z.null()]), "actor_state": OpticalStateSchema, "hardware_ready": z.boolean(), "discovery_active": z.boolean(), "cleanup_pending": z.boolean(), "error": z.union([OpticalErrorSchema, z.null()]) }) satisfies z.ZodMiniType<wire.OpticalReply>;
 export const OpticalTransceiverStatusSchema = z.object({ "calibration_sha256": z.optional(z.string()), "calibration_applied": z.boolean(), "model": z.string(), "wavelength_tx_nm": z.number(), "wavelength_rx_nm": z.number(), "phy_rate_downlink_gbps": z.number(), "phy_rate_uplink_gbps": z.number(), "tx_power_dbm": z.union([z.number(), z.null()]), "laser_bias_current_ma": z.union([z.number(), z.null()]), "temperature_celsius": z.union([z.number(), z.null()]), "vcc_voltage": z.union([z.number(), z.null()]), "cdr_locked": z.union([z.boolean(), z.null()]), "tx_enabled": z.optional(z.boolean()), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.OpticalTransceiverStatus>;
+export const PlatformCalibrationProfileSchema = z.literal("ux3326") satisfies z.ZodMiniType<wire.PlatformCalibrationProfile>;
+export const PlatformSelectionSchema = z.literal("selected") satisfies z.ZodMiniType<wire.PlatformSelection>;
+export const PlatformOnuResourceSchema = z.object({ "onu_id": z.number(), "interface": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.PlatformOnuResource>;
+export const PlatformOperationsSchema = z.object({ "optical_control": z.boolean(), "transceiver_telemetry": z.boolean(), "fpga_diagnostics": z.boolean(), "bosa_diagnostics": z.boolean(), "calibration_profile": z.union([PlatformCalibrationProfileSchema, z.null()]), "npu_offload": z.boolean(), "omci_mib": z.boolean(), "downstream_fec": z.boolean() }) satisfies z.ZodMiniType<wire.PlatformOperations>;
+export const PlatformInfoReplySchema = z.object({ "schema_version": z.literal(1), "selection": PlatformSelectionSchema, "platform_id": z.string(), "vendor": z.string(), "model": z.string(), "onus": z.array(PlatformOnuResourceSchema), "operations": PlatformOperationsSchema }) satisfies z.ZodMiniType<wire.PlatformInfoReply>;
 export const RegistrationStateSchema = z.union([z.literal("o1_initial"), z.literal("o2_standby"), z.literal("o3_serial_number"), z.literal("o4_ranging"), z.literal("o5_operation"), z.literal("o6_intermittent_lods"), z.literal("o7_emergency_stop")]) satisfies z.ZodMiniType<wire.RegistrationState>;
 export const RestartReplySchema = z.object({ "restarting": z.literal(true) }) satisfies z.ZodMiniType<wire.RestartReply>;
 export const UbusMethodStatsSchema = z.object({ "calls": z.number(), "failures": z.number(), "last_us": z.number(), "max_us": z.number(), "total_us": z.number() }) satisfies z.ZodMiniType<wire.UbusMethodStats>;
@@ -482,6 +487,16 @@ export type SchemaContracts = [
 	Assert<[wire.OpticalReply] extends [z.infer<typeof OpticalReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof OpticalTransceiverStatusSchema>] extends [wire.OpticalTransceiverStatus] ? true : false>,
 	Assert<[wire.OpticalTransceiverStatus] extends [z.infer<typeof OpticalTransceiverStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof PlatformCalibrationProfileSchema>] extends [wire.PlatformCalibrationProfile] ? true : false>,
+	Assert<[wire.PlatformCalibrationProfile] extends [z.infer<typeof PlatformCalibrationProfileSchema>] ? true : false>,
+	Assert<[z.infer<typeof PlatformSelectionSchema>] extends [wire.PlatformSelection] ? true : false>,
+	Assert<[wire.PlatformSelection] extends [z.infer<typeof PlatformSelectionSchema>] ? true : false>,
+	Assert<[z.infer<typeof PlatformOnuResourceSchema>] extends [wire.PlatformOnuResource] ? true : false>,
+	Assert<[wire.PlatformOnuResource] extends [z.infer<typeof PlatformOnuResourceSchema>] ? true : false>,
+	Assert<[z.infer<typeof PlatformOperationsSchema>] extends [wire.PlatformOperations] ? true : false>,
+	Assert<[wire.PlatformOperations] extends [z.infer<typeof PlatformOperationsSchema>] ? true : false>,
+	Assert<[z.infer<typeof PlatformInfoReplySchema>] extends [wire.PlatformInfoReply] ? true : false>,
+	Assert<[wire.PlatformInfoReply] extends [z.infer<typeof PlatformInfoReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof RegistrationStateSchema>] extends [wire.RegistrationState] ? true : false>,
 	Assert<[wire.RegistrationState] extends [z.infer<typeof RegistrationStateSchema>] ? true : false>,
 	Assert<[z.infer<typeof RestartReplySchema>] extends [wire.RestartReply] ? true : false>,

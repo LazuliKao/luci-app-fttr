@@ -15,6 +15,7 @@ import {
 	saveCalibration,
 	selectCalibration,
 } from "./contracts/api";
+import { requireCalibrationProfile } from "./contracts/capabilities";
 
 const view = L.view;
 
@@ -1176,7 +1177,8 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 }
 
 const main = view.extend({
-	load(): Promise<CalibrationInfo> {
+	async load(): Promise<CalibrationInfo> {
+		await requireCalibrationProfile("ux3326");
 		return getCalibration();
 	},
 	render(info: CalibrationInfo): HTMLElement {

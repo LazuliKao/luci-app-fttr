@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import type { PlatformInfoReply } from "../contracts/api";
 import { adaptersFromCapabilities, type Capabilities } from "../contracts/capabilities";
+import { platformOnu, platformOnuLabel } from "../contracts/platform";
 import type { FttrStatus } from "../contracts/status";
 import { field, grid, guardRemoval, preview, reference, tabchoice, tabfield, tabreference } from "./form";
 import { removeGroup } from "./operations";
@@ -47,6 +49,7 @@ function selectionFor(
 export function addDevices(
 	section: any,
 	connected: ConnectedDevice[],
+	platform: PlatformInfoReply,
 	pinning?: FttrStatus["onu_pinning"],
 	capabilities?: Capabilities,
 ): void {
@@ -84,8 +87,8 @@ export function addDevices(
 			const desired = L.uci.get("fttr", id, "onu_id");
 			const pending = (desired == null || desired === "" ? undefined : Number(desired)) !== active;
 			return [
-				actual != null ? `fttr${actual + 1}` : _("Not registered"),
-				active != null ? `${_("Reserved")}: fttr${active + 1}` : _("Automatic allocation"),
+				actual != null ? platformOnuLabel(platform, actual) : _("Not registered"),
+				active != null ? `${_("Reserved")}: ${platformOnuLabel(platform, active)}` : _("Automatic allocation"),
 				pending ? _("Pending restart") : "",
 			]
 				.filter(Boolean)
@@ -207,9 +210,9 @@ export function addDevices(
 			_("Fixed interface"),
 			[
 				["", _("Automatic allocation")],
-				...Array.from({ length: 16 }, (_, id): [string, string] => [
-					String(id),
-					`fttr${id + 1} · ONU-ID ${id}`,
+				...platform.onus.map(({ onu_id, interface: ifname }): [string, string] => [
+					String(onu_id),
+					ifname ? `${ifname} · ONU-ID ${onu_id}` : `ONU-ID ${onu_id}`,
 				]),
 			],
 			true,
@@ -234,11 +237,21 @@ export function addDevices(
 				L.ui.addNotification(null, <p>{_("Select a registered O5 device first.")}</p>, "warning");
 				return;
 			}
+			if (!platformOnu(platform, current.onu_id)) {
+				L.ui.addNotification(
+					null,
+					<p>{_("The selected platform does not expose this ONU-ID as an available interface.")}</p>,
+					"warning",
+				);
+				return;
+			}
 			pin.getUIElement(id)?.setValue(String(current.onu_id));
 		};
 		pin.validate = (id: string, value: string): boolean | string => {
 			if (!value) return true;
-			if (!/^(?:[0-9]|1[0-5])$/.test(value)) return _("Select an interface from fttr1 to fttr16.");
+			const selectedId = Number(value);
+			if (!Number.isInteger(selectedId) || !platformOnu(platform, selectedId))
+				return _("Select an ONU interface exposed by the selected platform.");
 			return L.uci.sections("fttr", "device").some((item) => {
 				if (item[".name"] === id) return false;
 				const other = pin.formvalue(item[".name"]) ?? item.onu_id;

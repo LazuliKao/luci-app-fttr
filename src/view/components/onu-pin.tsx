@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import type { PlatformInfoReply } from "../contracts/api";
 import { getStatus, reloadConfig } from "../contracts/api";
+import { platformOnu, platformOnuLabel } from "../contracts/platform";
 import type { FttrStatus, SubGateway } from "../contracts/status";
 
 type DeviceSection = { ".type": string; optical_sn?: string; onu_id?: string };
@@ -39,6 +41,7 @@ let saving = false;
 export async function confirmOnuPin(
 	onu: SubGateway,
 	pinning: FttrStatus["onu_pinning"],
+	platform: PlatformInfoReply,
 	onSaved: (status: FttrStatus) => void,
 ): Promise<void> {
 	if (!L.hasViewPermission() || !pinning || saving) return;
@@ -46,6 +49,14 @@ export async function confirmOnuPin(
 	const desired = pinning.desired[serial];
 	const unpin = desired !== undefined;
 	const slot = unpin ? desired : onu.onu_id;
+	if (slot == null || (!unpin && !platformOnu(platform, slot))) {
+		L.ui.addNotification(
+			null,
+			<p>{_("The selected platform does not expose this ONU-ID as an available interface.")}</p>,
+			"warning",
+		);
+		return;
+	}
 	const title = unpin ? _("Unpin interface") : _("Pin interface");
 	try {
 		const { values } = await readConfig("fttr", "device");
@@ -153,7 +164,7 @@ export async function confirmOnuPin(
 					</p>,
 					<p>
 						<code>{serial}</code>
-						{` · fttr${slot + 1} · ONU-ID ${slot}`}
+						{` · ${platformOnuLabel(platform, slot)}`}
 					</p>,
 					<p>
 						{_(

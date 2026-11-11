@@ -8,6 +8,7 @@ import type {
 	NpuSetRequest,
 	OpticalReply,
 	OpticalSettings,
+	PlatformInfoReply,
 	SyncAction,
 } from "../../api/generated/types";
 import { waitForJob } from "../../api/jobs";
@@ -15,24 +16,27 @@ import { applyCalibrationResult } from "../../api/validators";
 import { checked } from "./common";
 import { type NpuStatus, networkDevices } from "./status";
 
-export type { CalibrationInfo, OpticalReply, SyncAction } from "../../api/generated/types";
+export type { CalibrationInfo, OpticalReply, PlatformInfoReply, SyncAction } from "../../api/generated/types";
 export { applyCalibrationResult, calibrationInfo, npuReply, saveCalibrationResult } from "../../api/validators";
 export type NpuReply = NpuSetReply;
 export type SaveCalibrationResult = CalibrationSaved;
 export type ApplyCalibrationResult = CalibrationApplied;
 
-const rawNetwork = L.rpc.declare<unknown>({
-	object: "luci-rpc",
-	method: "getNetworkDevices",
-	expect: { "": {} },
-	reject: true,
-});
 export const getStatus = async () => getFttrClient().getStatus();
+export const getPlatformInfo = async (): Promise<PlatformInfoReply> => getFttrClient().getPlatformInfo();
 export const getSync = async () => getFttrClient().getSync();
 export const checkConfig = async () => getFttrClient().configCheck();
 export const reloadConfig = async () => getFttrClient().configReload();
 export const restartService = async () => getFttrClient().restartService();
-export const getNetworkDevices = async () => networkDevices.parse(checked(await rawNetwork()));
+export const getNetworkDevices = async () => {
+	const rawNetwork = L.rpc.declare<unknown>({
+		object: "luci-rpc",
+		method: "getNetworkDevices",
+		expect: { "": {} },
+		reject: true,
+	});
+	return networkDevices.parse(checked(await rawNetwork()));
+};
 export const getOpticalStatus = async (): Promise<OpticalReply> => getFttrClient().opticalStatus();
 export const setOptical = async (settings: OpticalSettings): Promise<OpticalReply> =>
 	getFttrClient().opticalSet(settings);

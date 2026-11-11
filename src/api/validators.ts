@@ -8,4 +8,5 @@ export {
 	JobReleaseReplySchema as releaseReply,
 	NpuSetReplySchema as npuReply,
 	OpticalReplySchema as opticalReply,
+	PlatformInfoReplySchema as platformInfo,
 } from "./generated/schemas";

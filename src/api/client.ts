@@ -10,12 +10,14 @@ import {
 	mibResult,
 	npuReply,
 	opticalReply,
+	platformInfo,
 	releaseReply,
 	saveCalibrationResult,
 } from "./validators";
 
 export const fttrValidators = {
 	getCapabilities: { parse: (value: unknown) => capabilities.parse(checked(value)) },
+	getPlatformInfo: { parse: (value: unknown) => platformInfo.parse(checked(value)) },
 	opticalStatus: opticalReply,
 	opticalSet: opticalReply,
 	getStatus: { parse: (value: unknown) => status.parse(checked(value)) },

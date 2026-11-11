@@ -5,7 +5,8 @@ import { addDevices } from "./config/devices";
 import { openRecovery } from "./config/recovery";
 import { saveConfiguration } from "./config/save";
 import { addServices } from "./config/services";
-import { checkConfig, getStatus, reloadConfig, restartService } from "./contracts/api";
+import type { PlatformInfoReply } from "./contracts/api";
+import { checkConfig, getPlatformInfo, getStatus, reloadConfig, restartService } from "./contracts/api";
 import { type Capabilities, getCapabilities } from "./contracts/capabilities";
 import type { ConfigCheck } from "./contracts/provisioning";
 import type { FttrStatus, SubGateway } from "./contracts/status";
@@ -34,10 +35,11 @@ type InitialCheck = {
 	connectedDevices: SubGateway[];
 	pinning?: FttrStatus["onu_pinning"];
 	capabilities: Capabilities;
+	platform: PlatformInfoReply;
 };
 const main = view.extend({
 	async load(): Promise<InitialCheck> {
-		const capabilities = await getCapabilities();
+		const [capabilities, platform] = await Promise.all([getCapabilities(), getPlatformInfo()]);
 		if (!capabilities.pages.config) {
 			throw new Error(_("This page is not supported by the installed FTTR build."));
 		}
@@ -53,6 +55,7 @@ const main = view.extend({
 			connectedDevices: status.sub_gateways,
 			pinning: "onu_pinning" in status ? status.onu_pinning : undefined,
 			capabilities,
+			platform,
 		};
 	},
 	render(initialCheck: InitialCheck): Promise<Node> {
@@ -63,7 +66,13 @@ const main = view.extend({
 
 		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
 		addBasic(section, _("Basic"), globalId);
-		addDevices(section, initialCheck.connectedDevices ?? [], initialCheck.pinning, initialCheck.capabilities);
+		addDevices(
+			section,
+			initialCheck.connectedDevices ?? [],
+			initialCheck.platform,
+			initialCheck.pinning,
+			initialCheck.capabilities,
+		);
 		addServices(section);
 		// The inherited Save & Apply handler calls this explicit page-save entry.
 		this.handleSave = () => saveConfiguration(map);

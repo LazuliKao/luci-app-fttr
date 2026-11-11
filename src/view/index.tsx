@@ -13,8 +13,9 @@ import { formatBytes, formatFirmware, formatLinkSpeed, formatPackets, text } fro
 import { showOnuDetails } from "./components/onu-details";
 import { confirmOnuPin } from "./components/onu-pin";
 import { createOpticalControl } from "./components/optical-control";
-import { getNetworkDevices, getStatus } from "./contracts/api";
-import type { FttrStatus, NetworkDevices, SubGateway } from "./contracts/status";
+import type { PlatformInfoReply } from "./contracts/api";
+import { getNetworkDevices, getPlatformInfo, getStatus } from "./contracts/api";
+import type { FttrStatus, NetworkDevices, SubGateway, SwitchPortStatus } from "./contracts/status";
 
 const view = L.view;
 const poll = L.Poll;
@@ -166,8 +167,8 @@ function createPortCard(number: number): PortCard {
 		element,
 		update(status, devices) {
 			const port = (status.switch_ports ?? []).find((item) => item.port === number);
-			const ifname = port?.interface ?? `fttr${number}`;
-			const device = devices[ifname];
+			const ifname = port?.interface;
+			const device = ifname ? devices[ifname] : undefined;
 			const stats = device?.stats;
 			const carrier = port?.carrier ?? device?.carrier ?? (device?.link?.speed !== undefined ? true : undefined);
 			const onu = (status.sub_gateways ?? []).find((item) => item.onu_id === port?.onu_id);
@@ -189,7 +190,7 @@ function createPortCard(number: number): PortCard {
 				element.classList.remove("port-up");
 			}
 
-			ifnameNode.textContent = ifname;
+			ifnameNode.textContent = text(ifname);
 			iconNode.setAttribute("src", `/luci-static/resources/icons/${connected ? "port_up.svg" : "port_down.svg"}`);
 			speedNode.textContent = connected
 				? device?.link?.speed !== undefined
@@ -232,18 +233,19 @@ function createPortCard(number: number): PortCard {
 
 interface OnuRow {
 	element: HTMLElement;
-	update(onu: SubGateway, pinning?: FttrStatus["onu_pinning"]): void;
+	update(onu: SubGateway, pinning: FttrStatus["onu_pinning"], switchPorts: SwitchPortStatus[]): void;
 }
 
-function createOnuRow(onu: SubGateway, onSaved: (status: FttrStatus) => void): OnuRow {
+function createOnuRow(onu: SubGateway, platform: PlatformInfoReply, onSaved: (status: FttrStatus) => void): OnuRow {
 	let current = onu;
 	let currentPinning: FttrStatus["onu_pinning"];
+	let currentPorts: SwitchPortStatus[] = [];
 	const pinButton = (
 		<button
 			type="button"
 			class="cbi-button cbi-button-neutral"
 			style="padding:0 .4em;min-height:1.5em;font-size:85%;margin-left:.5em"
-			onclick={() => confirmOnuPin(current, currentPinning, onSaved)}
+			onclick={() => confirmOnuPin(current, currentPinning, platform, onSaved)}
 		/>
 	) as HTMLButtonElement;
 	const onuIdNode = <span />;
@@ -284,13 +286,8 @@ function createOnuRow(onu: SubGateway, onSaved: (status: FttrStatus) => void): O
 
 	element.addEventListener("mouseenter", () => {
 		const ifname = current.data_path?.interface;
-		if (ifname) {
-			const portMatch = ifname.match(/fttr(\d+)/);
-			if (portMatch) {
-				const portEl = document.querySelector(`[data-fttr-port="${portMatch[1]}"]`);
-				portEl?.classList.add("fttr-port-highlight");
-			}
-		}
+		const port = currentPorts.find((item) => item.interface === ifname);
+		if (port) document.querySelector(`[data-fttr-port="${port.port}"]`)?.classList.add("fttr-port-highlight");
 	});
 
 	element.addEventListener("mouseleave", () => {
@@ -301,9 +298,10 @@ function createOnuRow(onu: SubGateway, onSaved: (status: FttrStatus) => void): O
 
 	const row: OnuRow = {
 		element,
-		update(value, pinning) {
+		update(value, pinning, switchPorts) {
 			current = value;
 			currentPinning = pinning;
+			currentPorts = switchPorts;
 			const serial = value.serial_number.toUpperCase();
 			const desired = pinning?.desired[serial];
 			pinButton.textContent = desired !== undefined ? _("Unpin") : _("Pin");
@@ -347,18 +345,22 @@ function createOnuRow(onu: SubGateway, onSaved: (status: FttrStatus) => void): O
 			updateBadge(wifiSyncNode, wifiSpec.tone, wifiSpec.label, wifiSpec.title);
 		},
 	};
-	row.update(onu);
+	row.update(onu, undefined, []);
 	return row;
 }
 
 interface OnuTable {
 	element: HTMLElement;
-	update(onus: SubGateway[], pinning?: FttrStatus["onu_pinning"]): void;
+	update(onus: SubGateway[], pinning: FttrStatus["onu_pinning"], switchPorts: SwitchPortStatus[]): void;
 }
 
-function createOnuTable(onus: SubGateway[], onSaved: (status: FttrStatus) => void): OnuTable {
+function createOnuTable(
+	onus: SubGateway[],
+	platform: PlatformInfoReply,
+	onSaved: (status: FttrStatus) => void,
+): OnuTable {
 	const rows = new Map<number, OnuRow>();
-	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu, onSaved));
+	for (const onu of onus) rows.set(onu.onu_id, createOnuRow(onu, platform, onSaved));
 	const emptyRow = (
 		<tr>
 			<td colSpan={12}>{_("No registered sub-gateways.")}</td>
@@ -392,7 +394,7 @@ function createOnuTable(onus: SubGateway[], onSaved: (status: FttrStatus) => voi
 
 	return {
 		element,
-		update(nextOnus, pinning) {
+		update(nextOnus, pinning, switchPorts) {
 			const nextIds = new Set(nextOnus.map((onu) => onu.onu_id));
 			for (const [onuId, row] of rows) {
 				if (!nextIds.has(onuId)) {
@@ -415,10 +417,10 @@ function createOnuTable(onus: SubGateway[], onSaved: (status: FttrStatus) => voi
 			for (const [index, onu] of nextOnus.entries()) {
 				let row = rows.get(onu.onu_id);
 				if (!row) {
-					row = createOnuRow(onu, onSaved);
+					row = createOnuRow(onu, platform, onSaved);
 					rows.set(onu.onu_id, row);
 				}
-				row.update(onu, pinning);
+				row.update(onu, pinning, switchPorts);
 				const current = body.children.item(index);
 				if (current !== row.element) body.insertBefore(row.element, current);
 			}
@@ -431,11 +433,19 @@ interface StatusView {
 	update(status: FttrStatus, devices: NetworkDevices): void;
 }
 
-function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevices): StatusView {
+function createStatusView(
+	initialStatus: FttrStatus,
+	initialDevices: NetworkDevices,
+	platform: PlatformInfoReply,
+): StatusView {
 	const initialOptical = initialStatus.optical_transceiver ?? {};
 	let currentDevices = initialDevices;
-	const onuTable = createOnuTable(initialStatus.sub_gateways ?? [], (status) => update(status, currentDevices));
-	const ports = Array.from({ length: 16 }, (_port, index) => createPortCard(index + 1));
+	const onuTable = createOnuTable(initialStatus.sub_gateways ?? [], platform, (status) =>
+		update(status, currentDevices),
+	);
+	const ports = new Map<number, PortCard>();
+	const portsGrid = <div class="fttr-ports-grid" />;
+	const noPortsNode = <p>{_("No downstream ports are reported by the selected platform.")}</p>;
 
 	const provisioningStatusNode = <span class="fttr-badge" />;
 	const provisioningModeNode = <span class="fttr-badge fttr-badge-info" />;
@@ -634,7 +644,8 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			</div>
 			<div class="cbi-section">
 				<h3>{_("Downstream ports")}</h3>
-				<div class="fttr-ports-grid">{ports.map((port) => port.element)}</div>
+				{noPortsNode}
+				{portsGrid}
 			</div>
 		</div>
 	);
@@ -692,8 +703,27 @@ function createStatusView(initialStatus: FttrStatus, initialDevices: NetworkDevi
 			updateBadge(cdrNode, "warning", _("Unlocked"));
 		}
 
-		onuTable.update(status.sub_gateways ?? [], status.onu_pinning);
-		for (const port of ports) port.update(status, devices);
+		onuTable.update(status.sub_gateways ?? [], status.onu_pinning, status.switch_ports ?? []);
+		const currentPorts = new Set<number>();
+		for (const [index, portStatus] of (status.switch_ports ?? []).entries()) {
+			if (currentPorts.has(portStatus.port)) continue;
+			currentPorts.add(portStatus.port);
+			let port = ports.get(portStatus.port);
+			if (!port) {
+				port = createPortCard(portStatus.port);
+				ports.set(portStatus.port, port);
+			}
+			port.update(status, devices);
+			const current = portsGrid.children.item(index);
+			if (current !== port.element) portsGrid.insertBefore(port.element, current);
+		}
+		for (const [portNumber, port] of ports) {
+			if (!currentPorts.has(portNumber)) {
+				port.element.remove();
+				ports.delete(portNumber);
+			}
+		}
+		noPortsNode.hidden = currentPorts.size > 0;
 	};
 
 	update(initialStatus, initialDevices);
@@ -705,18 +735,19 @@ let pageView: StatusView | null = null;
 let refreshing = false;
 
 export const main = view.extend({
-	async load(): Promise<{ status: FttrStatus; devices: NetworkDevices }> {
-		const [status, deviceResult] = await Promise.all([
+	async load(): Promise<{ status: FttrStatus; devices: NetworkDevices; platform: PlatformInfoReply }> {
+		const [status, deviceResult, platform] = await Promise.all([
 			getStatus(),
 			getNetworkDevices().catch((error) => {
 				console.warn("Failed to load network device details", error);
 				return {};
 			}),
+			getPlatformInfo(),
 		]);
-		return { status, devices: deviceResult };
+		return { status, devices: deviceResult, platform };
 	},
-	render(data: { status: FttrStatus; devices: NetworkDevices }): HTMLElement {
-		pageView = createStatusView(data.status, data.devices);
+	render(data: { status: FttrStatus; devices: NetworkDevices; platform: PlatformInfoReply }): HTMLElement {
+		pageView = createStatusView(data.status, data.devices, data.platform);
 		pageRoot = pageView.element;
 		poll.add(async () => {
 			if (refreshing || !pageRoot?.isConnected || !pageView) return;

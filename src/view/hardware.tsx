@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import type { PlatformInfoReply } from "../api/generated/types";
 import { createFecMonitor } from "./components/fec-monitor";
 import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
-import { getStatus } from "./contracts/api";
+import { getPlatformInfo, getStatus } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 
 const view = L.view;
@@ -40,7 +41,7 @@ function renderCdrBadge(locked: boolean | null): HTMLElement {
 	);
 }
 
-function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
+function createControllerPanel(status: FttrHardwareStatus, platform: PlatformInfoReply): HTMLElement {
 	const optical = status.optical_transceiver;
 	const mac = status.pon_mac;
 	const fpgaStatusNode = (
@@ -52,81 +53,90 @@ function createControllerPanel(status: FttrHardwareStatus): HTMLElement {
 		</span>
 	);
 
-	const cdrNode = renderCdrBadge(optical.cdr_locked);
+	const cards: HTMLElement[] = [];
+	if (platform.operations.fpga_diagnostics) {
+		cards.push(
+			<div class="fttr-card">
+				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("FPGA status")}</h4>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">0x01000004</span>
+					<code>
+						{mac?.register == null ? _("Unknown") : `0x${mac.register.toString(16).padStart(8, "0")}`}
+					</code>
+				</div>
+				{mac?.error ? <p class="alert-message warning">{mac.error}</p> : null}
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("FPGA status")}</span>
+					<span>{fpgaStatusNode}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("FPGA identifier")}</span>
+					<code>{text(status.fpga_status)}</code>
+				</div>
+			</div>,
+		);
+	}
+	if (platform.operations.transceiver_telemetry) {
+		cards.push(
+			<div class="fttr-card">
+				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Optical transceiver")}</h4>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Module model")}</span>
+					<strong>{text(optical.model)}</strong>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("TX wavelength")}</span>
+					<span>{optical.wavelength_tx_nm ? `${optical.wavelength_tx_nm} nm` : "—"}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("RX wavelength")}</span>
+					<span>{optical.wavelength_rx_nm ? `${optical.wavelength_rx_nm} nm` : "—"}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("CDR lock")}</span>
+					<span>{renderCdrBadge(optical.cdr_locked)}</span>
+				</div>
+			</div>,
+		);
+		cards.push(
+			<div class="fttr-card">
+				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Physical rates and diagnostics")}</h4>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Downlink PHY rate")}</span>
+					<span>{optical.phy_rate_downlink_gbps ? `${optical.phy_rate_downlink_gbps} Gbps` : "—"}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Uplink PHY rate")}</span>
+					<span>{optical.phy_rate_uplink_gbps ? `${optical.phy_rate_uplink_gbps} Gbps` : "—"}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Temperature")}</span>
+					<span>{optical.temperature_celsius == null ? "—" : `${optical.temperature_celsius} °C`}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("TX power")}</span>
+					<span>{formatPower(optical.tx_power_dbm)}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Voltage")}</span>
+					<span>{optical.vcc_voltage == null ? "—" : `${optical.vcc_voltage} V`}</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Bias current")}</span>
+					<span>{optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma} mA`}</span>
+				</div>
+			</div>,
+		);
+	}
 
 	return (
 		<div class="cbi-section fttr-panel-controller">
 			<h3 style="margin-bottom:12px">{_("Controller hardware")}</h3>
-			<div class="fttr-grid-3">
-				<div class="fttr-card">
-					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("FPGA status")}</h4>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">0x01000004</span>
-						<code>
-							{mac?.register == null ? _("Unknown") : `0x${mac.register.toString(16).padStart(8, "0")}`}
-						</code>
-					</div>
-					{mac?.error ? <p class="alert-message warning">{mac.error}</p> : null}
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("FPGA status")}</span>
-						<span>{fpgaStatusNode}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("FPGA identifier")}</span>
-						<code>{text(status.fpga_status)}</code>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("CDR lock")}</span>
-						<span>{cdrNode}</span>
-					</div>
-				</div>
-
-				<div class="fttr-card">
-					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Optical transceiver")}</h4>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("Module model")}</span>
-						<strong>{text(optical.model)}</strong>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("TX wavelength")}</span>
-						<span>{optical.wavelength_tx_nm ? `${optical.wavelength_tx_nm} nm` : "—"}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("RX wavelength")}</span>
-						<span>{optical.wavelength_rx_nm ? `${optical.wavelength_rx_nm} nm` : "—"}</span>
-					</div>
-				</div>
-
-				<div class="fttr-card">
-					<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Physical rates and diagnostics")}</h4>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("Downlink PHY rate")}</span>
-						<span>{optical.phy_rate_downlink_gbps ? `${optical.phy_rate_downlink_gbps} Gbps` : "—"}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("Uplink PHY rate")}</span>
-						<span>{optical.phy_rate_uplink_gbps ? `${optical.phy_rate_uplink_gbps} Gbps` : "—"}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("Temperature")}</span>
-						<span>{optical.temperature_celsius == null ? "—" : `${optical.temperature_celsius} °C`}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("TX power")}</span>
-						<span>{formatPower(optical.tx_power_dbm)}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("Voltage")}</span>
-						<span>{optical.vcc_voltage == null ? "—" : `${optical.vcc_voltage} V`}</span>
-					</div>
-					<div class="fttr-kv-row">
-						<span class="fttr-kv-label">{_("Bias current")}</span>
-						<span>
-							{optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma} mA`}
-						</span>
-					</div>
-				</div>
-			</div>
+			{cards.length ? (
+				<div class="fttr-grid-3">{cards}</div>
+			) : (
+				<p>{_("No controller diagnostics are reported by the selected platform.")}</p>
+			)}
 		</div>
 	);
 }
@@ -264,7 +274,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 	);
 }
 
-function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
+function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: PlatformInfoReply): HTMLElement {
 	type TabId = "controller" | "subgateways" | "fec";
 	let activeTab: TabId = "controller";
 
@@ -274,15 +284,15 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 	const tabs: Array<{ id: TabId; label: string }> = [
 		{ id: "controller", label: _("Controller & optical transceiver") },
 		{ id: "subgateways", label: _("Sub-gateways & optical links") },
-		{ id: "fec", label: _("ONU FEC monitoring") },
 	];
+	if (platform.operations.downstream_fec) tabs.push({ id: "fec", label: _("ONU FEC monitoring") });
 
 	const tabItems = new Map<TabId, HTMLElement>();
 
-	let controllerPanel = createControllerPanel(initialStatus);
+	let controllerPanel = createControllerPanel(initialStatus, platform);
 	let subgatewaysPanel = createSubgatewaysPanel(initialStatus.sub_gateways ?? []);
-	const fecMonitor = createFecMonitor(initialStatus);
-	const fecPanel = fecMonitor.element;
+	const fecMonitor = platform.operations.downstream_fec ? createFecMonitor(initialStatus) : undefined;
+	const fecPanel = fecMonitor?.element;
 
 	const switchTab = (id: TabId): void => {
 		activeTab = id;
@@ -291,7 +301,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 		}
 		controllerPanel.hidden = id !== "controller";
 		subgatewaysPanel.hidden = id !== "subgateways";
-		fecPanel.hidden = id !== "fec";
+		if (fecPanel) fecPanel.hidden = id !== "fec";
 		window.dispatchEvent(new Event("resize"));
 	};
 
@@ -319,13 +329,13 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;
-	fecPanel.hidden = true;
+	if (fecPanel) fecPanel.hidden = true;
 
 	const panelsContainer = (
 		<div id="fttr-panels-container">
 			{controllerPanel}
 			{subgatewaysPanel}
-			{fecPanel}
+			{fecPanel ?? null}
 		</div>
 	);
 
@@ -526,11 +536,11 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 		updating = true;
 		try {
 			const latest = await getStatus();
-			const newController = createControllerPanel(latest);
+			const newController = createControllerPanel(latest, platform);
 			const newSubgateways = createSubgatewaysPanel(latest.sub_gateways ?? []);
 			newController.hidden = activeTab !== "controller";
 			newSubgateways.hidden = activeTab !== "subgateways";
-			fecMonitor.update(latest);
+			fecMonitor?.update(latest);
 			controllerPanel.replaceWith(newController);
 			subgatewaysPanel.replaceWith(newSubgateways);
 			controllerPanel = newController;
@@ -546,11 +556,12 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus): HTMLElement {
 }
 
 const main = view.extend({
-	load(): Promise<FttrHardwareStatus> {
-		return getStatus();
+	async load(): Promise<{ status: FttrHardwareStatus; platform: PlatformInfoReply }> {
+		const [status, platform] = await Promise.all([getStatus(), getPlatformInfo()]);
+		return { status, platform };
 	},
-	render(status: FttrHardwareStatus): HTMLElement {
-		return renderHardwarePage(status);
+	render(data: { status: FttrHardwareStatus; platform: PlatformInfoReply }): HTMLElement {
+		return renderHardwarePage(data.status, data.platform);
 	},
 	handleSaveApply: null,
 	handleSave: null,
