@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-import { date, formatUptime, renderBadge, text } from "./dom";
+import { date, formatUptime, renderBadge, setHl202Badge, text } from "./dom";
 import { execute, readAccounts, readReport, type SourceTarget, setAccount, type Target } from "./rpc";
 
 let busy = false;
@@ -374,8 +374,11 @@ export function createAccountsPanel(): AccountsController {
 								return;
 							}
 							active = readback.active;
-							activeBadge.className = `hl202-badge ${active ? "hl202-badge-success" : "hl202-badge-neutral"}`;
-							activeBadge.textContent = active ? _("Enabled") : _("Disabled");
+							setHl202Badge(
+								activeBadge,
+								active ? "success" : "neutral",
+								active ? _("Enabled") : _("Disabled"),
+							);
 							toggleBtn.className = `cbi-button ${active ? "cbi-button-neutral" : "cbi-button-apply"}`;
 							toggleBtn.textContent = active ? _("Disable") : _("Enable");
 							userActionStatus.textContent = `${String(result.write_status)}; ${_("Refresh users to read the current state.")}`;

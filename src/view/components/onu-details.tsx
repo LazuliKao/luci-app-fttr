@@ -15,6 +15,7 @@ import type { SubGateway as OnuDetails } from "../contracts/status";
 import { isPageHidden } from "../contracts/visibility";
 import { BADGE_CSS, BusinessBadge, CwmpBadge, ProvisioningBadge, RegistrationBadge, WifiSyncBadge } from "./badge";
 import { formatPower, formatUptime, text } from "./formatters";
+import { createTabMenu } from "./tabs";
 
 const json = (v: unknown): string => JSON.stringify(v, null, 2);
 async function reportBlob(report: MibReport): Promise<Blob> {
@@ -544,26 +545,12 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		{ id: "raw", label: _("Raw JSON") },
 	];
 
-	const tabMenu = (
-		<ul class="cbi-tabmenu" style="margin:0;padding-left:0;display:flex;flex-wrap:wrap">
-			{tabsList.map((t) => {
-				const li = (
-					<li class={t.id === initialTab ? "cbi-tab" : "cbi-tab-disabled"} data-tab={t.id}>
-						<a
-							href={`#tab-${t.id}`}
-							onclick={(e: MouseEvent) => {
-								e.preventDefault();
-								tab(t.id);
-							}}
-						>
-							{t.label}
-						</a>
-					</li>
-				) as HTMLElement;
-				tabItems.set(t.id, li);
-				return li;
-			})}
-		</ul>
+	const tabMenu = createTabMenu(
+		tabsList,
+		initialTab,
+		tab,
+		tabItems,
+		"margin:0;padding-left:0;display:flex;flex-wrap:wrap",
 	);
 
 	const header = <div class="onu-details-header">{tabMenu}</div>;

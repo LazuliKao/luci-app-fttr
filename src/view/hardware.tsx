@@ -5,6 +5,7 @@ import { createFecMonitor } from "./components/fec-monitor";
 import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { capturePanelState } from "./components/panel-state";
+import { createTabMenu } from "./components/tabs";
 import { getPlatformInfo, getStatus } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 import { isPageHidden } from "./contracts/visibility";
@@ -311,27 +312,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 		window.dispatchEvent(new Event("resize"));
 	};
 
-	const tabMenu = (
-		<ul class="cbi-tabmenu" style="margin-top:14px;margin-bottom:0">
-			{tabs.map((tab) => {
-				const li = (
-					<li class={activeTab === tab.id ? "cbi-tab" : "cbi-tab-disabled"} data-tab={tab.id}>
-						<a
-							href={`#tab-${tab.id}`}
-							onclick={(e: MouseEvent) => {
-								e.preventDefault();
-								switchTab(tab.id);
-							}}
-						>
-							{tab.label}
-						</a>
-					</li>
-				) as HTMLElement;
-				tabItems.set(tab.id, li);
-				return li;
-			})}
-		</ul>
-	);
+	const tabMenu = createTabMenu(tabs, activeTab, switchTab, tabItems);
 
 	controllerPanel.hidden = false;
 	subgatewaysPanel.hidden = true;

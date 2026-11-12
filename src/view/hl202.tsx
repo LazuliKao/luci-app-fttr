@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { createTabMenu } from "./components/tabs";
 import { requirePage } from "./contracts/capabilities";
 import type { DeviceMeta } from "./contracts/hl202";
 import { isPageHidden } from "./contracts/visibility";
-import { text } from "./hl202/dom";
+import { setHl202Badge, text } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
 import { list, type Target } from "./hl202/rpc";
 
@@ -133,27 +134,7 @@ function renderPage(): HTMLElement {
 		window.dispatchEvent(new Event("resize"));
 	};
 
-	const tabMenu = (
-		<ul class="cbi-tabmenu" style="margin-top:14px;margin-bottom:0">
-			{tabs.map((tab) => {
-				const li = (
-					<li class={activeTab === tab.id ? "cbi-tab" : "cbi-tab-disabled"} data-tab={tab.id}>
-						<a
-							href={`#tab-${tab.id}`}
-							onclick={(e: MouseEvent) => {
-								e.preventDefault();
-								switchTab(tab.id);
-							}}
-						>
-							{tab.label}
-						</a>
-					</li>
-				) as HTMLElement;
-				tabItems.set(tab.id, li);
-				return li;
-			})}
-		</ul>
-	);
+	const tabMenu = createTabMenu(tabs, activeTab, switchTab, tabItems);
 
 	// Initially show first tab
 	reportCtrl.element.hidden = false;
@@ -195,16 +176,13 @@ function renderPage(): HTMLElement {
 		summaryModelNode.textContent = device.model || "HL202";
 
 		if (device.optical_online) {
-			summaryOpticalNode.className = "hl202-badge hl202-badge-success";
-			summaryOpticalNode.textContent = _("Optical online");
+			setHl202Badge(summaryOpticalNode, "success", _("Optical online"));
 		} else {
-			summaryOpticalNode.className = "hl202-badge hl202-badge-danger";
-			summaryOpticalNode.textContent = _("Optical offline");
+			setHl202Badge(summaryOpticalNode, "danger", _("Optical offline"));
 		}
 
 		if (device.can_execute && device.mqtt) {
-			summaryMqttNode.className = "hl202-badge hl202-badge-success";
-			summaryMqttNode.textContent = _("MQTT ready");
+			setHl202Badge(summaryMqttNode, "success", _("MQTT ready"));
 			summaryGenNode.textContent = `gen: ${device.mqtt.binding_generation}`;
 			summaryGenNode.hidden = false;
 			deviceWarning.hidden = true;
@@ -219,8 +197,7 @@ function renderPage(): HTMLElement {
 			accountsCtrl.setTarget(target);
 			consoleCtrl.setTarget(target);
 		} else {
-			summaryMqttNode.className = "hl202-badge hl202-badge-warning";
-			summaryMqttNode.textContent = _("MQTT unavailable");
+			setHl202Badge(summaryMqttNode, "warning", _("MQTT unavailable"));
 			summaryGenNode.hidden = true;
 			deviceWarning.hidden = false;
 

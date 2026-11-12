@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
-export const text = (value: unknown): string =>
-	value === null || value === undefined || value === "" ? "—" : String(value);
+import { formatDate, text } from "../components/formatters";
 
-export const date = (value?: number): string => (value ? new Date(value * 1000).toLocaleString() : "—");
+export { formatDate as date, text };
+
+export type Hl202BadgeTone = "success" | "warning" | "danger" | "info" | "neutral";
 
 export function formatUptime(seconds?: number): string {
 	if (seconds === undefined || !Number.isFinite(seconds) || seconds < 0) return "—";
@@ -19,14 +20,16 @@ export function formatUptime(seconds?: number): string {
 	return `${parts.join(" ")} (${seconds} s)`;
 }
 
-export function renderBadge(
-	type: "success" | "warning" | "danger" | "info" | "neutral",
-	label: string,
-	title?: string,
-): HTMLElement {
+export function renderBadge(type: Hl202BadgeTone, label: string, title?: string): HTMLElement {
 	return (
 		<span class={`hl202-badge hl202-badge-${type}`} title={title}>
 			{label}
 		</span>
 	);
+}
+
+/** Update an existing badge node without replacing it (keeps focus/listeners). */
+export function setHl202Badge(node: HTMLElement, type: Hl202BadgeTone, label: string): void {
+	node.className = `hl202-badge hl202-badge-${type}`;
+	node.textContent = label;
 }
