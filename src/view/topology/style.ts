@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 export const TOPOLOGY_CSS = `
-.fttr-topology { --topo-bg: Canvas; --topo-text: CanvasText; --topo-border: color-mix(in srgb, var(--topo-text) 18%, transparent); --topo-muted: color-mix(in srgb, var(--topo-text) 65%, var(--topo-bg)); --topo-card: color-mix(in srgb, var(--topo-bg) 97%, var(--topo-text)); --topo-blue: #2876df; --topo-green: #158353; --topo-amber: #a96908; color: var(--topo-text); }
-.fttr-topology[data-dark="true"] { --topo-blue: #75adff; --topo-green: #51d9a2; --topo-amber: #eab969; }
+.fttr-topology { --topo-bg: Canvas; --topo-text: CanvasText; --topo-border: color-mix(in srgb, var(--topo-text) 18%, transparent); --topo-muted: color-mix(in srgb, var(--topo-text) 65%, var(--topo-bg)); --topo-card: color-mix(in srgb, var(--topo-bg) 97%, var(--topo-text)); --topo-blue: #2876df; --topo-green: #158353; --topo-amber: #a96908; --topo-red: #b42318; color: var(--topo-text); }
+.fttr-topology[data-dark="true"] { --topo-blue: #75adff; --topo-green: #51d9a2; --topo-amber: #eab969; --topo-red: #ff8078; }
 .fttr-topology *, .fttr-topology *::before, .fttr-topology *::after { box-sizing: border-box; }
 .fttr-topology [hidden] { display: none !important; }
 .fttr-topology button { font: inherit; }
@@ -62,7 +62,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--topo-muted); }
 .fttr-topology .topo-dot.topo-success { background: var(--topo-green); }
 .fttr-topology .topo-dot.topo-info { background: var(--topo-blue); }
-.fttr-topology .topo-dot.topo-warning, .fttr-topology .topo-dot.topo-danger { background: var(--topo-amber); }
+.fttr-topology .topo-dot.topo-warning { background: var(--topo-amber); }
+.fttr-topology .topo-dot.topo-danger { background: var(--topo-red); }
 .fttr-topology .topo-card-address { font: 11px/20px ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 4px 0 6px; color: var(--topo-muted); }
 .fttr-topology .topo-card-metric { border-top: 1px solid var(--topo-border); padding-top: 8px; display: flex; align-items: center; gap: 7px; font-size: 12px; }
 .fttr-topology .topo-card-metric strong { color: var(--topo-blue); font: 600 14px ui-monospace, monospace; white-space: nowrap; }
@@ -87,7 +88,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-chip { display: inline-block; border: 1px solid var(--topo-border); border-radius: 5px; padding: 2px 6px; font-size: 11px; line-height: 16px; white-space: nowrap; font-weight: 500; }
 .fttr-topology .topo-chip.topo-info { color: var(--topo-blue); border-color: color-mix(in srgb, var(--topo-blue) 30%, transparent); background: color-mix(in srgb, var(--topo-blue) 7%, transparent); }
 .fttr-topology .topo-chip.topo-success { color: var(--topo-green); border-color: color-mix(in srgb, var(--topo-green) 30%, transparent); background: color-mix(in srgb, var(--topo-green) 7%, transparent); }
-.fttr-topology .topo-chip.topo-warning, .fttr-topology .topo-chip.topo-danger { color: var(--topo-amber); border-color: color-mix(in srgb, var(--topo-amber) 30%, transparent); background: color-mix(in srgb, var(--topo-amber) 7%, transparent); }
+.fttr-topology .topo-chip.topo-warning { color: var(--topo-amber); border-color: color-mix(in srgb, var(--topo-amber) 30%, transparent); background: color-mix(in srgb, var(--topo-amber) 7%, transparent); }
+.fttr-topology .topo-chip.topo-danger { color: var(--topo-red); border-color: color-mix(in srgb, var(--topo-red) 30%, transparent); background: color-mix(in srgb, var(--topo-red) 7%, transparent); }
 .fttr-topology .topo-detail-section { padding: 17px 20px; border-bottom: 1px solid var(--topo-border); }
 .fttr-topology .topo-detail-section h4 { font-size: 12px; margin: 0 0 13px; font-weight: 650; }
 .fttr-topology dl { margin: 0; }

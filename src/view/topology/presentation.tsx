@@ -59,6 +59,13 @@ export function nodeState(node: TopologyNode): string {
 	if (node.detail.registration === null) return _("Binding only");
 	return getRegistrationBadgeSpec(node.detail.registration).label;
 }
+function nodeStateTitle(node: TopologyNode): string | undefined {
+	if (node.detail.kind === "controller") return node.detail.fpga_status;
+	const parts = [node.detail.registration ?? "binding_only"];
+	if (node.detail.business?.error) parts.push(node.detail.business.error);
+	if (node.detail.binding.pending_restart) parts.push("pending_restart");
+	return parts.join(" · ");
+}
 function bindingLabel(node: TopologyNode): string {
 	if (node.detail.kind !== "onu") return "";
 	const b = node.detail.binding;
@@ -111,7 +118,7 @@ export function nodeCard(node: TopologyNode, snapshot: TopologyReply): HTMLEleme
 					<div class="topo-card-metric">
 						<span>{_("ONU Rx")}</span>
 						<strong>{num(link?.onu_rx_power_dbm, "dBm", 2)}</strong>
-						{badge(nodeState(node), nodeTone(node, snapshot))}
+						{badge(nodeState(node), nodeTone(node, snapshot), nodeStateTitle(node))}
 					</div>
 					<div class="topo-card-foot">
 						<span>
