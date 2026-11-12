@@ -13,7 +13,7 @@ import {
 	getRegistrationBadgeSpec,
 	getWifiSyncBadgeSpec,
 } from "../components/badge";
-import { clientKey, linkFor, measurementAge, nodeAddresses, type Selection } from "./model";
+import { addressSummary, clientKey, linkFor, measurementAge, type Selection } from "./model";
 import type { ClientState, TopologyStore } from "./store";
 
 export type Tone = "success" | "warning" | "info" | "neutral" | "danger";
@@ -74,7 +74,7 @@ function bindingLabel(node: TopologyNode): string {
 export function nodeCard(node: TopologyNode, snapshot: TopologyReply): HTMLElement {
 	const detail = node.detail;
 	const link = linkFor(snapshot, node.id);
-	const address = nodeAddresses(node)[0];
+	const address = addressSummary(node).primary;
 	return (
 		<div class="topo-card-content">
 			<div class="topo-card-head">
@@ -318,6 +318,7 @@ function nodeDetails(node: TopologyNode, snapshot: TopologyReply): HTMLElement[]
 	const d = node.detail;
 	const hl = d.kind === "onu" ? d.extensions.hl202 : null;
 	const link = linkFor(snapshot, node.id);
+	const addresses = addressSummary(node);
 	const identity = section(
 		_("Device identity"),
 		<>
@@ -325,7 +326,18 @@ function nodeDetails(node: TopologyNode, snapshot: TopologyReply): HTMLElement[]
 				{row(_("Device type"), d.kind === "controller" ? _("Main gateway") : _("Optical sub-gateway"))}
 				{row(_("Model"), d.model)}
 				{row(_("Firmware"), d.firmware_version)}
-				{row(_("Addresses"), nodeAddresses(node).join(", "))}
+				{row(
+					_("Addresses"),
+					<>
+						<span>{addresses.primary ?? "—"}</span>
+						{addresses.others.length ? (
+							<details class="topo-address-more">
+								<summary title={_("More addresses")}>{`+${addresses.others.length}`}</summary>
+								<div class="topo-address-list">{addresses.others.join(", ")}</div>
+							</details>
+						) : null}
+					</>,
+				)}
 				{d.kind === "onu" ? (
 					<>
 						{row(_("ONU ID"), d.onu_id)}

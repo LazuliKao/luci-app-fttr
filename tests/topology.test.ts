@@ -6,7 +6,7 @@ import { fttrValidators } from "../src/api/client";
 import { createFttrClient } from "../src/api/generated/luci-client";
 import { TopologyReplySchema, TopologyClientsReplySchema } from "../src/api/generated/schemas";
 import type { TopologyClient, TopologyClientsReply, TopologyNode, TopologyNodeReply, TopologyReply } from "../src/api/generated/types";
-import { CLIENT_PREVIEW_LIMIT, clientKey, counts, layout, linkFor, measurementAge, nodeAddresses } from "../src/view/topology/model";
+import { addressSummary, CLIENT_PREVIEW_LIMIT, clientKey, counts, layout, linkFor, measurementAge, nodeAddresses } from "../src/view/topology/model";
 import { type TopologyApi, TopologyStore } from "../src/view/topology/store";
 
 // Synthetic identities and documentation addresses only.
@@ -106,6 +106,23 @@ test("measurement age uses the core source timestamp and extensions supply only 
 	assert.equal(measurementAge(data, null, 105), null);
 	assert.equal(measurementAge(data, 0, 90), 0);
 	assert.deepEqual(nodeAddresses(data.nodes[1]), []);
+});
+
+test("address summary prefers the uplink IPv4 and keeps link-local values in the remainder", () => {
+	const data = snapshot();
+	const controller = data.nodes[0].detail;
+	assert.equal(controller.kind, "controller");
+	if (controller.kind !== "controller") return;
+	controller.interfaces = [
+		{ name: "br-lan", mac: null, carrier: true, speed_mbps: null, duplex: null, bridge_members: [], addresses: ["fe80::1", "192.168.1.1"] },
+		{ name: "wan", mac: null, carrier: true, speed_mbps: null, duplex: null, bridge_members: [], addresses: ["169.254.0.1"] },
+	];
+	controller.uplinks = [{ interface: "wan", device: null, protocol: "dhcp", up: true, addresses: ["100.64.0.2"] }];
+	assert.deepEqual(addressSummary(data.nodes[0]), {
+		primary: "100.64.0.2",
+		others: ["fe80::1", "192.168.1.1", "169.254.0.1"],
+	});
+	assert.deepEqual(addressSummary(gateway("backend:binding-id", null)), { primary: null, others: [] });
 });
 
 test("refresh has no reentry and keeps a successful graph and object inventory on RPC failure", async () => {

@@ -89,6 +89,9 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-detail-row { display: grid; grid-template-columns: minmax(90px, .9fr) minmax(0, 1.1fr); gap: 10px; font-size: 11px; line-height: 19px; margin: 7px 0; align-items: start; }
 .fttr-topology .topo-detail-row dt { color: var(--topo-muted); font-weight: normal; }
 .fttr-topology .topo-detail-row dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.fttr-topology .topo-address-more { margin-top: 5px; }
+.fttr-topology .topo-address-more summary { color: var(--topo-blue); font-size: 10px; line-height: 16px; }
+.fttr-topology .topo-address-list { margin-top: 6px; text-align: left; font: 11px/17px ui-monospace, monospace; overflow-wrap: anywhere; }
 .fttr-topology .topo-detail-row .topo-chip { white-space: normal; }
 .fttr-topology .topo-measure { font-family: ui-monospace, monospace; }
 .fttr-topology .topo-measure small { display: block; color: var(--topo-muted); font: 9px/14px inherit; overflow-wrap: anywhere; }

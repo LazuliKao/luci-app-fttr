@@ -28,6 +28,23 @@ export function nodeAddresses(node: TopologyNode): string[] {
 	return [...new Set([hl?.bridge_ip, hl?.ip].filter((ip): ip is string => Boolean(ip)))];
 }
 
+export interface AddressSummary {
+	primary: string | null;
+	others: string[];
+}
+function usableAddress(address: string): boolean {
+	return !/^fe80:/i.test(address) && !/^169\.254\./i.test(address) && address !== "::1";
+}
+/** Uplink and IPv4 addresses first; link-local values stay in the interface detail. */
+export function addressSummary(node: TopologyNode): AddressSummary {
+	const preferred =
+		node.detail.kind === "controller" ? node.detail.uplinks.flatMap((uplink) => uplink.addresses) : [];
+	const ordered = [...new Set([...preferred, ...nodeAddresses(node)])];
+	const primary =
+		ordered.find((address) => /^\d+\.\d+\.\d+\.\d+$/.test(address)) ?? ordered.find(usableAddress) ?? null;
+	return { primary, others: ordered.filter((address) => address !== primary) };
+}
+
 export interface Placement {
 	id: string;
 	x: number;
