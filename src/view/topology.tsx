@@ -29,6 +29,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		kind: "node",
 		id: initial.snapshot?.nodes.find((n) => n.detail.kind === "controller")?.id ?? CONTROLLER_ID,
 	};
+	let panMode = false;
 	let panelKey = "";
 	let panelSelection = "";
 	let themeFrame = 0;
@@ -66,6 +67,20 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	const refreshButton = (
 		<button type="button" class="cbi-button cbi-button-action" onclick={() => void refresh()}>
 			{_("Refresh")}
+		</button>
+	) as HTMLButtonElement;
+	const panToggle = (
+		<button
+			type="button"
+			class="cbi-button cbi-button-neutral topo-pan-toggle"
+			aria-pressed="false"
+			onclick={() => {
+				panMode = !panMode;
+				panToggle.setAttribute("aria-pressed", String(panMode));
+				graph.setPanning(panMode);
+			}}
+		>
+			{_("Drag mode")}
 		</button>
 	) as HTMLButtonElement;
 	const tool = (label: string, symbol: string, action: () => void) => (
@@ -107,6 +122,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 					<div class="topo-viewport-wrap">
 						{viewport}
 						{overlay}
+						{panToggle}
 					</div>
 					<div class="topo-legend">
 						<span>

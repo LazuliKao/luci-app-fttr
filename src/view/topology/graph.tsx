@@ -10,6 +10,7 @@ export interface TopologyGraph {
 	fit(): void;
 	zoom(factor: number): void;
 	reset(): void;
+	setPanning(enabled: boolean): void;
 	destroy(): void;
 }
 
@@ -24,6 +25,7 @@ export function createTopologyGraph(
 	let position = { x: 0, y: 0, scale: 1 };
 	let adjusted = false;
 	let dead = false;
+	let panEnabled = false;
 	let painted = "";
 	let lastWidth = 0;
 	let initialized = false;
@@ -71,8 +73,10 @@ export function createTopologyGraph(
 		};
 	}
 	const down = (event: PointerEvent) => {
-		if ((event.target as Element).closest("button") || (event.pointerType === "mouse" && event.button !== 0))
-			return;
+		if ((event.target as Element).closest("button")) return;
+		// In scroll mode a touch gesture belongs to the page, not the canvas.
+		if (event.pointerType === "touch" && !panEnabled) return;
+		if (event.pointerType === "mouse" && event.button !== 0) return;
 		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 		container.setPointerCapture(event.pointerId);
 		gesture = centerGesture();
@@ -333,6 +337,10 @@ export function createTopologyGraph(
 		fit: () => fit(),
 		zoom: (factor) => zoomAt(factor),
 		reset: () => zoomAt(1 / position.scale),
+		setPanning(enabled) {
+			panEnabled = enabled;
+			container.classList.toggle("is-pan-mode", enabled);
+		},
 		destroy() {
 			dead = true;
 			observer.disconnect();

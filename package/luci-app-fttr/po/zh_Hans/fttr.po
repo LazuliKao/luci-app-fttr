@@ -814,6 +814,9 @@ msgstr "从 1MB Factory 分区提取的下行光路校准参数（偏移 %s）"
 msgid "Downstream ports"
 msgstr "下联端口"
 
+msgid "Drag mode"
+msgstr "拖动模式"
+
 msgid "Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details"
 msgstr "拖动画布平移 · Ctrl + 滚轮或双指缩放 · 点击卡片或连线查看详情"
 

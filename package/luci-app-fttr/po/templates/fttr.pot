@@ -812,6 +812,9 @@ msgstr ""
 msgid "Downstream ports"
 msgstr ""
 
+msgid "Drag mode"
+msgstr ""
+
 msgid "Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details"
 msgstr ""
 

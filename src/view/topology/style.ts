@@ -77,6 +77,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-graph-more, .fttr-topology .topo-graph-note { position: absolute; font-size: 11px; text-align: right; color: var(--topo-blue); background: none; border: 0; padding: 3px 0; }
 .fttr-topology .topo-graph-more { cursor: pointer; text-decoration: underline; }
 .fttr-topology .topo-overlay { position: absolute; inset: 0; display: grid; place-content: center; padding: 32px; text-align: center; gap: 12px; background: var(--topo-bg); }
+.fttr-topology .topo-pan-toggle { display: none; position: absolute; left: 10px; top: 10px; z-index: 2; min-width: 0; margin: 0; padding: 4px 10px; border-radius: 999px; font-size: 11px; box-shadow: 0 2px 8px #00000026; }
+.fttr-topology .topo-pan-toggle[aria-pressed="true"] { border-color: var(--topo-blue); color: var(--topo-blue); }
 .fttr-topology .topo-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 12px 16px; font-size: 11px; color: var(--topo-muted); border-top: 1px solid var(--topo-border); }
 .fttr-topology .topo-legend i { width: 22px; display: inline-block; vertical-align: middle; border-top: 2px solid var(--topo-blue); margin-right: 6px; }
 .fttr-topology .topo-legend i.is-learned { border-top-style: dashed; border-color: var(--topo-muted); }
@@ -126,6 +128,6 @@ export const TOPOLOGY_CSS = `
 @media (max-width: 1100px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 310px; } .fttr-topology .topo-detail-section, .fttr-topology .topo-panel-title { padding: 16px; } }
 @media (max-width: 850px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr); height: auto; } .fttr-topology .topo-panel { height: auto; max-height: none; overflow: visible; scrollbar-gutter: auto; border-left: 0; border-top: 1px solid var(--topo-border); } .fttr-topology .topo-viewport-wrap { min-height: 460px; } }
 @media (max-width: 480px) { .fttr-topology .topo-count { padding: 6px 9px; } .fttr-topology .topo-count strong { font-size: 17px; } .fttr-topology .topo-viewport-wrap { min-height: 380px; } .fttr-topology .topo-toolbar { gap: 4px; } }
-@media (pointer: coarse) { .fttr-topology .topo-viewport { touch-action: pan-y; } .fttr-topology pre { max-height: none; } }
+@media (pointer: coarse) { .fttr-topology .topo-pan-toggle { display: inline-flex; } .fttr-topology .topo-viewport { touch-action: pan-y; } .fttr-topology .topo-viewport.is-pan-mode { touch-action: none; } .fttr-topology pre { max-height: none; } }
 @media (prefers-reduced-motion: reduce) { .fttr-topology * { transition: none !important; } }
 `;
