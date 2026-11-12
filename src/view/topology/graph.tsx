@@ -24,8 +24,8 @@ export function createTopologyGraph(
 	let position = { x: 0, y: 0, scale: 1 };
 	let adjusted = false;
 	let dead = false;
-	let structure = "";
 	let painted = "";
+	let lastWidth = 0;
 	let initialized = false;
 	let gesture: { x: number; y: number; distance: number } | null = null;
 	const pointers = new Map<number, { x: number; y: number }>();
@@ -324,9 +324,10 @@ export function createTopologyGraph(
 				[...world.querySelectorAll<HTMLElement>("[data-key]")]
 					.find((n) => n.dataset.key === focused)
 					?.focus({ preventScroll: true });
-			const nextStructure = data.positions.map((p) => `${p.id}:${p.x}:${p.y}`).join("|");
-			if (!initialized || (structure !== nextStructure && !adjusted)) fit(false);
-			structure = nextStructure;
+			// Only refit when the third column appears (the canvas gets wider). Row
+			// height changes from refreshed inventories must not move the viewport.
+			if (!initialized || (!adjusted && dimensions.width > lastWidth)) fit(false);
+			lastWidth = dimensions.width;
 			initialized = true;
 		},
 		fit: () => fit(),

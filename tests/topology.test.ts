@@ -193,6 +193,27 @@ test("a client refresh keeps the previous page visible until the new one arrives
 	assert.equal(store.clients.get(ONU)?.clients[0].hostname, "new");
 });
 
+test("a new snapshot keeps the previous object preview while inventories reload", async () => {
+	const pending = deferred<TopologyClientsReply>();
+	let overview = 0;
+	const store = new TopologyStore(api({
+		getTopology: async () => snapshot(`snapshot-${++overview + 1}`),
+		getTopologyClients: (r) => r.snapshot_id === "snapshot-2"
+			? pending.promise
+			: Promise.resolve(clients(r.node_id, r.snapshot_id, [client()])),
+	}), () => {}, snapshot("snapshot-1"));
+	await store.loadClients(ONU);
+	assert.equal(store.clients.get(ONU)?.clients.length, 1);
+	const task = store.refresh(false, ONU);
+	await Promise.resolve();
+	assert.equal(store.snapshot?.snapshot_id, "snapshot-2");
+	assert.equal(store.clients.get(ONU)?.clients.length, 1);
+	assert.equal(store.clients.get(ONU)?.loading, true);
+	pending.resolve(clients(ONU, "snapshot-2", [client({ hostname: "new" })]));
+	await task;
+	assert.equal(store.clients.get(ONU)?.clients[0].hostname, "new");
+});
+
 test("pagination carries the same snapshot and cursor, deduplicates pages and retains null counts", async () => {
 	const requests: unknown[] = [];
 	const store = new TopologyStore(api({ getTopologyClients: async (r) => {

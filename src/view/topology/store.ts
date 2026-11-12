@@ -80,7 +80,11 @@ export class TopologyStore {
 				if (this.dead) return;
 				this.snapshot = snapshot;
 				this.epoch++;
-				this.clients = new Map();
+				// Keep the last object previews visible while the new snapshot's
+				// inventories load; only drop nodes that no longer exist.
+				const live = new Set(snapshot.nodes.map((node) => node.id));
+				for (const id of [...this.clients.keys()]) if (!live.has(id)) this.clients.delete(id);
+				for (const state of this.clients.values()) state.loading = false;
 				this.details = new Map();
 				this.detailTasks.clear();
 				this.lastSuccess = new Date();
@@ -96,7 +100,7 @@ export class TopologyStore {
 			const refreshAll = this.cycle % 3 === 0;
 			const ids = snapshot.nodes
 				.map((node) => node.id)
-				.filter((id) => refreshAll || id === focusNodeId || !this.clients.has(id));
+				.filter((id) => refreshAll || id === focusNodeId || !this.clients.get(id)?.result);
 			let index = 0;
 			const worker = async () => {
 				while (index < ids.length && this.current(snapshot, epoch)) {
