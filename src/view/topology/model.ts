@@ -57,6 +57,10 @@ export interface ClientGroup {
 	clients: TopologyClient[];
 }
 export const CLIENT_PREVIEW_LIMIT = 2;
+export const NODE_HEIGHT = 150;
+export const CLIENT_HEIGHT = 72;
+const CLIENT_STEP = 80;
+const ROW_GAP = 22;
 
 /** Three explicit columns; no invented splitter or inferred physical port. */
 export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientGroup>) {
@@ -72,26 +76,27 @@ export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, Cli
 	let top = 56;
 	for (const node of onus) {
 		const children = clients.get(node.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? [];
-		const height = Math.max(150, children.length ? (children.length - 1) * 88 + 76 : 0);
+		const childHeight = children.length ? (children.length - 1) * CLIENT_STEP + CLIENT_HEIGHT : 0;
+		const height = Math.max(NODE_HEIGHT, childHeight);
 		positions.push({
 			id: node.id,
 			x: 454,
-			y: top + (height - 150) / 2,
+			y: top + (height - NODE_HEIGHT) / 2,
 			width: 306,
-			height: 150,
+			height: NODE_HEIGHT,
 			parent: linkFor(snapshot, node.id)?.source ?? null,
 		});
 		children.forEach((client, index) => {
 			positions.push({
 				id: clientKey(node.id, client),
 				x: 858,
-				y: top + index * 88,
+				y: top + (height - childHeight) / 2 + index * CLIENT_STEP,
 				width: 254,
-				height: 76,
+				height: CLIENT_HEIGHT,
 				parent: node.id,
 			});
 		});
-		top += height + 30;
+		top += height + ROW_GAP;
 	}
 	const localClients = controller ? (clients.get(controller.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
 	const controllerY = Math.max(56, (top - 220) / 2);
