@@ -30,6 +30,7 @@ export function createTopologyGraph(
 	let adjusted = false;
 	let dead = false;
 	let structure = "";
+	let painted = "";
 	let initialized = false;
 	let gesture: { x: number; y: number; distance: number } | null = null;
 	const pointers = new Map<number, { x: number; y: number }>();
@@ -302,11 +303,30 @@ export function createTopologyGraph(
 						);
 				}
 			}
+			const syncSelection = () => {
+				for (const card of world.querySelectorAll<HTMLElement>(".topo-graph-card")) {
+					const current = card.dataset.key === selectedId;
+					card.classList.toggle("is-selected", current);
+					card.setAttribute("aria-pressed", String(current));
+				}
+				for (const wire of world.querySelectorAll<HTMLElement>(".topo-wire"))
+					wire.classList.toggle("is-selected", wire.dataset.target === selectedId);
+			};
+			// Ignore the selection-only classes so a click updates classes instead of
+			// rebuilding the whole world and dropping hover or text selection.
+			const signature = parts
+				.map((part) => part.outerHTML.replace(/\s(?:is-selected|aria-pressed="(?:true|false)")/g, ""))
+				.join("");
+			if (initialized && signature === painted) {
+				syncSelection();
+				return;
+			}
 			const focused =
 				document.activeElement instanceof HTMLElement && world.contains(document.activeElement)
 					? document.activeElement.dataset.key
 					: null;
 			world.replaceChildren(...parts);
+			painted = signature;
 			if (focused)
 				[...world.querySelectorAll<HTMLElement>("[data-key]")]
 					.find((n) => n.dataset.key === focused)

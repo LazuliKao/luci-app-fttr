@@ -31,6 +31,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	};
 	let showClients = false;
 	let panelKey = "";
+	let panelSelection = "";
 	let themeFrame = 0;
 	const countsNode = <div class="topo-counts" />;
 	const updated = <span class="topo-sampled" />;
@@ -171,27 +172,44 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	}
 
 	function renderPanel() {
-		const nextKey = JSON.stringify(selected);
-		const sameSelection = panelKey === nextKey;
+		const parentId = selected.kind === "node" ? selected.id : selected.parent;
+		const clientState = store.clients.get(parentId);
+		const detailState = store.details.get(parentId);
+		const selectionKey = JSON.stringify(selected);
+		const nextKey = JSON.stringify([
+			selectionKey,
+			store.snapshot?.nodes.find((node) => node.id === parentId),
+			clientState?.clients.length,
+			clientState?.loading,
+			clientState?.error,
+			clientState?.result?.next_cursor,
+			clientState?.result?.associated_client_count,
+			clientState?.result?.learned_host_count,
+			clientState?.result?.sources,
+			detailState?.loading,
+			detailState?.error,
+		]);
+		if (panelKey === nextKey) return;
+		const sameSelection = panelSelection === selectionKey;
 		const scroll = sameSelection ? panel.scrollTop : 0;
 		const open = sameSelection
-			? [...panel.querySelectorAll<HTMLDetailsElement>("details[open]")].map(
-					(d) => d.querySelector("summary")?.textContent,
-				)
+			? [...panel.querySelectorAll<HTMLDetailsElement>("details")].map((detail) => detail.open)
 			: [];
 		const focused =
 			sameSelection && document.activeElement instanceof HTMLElement && panel.contains(document.activeElement)
 				? document.activeElement.dataset.focusKey
 				: null;
 		panel.replaceChildren(renderDetails(store, selected, select));
-		for (const detail of panel.querySelectorAll<HTMLDetailsElement>("details"))
-			if (open.includes(detail.querySelector("summary")?.textContent)) detail.open = true;
+		[...panel.querySelectorAll<HTMLDetailsElement>("details")].forEach((detail, index) => {
+			if (open[index]) detail.open = true;
+		});
 		panel.scrollTop = scroll;
 		if (focused)
 			[...panel.querySelectorAll<HTMLElement>("[data-focus-key]")]
 				.find((node) => node.dataset.focusKey === focused)
 				?.focus({ preventScroll: true });
 		panelKey = nextKey;
+		panelSelection = selectionKey;
 	}
 
 	function render() {
