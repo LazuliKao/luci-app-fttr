@@ -396,7 +396,7 @@ export function createAccountsPanel(): AccountsController {
 								<div style="display:flex;align-items:center;gap:8px">
 									<strong style="font-size:105%">{account.username}</strong>
 									<span style="font-size:80%;color:#888">
-										{_("(Entry %s)").replace("%s", String(entry))}
+										{_("(Entry %s)").format(String(entry))}
 									</span>
 									{activeBadge}
 								</div>
@@ -574,7 +574,7 @@ export function createConsolePanel(): ConsoleController {
 		const startTime = Date.now();
 		const target = currentTarget;
 		try {
-			const res = await execute(target, script.value, seconds);
+			const res = await execute(target, cmd, seconds);
 			if (JSON.stringify(target) !== JSON.stringify(currentTarget)) return;
 			const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
 			const op = res.operation;
@@ -706,7 +706,7 @@ export function createConsolePanel(): ConsoleController {
 					<span>{_("Timeout in seconds")}:</span>
 					{timeout}
 				</label>
-				<span style="font-size:82%;color:#888">{_("(Shortcut: %s)").replace("%s", "Ctrl + Enter")}</span>
+				<span style="font-size:82%;color:#888">{_("(Shortcut: %s)").format("Ctrl + Enter")}</span>
 				<div style="margin-left:auto">{execBtn}</div>
 			</div>
 			<div style="margin-top:10px">

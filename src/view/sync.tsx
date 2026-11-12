@@ -5,6 +5,7 @@ import { showOnuDetails } from "./components/onu-details";
 import { checkConfig, getStatus, getSync, type SyncAction, sync } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
+import { isPageHidden } from "./contracts/visibility";
 
 const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }> = {
 	ready: { label: _("Ready"), type: "success" },
@@ -348,9 +349,7 @@ function deviceCard(
 
 	const confirmReset = () => {
 		const label = device.name || device.optical_sn;
-		if (
-			window.confirm(_("Are you sure you want to reset the synchronization state for %s?").replace("%s", label))
-		) {
+		if (window.confirm(_("Are you sure you want to reset the synchronization state for %s?").format(label))) {
 			reset(device);
 		}
 	};
@@ -424,7 +423,7 @@ function deviceCard(
 						{renderStateBadge(
 							device.management?.state,
 							device.management?.last_inform
-								? `${_("Last Inform: %s").replace("%s", date(device.management.last_inform))}${
+								? `${_("Last Inform: %s").format(date(device.management.last_inform))}${
 										device.management.age_seconds != null
 											? ` (${formatAge(device.management.age_seconds)})`
 											: ""
@@ -483,9 +482,8 @@ function deviceCard(
 							<>
 								<span>·</span>
 								<span style="color:#d35400">
-									{_("Next self-healing retry in %d seconds").replace(
-										"%d",
-										String(op.next_retry_at - Math.floor(Date.now() / 1000)),
+									{_("Next self-healing retry in %d seconds").format(
+										op.next_retry_at - Math.floor(Date.now() / 1000),
 									)}
 								</span>
 							</>
@@ -615,7 +613,7 @@ const main = L.view.extend({
 					<div class="alert-message info">
 						{_(
 							"Synchronization state reset for %s. Preview differences to read the current device state.",
-						).replace("%s", device.name || device.optical_sn)}
+						).format(device.name || device.optical_sn)}
 					</div>,
 				);
 				update(await getSync());
@@ -636,9 +634,10 @@ const main = L.view.extend({
 				const operationIds = "operation_ids" in reply ? reply.operation_ids.join(", ") : "—";
 				result.replaceChildren(
 					<div class="alert-message info">
-						{_("Configuration delivery started for %s. Operation IDs: %s")
-							.replace("%s", device.name || device.optical_sn)
-							.replace("%s", operationIds || "—")}
+						{_("Configuration delivery started for %s. Operation IDs: %s").format(
+							device.name || device.optical_sn,
+							operationIds || "—",
+						)}
 					</div>,
 				);
 				update(await getSync());
@@ -670,7 +669,7 @@ const main = L.view.extend({
 				const reply = await sync(action, target.value);
 				const msg = action.startsWith("management_")
 					? _("Management operation started; status is refreshed below.")
-					: _("Started: %s").replace("%s", "operation_ids" in reply ? reply.operation_ids.join(", ") : "—");
+					: _("Started: %s").format("operation_ids" in reply ? reply.operation_ids.join(", ") : "—");
 				result.replaceChildren(<div class="alert-message info">{msg}</div>);
 				update(await getSync());
 			} catch (failure) {
@@ -1276,7 +1275,7 @@ const main = L.view.extend({
 		update(initial);
 
 		L.Poll.add(async () => {
-			if (!root.isConnected || refreshing) return;
+			if (!root.isConnected || isPageHidden() || refreshing) return;
 			refreshing = true;
 			try {
 				const [status, check] = await Promise.all([getSync(), checkConfig()]);

@@ -16,6 +16,7 @@ import { createOpticalControl } from "./components/optical-control";
 import type { PlatformInfoReply } from "./contracts/api";
 import { getNetworkDevices, getPlatformInfo, getStatus } from "./contracts/api";
 import type { FttrStatus, NetworkDevices, SubGateway, SwitchPortStatus } from "./contracts/status";
+import { isPageHidden } from "./contracts/visibility";
 
 const view = L.view;
 const poll = L.Poll;
@@ -431,6 +432,7 @@ function createOnuTable(
 interface StatusView {
 	element: HTMLElement;
 	update(status: FttrStatus, devices: NetworkDevices): void;
+	setStale(stale: boolean): void;
 }
 
 function createStatusView(
@@ -476,9 +478,14 @@ function createStatusView(
 	const opticalNode = <span>{text(initialOptical.model)}</span>;
 	const cdrNode = <span class="fttr-badge" />;
 	const pinningNode = <p role="status" />;
+	const staleNotice = (
+		<p class="alert-message warning" role="status" hidden>
+			{_("Live status is unavailable. The displayed data may be stale.")}
+		</p>
+	);
 	const opticalControl = createOpticalControl();
 	poll.add(async () => {
-		if (opticalControl.element.isConnected) await opticalControl.refresh();
+		if (!isPageHidden() && opticalControl.element.isConnected) await opticalControl.refresh();
 	}, 2);
 
 	const element = (
@@ -618,6 +625,7 @@ function createStatusView(
 				`}
 			</style>
 			<h2>{_("FTTR overview")}</h2>
+			{staleNotice}
 			{opticalControl.element}
 			{provisioningNode}
 			{pinningNode}
@@ -727,12 +735,19 @@ function createStatusView(
 	};
 
 	update(initialStatus, initialDevices);
-	return { element, update };
+	return {
+		element,
+		update,
+		setStale: (stale) => {
+			staleNotice.hidden = !stale;
+		},
+	};
 }
 
 let pageRoot: HTMLElement | null = null;
 let pageView: StatusView | null = null;
 let refreshing = false;
+let lastSuccess = Date.now();
 
 export const main = view.extend({
 	async load(): Promise<{ status: FttrStatus; devices: NetworkDevices; platform: PlatformInfoReply }> {
@@ -750,14 +765,17 @@ export const main = view.extend({
 		pageView = createStatusView(data.status, data.devices, data.platform);
 		pageRoot = pageView.element;
 		poll.add(async () => {
-			if (refreshing || !pageRoot?.isConnected || !pageView) return;
+			if (refreshing || isPageHidden() || !pageRoot?.isConnected || !pageView) return;
 			const activeView = pageView;
 			refreshing = true;
 			try {
 				const [status, devices] = await Promise.all([getStatus(), getNetworkDevices().catch(() => ({}))]);
 				if (pageView === activeView && activeView.element.isConnected) activeView.update(status, devices);
+				lastSuccess = Date.now();
+				activeView.setStale(false);
 			} catch (error) {
 				console.error("Failed to refresh FTTR status", error);
+				activeView.setStale(Date.now() - lastSuccess > 30000);
 			} finally {
 				refreshing = false;
 			}

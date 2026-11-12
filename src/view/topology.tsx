@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { getFttrClient } from "../api/client";
 import type { TopologyReply } from "../api/generated/types";
+import { isPageHidden } from "./contracts/visibility";
 import { createTopologyGraph } from "./topology/graph";
 import { CONTROLLER_ID, counts, type Selection } from "./topology/model";
 import { badge, renderDetails } from "./topology/presentation";
@@ -239,6 +240,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			return;
 		}
 		attached = true;
+		if (isPageHidden()) return;
 		await refresh();
 	};
 	function updateTheme() {

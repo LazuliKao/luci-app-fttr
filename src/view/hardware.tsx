@@ -6,6 +6,7 @@ import { formatAge, formatFirmware, formatPower, text } from "./components/forma
 import { showOnuDetails } from "./components/onu-details";
 import { getPlatformInfo, getStatus } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
+import { isPageHidden } from "./contracts/visibility";
 
 const view = L.view;
 
@@ -178,9 +179,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 						<div class="fttr-card-header">
 							<div class="fttr-card-title-group">
 								<h3 style="margin:0">
-									{_("Sub-gateway %s — %s")
-										.replace("%s", String(onu.onu_id))
-										.replace("%s", text(onu.model))}
+									{_("Sub-gateway %s — %s").format(String(onu.onu_id), text(onu.model))}
 								</h3>
 								<div class="fttr-card-meta-tags">
 									<span class="fttr-badge fttr-badge-neutral">{onu.vendor}</span>
@@ -293,6 +292,12 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 	let subgatewaysPanel = createSubgatewaysPanel(initialStatus.sub_gateways ?? []);
 	const fecMonitor = platform.operations.downstream_fec ? createFecMonitor(initialStatus) : undefined;
 	const fecPanel = fecMonitor?.element;
+	const staleNotice = (
+		<p class="alert-message warning" role="status" hidden>
+			{_("Live hardware status is unavailable. The displayed data may be stale.")}
+		</p>
+	);
+	let lastSuccess = Date.now();
 
 	const switchTab = (id: TabId): void => {
 		activeTab = id;
@@ -522,6 +527,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 				`}
 			</style>
 			<h2>{_("FTTR hardware status")}</h2>
+			{staleNotice}
 			{tabMenu}
 			{panelsContainer}
 			<p class="cbi-footer" style="margin-top:1.5em;font-size:85%;color:#888">
@@ -532,7 +538,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 
 	let updating = false;
 	L.Poll.add(async () => {
-		if (!root.isConnected || updating) return;
+		if (!root.isConnected || isPageHidden() || updating) return;
 		updating = true;
 		try {
 			const latest = await getStatus();
@@ -545,8 +551,11 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 			subgatewaysPanel.replaceWith(newSubgateways);
 			controllerPanel = newController;
 			subgatewaysPanel = newSubgateways;
+			lastSuccess = Date.now();
+			staleNotice.hidden = true;
 		} catch (error) {
 			console.error("Failed to refresh hardware status", error);
+			staleNotice.hidden = Date.now() - lastSuccess <= 30000;
 		} finally {
 			updating = false;
 		}

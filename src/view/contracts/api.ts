@@ -28,14 +28,16 @@ export const getSync = async () => getFttrClient().getSync();
 export const checkConfig = async () => getFttrClient().configCheck();
 export const reloadConfig = async () => getFttrClient().configReload();
 export const restartService = async () => getFttrClient().restartService();
+// Declared once, lazily: importing this module must not require the LuCI global.
+let getNetworkDevicesRaw: (() => Promise<unknown>) | undefined;
 export const getNetworkDevices = async () => {
-	const rawNetwork = L.rpc.declare<unknown>({
+	getNetworkDevicesRaw ??= L.rpc.declare<unknown>({
 		object: "luci-rpc",
 		method: "getNetworkDevices",
 		expect: { "": {} },
 		reject: true,
 	});
-	return networkDevices.parse(checked(await rawNetwork()));
+	return networkDevices.parse(checked(await getNetworkDevicesRaw()));
 };
 export const getOpticalStatus = async (): Promise<OpticalReply> => getFttrClient().opticalStatus();
 export const setOptical = async (settings: OpticalSettings): Promise<OpticalReply> =>

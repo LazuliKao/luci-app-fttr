@@ -43,18 +43,18 @@ export function formatAge(seconds: number | null | undefined): string | null {
 	if (seconds == null || !Number.isFinite(seconds) || seconds < 0) return null;
 	const sec = Math.floor(seconds);
 	if (sec < 60) {
-		return (sec === 1 ? _("%d second ago") : _("%d seconds ago")).replace("%d", String(sec));
+		return (sec === 1 ? _("%d second ago") : _("%d seconds ago")).format(sec);
 	}
 	const mins = Math.floor(sec / 60);
 	if (mins < 60) {
-		return (mins === 1 ? _("%d minute ago") : _("%d minutes ago")).replace("%d", String(mins));
+		return (mins === 1 ? _("%d minute ago") : _("%d minutes ago")).format(mins);
 	}
 	const hours = Math.floor(sec / 3600);
 	if (hours < 24) {
-		return (hours === 1 ? _("%d hour ago") : _("%d hours ago")).replace("%d", String(hours));
+		return (hours === 1 ? _("%d hour ago") : _("%d hours ago")).format(hours);
 	}
 	const days = Math.floor(sec / 86400);
-	return (days === 1 ? _("%d day ago") : _("%d days ago")).replace("%d", String(days));
+	return (days === 1 ? _("%d day ago") : _("%d days ago")).format(days);
 }
 
 /**

@@ -1,17 +1,29 @@
 import { checked, jobStart, RpcError } from "../view/contracts/common";
+import { isPageHidden, onPageLeave } from "../view/contracts/visibility";
 import { getFttrClient } from "./client";
 
 // Polling never replays the operation. Leaving a page only releases its result.
 export async function waitForJob(start: unknown, parseResult: (value: unknown) => unknown = checked): Promise<unknown> {
 	const initial = jobStart.parse(checked(start));
-	const deadline = Date.now() + 330000;
+	let deadline = Date.now() + 330000;
 	const path = window.location.pathname;
+	let left = false;
+	const removePageLeave = onPageLeave(() => {
+		left = true;
+	});
 	const parts: Uint8Array[] = [];
 	let totalBytes = 0;
 	let expected: { chunks: number; bytes: number } | undefined;
 	try {
 		for (let chunk = 0; chunk < 128; ) {
-			if (window.location.pathname !== path)
+			// Pause result polling while the tab is hidden; the deadline counts only
+			// foreground time so a backgrounded job is not reported as timed out.
+			if (isPageHidden()) {
+				const hiddenAt = Date.now();
+				while (isPageHidden() && !left) await new Promise<void>((resolve) => window.setTimeout(resolve, 1000));
+				deadline += Date.now() - hiddenAt;
+			}
+			if (left || window.location.pathname !== path)
 				throw new RpcError(
 					"navigation",
 					_("Result polling stopped after leaving the page. The backend job is not cancelled."),
@@ -59,6 +71,7 @@ export async function waitForJob(start: unknown, parseResult: (value: unknown) =
 		}
 		throw new RpcError("transport", _("Too many result chunks"));
 	} finally {
+		removePageLeave();
 		await getFttrClient()
 			.jobRelease({ job: initial.job })
 			.catch(() => {});

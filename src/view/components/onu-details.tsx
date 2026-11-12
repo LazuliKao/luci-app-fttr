@@ -12,6 +12,7 @@ import {
 	type Value,
 } from "../contracts/mib";
 import type { SubGateway as OnuDetails } from "../contracts/status";
+import { isPageHidden } from "../contracts/visibility";
 import { BADGE_CSS, BusinessBadge, CwmpBadge, ProvisioningBadge, RegistrationBadge, WifiSyncBadge } from "./badge";
 import { formatPower, formatUptime, text } from "./formatters";
 
@@ -998,8 +999,16 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 			if (!active()) return;
 			const started = await startMib(current.onu_id, current.serial_number, withTables);
 			job = started.job;
-			const deadline = Date.now() + 140000;
+			let deadline = Date.now() + 140000;
 			while (active()) {
+				// Pause the snapshot poll while the tab is hidden; only foreground
+				// time counts against the deadline.
+				if (isPageHidden()) {
+					const hiddenAt = Date.now();
+					while (isPageHidden() && active()) await new Promise((resolve) => setTimeout(resolve, 1000));
+					deadline += Date.now() - hiddenAt;
+					if (!active()) return;
+				}
 				const result = await getMib(started.job, 0);
 				if (!active()) return;
 				if (result.status === "ready") {

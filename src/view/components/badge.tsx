@@ -140,7 +140,7 @@ export function getCwmpBadgeSpec(mgmt?: SubGateway["management"]): {
 		mgmt?.age_seconds ?? (mgmt?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - mgmt.last_inform) : null);
 	const ageText = formatAge(age);
 	const fullTime = mgmt?.last_inform ? new Date(mgmt.last_inform * 1000).toLocaleString() : null;
-	const title = fullTime ? _("Last Inform: %s").replace("%s", fullTime) : undefined;
+	const title = fullTime ? _("Last Inform: %s").format(fullTime) : undefined;
 
 	let label = "—";
 	let tone: BadgeTone = "none";
@@ -223,7 +223,7 @@ export function getProvisioningBadgeSpec(
 				: provData?.reconcile_reason
 					? provData.reconcile_reason
 					: nextRetry > 0
-						? _("Next self-healing retry in %d seconds").replace("%d", String(nextRetry))
+						? _("Next self-healing retry in %d seconds").format(nextRetry)
 						: (provData?.reason ?? provData?.error));
 
 	if (!state || state === "not_started") {

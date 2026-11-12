@@ -3,6 +3,7 @@
 import { getNpuStatus, setNpu } from "./contracts/api";
 import { requirePlatformOperation } from "./contracts/capabilities";
 import type { NpuStatus } from "./contracts/status";
+import { isPageHidden } from "./contracts/visibility";
 import { exactCounter, maskText } from "./npu-data";
 
 function row(label: string, value: string | number | HTMLElement): HTMLElement {
@@ -437,7 +438,7 @@ function renderPage(): HTMLElement {
 	);
 	void fetchStatus();
 	L.Poll.add(async () => {
-		if (!root.isConnected) return;
+		if (!root.isConnected || isPageHidden()) return;
 		if (lastReceived && Date.now() - lastReceived > 12000) {
 			lastReceived = 0;
 			content.replaceChildren(

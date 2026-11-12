@@ -2,6 +2,7 @@
 
 import { requirePage } from "./contracts/capabilities";
 import type { DeviceMeta } from "./contracts/hl202";
+import { isPageHidden } from "./contracts/visibility";
 import { text } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
 import { list, type Target } from "./hl202/rpc";
@@ -229,9 +230,9 @@ function renderPage(): HTMLElement {
 		}
 	};
 
-	const reload = async (): Promise<void> => {
+	const reload = async (showLoading = true): Promise<void> => {
 		refresh.disabled = true;
-		status.textContent = _("Loading devices…");
+		if (showLoading) status.textContent = _("Loading devices…");
 		try {
 			const response = await list();
 			const parsedDevices = response.devices;
@@ -563,13 +564,15 @@ function renderPage(): HTMLElement {
 		</div>
 	);
 
-	const poll = async (): Promise<void> => {
+	// Self-terminating chain: once the view is detached no further timer is
+	// scheduled, so no L.Poll.remove teardown is needed (this view has no destroy hook).
+	const tick = async (): Promise<void> => {
 		if (!root.isConnected) return;
-		await reload();
-		if (root.isConnected) window.setTimeout(() => void poll(), 5000);
+		if (!isPageHidden()) await reload(false);
+		if (root.isConnected) window.setTimeout(() => void tick(), 5000);
 	};
 
-	window.setTimeout(() => void poll(), 5000);
+	window.setTimeout(() => void tick(), 5000);
 	return root;
 }
 
