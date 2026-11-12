@@ -116,15 +116,7 @@ export function createOpticalControl() {
 			next.error?.message || mac?.error || (applied ? "" : _("Saved; applying hardware configuration"));
 		render();
 	};
-	save.onclick = async () => {
-		if (busy || stale || !saved || !L.hasViewPermission()) return;
-		const settings = read();
-		if (
-			((!settings.enabled && saved.enabled) ||
-				(!settings.downstream_tx_enabled && saved.downstream_tx_enabled)) &&
-			!window.confirm(_("This disconnects all ONUs on this PON. Apply these settings?"))
-		)
-			return;
+	const applySettings = async (settings: OpticalSettings) => {
 		busy = true;
 		revision++;
 		render();
@@ -138,6 +130,37 @@ export function createOpticalControl() {
 			busy = false;
 			render();
 		}
+	};
+	save.onclick = () => {
+		if (busy || stale || !saved || !L.hasViewPermission()) return;
+		const settings = read();
+		if ((!settings.enabled && saved.enabled) || (!settings.downstream_tx_enabled && saved.downstream_tx_enabled)) {
+			L.ui.showModal(
+				_("Optical transceiver"),
+				<div>
+					{[
+						<p>{_("This disconnects all ONUs on this PON. Apply these settings?")}</p>,
+						<div class="right">
+							<button type="button" class="cbi-button" onclick={() => L.ui.hideModal()}>
+								{_("Cancel")}
+							</button>{" "}
+							<button
+								type="button"
+								class="cbi-button cbi-button-negative"
+								onclick={() => {
+									L.ui.hideModal();
+									return applySettings(settings);
+								}}
+							>
+								{_("Confirm")}
+							</button>
+						</div>,
+					]}
+				</div>,
+			);
+			return;
+		}
+		return applySettings(settings);
 	};
 	return {
 		element,

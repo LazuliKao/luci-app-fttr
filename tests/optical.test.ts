@@ -15,6 +15,7 @@ class TestNode {
 	replaceChildren(...nodes: TestNode[]) { this.children = nodes; }
 	set textContent(value: string) { this.children = [value]; }
 	get textContent(): string { return this.children.map(v => v instanceof TestNode ? v.textContent : v).join(" "); }
+	addEventListener(type: string, fn: any) { (this as any)["on" + type] = fn; }
 	all(tag: string): TestNode[] { return [this, ...this.children.flatMap(v => v instanceof TestNode ? v.all(tag) : [])].filter(v => v.tag === tag); }
 }
 
@@ -29,12 +30,20 @@ test("optical controls submit all flags atomically, preserve edits, reject stale
 	let get: () => Promise<any> = async () => snapshot;
 	let set: (...args: any[]) => Promise<any> = async () => snapshot;
 	let writable = true;
+	let modal: TestNode | undefined;
 	Object.assign(globalThis, {
 		_: (value: string) => value, Node: TestNode,
 		E: (tag: string, attrs: any, children: any) => new TestNode(tag, attrs, children),
-		window: { confirm: () => true },
 		L: {
 			hasViewPermission: () => writable,
+			ui: {
+				showModal: (_title: string, node: TestNode) => {
+					modal = node;
+				},
+				hideModal: () => {
+					modal = undefined;
+				},
+			},
 			rpc: { declare: ({ method }: { method: string }) => (...args: any[]) => method === "optical_status" ? get() : set(...args) },
 		},
 	});
@@ -58,7 +67,12 @@ test("optical controls submit all flags atomically, preserve edits, reject stale
 		assert.deepEqual([enabled, tx, coding], [true, false, true]);
 		return new Promise(resolve => { resolveSet = resolve; });
 	};
-	const saving = save.onclick!();
+	save.onclick!();
+	assert.ok(modal, "modal must be displayed when disconnecting ONUs");
+	const confirmBtn = modal?.all("button").find(b => b.textContent === "Confirm");
+	assert.ok(confirmBtn, "modal must have a Confirm button");
+	const saving = confirmBtn.onclick!();
+	assert.equal(modal, undefined, "modal must be hidden after confirming");
 	assert.equal(master.disabled, true);
 	resolveOld(snapshot);
 	await oldPoll;

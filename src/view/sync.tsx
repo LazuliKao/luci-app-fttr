@@ -350,9 +350,34 @@ function deviceCard(
 
 	const confirmReset = () => {
 		const label = device.name || device.optical_sn;
-		if (window.confirm(_("Are you sure you want to reset the synchronization state for %s?").format(label))) {
-			reset(device);
-		}
+		L.ui.showModal(
+			_("Reset synchronization state"),
+			<div>
+				{[
+					<p>{_("Are you sure you want to reset the synchronization state for %s?").format(label)}</p>,
+					<p>
+						{_(
+							"Clear old tasks and managed-object records after a device factory reset. The next preview or apply reads the device again.",
+						)}
+					</p>,
+					<div class="right">
+						<button type="button" class="cbi-button" onclick={() => L.ui.hideModal()}>
+							{_("Cancel")}
+						</button>{" "}
+						<button
+							type="button"
+							class="cbi-button cbi-button-negative"
+							onclick={() => {
+								L.ui.hideModal();
+								return reset(device);
+							}}
+						>
+							{_("Confirm")}
+						</button>
+					</div>,
+				]}
+			</div>,
+		);
 	};
 
 	return (
