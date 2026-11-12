@@ -29,7 +29,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		kind: "node",
 		id: initial.snapshot?.nodes.find((n) => n.detail.kind === "controller")?.id ?? CONTROLLER_ID,
 	};
-	let showClients = false;
+	let showClients = true;
 	let panelKey = "";
 	let panelSelection = "";
 	let themeFrame = 0;
@@ -73,7 +73,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		<button
 			type="button"
 			class="cbi-button cbi-button-neutral topo-toggle"
-			aria-pressed="false"
+			aria-pressed="true"
 			title={_("Show objects on the canvas")}
 			onclick={() => {
 				showClients = !showClients;
