@@ -13,6 +13,7 @@ import {
 	getRegistrationBadgeSpec,
 	getWifiSyncBadgeSpec,
 } from "../components/badge";
+import { formatUptime } from "../components/formatters";
 import { addressSummary, clientKey, linkFor, measurementAge, type Selection } from "./model";
 import type { ClientState, TopologyStore } from "./store";
 
@@ -26,11 +27,6 @@ export function badge(label: string, tone: string = "neutral", title?: string): 
 }
 export function num(value: number | null | undefined, unit = "", digits = 1): string {
 	return value == null || !Number.isFinite(value) ? "—" : `${value.toFixed(digits)}${unit ? ` ${unit}` : ""}`;
-}
-export function duration(seconds: number | null | undefined): string {
-	if (seconds == null) return "—";
-	const s = Math.max(0, Math.floor(seconds));
-	return `${Math.floor(s / 86400)}d ${Math.floor((s % 86400) / 3600)}h ${Math.floor((s % 3600) / 60)}m`;
 }
 export function relationText(client: TopologyClient): string {
 	return client.relation === "associated_with"
@@ -351,7 +347,7 @@ function nodeDetails(node: TopologyNode, snapshot: TopologyReply): HTMLElement[]
 						{hl?.mac ? row(_("Reported MAC"), hl.mac) : null}
 					</>
 				) : null}
-				{row(_("Uptime"), duration(d.uptime_seconds))}
+				{row(_("Uptime"), formatUptime(d.uptime_seconds))}
 			</dl>
 			{d.kind === "onu" ? (
 				<details>
@@ -405,7 +401,7 @@ function nodeDetails(node: TopologyNode, snapshot: TopologyReply): HTMLElement[]
 						{row(_("Connection type (raw)"), hl.connection_type_raw)}
 						{row(_("CPU usage (raw)"), hl.cpu_usage_raw)}
 						{row(_("Memory usage (raw)"), hl.memory_usage_raw)}
-						{row(_("Reported uptime"), duration(hl.uptime_seconds))}
+						{row(_("Reported uptime"), formatUptime(hl.uptime_seconds))}
 					</dl>,
 				),
 			);
