@@ -125,6 +125,7 @@ export function BusinessBadge(props: { status?: BusinessStatus | null }): HTMLEl
 // ---------------------------------------------------------------------------
 
 export const CWMP_STATE_LABELS: Record<string, string> = {
+	disabled: _("Disabled"),
 	online: _("Online"),
 	waiting_inform: _("Waiting Inform"),
 	offline_or_stale: _("Offline or stale"),
@@ -140,12 +141,15 @@ export function getCwmpBadgeSpec(mgmt?: SubGateway["management"]): {
 		mgmt?.age_seconds ?? (mgmt?.last_inform ? Math.max(0, Math.floor(Date.now() / 1000) - mgmt.last_inform) : null);
 	const ageText = formatAge(age);
 	const fullTime = mgmt?.last_inform ? new Date(mgmt.last_inform * 1000).toLocaleString() : null;
-	const title = fullTime ? _("Last Inform: %s").format(fullTime) : undefined;
+	const title = state !== "disabled" && fullTime ? _("Last Inform: %s").format(fullTime) : undefined;
 
 	let label = "—";
 	let tone: BadgeTone = "none";
 
-	if (state === "online") {
+	if (state === "disabled") {
+		tone = "neutral";
+		label = CWMP_STATE_LABELS.disabled;
+	} else if (state === "online") {
 		tone = "success";
 		label = CWMP_STATE_LABELS.online;
 	} else if (state === "waiting_inform") {
@@ -159,7 +163,7 @@ export function getCwmpBadgeSpec(mgmt?: SubGateway["management"]): {
 		label = text(state);
 	}
 
-	const displayLabel = ageText && state ? `${label} · ${ageText}` : label;
+	const displayLabel = ageText && state && state !== "disabled" ? `${label} · ${ageText}` : label;
 	return { tone, label: displayLabel, title };
 }
 

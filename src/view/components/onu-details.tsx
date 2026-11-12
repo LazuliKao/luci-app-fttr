@@ -387,7 +387,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 				[_("CWMP"), <CwmpBadge management={initial.management} />],
 				[
 					_("Last Inform"),
-					initial.management?.last_inform
+					initial.management?.state !== "disabled" && initial.management?.last_inform
 						? `${new Date(initial.management.last_inform * 1000).toLocaleString()}${
 								initial.management.age_seconds != null ? ` (${initial.management.age_seconds} s)` : ""
 							}`

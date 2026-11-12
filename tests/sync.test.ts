@@ -134,3 +134,32 @@ test("reset synchronization state opens LuCI confirmation modal and triggers res
 	assert.equal(modal, undefined, "Confirm must hide the modal");
 	assert.equal(resetCalled, true, "Confirm must trigger reset");
 });
+
+test("getCwmpBadgeSpec and sync card render disabled badge when CWMP is disabled", async () => {
+	const { getCwmpBadgeSpec } = await import("../src/view/components/badge");
+	const spec = getCwmpBadgeSpec({
+		state: "disabled",
+		cwmp_id: "test",
+		optical_online: true,
+		last_inform: null,
+		age_seconds: null,
+	});
+	assert.equal(spec.tone, "neutral");
+	assert.equal(spec.label, "Disabled");
+	assert.equal(spec.title, undefined);
+
+	const { deviceCard } = await import("../src/view/sync");
+	const device = {
+		device: "onu_disabled",
+		optical_sn: "H3CT1234ABCD",
+		omci_adapter: "hl202",
+		bootstrap_adapter: "none",
+		provisioning_adapter: "hl202-mqtt",
+		management: { state: "disabled" },
+		mqtt: { state: "online" },
+		provisioning: { state: "completed", items: [] },
+	} as unknown as DeviceSync;
+	const noop = async () => {};
+	const root = deviceCard(device, false, noop, noop, noop, noop, false, true, false) as unknown as TestNode;
+	assert.match(root.textContent, /CWMP:.*Disabled.*MQTT:.*Online/);
+});

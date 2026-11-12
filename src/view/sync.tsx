@@ -448,7 +448,7 @@ function deviceCard(
 						<span class="fttr-pill-label">CWMP:</span>{" "}
 						{renderStateBadge(
 							device.management?.state,
-							device.management?.last_inform
+							device.management?.state !== "disabled" && device.management?.last_inform
 								? `${_("Last Inform: %s").format(date(device.management.last_inform))}${
 										device.management.age_seconds != null
 											? ` (${formatAge(device.management.age_seconds)})`
