@@ -93,7 +93,12 @@ export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, Cli
 		const children = showClients ? (group?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
 		const childHeight = children.length ? (children.length - 1) * CLIENT_STEP + CLIENT_HEIGHT : 0;
 		const contentHeight = Math.max(NODE_HEIGHT, childHeight);
-		const linkRow = observedCount(group) > 0 ? LINK_ROW : 0;
+		const showLink =
+			observedCount(group) > 0 &&
+			(!showClients ||
+				(group?.clients.length ?? 0) > CLIENT_PREVIEW_LIMIT ||
+				Boolean(group?.result?.next_cursor));
+		const linkRow = showLink ? LINK_ROW : 0;
 		positions.push({
 			id: node.id,
 			x: 454,
