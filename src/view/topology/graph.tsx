@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 // LuCI-owned card graph: semantic buttons, explicit layout and a pan/zoom viewport.
 import type { TopologyReply } from "../../api/generated/types";
-import { CLIENT_PREVIEW_LIMIT, clientKey, layout, type Selection } from "./model";
+import { CLIENT_PREVIEW_LIMIT, clientKey, layout, observedCount, type Selection } from "./model";
 import { badge, clientCard, nodeCard, nodeState, nodeTone, relationText } from "./presentation";
 import type { ClientState } from "./store";
 
 export interface TopologyGraph {
-	update(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientState>, selected: Selection): void;
+	update(
+		snapshot: TopologyReply,
+		clients: ReadonlyMap<string, ClientState>,
+		selected: Selection,
+		showClients: boolean,
+	): void;
 	fit(): void;
 	zoom(factor: number): void;
 	reset(): void;
@@ -129,9 +134,9 @@ export function createTopologyGraph(
 	observer.observe(container);
 
 	return {
-		update(snapshot, clients, selected) {
+		update(snapshot, clients, selected, showClients) {
 			if (dead) return;
-			const data = layout(snapshot, clients);
+			const data = layout(snapshot, clients, showClients);
 			dimensions = data;
 			const byId = new Map(data.positions.map((p) => [p.id, p]));
 			const objects = new Map(
@@ -270,7 +275,11 @@ export function createTopologyGraph(
 				parts.push(button);
 				if (node) {
 					const state = clients.get(node.id);
-					if (state && (state.clients.length > CLIENT_PREVIEW_LIMIT || state.result?.next_cursor)) {
+					const total = observedCount(state);
+					const overflow = Boolean(
+						state && (state.clients.length > CLIENT_PREVIEW_LIMIT || state.result?.next_cursor),
+					);
+					if (total > 0 && (!showClients || overflow)) {
 						parts.push(
 							<button
 								type="button"
@@ -278,8 +287,8 @@ export function createTopologyGraph(
 								style={`left:${p.x}px;top:${p.y + p.height + 4}px;width:${p.width}px`}
 								onclick={() => onSelect({ kind: "node", id: node.id })}
 							>
-								{_("View all observed objects")} · {state.clients.length}
-								{state.result?.next_cursor ? "+" : ""}
+								{_("View all observed objects")} · {total}
+								{state?.result?.next_cursor ? "+" : ""}
 							</button>,
 						);
 					} else if (state?.error)

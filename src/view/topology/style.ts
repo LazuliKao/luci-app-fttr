@@ -23,6 +23,7 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-sampled[data-stale="true"] { color: var(--topo-amber); }
 .fttr-topology .topo-zoom { min-width: 38px; text-align: right; font: 11px ui-monospace, monospace; color: var(--topo-muted); }
 .fttr-topology .topo-toolbar .cbi-button { min-width: 32px; margin: 0; }
+.fttr-topology .topo-toolbar .topo-toggle[aria-pressed="true"] { border-color: var(--topo-blue); color: var(--topo-blue); }
 .fttr-topology .topo-viewport-wrap { position: relative; flex: 1; min-height: 0; }
 .fttr-topology .topo-viewport { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; background-color: color-mix(in srgb, var(--topo-bg) 96%, var(--topo-text)); background-image: radial-gradient(var(--topo-border) 1px, transparent 1px); background-size: 24px 24px; }
 .fttr-topology .topo-viewport.is-panning { cursor: grabbing; user-select: none; }

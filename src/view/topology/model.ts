@@ -55,15 +55,29 @@ export interface Placement {
 }
 export interface ClientGroup {
 	clients: TopologyClient[];
+	result?: {
+		associated_client_count?: number | null;
+		learned_host_count?: number | null;
+		next_cursor?: string | null;
+	} | null;
 }
 export const CLIENT_PREVIEW_LIMIT = 2;
 export const NODE_HEIGHT = 150;
 export const CLIENT_HEIGHT = 72;
 const CLIENT_STEP = 80;
 const ROW_GAP = 22;
+const LINK_ROW = 22;
+
+export function observedCount(group: ClientGroup | undefined): number {
+	if (!group) return 0;
+	const associated = group.result?.associated_client_count;
+	const learned = group.result?.learned_host_count;
+	if (associated != null || learned != null) return (associated ?? 0) + (learned ?? 0);
+	return group.clients.length;
+}
 
 /** Three explicit columns; no invented splitter or inferred physical port. */
-export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientGroup>) {
+export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientGroup>, showClients = true) {
 	const positions: Placement[] = [];
 	const controller = snapshot.nodes.find((n) => n.detail.kind === "controller");
 	const onus = snapshot.nodes
@@ -75,13 +89,15 @@ export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, Cli
 		});
 	let top = 56;
 	for (const node of onus) {
-		const children = clients.get(node.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? [];
+		const group = clients.get(node.id);
+		const children = showClients ? (group?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
 		const childHeight = children.length ? (children.length - 1) * CLIENT_STEP + CLIENT_HEIGHT : 0;
-		const height = Math.max(NODE_HEIGHT, childHeight);
+		const contentHeight = Math.max(NODE_HEIGHT, childHeight);
+		const linkRow = observedCount(group) > 0 ? LINK_ROW : 0;
 		positions.push({
 			id: node.id,
 			x: 454,
-			y: top + (height - NODE_HEIGHT) / 2,
+			y: top + (contentHeight - NODE_HEIGHT) / 2,
 			width: 306,
 			height: NODE_HEIGHT,
 			parent: linkFor(snapshot, node.id)?.source ?? null,
@@ -90,15 +106,16 @@ export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, Cli
 			positions.push({
 				id: clientKey(node.id, client),
 				x: 858,
-				y: top + (height - childHeight) / 2 + index * CLIENT_STEP,
+				y: top + (contentHeight - childHeight) / 2 + index * CLIENT_STEP,
 				width: 254,
 				height: CLIENT_HEIGHT,
 				parent: node.id,
 			});
 		});
-		top += height + ROW_GAP;
+		top += contentHeight + linkRow + ROW_GAP;
 	}
-	const localClients = controller ? (clients.get(controller.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
+	const localClients =
+		controller && showClients ? (clients.get(controller.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
 	const controllerY = Math.max(56, (top - 220) / 2);
 	if (controller) {
 		positions.unshift({ id: controller.id, x: 28, y: controllerY, width: 322, height: 198, parent: null });
