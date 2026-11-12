@@ -65,11 +65,11 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-dot.topo-info { background: var(--topo-blue); }
 .fttr-topology .topo-dot.topo-warning { background: var(--topo-amber); }
 .fttr-topology .topo-dot.topo-danger { background: var(--topo-red); }
-.fttr-topology .topo-card-address { font: 11px/20px ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 4px 0 6px; color: var(--topo-muted); }
-.fttr-topology .topo-card-metric { border-top: 1px solid var(--topo-border); padding-top: 8px; display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.fttr-topology .topo-card-address { font: 11px/20px ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 3px 0 5px; color: var(--topo-muted); }
+.fttr-topology .topo-card-metric { border-top: 1px solid var(--topo-border); padding-top: 7px; display: flex; align-items: center; gap: 7px; font-size: 12px; }
 .fttr-topology .topo-card-metric strong { color: var(--topo-blue); font: 600 14px ui-monospace, monospace; white-space: nowrap; }
 .fttr-topology .topo-card-metric .topo-chip { margin-left: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
-.fttr-topology .topo-card-foot { display: flex; justify-content: space-between; gap: 8px; color: var(--topo-muted); font-size: 11px; margin-top: 7px; }
+.fttr-topology .topo-card-foot { display: flex; justify-content: space-between; gap: 8px; color: var(--topo-muted); font-size: 11px; margin-top: 6px; }
 .fttr-topology .topo-card-foot span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fttr-topology .topo-card-note { font-size: 11px; color: var(--topo-muted); display: block; margin-top: 6px; }
 .fttr-topology .topo-client-content { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
