@@ -24,6 +24,8 @@ export interface DetailState {
 	loading: boolean;
 	error: string | null;
 }
+/** Bound per-node client accumulation so repeated "Load more" cannot grow without limit. */
+export const MAX_CLIENTS_PER_NODE = 2000;
 export function errorText(error: unknown): string {
 	return error instanceof Error ? error.message : String(error);
 }
@@ -105,6 +107,7 @@ export class TopologyStore {
 		if (!snapshot || this.dead || !snapshot.nodes.some((n) => n.id === nodeId)) return;
 		const previous = this.clients.get(nodeId);
 		if (previous?.loading || (more && !previous?.result?.next_cursor)) return;
+		if (more && (previous?.clients.length ?? 0) >= MAX_CLIENTS_PER_NODE) return;
 		const epoch = this.epoch;
 		const state: ClientState = {
 			clients: more ? (previous?.clients ?? []) : [],

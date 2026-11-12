@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { isPageHidden } from "../visibility";
 import {
 	BADGE_CSS,
 	getBusinessBadgeSpec,
@@ -16,7 +17,6 @@ import { createOpticalControl } from "./components/optical-control";
 import type { PlatformInfoReply } from "./contracts/api";
 import { getNetworkDevices, getPlatformInfo, getStatus } from "./contracts/api";
 import type { FttrStatus, NetworkDevices, SubGateway, SwitchPortStatus } from "./contracts/status";
-import { isPageHidden } from "./contracts/visibility";
 
 const view = L.view;
 const poll = L.Poll;

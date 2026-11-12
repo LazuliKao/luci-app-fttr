@@ -1,6 +1,6 @@
-import { checked, jobStart, RpcError } from "../view/contracts/common";
-import { isPageHidden, onPageLeave } from "../view/contracts/visibility";
+import { isPageHidden, onPageLeave } from "../visibility";
 import { getFttrClient } from "./client";
+import { checked, jobStart, RpcError } from "./common";
 
 // Polling never replays the operation. Leaving a page only releases its result.
 export async function waitForJob(start: unknown, parseResult: (value: unknown) => unknown = checked): Promise<unknown> {

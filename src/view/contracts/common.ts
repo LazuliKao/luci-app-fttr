@@ -1,28 +1,11 @@
-import * as z from "zod/mini";
+// SPDX-License-Identifier: Apache-2.0
 
-export { JobChunkSchema as jobChunk, JobPendingSchema as jobStart } from "../../api/generated/schemas";
-
-const errorReply = z.object({ error: z.union([z.string(), z.object({ code: z.string(), message: z.string() })]) });
-
-export class RpcError extends Error {
-	constructor(
-		readonly code: string,
-		message: string,
-	) {
-		super(message);
-		this.name = "RpcError";
-	}
-}
-
-export function checked(value: unknown): unknown {
-	const failure = errorReply.safeParse(value);
-	if (failure.success) {
-		const error = failure.data.error;
-		throw typeof error === "string" ? new RpcError("rpc", error) : new RpcError(error.code, error.message);
-	}
-	return value;
-}
-
-export function assertNever(value: never): never {
-	throw new RpcError("unexpected_variant", `Unexpected variant: ${String(value)}`);
-}
+// Shared error helpers live in the api layer; re-exported here so view code
+// keeps its existing import paths without api/* depending on view/contracts/*.
+export {
+	assertNever,
+	checked,
+	jobChunk,
+	jobStart,
+	RpcError,
+} from "../../api/common";

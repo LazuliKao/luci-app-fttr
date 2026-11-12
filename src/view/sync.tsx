@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { isPageHidden } from "../visibility";
 import { formatDate as date, formatAge, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { capturePanelState } from "./components/panel-state";
 import { checkConfig, getStatus, getSync, type SyncAction, sync } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
-import { isPageHidden } from "./contracts/visibility";
 
 const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }> = {
 	ready: { label: _("Ready"), type: "success" },

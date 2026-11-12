@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { isPageHidden } from "../visibility";
 import { createTabMenu } from "./components/tabs";
 import { requirePage } from "./contracts/capabilities";
 import type { DeviceMeta } from "./contracts/hl202";
-import { isPageHidden } from "./contracts/visibility";
 import { setHl202Badge, text } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
 import { list, type Target } from "./hl202/rpc";

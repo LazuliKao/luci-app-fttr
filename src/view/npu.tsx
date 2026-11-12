@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { isPageHidden } from "../visibility";
 import { getNpuStatus, setNpu } from "./contracts/api";
 import { requirePlatformOperation } from "./contracts/capabilities";
 import type { NpuStatus } from "./contracts/status";
-import { isPageHidden } from "./contracts/visibility";
 import { exactCounter, maskText } from "./npu-data";
 
 function row(label: string, value: string | number | HTMLElement): HTMLElement {

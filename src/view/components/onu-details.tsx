@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { isPageHidden } from "../../visibility";
 import { getStatus } from "../contracts/api";
 import { assertNever, checked } from "../contracts/common";
 import {
@@ -12,7 +13,6 @@ import {
 	type Value,
 } from "../contracts/mib";
 import type { SubGateway as OnuDetails } from "../contracts/status";
-import { isPageHidden } from "../contracts/visibility";
 import { BADGE_CSS, BusinessBadge, CwmpBadge, ProvisioningBadge, RegistrationBadge, WifiSyncBadge } from "./badge";
 import { formatPower, formatUptime, text } from "./formatters";
 import { createTabMenu } from "./tabs";

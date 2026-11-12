@@ -1,18 +1,22 @@
-import { checked, jobChunk, jobStart } from "../view/contracts/common";
-import { deviceList } from "../view/contracts/hl202";
-import { actionResult, configCheck, restartReply, syncStatus } from "../view/contracts/provisioning";
-import { nativeNpuStatus, status } from "../view/contracts/status";
+import { checked, jobChunk, jobStart } from "./common";
 import { createFttrClient } from "./generated/luci-client";
 import { TopologyClientsReplySchema, TopologyNodeReplySchema, TopologyReplySchema } from "./generated/schemas";
 import {
+	actionResult,
 	calibrationInfo,
 	capabilities,
+	configCheck,
+	deviceList,
 	mibResult,
+	nativeNpuStatus,
 	npuReply,
 	opticalReply,
 	platformInfo,
 	releaseReply,
+	restartReply,
 	saveCalibrationResult,
+	status,
+	syncStatus,
 } from "./validators";
 
 export const fttrValidators = {
