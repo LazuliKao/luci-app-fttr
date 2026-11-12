@@ -146,6 +146,13 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 					);
 				}
 			};
+			const byParent = new Map<string, string[]>();
+			for (const target of data.positions) {
+				if (!target.parent) continue;
+				const siblings = byParent.get(target.parent) ?? [];
+				siblings.push(target.id);
+				byParent.set(target.parent, siblings);
+			}
 			for (const target of data.positions) {
 				const source = target.parent ? byId.get(target.parent) : null;
 				if (!source) continue;
@@ -159,15 +166,23 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 							: { kind: "node", id: target.id },
 					);
 				const label = `${object ? relationText(object.client) : _("Logical PON link")} · ${nodes.get(target.id)?.label ?? object?.client.hostname ?? object?.client.mac ?? target.id}`;
-				const segment = (vertical: boolean, x: number, y: number, length: number, accessible = false) => (
+				const segment = (
+					vertical: boolean,
+					x: number,
+					y: number,
+					length: number,
+					hit = false,
+					focus = false,
+				) => (
 					<button
 						type="button"
-						class={`topo-wire-hit ${vertical ? "is-vertical" : "is-horizontal"}`}
+						class={`topo-wire-hit ${vertical ? "is-vertical" : "is-horizontal"} ${hit ? "is-hit" : ""}`}
 						style={`left:${x}px;top:${y}px;${vertical ? "height" : "width"}:${Math.max(length, 2)}px`}
-						tabIndex={accessible ? 0 : -1}
-						aria-label={label}
-						title={label}
-						data-key={accessible ? `link:${target.id}` : undefined}
+						tabIndex={focus ? 0 : -1}
+						aria-hidden={focus ? undefined : "true"}
+						aria-label={focus ? label : undefined}
+						title={hit ? label : undefined}
+						data-key={focus ? `link:${target.id}` : undefined}
 						onclick={selectLink}
 					/>
 				);
@@ -179,13 +194,13 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 						middle = (sy + ty) / 2;
 					parts.push(
 						<div
-							class={`topo-wire ${dotted ? "is-associated" : "is-learned"} ${selectedId === target.id || selectedId === source.id ? "is-selected" : ""}`}
+							class={`topo-wire ${dotted ? "is-associated" : "is-learned"} ${selectedId === target.id ? "is-selected" : ""}`}
 							data-source={source.id}
 							data-target={target.id}
 						>
 							{segment(true, sx, sy, middle - sy)}
 							{segment(false, Math.min(sx, tx), middle, Math.abs(tx - sx))}
-							{segment(true, tx, middle, ty - middle, true)}
+							{segment(true, tx, middle, ty - middle, true, true)}
 						</div>,
 					);
 					continue;
@@ -193,11 +208,15 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 				const sx = source.x + source.width,
 					sy = source.y + source.height / 2;
 				const tx = target.x,
-					ty = target.y + target.height / 2,
-					middle = (sx + tx) / 2;
+					ty = target.y + target.height / 2;
+				const siblings = byParent.get(target.parent ?? "") ?? [target.id];
+				const laneCount = Math.min(siblings.length, 7);
+				const slot = Math.max(0, siblings.indexOf(target.id)) % laneCount;
+				const lane = (slot - (laneCount - 1) / 2) * 14;
+				const middle = (sx + tx) / 2 + lane;
 				const wire = (
 					<div
-						class={`topo-wire ${dashed ? "is-learned" : dotted ? "is-associated" : "is-pon"} ${selectedId === target.id || selectedId === source.id ? "is-selected" : ""}`}
+						class={`topo-wire ${dashed ? "is-learned" : dotted ? "is-associated" : "is-pon"} ${selectedId === target.id ? "is-selected" : ""}`}
 						data-source={source.id}
 						data-target={target.id}
 						title={object ? relationText(object.client) : _("Logical PON link")}
@@ -205,8 +224,8 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 				);
 				wire.append(
 					segment(false, sx, sy, middle - sx),
-					segment(true, middle, Math.min(sy, ty), Math.abs(ty - sy)),
-					segment(false, middle, ty, tx - middle, true),
+					segment(true, middle, Math.min(sy, ty), Math.abs(ty - sy), true),
+					segment(false, middle, ty, tx - middle, true, true),
 				);
 				parts.push(wire);
 			}

@@ -28,12 +28,13 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-wire.is-learned { --wire-color: var(--topo-muted); }
 .fttr-topology .topo-wire.is-associated { --wire-color: var(--topo-green); }
 .fttr-topology .topo-wire.is-selected { --wire-color: var(--topo-blue); }
-.fttr-topology .topo-wire-hit { position: absolute; display: block; padding: 0; margin: 0; border: 0; background: transparent; color: var(--wire-color); pointer-events: auto; cursor: pointer; border-radius: 6px; }
+.fttr-topology .topo-wire-hit { position: absolute; display: block; padding: 0; margin: 0; border: 0; background: transparent; color: var(--wire-color); pointer-events: none; border-radius: 6px; }
+.fttr-topology .topo-wire-hit.is-hit { pointer-events: auto; cursor: pointer; }
 .fttr-topology .topo-wire-hit.is-horizontal { height: 16px; transform: translateY(-8px); }
-.fttr-topology .topo-wire-hit.is-vertical { width: 16px; transform: translateX(-8px); }
+.fttr-topology .topo-wire-hit.is-vertical { width: 12px; transform: translateX(-6px); }
 .fttr-topology .topo-wire-hit::after { content: ''; position: absolute; border-color: currentColor; border-style: solid; border-width: 0; opacity: .7; transition: opacity .15s, filter .15s; }
 .fttr-topology .topo-wire-hit.is-horizontal::after { left: 0; right: 0; top: 7px; border-top-width: 2px; }
-.fttr-topology .topo-wire-hit.is-vertical::after { top: 0; bottom: 0; left: 7px; border-left-width: 2px; }
+.fttr-topology .topo-wire-hit.is-vertical::after { top: 0; bottom: 0; left: 5px; border-left-width: 2px; }
 .fttr-topology .is-learned .topo-wire-hit::after { border-style: dashed; }
 .fttr-topology .is-associated .topo-wire-hit::after { border-style: dotted; }
 .fttr-topology .topo-wire:has(.topo-wire-hit:hover), .fttr-topology .topo-wire:focus-within, .fttr-topology .topo-wire.is-hovered { --wire-color: var(--topo-blue); }
