@@ -124,7 +124,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-device-picker select { max-width: 100%; min-width: 0; }
 @media (min-width: 1700px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 390px; } }
 @media (max-width: 1100px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 310px; } .fttr-topology .topo-detail-section, .fttr-topology .topo-panel-title { padding: 16px; } }
-@media (max-width: 850px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr); height: auto; } .fttr-topology .topo-panel { height: auto; max-height: 650px; border-left: 0; border-top: 1px solid var(--topo-border); } .fttr-topology .topo-viewport-wrap { min-height: 460px; } }
+@media (max-width: 850px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr); height: auto; } .fttr-topology .topo-panel { height: auto; max-height: none; overflow: visible; scrollbar-gutter: auto; border-left: 0; border-top: 1px solid var(--topo-border); } .fttr-topology .topo-viewport-wrap { min-height: 460px; } }
 @media (max-width: 480px) { .fttr-topology .topo-count { padding: 6px 9px; } .fttr-topology .topo-count strong { font-size: 17px; } .fttr-topology .topo-viewport-wrap { min-height: 380px; } .fttr-topology .topo-toolbar { gap: 4px; } }
+@media (pointer: coarse) { .fttr-topology .topo-viewport { touch-action: pan-y; } .fttr-topology pre { max-height: none; } }
 @media (prefers-reduced-motion: reduce) { .fttr-topology * { transition: none !important; } }
 `;
