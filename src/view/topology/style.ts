@@ -15,12 +15,12 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-notices:empty { display: none; }
 .fttr-topology .topo-notices { border-left: 3px solid var(--topo-amber); padding: 8px 12px; margin-bottom: 12px; background: color-mix(in srgb, var(--topo-amber) 7%, var(--topo-bg)); }
 .fttr-topology .topo-notices p { margin: 4px 0; }
-.fttr-topology .topo-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 350px; border: 1px solid var(--topo-border); border-radius: 12px; overflow: hidden; background: var(--topo-bg); }
+.fttr-topology .topo-workspace { --topo-stage-h: clamp(420px, calc(100vh - 300px), 920px); display: grid; grid-template-columns: minmax(0, 1fr) 350px; height: var(--topo-stage-h); border: 1px solid var(--topo-border); border-radius: 12px; overflow: hidden; background: var(--topo-bg); }
 .fttr-topology .topo-stage { min-width: 0; display: flex; flex-direction: column; }
 .fttr-topology .topo-stage-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--topo-border); flex-wrap: wrap; }
 .fttr-topology .topo-stage-heading { font-size: 13px; font-weight: 600; }
 .fttr-topology .topo-toolbar .cbi-button { min-width: 32px; margin: 0; }
-.fttr-topology .topo-viewport-wrap { position: relative; flex: 1; min-height: 680px; }
+.fttr-topology .topo-viewport-wrap { position: relative; flex: 1; min-height: 0; }
 .fttr-topology .topo-viewport { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; background-color: color-mix(in srgb, var(--topo-bg) 96%, var(--topo-text)); background-image: radial-gradient(var(--topo-border) 1px, transparent 1px); background-size: 24px 24px; }
 .fttr-topology .topo-viewport.is-panning { cursor: grabbing; user-select: none; }
 .fttr-topology .topo-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
@@ -75,7 +75,7 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-legend i { width: 22px; display: inline-block; vertical-align: middle; border-top: 2px solid var(--topo-blue); margin-right: 6px; }
 .fttr-topology .topo-legend i.is-learned { border-top-style: dashed; border-color: var(--topo-muted); }
 .fttr-topology .topo-legend i.is-associated { border-top-style: dotted; border-color: var(--topo-green); }
-.fttr-topology .topo-panel { border-left: 1px solid var(--topo-border); height: 820px; overflow-y: auto; overscroll-behavior: contain; background: var(--topo-card); scrollbar-gutter: stable; }
+.fttr-topology .topo-panel { border-left: 1px solid var(--topo-border); height: 100%; overflow-y: auto; overscroll-behavior: contain; background: var(--topo-card); scrollbar-gutter: stable; }
 .fttr-topology .topo-panel-title { padding: 20px; display: flex; align-items: flex-start; gap: 8px; justify-content: space-between; border-bottom: 1px solid var(--topo-border); }
 .fttr-topology .topo-panel-title h3 { margin: 5px 0 0; font-size: 16px; overflow-wrap: anywhere; }
 .fttr-topology .topo-panel-title small { color: var(--topo-muted); font-size: 11px; }
@@ -114,7 +114,7 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-device-picker select { max-width: 100%; min-width: 0; }
 @media (min-width: 1700px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 390px; } }
 @media (max-width: 1100px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 310px; } .fttr-topology .topo-detail-section, .fttr-topology .topo-panel-title { padding: 16px; } }
-@media (max-width: 850px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr); } .fttr-topology .topo-panel { height: auto; max-height: 650px; border-left: 0; border-top: 1px solid var(--topo-border); } .fttr-topology .topo-viewport-wrap { min-height: 460px; } }
+@media (max-width: 850px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr); height: auto; } .fttr-topology .topo-panel { height: auto; max-height: 650px; border-left: 0; border-top: 1px solid var(--topo-border); } .fttr-topology .topo-viewport-wrap { min-height: 460px; } }
 @media (max-width: 480px) { .fttr-topology .topo-count { padding: 6px 9px; } .fttr-topology .topo-count strong { font-size: 17px; } .fttr-topology .topo-viewport-wrap { min-height: 380px; } .fttr-topology .topo-toolbar { gap: 4px; } }
 @media (prefers-reduced-motion: reduce) { .fttr-topology * { transition: none !important; } }
 `;

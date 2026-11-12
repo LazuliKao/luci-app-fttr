@@ -30,8 +30,10 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 	function fit(full = true) {
 		if (dead || !container.clientWidth || !container.clientHeight) return;
 		adjusted = false;
+		// A true fit may shrink everything; the automatic fit keeps text readable and
+		// lets the user pan the overflow instead.
 		const scale = Math.max(
-			full ? 0.15 : 0.6,
+			full ? 0.15 : 0.7,
 			Math.min(
 				1,
 				(container.clientWidth - 40) / dimensions.width,
