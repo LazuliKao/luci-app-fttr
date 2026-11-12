@@ -4,6 +4,7 @@ import type { PlatformInfoReply } from "../api/generated/types";
 import { createFecMonitor } from "./components/fec-monitor";
 import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
+import { capturePanelState } from "./components/panel-state";
 import { getPlatformInfo, getStatus } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
 import { isPageHidden } from "./contracts/visibility";
@@ -537,20 +538,27 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 	);
 
 	let updating = false;
+	let lastSnapshot = JSON.stringify(initialStatus);
 	L.Poll.add(async () => {
 		if (!root.isConnected || isPageHidden() || updating) return;
 		updating = true;
 		try {
 			const latest = await getStatus();
-			const newController = createControllerPanel(latest, platform);
-			const newSubgateways = createSubgatewaysPanel(latest.sub_gateways ?? []);
-			newController.hidden = activeTab !== "controller";
-			newSubgateways.hidden = activeTab !== "subgateways";
 			fecMonitor?.update(latest);
-			controllerPanel.replaceWith(newController);
-			subgatewaysPanel.replaceWith(newSubgateways);
-			controllerPanel = newController;
-			subgatewaysPanel = newSubgateways;
+			const snapshot = JSON.stringify(latest);
+			if (snapshot !== lastSnapshot) {
+				lastSnapshot = snapshot;
+				const restore = capturePanelState(panelsContainer);
+				const newController = createControllerPanel(latest, platform);
+				const newSubgateways = createSubgatewaysPanel(latest.sub_gateways ?? []);
+				newController.hidden = activeTab !== "controller";
+				newSubgateways.hidden = activeTab !== "subgateways";
+				controllerPanel.replaceWith(newController);
+				subgatewaysPanel.replaceWith(newSubgateways);
+				controllerPanel = newController;
+				subgatewaysPanel = newSubgateways;
+				restore();
+			}
 			lastSuccess = Date.now();
 			staleNotice.hidden = true;
 		} catch (error) {

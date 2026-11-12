@@ -125,9 +125,7 @@ export class TopologyStore {
 			if (reply.status === "error") throw new Error(reply.code);
 			if (reply.snapshot_id !== snapshot.snapshot_id || reply.parent_node_id !== nodeId)
 				throw new Error("snapshot_mismatch");
-			const unique = new Map(
-				[...state.clients, ...reply.clients].map((c) => [JSON.stringify([c.id, c.interface]), c]),
-			);
+			const unique = new Map([...state.clients, ...reply.clients].map((c) => [`${c.id}\u0000${c.interface}`, c]));
 			state.clients = [...unique.values()];
 			state.result = reply;
 		} catch (error) {

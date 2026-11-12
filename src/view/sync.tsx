@@ -2,6 +2,7 @@
 
 import { formatDate as date, formatAge, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
+import { capturePanelState } from "./components/panel-state";
 import { checkConfig, getStatus, getSync, type SyncAction, sync } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
@@ -1254,6 +1255,7 @@ const main = L.view.extend({
 			const opened = new Set(
 				Array.from(content.querySelectorAll("details[open]")).map((d) => d.getAttribute("data-device")),
 			);
+			const restore = capturePanelState(content);
 			content.replaceChildren(
 				...(status.devices ?? []).map((d) =>
 					deviceCard(
@@ -1269,6 +1271,7 @@ const main = L.view.extend({
 					),
 				),
 			);
+			restore();
 		}
 
 		target.addEventListener("change", () => update(current));

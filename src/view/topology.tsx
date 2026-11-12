@@ -125,7 +125,18 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			</footer>
 		</div>
 	);
-	const store = new TopologyStore(getFttrClient(), render, initial.snapshot, initial.error);
+	// A single refresh emits several store changes (start, snapshot, per-node
+	// clients, finish). Coalesce them into one render per frame instead of
+	// rebuilding the panel and graph on every emit.
+	let renderFrame = 0;
+	const scheduleRender = () => {
+		if (renderFrame) return;
+		renderFrame = requestAnimationFrame(() => {
+			renderFrame = 0;
+			render();
+		});
+	};
+	const store = new TopologyStore(getFttrClient(), scheduleRender, initial.snapshot, initial.error);
 	const graph = createTopologyGraph(viewport, select);
 
 	function select(selection: Selection) {
@@ -297,6 +308,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		lifecycle.disconnect();
 		scheme?.removeEventListener("change", themeChanged);
 		cancelAnimationFrame(themeFrame);
+		if (renderFrame) cancelAnimationFrame(renderFrame);
 		window.removeEventListener("pagehide", destroy);
 		if (activePage?.element === element) activePage = null;
 	}

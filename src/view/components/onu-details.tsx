@@ -96,6 +96,14 @@ function reference(definition: Definition): HTMLElement {
 }
 
 function browser(report: MibReport): HTMLElement {
+	// Group once instead of filtering the full record list per entity (O(E×R)).
+	const recordsByEntity = new Map<string, MibReport["records"]>();
+	for (const record of report.records) {
+		const key = `${record.class_id}\u0000${record.entity_id}`;
+		const group = recordsByEntity.get(key);
+		if (group) group.push(record);
+		else recordsByEntity.set(key, [record]);
+	}
 	let selectedId: number | null = report.classes.length ? report.classes[0].class_id : null;
 	const content = <div class="mib-content" />;
 	const filter = (
@@ -222,9 +230,7 @@ function browser(report: MibReport): HTMLElement {
 							<pre class="mib-pre">
 								{json({
 									diagnostics: entity.diagnostics,
-									records: report.records.filter(
-										(r) => r.class_id === id && r.entity_id === entity.entity_id,
-									),
+									records: recordsByEntity.get(`${id}\u0000${entity.entity_id}`) ?? [],
 								})}
 							</pre>
 						</details>
@@ -263,7 +269,14 @@ function browser(report: MibReport): HTMLElement {
 		);
 	}
 
-	filter.addEventListener("input", list);
+	let filterTimer: ReturnType<typeof setTimeout> | undefined;
+	filter.addEventListener("input", () => {
+		if (filterTimer !== undefined) clearTimeout(filterTimer);
+		filterTimer = setTimeout(() => {
+			filterTimer = undefined;
+			list();
+		}, 150);
+	});
 	list();
 	if (report.classes.length) select(report.classes[0].class_id);
 

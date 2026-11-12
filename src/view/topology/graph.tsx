@@ -275,7 +275,7 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 				[...world.querySelectorAll<HTMLElement>("[data-key]")]
 					.find((n) => n.dataset.key === focused)
 					?.focus({ preventScroll: true });
-			const nextStructure = JSON.stringify(data.positions.map((p) => [p.id, p.x, p.y]));
+			const nextStructure = data.positions.map((p) => `${p.id}:${p.x}:${p.y}`).join("|");
 			if (!initialized || (structure !== nextStructure && !adjusted)) fit(false);
 			structure = nextStructure;
 			initialized = true;
