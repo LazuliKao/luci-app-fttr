@@ -29,7 +29,6 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		kind: "node",
 		id: initial.snapshot?.nodes.find((n) => n.detail.kind === "controller")?.id ?? CONTROLLER_ID,
 	};
-	let showClients = true;
 	let panelKey = "";
 	let panelSelection = "";
 	let themeFrame = 0;
@@ -69,21 +68,6 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			{_("Refresh")}
 		</button>
 	) as HTMLButtonElement;
-	const clientsToggle = (
-		<button
-			type="button"
-			class="cbi-button cbi-button-neutral topo-toggle"
-			aria-pressed="true"
-			title={_("Show objects on the canvas")}
-			onclick={() => {
-				showClients = !showClients;
-				clientsToggle.setAttribute("aria-pressed", String(showClients));
-				render();
-			}}
-		>
-			{_("Object")}
-		</button>
-	) as HTMLButtonElement;
 	const tool = (label: string, symbol: string, action: () => void) => (
 		<button type="button" class="cbi-button cbi-button-neutral" title={label} aria-label={label} onclick={action}>
 			{symbol}
@@ -117,7 +101,6 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 							{zoomLevel}
 							{tool(_("Reset zoom to 100%"), "1:1", () => graph.reset())}
 							{tool(_("Fit topology to view"), _("Fit"), () => graph.fit())}
-							{clientsToggle}
 							{refreshButton}
 						</div>
 					</div>
@@ -277,7 +260,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			if (snapshot.issues.length)
 				messages.push(`${_("Backend topology issues")}: ${snapshot.issues.map((i) => i.code).join(", ")}`);
 			if (!count.known) messages.push(_("No known sub-gateways in this snapshot."));
-			graph.update(snapshot, store.clients, selected, showClients);
+			graph.update(snapshot, store.clients, selected);
 		}
 		notices.replaceChildren(...messages.map((message) => <p>{message}</p>));
 		renderPanel();

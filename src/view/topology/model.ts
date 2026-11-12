@@ -77,7 +77,7 @@ export function observedCount(group: ClientGroup | undefined): number {
 }
 
 /** Three explicit columns; no invented splitter or inferred physical port. */
-export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientGroup>, showClients = true) {
+export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientGroup>) {
 	const positions: Placement[] = [];
 	const controller = snapshot.nodes.find((n) => n.detail.kind === "controller");
 	const onus = snapshot.nodes
@@ -90,14 +90,12 @@ export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, Cli
 	let top = 56;
 	for (const node of onus) {
 		const group = clients.get(node.id);
-		const children = showClients ? (group?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
+		const children = group?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? [];
 		const childHeight = children.length ? (children.length - 1) * CLIENT_STEP + CLIENT_HEIGHT : 0;
 		const contentHeight = Math.max(NODE_HEIGHT, childHeight);
 		const showLink =
 			observedCount(group) > 0 &&
-			(!showClients ||
-				(group?.clients.length ?? 0) > CLIENT_PREVIEW_LIMIT ||
-				Boolean(group?.result?.next_cursor));
+			((group?.clients.length ?? 0) > CLIENT_PREVIEW_LIMIT || Boolean(group?.result?.next_cursor));
 		const linkRow = showLink ? LINK_ROW : 0;
 		positions.push({
 			id: node.id,
@@ -119,8 +117,7 @@ export function layout(snapshot: TopologyReply, clients: ReadonlyMap<string, Cli
 		});
 		top += contentHeight + linkRow + ROW_GAP;
 	}
-	const localClients =
-		controller && showClients ? (clients.get(controller.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
+	const localClients = controller ? (clients.get(controller.id)?.clients.slice(0, CLIENT_PREVIEW_LIMIT) ?? []) : [];
 	const controllerY = Math.max(56, (top - 220) / 2);
 	if (controller) {
 		positions.unshift({ id: controller.id, x: 28, y: controllerY, width: 322, height: 198, parent: null });

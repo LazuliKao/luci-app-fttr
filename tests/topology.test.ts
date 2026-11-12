@@ -100,14 +100,11 @@ test("three-column layout keeps local AP objects on the controller and bounds pr
 	for (const node of result.positions) { assert.ok(node.x >= 0); assert.ok(node.y >= 0); assert.ok(node.x + node.width <= result.width); }
 });
 
-test("hidden object column only keeps the count entry", () => {
-	const data = snapshot();
+test("observed count prefers reported totals over the preview page", () => {
 	const groups = new Map([[ONU, { clients: [client(), client({ id: "second" })], result: { associated_client_count: 1, learned_host_count: 2 } }]]);
 	assert.equal(observedCount(groups.get(ONU)), 3);
-	const hidden = layout(data, groups, false);
-	assert.equal(hidden.positions.filter((p) => p.parent === ONU).length, 0);
-	assert.ok(hidden.positions.length < layout(data, groups).positions.length);
-	assert.ok(hidden.width < layout(data, groups).width);
+	const data = snapshot();
+	assert.equal(layout(data, groups).positions.filter((p) => p.parent === ONU).length, CLIENT_PREVIEW_LIMIT);
 });
 
 test("measurement age uses the core source timestamp and extensions supply only observed addresses", () => {
