@@ -82,7 +82,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 				graph.setPanning(panMode);
 			}}
 		>
-			⇳
+			✥
 		</button>
 	) as HTMLButtonElement;
 	const tool = (label: string, symbol: string, action: () => void) => (
