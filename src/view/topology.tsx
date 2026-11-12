@@ -74,13 +74,15 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			type="button"
 			class="cbi-button cbi-button-neutral topo-pan-toggle"
 			aria-pressed="false"
+			aria-label={_("Drag mode")}
+			title={_("Drag mode")}
 			onclick={() => {
 				panMode = !panMode;
 				panToggle.setAttribute("aria-pressed", String(panMode));
 				graph.setPanning(panMode);
 			}}
 		>
-			{_("Drag mode")}
+			⇳
 		</button>
 	) as HTMLButtonElement;
 	const tool = (label: string, symbol: string, action: () => void) => (
