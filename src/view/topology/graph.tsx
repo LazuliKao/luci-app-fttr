@@ -26,6 +26,8 @@ export function createTopologyGraph(
 	let adjusted = false;
 	let dead = false;
 	let panEnabled = false;
+	let moved = 0;
+	let suppressClick = false;
 	let painted = "";
 	let lastWidth = 0;
 	let initialized = false;
@@ -73,10 +75,11 @@ export function createTopologyGraph(
 		};
 	}
 	const down = (event: PointerEvent) => {
-		if ((event.target as Element).closest("button")) return;
+		if (event.pointerType === "mouse" && event.button !== 0) return;
+		moved = 0;
+		suppressClick = false;
 		// In scroll mode a touch gesture belongs to the page, not the canvas.
 		if (event.pointerType === "touch" && !panEnabled) return;
-		if (event.pointerType === "mouse" && event.button !== 0) return;
 		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 		container.setPointerCapture(event.pointerId);
 		gesture = centerGesture();
@@ -87,8 +90,11 @@ export function createTopologyGraph(
 		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 		const next = centerGesture();
 		if (gesture && next) {
-			position.x += next.x - gesture.x;
-			position.y += next.y - gesture.y;
+			const dx = next.x - gesture.x;
+			const dy = next.y - gesture.y;
+			moved += Math.hypot(dx, dy);
+			position.x += dx;
+			position.y += dy;
 			if (next.distance > 0 && gesture.distance > 0) {
 				const box = container.getBoundingClientRect();
 				zoomAt(next.distance / gesture.distance, next.x - box.left, next.y - box.top);
@@ -99,9 +105,19 @@ export function createTopologyGraph(
 		gesture = next;
 	};
 	const up = (event: PointerEvent) => {
-		pointers.delete(event.pointerId);
+		const tracked = pointers.delete(event.pointerId);
 		gesture = centerGesture();
-		if (!pointers.size) container.classList.remove("is-panning");
+		if (!pointers.size && tracked) {
+			container.classList.remove("is-panning");
+			// A drag that starts on a card must not also select it.
+			suppressClick = moved > 8;
+		}
+	};
+	const click = (event: MouseEvent) => {
+		if (!suppressClick) return;
+		suppressClick = false;
+		event.preventDefault();
+		event.stopPropagation();
 	};
 	const wheel = (event: WheelEvent) => {
 		if (!event.ctrlKey && !event.metaKey) return;
@@ -128,6 +144,7 @@ export function createTopologyGraph(
 	container.addEventListener("lostpointercapture", up);
 	container.addEventListener("wheel", wheel, { passive: false });
 	container.addEventListener("focusin", focus);
+	container.addEventListener("click", click, true);
 	const observer = new ResizeObserver(() => {
 		if (!dead && !adjusted) fit(false);
 	});
@@ -351,6 +368,7 @@ export function createTopologyGraph(
 			container.removeEventListener("lostpointercapture", up);
 			container.removeEventListener("wheel", wheel);
 			container.removeEventListener("focusin", focus);
+			container.removeEventListener("click", click, true);
 			pointers.clear();
 			world.remove();
 		},
