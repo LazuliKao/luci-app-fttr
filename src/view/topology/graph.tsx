@@ -9,10 +9,15 @@ export interface TopologyGraph {
 	update(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientState>, selected: Selection): void;
 	fit(): void;
 	zoom(factor: number): void;
+	reset(): void;
 	destroy(): void;
 }
 
-export function createTopologyGraph(container: HTMLElement, onSelect: (selection: Selection) => void): TopologyGraph {
+export function createTopologyGraph(
+	container: HTMLElement,
+	onSelect: (selection: Selection) => void,
+	onScale?: (scale: number) => void,
+): TopologyGraph {
 	const world = <div class="topo-world" />;
 	container.replaceChildren(world);
 	let dimensions = { width: 1000, height: 600 };
@@ -26,6 +31,7 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 
 	function transform() {
 		world.style.transform = `translate(${position.x}px, ${position.y}px) scale(${position.scale})`;
+		onScale?.(position.scale);
 	}
 	function fit(full = true) {
 		if (dead || !container.clientWidth || !container.clientHeight) return;
@@ -303,6 +309,7 @@ export function createTopologyGraph(container: HTMLElement, onSelect: (selection
 		},
 		fit: () => fit(),
 		zoom: (factor) => zoomAt(factor),
+		reset: () => zoomAt(1 / position.scale),
 		destroy() {
 			dead = true;
 			observer.disconnect();

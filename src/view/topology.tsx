@@ -2,6 +2,7 @@
 import { getFttrClient } from "../api/client";
 import type { TopologyReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
+import { formatAge } from "./components/formatters";
 import { createTopologyGraph } from "./topology/graph";
 import { CONTROLLER_ID, counts, type Selection } from "./topology/model";
 import { badge, renderDetails } from "./topology/presentation";
@@ -31,7 +32,8 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	let panelKey = "";
 	let themeFrame = 0;
 	const countsNode = <div class="topo-counts" />;
-	const updated = <span />;
+	const updated = <span class="topo-sampled" />;
+	const zoomLevel = <span class="topo-zoom">100%</span>;
 	const liveState = <span role="status" aria-live="polite" />;
 	const notices = <div class="topo-notices" role="status" aria-live="polite" />;
 	const panel = <aside class="topo-panel" aria-label={_("Node and link details")} />;
@@ -90,10 +92,13 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 					<div class="topo-stage-header">
 						<span class="topo-stage-heading">
 							{_("Network overview")} · {liveState}
+							{updated}
 						</span>
 						<div class="topo-toolbar" role="toolbar" aria-label={_("Topology controls")}>
 							{tool(_("Zoom in"), "+", () => graph.zoom(1.2))}
 							{tool(_("Zoom out"), "−", () => graph.zoom(1 / 1.2))}
+							{zoomLevel}
+							{tool(_("Reset zoom to 100%"), "1:1", () => graph.reset())}
 							{tool(_("Fit topology to view"), _("Fit"), () => graph.fit())}
 							{refreshButton}
 						</div>
@@ -121,7 +126,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			</div>
 			<footer class="topo-footer">
 				<span>{_("Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details")}</span>
-				{updated}
+				<span>{`${_("Refresh")}: ${REFRESH_INTERVAL}s`}</span>
 			</footer>
 		</div>
 	);
@@ -137,7 +142,9 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		});
 	};
 	const store = new TopologyStore(getFttrClient(), scheduleRender, initial.snapshot, initial.error);
-	const graph = createTopologyGraph(viewport, select);
+	const graph = createTopologyGraph(viewport, select, (scale) => {
+		zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+	});
 
 	function select(selection: Selection) {
 		if (dead) return;
@@ -187,9 +194,11 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 				store.error ? "warning" : "info",
 			),
 		);
-		updated.textContent = snapshot
-			? `${_("Sampled")}: ${new Date(snapshot.generated_at * 1000).toLocaleTimeString()} · ${_("Refresh")}: ${REFRESH_INTERVAL}s`
-			: _("No successful snapshot yet");
+		const age = snapshot ? Math.max(0, Math.round(Date.now() / 1000 - snapshot.generated_at)) : null;
+		const ageText = age === null ? null : formatAge(age);
+		updated.textContent = snapshot ? `${_("Sampled")} · ${ageText ?? "—"}` : _("No successful snapshot yet");
+		updated.title = snapshot ? new Date(snapshot.generated_at * 1000).toLocaleString() : "";
+		updated.dataset.stale = String(age !== null && age > REFRESH_INTERVAL * 2);
 		overlay.hidden = Boolean(snapshot?.nodes.length);
 		overlayMessage.textContent = snapshot
 			? _("No nodes reported in this snapshot.")

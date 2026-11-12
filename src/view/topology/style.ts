@@ -19,6 +19,9 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-stage { min-width: 0; display: flex; flex-direction: column; }
 .fttr-topology .topo-stage-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--topo-border); flex-wrap: wrap; }
 .fttr-topology .topo-stage-heading { font-size: 13px; font-weight: 600; }
+.fttr-topology .topo-sampled { margin-left: 10px; font-size: 11px; font-weight: normal; color: var(--topo-muted); }
+.fttr-topology .topo-sampled[data-stale="true"] { color: var(--topo-amber); }
+.fttr-topology .topo-zoom { min-width: 38px; text-align: right; font: 11px ui-monospace, monospace; color: var(--topo-muted); }
 .fttr-topology .topo-toolbar .cbi-button { min-width: 32px; margin: 0; }
 .fttr-topology .topo-viewport-wrap { position: relative; flex: 1; min-height: 0; }
 .fttr-topology .topo-viewport { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; background-color: color-mix(in srgb, var(--topo-bg) 96%, var(--topo-text)); background-image: radial-gradient(var(--topo-border) 1px, transparent 1px); background-size: 24px 24px; }
