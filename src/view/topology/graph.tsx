@@ -315,7 +315,16 @@ export function createTopologyGraph(
 			// Ignore the selection-only classes so a click updates classes instead of
 			// rebuilding the whole world and dropping hover or text selection.
 			const signature = parts
-				.map((part) => part.outerHTML.replace(/\s(?:is-selected|aria-pressed="(?:true|false)")/g, ""))
+				.map((part) =>
+					part.outerHTML
+						.replace(/class="([^"]*)"/g, (_, value: string) => {
+							return `class="${value
+								.replace(/\bis-selected\b/g, "")
+								.replace(/\s+/g, " ")
+								.trim()}"`;
+						})
+						.replace(/\saria-pressed="(?:true|false)"/g, ""),
+				)
 				.join("");
 			if (initialized && signature === painted) {
 				syncSelection();
