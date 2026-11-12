@@ -158,13 +158,6 @@ export function createTopologyGraph(
 					);
 				}
 			};
-			const byParent = new Map<string, string[]>();
-			for (const target of data.positions) {
-				if (!target.parent) continue;
-				const siblings = byParent.get(target.parent) ?? [];
-				siblings.push(target.id);
-				byParent.set(target.parent, siblings);
-			}
 			for (const target of data.positions) {
 				const source = target.parent ? byId.get(target.parent) : null;
 				if (!source) continue;
@@ -221,11 +214,7 @@ export function createTopologyGraph(
 					sy = source.y + source.height / 2;
 				const tx = target.x,
 					ty = target.y + target.height / 2;
-				const siblings = byParent.get(target.parent ?? "") ?? [target.id];
-				const laneCount = Math.min(siblings.length, 7);
-				const slot = Math.max(0, siblings.indexOf(target.id)) % laneCount;
-				const lane = (slot - (laneCount - 1) / 2) * 14;
-				const middle = (sx + tx) / 2 + lane;
+				const middle = (sx + tx) / 2;
 				const wire = (
 					<div
 						class={`topo-wire ${dashed ? "is-learned" : dotted ? "is-associated" : "is-pon"} ${selectedId === target.id ? "is-selected" : ""}`}
@@ -236,7 +225,7 @@ export function createTopologyGraph(
 				);
 				wire.append(
 					segment(false, sx, sy, middle - sx),
-					segment(true, middle, Math.min(sy, ty), Math.abs(ty - sy), true),
+					segment(true, middle, Math.min(sy, ty), Math.abs(ty - sy)),
 					segment(false, middle, ty, tx - middle, true, true),
 				);
 				parts.push(wire);
