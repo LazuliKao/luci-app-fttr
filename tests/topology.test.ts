@@ -166,6 +166,36 @@ test("partial client failure does not reject the snapshot or invent an empty suc
 	assert.equal(store.clients.get("controller")?.result?.learned_host_count, null);
 });
 
+test("object refreshes are spread across poll cycles", async () => {
+	let clientCalls = 0;
+	const store = new TopologyStore(api({ getTopologyClients: async (r) => {
+		clientCalls++;
+		return clients(r.node_id, r.snapshot_id, [client()]);
+	} }), () => {}, snapshot());
+	await store.refresh();
+	assert.equal(clientCalls, 2);
+	await store.refresh(true, ONU);
+	assert.equal(clientCalls, 3);
+	await store.refresh(true);
+	assert.equal(clientCalls, 5);
+});
+
+test("a client refresh keeps the previous page visible until the new one arrives", async () => {
+	const next = deferred<TopologyClientsReply>();
+	let calls = 0;
+	const store = new TopologyStore(api({ getTopologyClients: async (r) => {
+		calls++;
+		if (calls === 1) return clients(r.node_id, r.snapshot_id, [client()]);
+		return next.promise;
+	} }), () => {}, snapshot());
+	await store.loadClients(ONU);
+	const pending = store.loadClients(ONU);
+	assert.equal(store.clients.get(ONU)?.clients.length, 1);
+	next.resolve(clients(ONU, "snapshot-1", [client({ hostname: "new" })]));
+	await pending;
+	assert.equal(store.clients.get(ONU)?.clients[0].hostname, "new");
+});
+
 test("pagination carries the same snapshot and cursor, deduplicates pages and retains null counts", async () => {
 	const requests: unknown[] = [];
 	const store = new TopologyStore(api({ getTopologyClients: async (r) => {

@@ -267,7 +267,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 
 	async function refresh(hydrateOnly = false) {
 		if (dead || store.refreshing) return;
-		await store.refresh(hydrateOnly);
+		await store.refresh(hydrateOnly, selected.kind === "node" ? selected.id : selected.parent);
 		if (!dead && selected.kind === "node") await store.loadNode(selected.id);
 	}
 	const tick = async () => {

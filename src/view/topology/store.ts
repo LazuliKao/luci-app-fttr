@@ -39,6 +39,7 @@ export class TopologyStore {
 	lastSuccess: Date | null;
 	private dead = false;
 	private epoch = 0;
+	private cycle = 0;
 	private pending: Promise<void> | null = null;
 	private detailTasks = new Map<string, Promise<void>>();
 
@@ -60,19 +61,19 @@ export class TopologyStore {
 	}
 
 	/** No overlapping polls; a failed refresh retains the entire successful view. */
-	refresh(hydrateOnly = false): Promise<void> {
+	refresh(hydrateOnly = false, focusNodeId?: string | null): Promise<void> {
 		if (this.dead) return Promise.resolve();
 		if (this.pending) return this.pending;
 		this.refreshing = true;
 		this.emit();
-		this.pending = this.runRefresh(hydrateOnly).finally(() => {
+		this.pending = this.runRefresh(hydrateOnly, focusNodeId).finally(() => {
 			this.pending = null;
 			this.refreshing = false;
 			this.emit();
 		});
 		return this.pending;
 	}
-	private async runRefresh(hydrateOnly: boolean) {
+	private async runRefresh(hydrateOnly: boolean, focusNodeId?: string | null) {
 		try {
 			if (!hydrateOnly || !this.snapshot) {
 				const snapshot = await this.api.getTopology();
@@ -89,7 +90,13 @@ export class TopologyStore {
 			const snapshot = this.snapshot;
 			if (!snapshot) return;
 			const epoch = this.epoch;
-			const ids = snapshot.nodes.map((node) => node.id);
+			// Client inventories are heavier than the overview. Refresh all of them
+			// every third poll and only the selected or not-yet-loaded node in between.
+			this.cycle++;
+			const refreshAll = this.cycle % 3 === 0;
+			const ids = snapshot.nodes
+				.map((node) => node.id)
+				.filter((id) => refreshAll || id === focusNodeId || !this.clients.has(id));
 			let index = 0;
 			const worker = async () => {
 				while (index < ids.length && this.current(snapshot, epoch)) {
@@ -110,8 +117,8 @@ export class TopologyStore {
 		if (more && (previous?.clients.length ?? 0) >= MAX_CLIENTS_PER_NODE) return;
 		const epoch = this.epoch;
 		const state: ClientState = {
-			clients: more ? (previous?.clients ?? []) : [],
-			result: more ? (previous?.result ?? null) : null,
+			clients: previous?.clients ?? [],
+			result: previous?.result ?? null,
 			loading: true,
 			error: null,
 		};
@@ -128,8 +135,12 @@ export class TopologyStore {
 			if (reply.status === "error") throw new Error(reply.code);
 			if (reply.snapshot_id !== snapshot.snapshot_id || reply.parent_node_id !== nodeId)
 				throw new Error("snapshot_mismatch");
-			const unique = new Map([...state.clients, ...reply.clients].map((c) => [`${c.id}\u0000${c.interface}`, c]));
-			state.clients = [...unique.values()];
+			if (more) {
+				const unique = new Map(
+					[...state.clients, ...reply.clients].map((c) => [`${c.id}\u0000${c.interface}`, c]),
+				);
+				state.clients = [...unique.values()];
+			} else state.clients = reply.clients;
 			state.result = reply;
 		} catch (error) {
 			if (this.current(snapshot, epoch)) state.error = errorText(error);
