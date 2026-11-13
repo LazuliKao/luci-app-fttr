@@ -42,6 +42,26 @@ export type FactoryCalibration = { detected: boolean, device: string, has_data: 
 export type FecPmCounters = { entity_id: number, interval_end_time: number, corrected_bytes: number, corrected_code_words: number, uncorrectable_code_words: number, total_code_words: number, fec_seconds: number, };
 export type FecStatus = { ani_entity_id: number | null, control_supported: boolean, downstream_enabled: boolean | null, upstream_enabled: boolean | null, downstream_pm: FecPmCounters | null, measurement: MeasurementEvidence, };
 export type FirmwareCalibration = { exists: boolean, path: string, size: number, sha256: string, data: string, };
+export type FpgaCounterDescriptor = { key: string, label: string, group: string, address: string, width_bits: number, scope: string, };
+export type FpgaDelta = { elapsed_ms: number, same_daemon: boolean, hardware_continuity_verified: boolean, onus: Array<FpgaOnuDelta>, counters_modulo_4294967296: { [key in string]: number } | null, };
+export type FpgaDiagnosticReply = { "status": "success", snapshot: FpgaSnapshot, } | { "status": "error", error: string, };
+export type FpgaDiagnosticRequest = { onu_id?: number, };
+export type FpgaGrant = { bandwidth_raw: number, control_raw: number, enabled_bit28: boolean,
+/**
+ * Raw low 20 bits; physical units have not been established.
+ */
+bandwidth: number, weight: number, };
+export type FpgaOnu = { slot: number,
+/**
+ * Opaque registration token; never a serial number.
+ */
+generation: string | null, lob: number, bip: number, management: FpgaGrant, business: FpgaGrant, };
+export type FpgaOnuDelta = { slot: number, registration_continuity_verified: boolean, lob_modulo_65536: number | null, bip_modulo_65536: number | null, };
+export type FpgaSnapshot = { schema_version: 2, source_sha256: string, limitations: string, started_unix_ms: number, read_duration_us: number,
+/**
+ * Monotonic clock relative to this daemon's first diagnostic read.
+ */
+started_monotonic_ms: number | null, daemon_instance: string | null, hardware_epoch: string | null, main_bandwidth_raw: number, main_bandwidth_enabled: boolean, onus: Array<FpgaOnu>, counters: { [key in string]: number }, counter_descriptors: Array<FpgaCounterDescriptor>, raw_registers: { [key in string]: number }, };
 export type HlAccount = { entry: 0 | 1 | 2, username: string, active: boolean, };
 export type HlAccountReply = { schema_version: 1, operation: HlOperation, accounts: Array<HlAccount> | null, write_status: HlWriteStatus, } | { schema_version: number, error: OpticalError, };
 export type HlAccountsRequest = { target: HlTarget, };
@@ -157,43 +177,43 @@ export type TemperatureCompensationStatus = { enabled: boolean, reason: string, 
 export type TopologyBinding = { active_onu_id: number | null, desired_onu_id: number | null, state: TopologyBindingState, pending_restart: boolean, };
 export type TopologyBindingState = "none" | "effective" | "pending_add" | "pending_change" | "pending_remove";
 export type TopologyClient = { id: string, mac: string, hostname: string | null, addresses: Array<string>, relation: TopologyRelation, source: string, interface: string | null, };
-export type TopologyClientsReply = { "status": "ok", snapshot_id: string, parent_node_id: string, clients: Array<TopologyClient>, 
+export type TopologyClientsReply = { "status": "ok", snapshot_id: string, parent_node_id: string, clients: Array<TopologyClient>,
 /**
  * None when that inventory was not successfully read.
  */
-associated_client_count: number | null, learned_host_count: number | null, 
+associated_client_count: number | null, learned_host_count: number | null,
 /**
  * FDB/host hints cannot establish an exhaustive terminal inventory.
  */
 complete: boolean, next_cursor: string | null, sources: Array<TopologySource>, } | { "status": "error", code: TopologyQueryError, };
-export type TopologyClientsRequest = { node_id: string, snapshot_id?: string, 
+export type TopologyClientsRequest = { node_id: string, snapshot_id?: string,
 /**
  * Opaque cursor returned by the preceding page; requires snapshot_id.
  */
 cursor?: string, limit?: number, };
-export type TopologyController = { model: string | null, firmware_version: string | null, uptime_seconds: number | null, fpga_status: string, optical: TopologyOpticalModule, interfaces: Array<TopologyInterface>, 
+export type TopologyController = { model: string | null, firmware_version: string | null, uptime_seconds: number | null, fpga_status: string, optical: TopologyOpticalModule, interfaces: Array<TopologyInterface>,
 /**
  * Interfaces with an observed default route; not Internet reachability.
  */
 uplinks: Array<TopologyUplink>, };
-export type TopologyDataPath = { 
+export type TopologyDataPath = {
 /**
  * RX is ONU -> controller; TX is controller -> ONU.
  */
 observer_node_id: string, rx_bytes: number | null, tx_bytes: number | null, current_rx_kbps: number | null, current_tx_kbps: number | null, onu_inventory: OnuOmciInventory | null, offload: DataPathOffloadStatus, measurements: { [key in string]: MeasurementEvidence }, };
 export type TopologyExtensions = { hl202: TopologyHl202 | null, };
-export type TopologyHl202 = { report_revision: number, binding_generation: string, age_seconds: number, ip: string | null, bridge_ip: string | null, mac: string | null, connection_type_raw: string | null, uptime_seconds: number | null, 
+export type TopologyHl202 = { report_revision: number, binding_generation: string, age_seconds: number, ip: string | null, bridge_ip: string | null, mac: string | null, connection_type_raw: string | null, uptime_seconds: number | null,
 /**
  * Unit/percentage semantics are not verified; preserve device integers.
  */
 cpu_usage_raw: number | null, memory_usage_raw: number | null, };
-export type TopologyInterface = { name: string, mac: string | null, carrier: boolean | null, 
+export type TopologyInterface = { name: string, mac: string | null, carrier: boolean | null,
 /**
  * Only physical interfaces; unknown/negative speeds are null.
  */
 speed_mbps: number | null, duplex: string | null, bridge_members: Array<string>, addresses: Array<string>, };
 export type TopologyIssue = { code: string, node_id: string | null, };
-export type TopologyLink = { id: string, source: string, target: string, relation: TopologyRelation, 
+export type TopologyLink = { id: string, source: string, target: string, relation: TopologyRelation,
 /**
  * A logical interface, never a claim about physical splitter/port layout.
  */
@@ -202,12 +222,12 @@ export type TopologyNode = { id: string, label: string, detail: TopologyNodeDeta
 export type TopologyNodeDetail = { "kind": "controller" } & TopologyController | { "kind": "onu" } & TopologyOnu;
 export type TopologyNodeReply = { "status": "ok", snapshot_id: string, node: TopologyNode, } | { "status": "error", code: TopologyQueryError, };
 export type TopologyNodeRequest = { node_id: string, snapshot_id?: string, };
-export type TopologyOnu = { serial_number: string | null, onu_id: number | null, vendor: string | null, model: string | null, hardware_version: string | null, firmware_version: string | null, 
+export type TopologyOnu = { serial_number: string | null, onu_id: number | null, vendor: string | null, model: string | null, hardware_version: string | null, firmware_version: string | null,
 /**
  * None means a binding-only placeholder, not an invented O1 observation.
  */
 registration: RegistrationState | null, business: BusinessStatus | null, management: ManagementStatus | null, provisioning: ProvisioningStatus | null, services: Array<SyncItem>, ssids: Array<SyncItem>, wifi_sync: WifiSync | null, identity: OnuIdentity | null, identity_current: boolean, identity_age_seconds: number | null, uptime_seconds: number | null, fec: FecStatus | null, binding: TopologyBinding, extensions: TopologyExtensions, measurements: { [key in string]: MeasurementEvidence }, };
-export type TopologyOpticalModule = { model: string, wavelength_tx_nm: number, wavelength_rx_nm: number, 
+export type TopologyOpticalModule = { model: string, wavelength_tx_nm: number, wavelength_rx_nm: number,
 /**
  * Shared nominal PON capacity, not per-ONU negotiated or measured speed.
  */
@@ -215,7 +235,7 @@ nominal_downlink_gbps: number, nominal_uplink_gbps: number, tx_power_dbm: number
 export type TopologyQueryError = "snapshot_expired" | "node_not_found" | "invalid_cursor";
 export type TopologyRelation = "pon_logical" | "associated_with" | "learned_behind";
 export type TopologyReply = { schema_version: 1, snapshot_id: string, generated_at: number, snapshot_ttl_seconds: number, nodes: Array<TopologyNode>, links: Array<TopologyLink>, sources: Array<TopologySource>, issues: Array<TopologyIssue>, };
-export type TopologySource = { id: string, state: TopologySourceState, 
+export type TopologySource = { id: string, state: TopologySourceState,
 /**
  * Unix time at which this source was sampled (not a promise of atomicity).
  */

@@ -6,6 +6,7 @@
 				"fttr": [
 					"get_capabilities",
 					"get_platform_info",
+					"fpga_diagnostic",
 					"optical_status",
 					"get_status",
 					"get_topology",

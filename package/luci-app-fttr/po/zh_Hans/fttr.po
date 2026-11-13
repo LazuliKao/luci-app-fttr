@@ -2923,3 +2923,112 @@ msgstr "缩小"
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
+
+# HM2004 structured FPGA diagnostics
+msgid "FPGA diagnostics"
+msgstr "FPGA 诊断"
+
+msgid "All slots"
+msgstr "全部槽位"
+
+msgid "bit 28"
+msgstr "第 28 位"
+
+msgid "Bandwidth (raw units)"
+msgstr "带宽（原始单位）"
+
+msgid "Weight"
+msgstr "权重"
+
+msgid "Sample time"
+msgstr "采样时间"
+
+msgid "Read duration"
+msgstr "读取耗时"
+
+msgid "Main bandwidth enabled"
+msgstr "主带宽已启用"
+
+msgid "Modulo deltas over"
+msgstr "模增量采样间隔"
+
+msgid "No continuous baseline. Deltas are withheld until daemon and hardware context continuity can be verified."
+msgstr "缺少连续基线。确认守护进程和硬件上下文连续之前不显示增量。"
+
+msgid "ONU slot"
+msgstr "ONU 槽位"
+
+msgid "Registration token"
+msgstr "注册代次标识"
+
+msgid "Management grant"
+msgstr "管理授权"
+
+msgid "Business grant"
+msgstr "业务授权"
+
+msgid "Unregistered"
+msgstr "未注册"
+
+msgid "Global counters (32-bit)"
+msgstr "全局计数（32 位）"
+
+msgid "Global counters cannot be attributed to a selected ONU. FPGA BCH readings are separate from ONU FEC PM. Grant bandwidth units are unverified."
+msgstr "全局计数不能归因于所选 ONU。FPGA BCH 读数与 ONU FEC 性能监测分别统计。授权带宽的单位尚未核实。"
+
+msgid "Stock label / key"
+msgstr "原厂标签 / 字段名"
+
+msgid "Modulo delta"
+msgstr "模增量"
+
+msgid "Source, limitations and raw registers"
+msgstr "来源、限制与寄存器原值"
+
+msgid "Daemon"
+msgstr "守护进程实例"
+
+msgid "Hardware epoch"
+msgstr "硬件上下文代次"
+
+msgid "Export JSON"
+msgstr "导出 JSON"
+
+msgid "Export NDJSON"
+msgstr "导出 NDJSON"
+
+msgid "Samples"
+msgstr "样本数"
+
+msgid "samples"
+msgstr "个样本"
+
+msgid "Interval (ms)"
+msgstr "间隔（毫秒）"
+
+msgid "Read a snapshot or start a bounded sampling window."
+msgstr "读取单次快照或启动限时采样。"
+
+msgid "Read snapshot"
+msgstr "读取快照"
+
+msgid "Start sampling"
+msgstr "开始采样"
+
+msgid "Stop"
+msgstr "停止"
+
+msgid "Stopped"
+msgstr "已停止"
+
+msgid "Read-only observed register diagnostics. Sampling is limited to 120 samples and 60 seconds; it stops when this panel becomes inactive."
+msgstr "只读寄存器诊断。最多采集 120 个样本、持续 60 秒；离开此面板时停止采样。"
+
+msgid "Sampling failed; retained samples may be stale."
+msgstr "采样失败，保留的样本可能已过期。"
+
+msgid "Sampling"
+msgstr "采样中"
+
+msgid "Waiting for pending read"
+msgstr "等待已发出的读取完成"

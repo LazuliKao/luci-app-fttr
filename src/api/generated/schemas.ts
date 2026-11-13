@@ -78,6 +78,14 @@ export const DataPathStatusSchema = z.object({ "interface": z.string(), "gem_por
 export const EmptyRequestSchema = z.object({}) satisfies z.ZodMiniType<wire.EmptyRequest>;
 export const FecPmCountersSchema = z.object({ "entity_id": z.number(), "interval_end_time": z.number(), "corrected_bytes": z.number(), "corrected_code_words": z.number(), "uncorrectable_code_words": z.number(), "total_code_words": z.number(), "fec_seconds": z.number() }) satisfies z.ZodMiniType<wire.FecPmCounters>;
 export const FecStatusSchema = z.object({ "ani_entity_id": z.union([z.number(), z.null()]), "control_supported": z.boolean(), "downstream_enabled": z.union([z.boolean(), z.null()]), "upstream_enabled": z.union([z.boolean(), z.null()]), "downstream_pm": z.union([FecPmCountersSchema, z.null()]), "measurement": MeasurementEvidenceSchema }) satisfies z.ZodMiniType<wire.FecStatus>;
+export const FpgaCounterDescriptorSchema = z.object({ "key": z.string(), "label": z.string(), "group": z.string(), "address": z.string(), "width_bits": z.number(), "scope": z.string() }) satisfies z.ZodMiniType<wire.FpgaCounterDescriptor>;
+export const FpgaOnuDeltaSchema = z.object({ "slot": z.number(), "registration_continuity_verified": z.boolean(), "lob_modulo_65536": z.union([z.number(), z.null()]), "bip_modulo_65536": z.union([z.number(), z.null()]) }) satisfies z.ZodMiniType<wire.FpgaOnuDelta>;
+export const FpgaDeltaSchema = z.object({ "elapsed_ms": z.number(), "same_daemon": z.boolean(), "hardware_continuity_verified": z.boolean(), "onus": z.array(FpgaOnuDeltaSchema), "counters_modulo_4294967296": z.union([z.record(z.string(), z.number()), z.null()]) }) satisfies z.ZodMiniType<wire.FpgaDelta>;
+export const FpgaGrantSchema = z.object({ "bandwidth_raw": z.number(), "control_raw": z.number(), "enabled_bit28": z.boolean(), "bandwidth": z.number(), "weight": z.number() }) satisfies z.ZodMiniType<wire.FpgaGrant>;
+export const FpgaOnuSchema = z.object({ "slot": z.number(), "generation": z.union([z.string(), z.null()]), "lob": z.number(), "bip": z.number(), "management": FpgaGrantSchema, "business": FpgaGrantSchema }) satisfies z.ZodMiniType<wire.FpgaOnu>;
+export const FpgaSnapshotSchema = z.object({ "schema_version": z.literal(2), "source_sha256": z.string(), "limitations": z.string(), "started_unix_ms": z.number(), "read_duration_us": z.number(), "started_monotonic_ms": z.union([z.number(), z.null()]), "daemon_instance": z.union([z.string(), z.null()]), "hardware_epoch": z.union([z.string(), z.null()]), "main_bandwidth_raw": z.number(), "main_bandwidth_enabled": z.boolean(), "onus": z.array(FpgaOnuSchema), "counters": z.record(z.string(), z.number()), "counter_descriptors": z.array(FpgaCounterDescriptorSchema), "raw_registers": z.record(z.string(), z.number()) }) satisfies z.ZodMiniType<wire.FpgaSnapshot>;
+export const FpgaDiagnosticReplySchema = z.union([z.object({ "status": z.literal("success"), "snapshot": FpgaSnapshotSchema }), z.object({ "status": z.literal("error"), "error": z.string() })]) satisfies z.ZodMiniType<wire.FpgaDiagnosticReply>;
+export const FpgaDiagnosticRequestSchema = z.object({ "onu_id": z.optional(z.number()) }) satisfies z.ZodMiniType<wire.FpgaDiagnosticRequest>;
 export const HlAccountSchema = z.object({ "entry": z.union([z.literal(0), z.literal(1), z.literal(2)]), "username": z.string(), "active": z.boolean() }) satisfies z.ZodMiniType<wire.HlAccount>;
 export const MqttSourceSchema = z.object({ "mqtt_mac": z.string(), "optical_sn": z.union([z.string(), z.null()]), "onu_id": z.union([z.number(), z.null()]), "binding_generation": z.string(), "last_seen": z.number(), "reason": z.string() }) satisfies z.ZodMiniType<wire.MqttSource>;
 export const HlCommandStatusSchema = z.union([z.literal("executed"), z.literal("dispatched"), z.literal("timeout"), z.literal("error")]) satisfies z.ZodMiniType<wire.HlCommandStatus>;
@@ -345,6 +353,22 @@ export type SchemaContracts = [
 	Assert<[wire.FecPmCounters] extends [z.infer<typeof FecPmCountersSchema>] ? true : false>,
 	Assert<[z.infer<typeof FecStatusSchema>] extends [wire.FecStatus] ? true : false>,
 	Assert<[wire.FecStatus] extends [z.infer<typeof FecStatusSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaCounterDescriptorSchema>] extends [wire.FpgaCounterDescriptor] ? true : false>,
+	Assert<[wire.FpgaCounterDescriptor] extends [z.infer<typeof FpgaCounterDescriptorSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaOnuDeltaSchema>] extends [wire.FpgaOnuDelta] ? true : false>,
+	Assert<[wire.FpgaOnuDelta] extends [z.infer<typeof FpgaOnuDeltaSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaDeltaSchema>] extends [wire.FpgaDelta] ? true : false>,
+	Assert<[wire.FpgaDelta] extends [z.infer<typeof FpgaDeltaSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaGrantSchema>] extends [wire.FpgaGrant] ? true : false>,
+	Assert<[wire.FpgaGrant] extends [z.infer<typeof FpgaGrantSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaOnuSchema>] extends [wire.FpgaOnu] ? true : false>,
+	Assert<[wire.FpgaOnu] extends [z.infer<typeof FpgaOnuSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaSnapshotSchema>] extends [wire.FpgaSnapshot] ? true : false>,
+	Assert<[wire.FpgaSnapshot] extends [z.infer<typeof FpgaSnapshotSchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaDiagnosticReplySchema>] extends [wire.FpgaDiagnosticReply] ? true : false>,
+	Assert<[wire.FpgaDiagnosticReply] extends [z.infer<typeof FpgaDiagnosticReplySchema>] ? true : false>,
+	Assert<[z.infer<typeof FpgaDiagnosticRequestSchema>] extends [wire.FpgaDiagnosticRequest] ? true : false>,
+	Assert<[wire.FpgaDiagnosticRequest] extends [z.infer<typeof FpgaDiagnosticRequestSchema>] ? true : false>,
 	Assert<[z.infer<typeof HlAccountSchema>] extends [wire.HlAccount] ? true : false>,
 	Assert<[wire.HlAccount] extends [z.infer<typeof HlAccountSchema>] ? true : false>,
 	Assert<[z.infer<typeof MqttSourceSchema>] extends [wire.MqttSource] ? true : false>,

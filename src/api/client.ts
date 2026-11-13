@@ -1,4 +1,5 @@
 import { checked, jobChunk, jobStart } from "./common";
+import { fpgaDiagnostic } from "./fpga";
 import { createFttrClient } from "./generated/luci-client";
 import { TopologyClientsReplySchema, TopologyNodeReplySchema, TopologyReplySchema } from "./generated/schemas";
 import {
@@ -20,6 +21,7 @@ import {
 } from "./validators";
 
 export const fttrValidators = {
+	fpgaDiagnostic,
 	getCapabilities: { parse: (value: unknown) => capabilities.parse(checked(value)) },
 	getPlatformInfo: { parse: (value: unknown) => platformInfo.parse(checked(value)) },
 	opticalStatus: opticalReply,

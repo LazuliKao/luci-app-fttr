@@ -4,6 +4,7 @@ import type { PlatformInfoReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
 import { createFecMonitor } from "./components/fec-monitor";
 import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
+import { createFpgaDiagnostics } from "./components/fpga-diagnostics";
 import { showOnuDetails } from "./components/onu-details";
 import { capturePanelState } from "./components/panel-state";
 import { createTabMenu } from "./components/tabs";
@@ -276,7 +277,7 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 }
 
 function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: PlatformInfoReply): HTMLElement {
-	type TabId = "controller" | "subgateways" | "fec";
+	type TabId = "controller" | "subgateways" | "fec" | "fpga";
 	let activeTab: TabId = "controller";
 
 	// Module state survives LuCI view remounts; clear a stuck in-flight flag
@@ -287,6 +288,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 		{ id: "subgateways", label: _("Sub-gateways & optical links") },
 	];
 	if (platform.operations.downstream_fec) tabs.push({ id: "fec", label: _("ONU FEC monitoring") });
+	if (platform.operations.fpga_diagnostics) tabs.push({ id: "fpga", label: _("FPGA diagnostics") });
 
 	const tabItems = new Map<TabId, HTMLElement>();
 
@@ -294,6 +296,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 	let subgatewaysPanel = createSubgatewaysPanel(initialStatus.sub_gateways ?? []);
 	const fecMonitor = platform.operations.downstream_fec ? createFecMonitor(initialStatus) : undefined;
 	const fecPanel = fecMonitor?.element;
+	const fpgaMonitor = platform.operations.fpga_diagnostics ? createFpgaDiagnostics() : undefined;
 	const staleNotice = (
 		<p class="alert-message warning" role="status" hidden>
 			{_("Live hardware status is unavailable. The displayed data may be stale.")}
@@ -309,6 +312,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 		controllerPanel.hidden = id !== "controller";
 		subgatewaysPanel.hidden = id !== "subgateways";
 		if (fecPanel) fecPanel.hidden = id !== "fec";
+		fpgaMonitor?.setActive(id === "fpga");
 		window.dispatchEvent(new Event("resize"));
 	};
 
@@ -323,6 +327,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 			{controllerPanel}
 			{subgatewaysPanel}
 			{fecPanel ?? null}
+			{fpgaMonitor?.element ?? null}
 		</div>
 	);
 

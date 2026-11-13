@@ -4,6 +4,7 @@ import type {
 	CalibrationInfo,
 	CalibrationMode,
 	CalibrationSaved,
+	FpgaDiagnosticRequest,
 	NpuSetReply,
 	NpuSetRequest,
 	OpticalReply,
@@ -24,6 +25,8 @@ export type ApplyCalibrationResult = CalibrationApplied;
 
 export const getStatus = async () => getFttrClient().getStatus();
 export const getPlatformInfo = async (): Promise<PlatformInfoReply> => getFttrClient().getPlatformInfo();
+export const getFpgaDiagnostic = async (request: FpgaDiagnosticRequest) =>
+	(await getFttrClient().fpgaDiagnostic(request)).snapshot;
 export const getSync = async () => getFttrClient().getSync();
 export const checkConfig = async () => getFttrClient().configCheck();
 export const reloadConfig = async () => getFttrClient().configReload();

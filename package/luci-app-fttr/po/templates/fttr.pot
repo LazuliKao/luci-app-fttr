@@ -2911,3 +2911,112 @@ msgstr ""
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr ""
+
+# HM2004 structured FPGA diagnostics
+msgid "FPGA diagnostics"
+msgstr ""
+
+msgid "All slots"
+msgstr ""
+
+msgid "bit 28"
+msgstr ""
+
+msgid "Bandwidth (raw units)"
+msgstr ""
+
+msgid "Weight"
+msgstr ""
+
+msgid "Sample time"
+msgstr ""
+
+msgid "Read duration"
+msgstr ""
+
+msgid "Main bandwidth enabled"
+msgstr ""
+
+msgid "Modulo deltas over"
+msgstr ""
+
+msgid "No continuous baseline. Deltas are withheld until daemon and hardware context continuity can be verified."
+msgstr ""
+
+msgid "ONU slot"
+msgstr ""
+
+msgid "Registration token"
+msgstr ""
+
+msgid "Management grant"
+msgstr ""
+
+msgid "Business grant"
+msgstr ""
+
+msgid "Unregistered"
+msgstr ""
+
+msgid "Global counters (32-bit)"
+msgstr ""
+
+msgid "Global counters cannot be attributed to a selected ONU. FPGA BCH readings are separate from ONU FEC PM. Grant bandwidth units are unverified."
+msgstr ""
+
+msgid "Stock label / key"
+msgstr ""
+
+msgid "Modulo delta"
+msgstr ""
+
+msgid "Source, limitations and raw registers"
+msgstr ""
+
+msgid "Daemon"
+msgstr ""
+
+msgid "Hardware epoch"
+msgstr ""
+
+msgid "Export JSON"
+msgstr ""
+
+msgid "Export NDJSON"
+msgstr ""
+
+msgid "Samples"
+msgstr ""
+
+msgid "samples"
+msgstr ""
+
+msgid "Interval (ms)"
+msgstr ""
+
+msgid "Read a snapshot or start a bounded sampling window."
+msgstr ""
+
+msgid "Read snapshot"
+msgstr ""
+
+msgid "Start sampling"
+msgstr ""
+
+msgid "Stop"
+msgstr ""
+
+msgid "Stopped"
+msgstr ""
+
+msgid "Read-only observed register diagnostics. Sampling is limited to 120 samples and 60 seconds; it stops when this panel becomes inactive."
+msgstr ""
+
+msgid "Sampling failed; retained samples may be stale."
+msgstr ""
+
+msgid "Sampling"
+msgstr ""
+
+msgid "Waiting for pending read"
+msgstr ""
