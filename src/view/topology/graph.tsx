@@ -27,6 +27,7 @@ export function createTopologyGraph(
 	let dead = false;
 	let panEnabled = false;
 	let moved = 0;
+	let dragging = false;
 	let suppressClick = false;
 	let painted = "";
 	let lastWidth = 0;
@@ -74,16 +75,28 @@ export function createTopologyGraph(
 			distance: points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y) : 0,
 		};
 	}
+	function capture(id: number) {
+		try {
+			container.setPointerCapture(id);
+		} catch {
+			// The pointer may already have been released.
+		}
+	}
 	const down = (event: PointerEvent) => {
 		if (event.pointerType === "mouse" && event.button !== 0) return;
-		moved = 0;
-		suppressClick = false;
+		// Reset bookkeeping only when a brand-new gesture starts.
+		if (pointers.size === 0) {
+			moved = 0;
+			dragging = false;
+			suppressClick = false;
+		}
 		// In scroll mode a touch gesture belongs to the page, not the canvas.
 		if (event.pointerType === "touch" && !panEnabled) return;
 		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-		container.setPointerCapture(event.pointerId);
 		gesture = centerGesture();
-		container.classList.add("is-panning");
+		// Capturing on pointerdown would retarget the compatibility click to the
+		// container and swallow card selection. Defer it until we know it is a drag.
+		if (dragging) capture(event.pointerId);
 	};
 	const move = (event: PointerEvent) => {
 		if (!pointers.has(event.pointerId)) return;
@@ -93,14 +106,21 @@ export function createTopologyGraph(
 			const dx = next.x - gesture.x;
 			const dy = next.y - gesture.y;
 			moved += Math.hypot(dx, dy);
-			position.x += dx;
-			position.y += dy;
-			if (next.distance > 0 && gesture.distance > 0) {
-				const box = container.getBoundingClientRect();
-				zoomAt(next.distance / gesture.distance, next.x - box.left, next.y - box.top);
+			if (!dragging && moved > 8) {
+				dragging = true;
+				container.classList.add("is-panning");
+				for (const id of pointers.keys()) capture(id);
 			}
-			adjusted = true;
-			transform();
+			if (dragging) {
+				position.x += dx;
+				position.y += dy;
+				if (next.distance > 0 && gesture.distance > 0) {
+					const box = container.getBoundingClientRect();
+					zoomAt(next.distance / gesture.distance, next.x - box.left, next.y - box.top);
+				}
+				adjusted = true;
+				transform();
+			}
 		}
 		gesture = next;
 	};
@@ -110,7 +130,8 @@ export function createTopologyGraph(
 		if (!pointers.size && tracked) {
 			container.classList.remove("is-panning");
 			// A drag that starts on a card must not also select it.
-			suppressClick = moved > 8;
+			suppressClick = dragging;
+			dragging = false;
 		}
 	};
 	const click = (event: MouseEvent) => {
