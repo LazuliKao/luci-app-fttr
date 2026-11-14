@@ -13,6 +13,17 @@ const TOPOLOGY_ICON_MAP = {
 	onu: "connected-20-regular",
 	wifiClient: "wifi-1-20-regular",
 	wiredClient: "plug-connected-20-regular",
+	zoomIn: "zoom-in-20-regular",
+	zoomOut: "zoom-out-20-regular",
+	zoomFit: "zoom-fit-20-regular",
+	locate: "my-location-20-regular",
+	minimap: "map-20-regular",
+	panel: "panel-right-20-regular",
+	fullscreenEnter: "full-screen-maximize-20-regular",
+	fullscreenExit: "full-screen-minimize-20-regular",
+	refresh: "arrow-clockwise-20-regular",
+	pan: "arrow-move-20-regular",
+	clear: "dismiss-20-regular",
 };
 
 function toInlineSvg(icon, iconName) {

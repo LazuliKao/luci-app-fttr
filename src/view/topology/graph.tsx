@@ -3,10 +3,9 @@
 // interactive AntV G6 viewport with optical link labels, hover neighbor
 // highlighting, minimap navigation, and theme-synchronized palettes.
 
-import { DragCanvas } from "@antv/g6/esm/behaviors/drag-canvas";
 import { HoverActivate } from "@antv/g6/esm/behaviors/hover-activate";
 import { ZoomCanvas } from "@antv/g6/esm/behaviors/zoom-canvas";
-import { EdgeEvent, GraphEvent, NodeEvent } from "@antv/g6/esm/constants";
+import { CanvasEvent, EdgeEvent, GraphEvent } from "@antv/g6/esm/constants";
 import { CubicHorizontal } from "@antv/g6/esm/elements/edges/cubic-horizontal";
 import { CubicVertical } from "@antv/g6/esm/elements/edges/cubic-vertical";
 import { Polyline } from "@antv/g6/esm/elements/edges/polyline";
@@ -44,7 +43,6 @@ function ensureRegistered() {
 	register("edge", "cubic-horizontal", CubicHorizontal);
 	register("edge", "cubic-vertical", CubicVertical);
 	register("edge", "polyline", Polyline);
-	register("behavior", "drag-canvas", DragCanvas);
 	register("behavior", "zoom-canvas", ZoomCanvas);
 	register("behavior", "hover-activate", HoverActivate);
 	register("plugin", "minimap", Minimap);
@@ -184,6 +182,17 @@ function nodeMatchesFilter(node: TopologyNode, snapshot: TopologyReply, filter: 
 	]);
 }
 
+export function countFilteredNodes(snapshot: TopologyReply, filter: GraphFilter): { matched: number; total: number } {
+	const total = snapshot.nodes.length;
+	const hasFilter = Boolean(filter.query.trim()) || filter.status !== "all";
+	if (!hasFilter) return { matched: total, total };
+	let matched = 0;
+	for (const node of snapshot.nodes) {
+		if (nodeMatchesFilter(node, snapshot, filter)) matched++;
+	}
+	return { matched, total };
+}
+
 function clientMatchesFilter(client: TopologyClient, filter: GraphFilter): boolean {
 	if (filter.status !== "all" && filter.status !== "online") return false;
 	const query = filter.query.trim().toLowerCase();
@@ -192,6 +201,7 @@ function clientMatchesFilter(client: TopologyClient, filter: GraphFilter): boole
 }
 
 function buildNodeElement(
+	id: string,
 	node: TopologyNode | undefined,
 	client: { parent: string; client: TopologyClient } | undefined,
 	snapshot: TopologyReply,
@@ -204,6 +214,7 @@ function buildNodeElement(
 	const card = (
 		<div
 			class={`topo-graph-card topo-${tone} ${kindClass} ${selected ? "is-selected" : ""} ${dimmed ? "is-dimmed" : ""}`}
+			data-topo-id={id}
 			style="width:100%;height:100%"
 		>
 			{node ? nodeCard(node, snapshot) : client ? clientCard(client.client) : null}
@@ -276,19 +287,25 @@ export function createTopologyGraph(
 	const minimapPlugin = () => ({
 		type: "minimap",
 		key: "minimap",
-		size: [176, 112] as [number, number],
+		className: "topo-minimap",
+		size: [156, 96] as [number, number],
 		padding: 8,
 		position: "right-bottom" as const,
 		containerStyle: {
-			background: palette.nodeFill,
+			left: "auto",
+			top: "auto",
+			right: "12px",
+			bottom: "12px",
+			background: palette.dark ? "rgba(24, 28, 35, 0.78)" : "rgba(255, 255, 255, 0.82)",
+			backdropFilter: "blur(8px)",
 			border: `1px solid ${palette.nodeStroke}`,
 			borderRadius: "8px",
-			boxShadow: "0 4px 16px rgba(0, 0, 0, 0.14)",
+			boxShadow: "0 4px 14px rgba(0, 0, 0, 0.14)",
 			overflow: "hidden",
 		},
 		maskStyle: {
-			border: `1.5px solid ${palette.selected}`,
-			background: palette.dark ? "rgba(117, 173, 255, 0.14)" : "rgba(40, 118, 223, 0.12)",
+			border: `1px solid ${palette.selected}`,
+			background: palette.dark ? "rgba(117, 173, 255, 0.12)" : "rgba(40, 118, 223, 0.1)",
 		},
 		shape: (
 			id: string,
@@ -300,11 +317,12 @@ export function createTopologyGraph(
 				style: Record<string, unknown>;
 			};
 			const tone = toneLookup.get(id) ?? "neutral";
-			rect.style.opacity = 0.9;
-			rect.style.fill = palette.nodeFill;
+			rect.style.opacity = 0.92;
+			rect.style.fill = palette[tone];
+			rect.style.fillOpacity = 0.22;
 			rect.style.stroke = palette[tone];
-			rect.style.lineWidth = 2;
-			rect.style.radius = 6;
+			rect.style.lineWidth = 1.5;
+			rect.style.radius = 5;
 			return rect;
 		},
 	});
@@ -321,31 +339,27 @@ export function createTopologyGraph(
 			state: {
 				active: {
 					stroke: palette.selected,
-					lineWidth: 2.8,
+					strokeOpacity: 1,
+					lineWidth: 3,
 					zIndex: 4,
 				},
 				inactive: {
-					opacity: 0.22,
+					opacity: 0.48,
 				},
 			},
 		},
 		node: {
 			state: {
 				active: { zIndex: 3 },
-				inactive: { opacity: 0.35 },
+				inactive: { opacity: 0.55 },
 			},
 		},
 		behaviors: [
 			{
-				type: "drag-canvas",
-				key: "drag",
-				enable: (event: { pointerType?: string }) => event.pointerType !== "touch" || panEnabled,
-			},
-			{
 				type: "zoom-canvas",
 				key: "wheel-zoom",
-				preventDefault: false,
-				enable: (event: { ctrlKey?: boolean; metaKey?: boolean }) => Boolean(event.ctrlKey || event.metaKey),
+				preventDefault: true,
+				sensitivity: 0.45,
 			},
 			{ type: "zoom-canvas", key: "pinch-zoom", trigger: ["pinch"] },
 			{
@@ -361,8 +375,111 @@ export function createTopologyGraph(
 	});
 
 	const onWheel = (event: WheelEvent) => {
-		if (event.ctrlKey || event.metaKey) event.preventDefault();
+		event.preventDefault();
+		// G6's HTML node overlay sits above the canvas and doesn't forward wheel events.
+		if (!(event.target instanceof HTMLCanvasElement)) {
+			const box = container.getBoundingClientRect();
+			const clamped = Math.max(-120, Math.min(120, event.deltaY));
+			const ratio = Math.exp(-clamped * 0.0006);
+			const origin: [number, number] = [event.clientX - box.left, event.clientY - box.top];
+			void enqueue(async () => {
+				userAdjusted = true;
+				await graph.zoomBy(ratio, false, origin);
+				emitScale();
+			});
+		}
 	};
+	const activePointers = new Map<number, { x: number; y: number }>();
+	let movedDistance = 0;
+	let dragging = false;
+	let suppressClick = false;
+
+	const onPointerDown = (event: PointerEvent) => {
+		if (event.pointerType === "mouse" && event.button !== 0) return;
+		if (event.pointerType === "touch" && !panEnabled) return;
+		if ((event.target as Element | null)?.closest(".topo-minimap")) return;
+		activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+		if (activePointers.size === 1) {
+			movedDistance = 0;
+			dragging = false;
+			suppressClick = false;
+		} else {
+			// Yield to two-finger pinch-zoom when a second touch lands.
+			dragging = false;
+			container.classList.remove("is-panning");
+		}
+	};
+	const onPointerMove = (event: PointerEvent) => {
+		const prev = activePointers.get(event.pointerId);
+		if (!prev) return;
+		const dx = event.clientX - prev.x;
+		const dy = event.clientY - prev.y;
+		activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+		if (activePointers.size !== 1) return;
+		movedDistance += Math.hypot(dx, dy);
+		if (!dragging && movedDistance > 7) {
+			dragging = true;
+			container.classList.add("is-panning");
+			try {
+				container.setPointerCapture(event.pointerId);
+			} catch {
+				// Pointer may already be released.
+			}
+		}
+		if (dragging && (dx !== 0 || dy !== 0)) {
+			userAdjusted = true;
+			void graph.translateBy([dx, dy], false);
+		}
+	};
+	const endPan = (event: PointerEvent) => {
+		if (!activePointers.delete(event.pointerId)) return;
+		if (activePointers.size === 0 && dragging) {
+			suppressClick = true;
+			dragging = false;
+			container.classList.remove("is-panning");
+			try {
+				if (container.hasPointerCapture(event.pointerId)) container.releasePointerCapture(event.pointerId);
+			} catch {
+				// Ignore if already released.
+			}
+		}
+	};
+	const onTouchMove = (event: TouchEvent) => {
+		if (panEnabled && event.touches.length === 1 && !(event.target as Element | null)?.closest(".topo-minimap")) {
+			event.preventDefault();
+		}
+	};
+	const onClickCapture = (event: MouseEvent) => {
+		if (!suppressClick) return;
+		suppressClick = false;
+		event.preventDefault();
+		event.stopPropagation();
+	};
+	const onCardClick = (event: MouseEvent) => {
+		const card = (event.target as Element | null)?.closest<HTMLElement>("[data-topo-id]");
+		if (!card?.dataset.topoId) return;
+		const target = selectionLookup.get(card.dataset.topoId);
+		if (target) onSelect(target);
+	};
+	const onCardDblClick = (event: MouseEvent) => {
+		const card = (event.target as Element | null)?.closest<HTMLElement>("[data-topo-id]");
+		const id = card?.dataset.topoId;
+		if (!id || !selectionLookup.has(id)) return;
+		void enqueue(async () => {
+			userAdjusted = true;
+			await graph.focusElement(id, { duration: 220 });
+		});
+	};
+
+	container.addEventListener("pointerdown", onPointerDown);
+	container.addEventListener("pointermove", onPointerMove);
+	container.addEventListener("pointerup", endPan);
+	container.addEventListener("pointercancel", endPan);
+	container.addEventListener("lostpointercapture", endPan);
+	container.addEventListener("touchmove", onTouchMove, { passive: false });
+	container.addEventListener("click", onClickCapture, true);
+	container.addEventListener("click", onCardClick);
+	container.addEventListener("dblclick", onCardDblClick);
 	container.addEventListener("wheel", onWheel, { passive: false });
 
 	const emitScale = () => {
@@ -374,20 +491,11 @@ export function createTopologyGraph(
 		emitScale();
 	});
 
-	graph.on(NodeEvent.CLICK, (event: IElementEvent) => {
-		const id = String(event.target.id);
-		const target = selectionLookup.get(id);
-		if (target) onSelect(target);
-	});
-
-	graph.on(NodeEvent.DBLCLICK, (event: IElementEvent) => {
-		const id = String(event.target.id);
-		if (selectionLookup.has(id)) {
-			void enqueue(async () => {
-				userAdjusted = true;
-				await graph.focusElement(id, { duration: 220 });
-			});
-		}
+	graph.on(CanvasEvent.DBLCLICK, () => {
+		void enqueue(async () => {
+			userAdjusted = false;
+			if (rendered) await autoFit(true);
+		});
 	});
 
 	graph.on(EdgeEvent.CLICK, (event: IElementEvent) => {
@@ -447,6 +555,8 @@ export function createTopologyGraph(
 		const g6Nodes: NodeData[] = [];
 		const g6Edges: EdgeData[] = [];
 		const selectedId = selected.id;
+		const selectedPathTargets = new Set<string>([selectedId]);
+		if (selected.kind === "client" && selected.parent) selectedPathTargets.add(selected.parent);
 		const hasFilter = Boolean(filter.query.trim()) || filter.status !== "all";
 
 		for (const p of data.positions) {
@@ -468,6 +578,7 @@ export function createTopologyGraph(
 					: true;
 
 			const el = buildNodeElement(
+				p.id,
 				node,
 				object,
 				snapshot,
@@ -505,7 +616,7 @@ export function createTopologyGraph(
 			const object = objectsMap.get(target.id);
 			const targetNode = nodesMap.get(target.id);
 			const isVertical = target.x === source.x;
-			const isSelected = selectedId === target.id;
+			const isSelected = selectedPathTargets.has(target.id);
 			const tone = nextToneLookup.get(target.id) ?? "neutral";
 
 			if (object) {
@@ -519,16 +630,22 @@ export function createTopologyGraph(
 						sourcePort: isVertical ? "bottom" : "right",
 						targetPort: isVertical ? "top" : "left",
 						stroke: isSelected ? palette.selected : isAssociated ? palette.success : palette.muted,
-						lineWidth: isSelected ? 2.5 : 1.6,
+						strokeOpacity: isSelected ? 1 : 0.78,
+						lineWidth: isSelected ? 2.8 : 1.8,
 						lineDash: isAssociated ? [3, 4] : [6, 4],
+						shadowColor: isSelected ? palette.selected : undefined,
+						shadowBlur: isSelected ? 8 : 0,
 						cursor: "pointer",
-						zIndex: isSelected ? 3 : 0,
+						zIndex: isSelected ? 4 : 0,
 						endArrow: false,
 						labelText: isAssociated ? _("Wi-Fi") : undefined,
-						labelFill: palette.muted,
+						labelAutoRotate: false,
+						labelFill: palette.text,
 						labelFontSize: 10,
 						labelBackground: isAssociated,
 						labelBackgroundFill: palette.labelBackground,
+						labelBackgroundStroke: palette.nodeStroke,
+						labelBackgroundLineWidth: 1,
 						labelBackgroundRadius: 4,
 						labelPadding: [1, 5],
 					},
@@ -553,16 +670,22 @@ export function createTopologyGraph(
 						targetPort: "left",
 						curvePosition: 0.45,
 						stroke: isSelected ? palette.selected : isOffline ? palette.edge : palette[tone],
-						lineWidth: isSelected ? 2.8 : 2,
+						strokeOpacity: isSelected ? 1 : isOffline ? 0.65 : 0.88,
+						lineWidth: isSelected ? 3 : 2.2,
 						lineDash: isOffline ? [6, 4] : 0,
+						shadowColor: isSelected ? palette.selected : undefined,
+						shadowBlur: isSelected ? 8 : 0,
 						cursor: "pointer",
-						zIndex: isSelected ? 3 : 1,
+						zIndex: isSelected ? 4 : 1,
 						endArrow: false,
 						labelText: rxText,
+						labelAutoRotate: false,
 						labelFill: isSelected ? palette.selected : isOffline ? palette.muted : palette.text,
 						labelFontSize: 10,
 						labelBackground: true,
 						labelBackgroundFill: palette.labelBackground,
+						labelBackgroundStroke: isSelected ? palette.selected : palette.nodeStroke,
+						labelBackgroundLineWidth: 1,
 						labelBackgroundRadius: 4,
 						labelPadding: [2, 6],
 					},
@@ -605,14 +728,15 @@ export function createTopologyGraph(
 		lastWidth = data.width;
 	};
 
+	const resizeTarget = container.parentElement ?? container;
 	const observer = new ResizeObserver(() => {
-		if (dead || !container.clientWidth || !container.clientHeight) return;
+		if (dead || !resizeTarget.clientWidth || !resizeTarget.clientHeight) return;
 		void enqueue(async () => {
-			graph.resize(container.clientWidth, container.clientHeight);
+			graph.resize(resizeTarget.clientWidth, resizeTarget.clientHeight);
 			if (rendered && !userAdjusted) await autoFit(false);
 		});
 	});
-	observer.observe(container);
+	observer.observe(resizeTarget);
 
 	return {
 		update(snapshot, clients, selected, filter = { query: "", status: "all" }) {
@@ -673,6 +797,15 @@ export function createTopologyGraph(
 			if (dead) return;
 			dead = true;
 			observer.disconnect();
+			container.removeEventListener("pointerdown", onPointerDown);
+			container.removeEventListener("pointermove", onPointerMove);
+			container.removeEventListener("pointerup", endPan);
+			container.removeEventListener("pointercancel", endPan);
+			container.removeEventListener("lostpointercapture", endPan);
+			container.removeEventListener("touchmove", onTouchMove);
+			container.removeEventListener("click", onClickCapture, true);
+			container.removeEventListener("click", onCardClick);
+			container.removeEventListener("dblclick", onCardDblClick);
 			container.removeEventListener("wheel", onWheel);
 			graph.off();
 			graph.destroy();

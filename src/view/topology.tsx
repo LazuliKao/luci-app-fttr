@@ -3,7 +3,14 @@ import { getFttrClient } from "../api/client";
 import type { TopologyReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
 import { formatAge } from "./components/formatters";
-import { createTopologyGraph, type GraphFilter, readPalette, type StatusFilter } from "./topology/graph";
+import {
+	countFilteredNodes,
+	createTopologyGraph,
+	type GraphFilter,
+	readPalette,
+	type StatusFilter,
+} from "./topology/graph";
+import { TOPOLOGY_ICONS, type TopologyIconName } from "./topology/icons";
 import { CONTROLLER_ID, counts, type Selection } from "./topology/model";
 import { badge, renderDetails } from "./topology/presentation";
 import { errorText, TopologyStore } from "./topology/store";
@@ -22,6 +29,12 @@ interface TopologyPage {
 }
 let activePage: TopologyPage | null = null;
 
+function iconEl(name: TopologyIconName): HTMLElement {
+	const el = <span class="topo-btn-icon" aria-hidden="true" />;
+	el.innerHTML = TOPOLOGY_ICONS[name];
+	return el;
+}
+
 function createTopologyPage(initial: LoadResult): TopologyPage {
 	let dead = false;
 	let attached = false;
@@ -31,13 +44,25 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	};
 	let panMode = false;
 	let minimapEnabled = typeof window !== "undefined" ? window.innerWidth >= 640 : true;
+	let panelCollapsed = false;
+	let fullscreen = false;
 	let filter: GraphFilter = { query: "", status: "all" };
 	let panelKey = "";
 	let panelSelection = "";
 	let themeFrame = 0;
 	const countsNode = <div class="topo-counts" />;
 	const updated = <span class="topo-sampled" />;
-	const zoomLevel = <span class="topo-zoom">100%</span>;
+	const zoomLevel = (
+		<button
+			type="button"
+			class="topo-tool-btn topo-zoom-btn"
+			title={_("Reset zoom to 100%")}
+			aria-label={_("Reset zoom to 100%")}
+			onclick={() => graph.reset()}
+		>
+			100%
+		</button>
+	) as HTMLButtonElement;
 	const liveState = <span role="status" aria-live="polite" />;
 	const notices = <div class="topo-notices" role="status" aria-live="polite" />;
 	const panel = <aside class="topo-panel" aria-label={_("Node and link details")} />;
@@ -70,6 +95,23 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			}}
 		/>
 	) as HTMLSelectElement;
+	const searchClear = (
+		<button
+			type="button"
+			class="topo-search-clear"
+			hidden
+			title={_("Clear filter")}
+			aria-label={_("Clear filter")}
+			onclick={() => {
+				searchInput.value = "";
+				filter = { ...filter, query: "" };
+				render();
+			}}
+		>
+			{iconEl("clear")}
+		</button>
+	) as HTMLButtonElement;
+	const matchBadge = <span class="topo-match-count" hidden />;
 	const searchInput = (
 		<input
 			type="search"
@@ -118,7 +160,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	const minimapToggle = (
 		<button
 			type="button"
-			class="cbi-button cbi-button-neutral"
+			class="topo-tool-btn"
 			aria-pressed={String(minimapEnabled)}
 			title={_("Toggle minimap")}
 			aria-label={_("Toggle minimap")}
@@ -128,12 +170,43 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 				graph.setMinimap(minimapEnabled);
 			}}
 		>
-			{_("Map")}
+			{iconEl("minimap")}
+			<span>{_("Map")}</span>
+		</button>
+	) as HTMLButtonElement;
+	const panelToggle = (
+		<button
+			type="button"
+			class="topo-tool-btn"
+			aria-pressed="true"
+			title={_("Toggle details panel")}
+			aria-label={_("Toggle details panel")}
+			onclick={() => {
+				panelCollapsed = !panelCollapsed;
+				panelToggle.setAttribute("aria-pressed", String(!panelCollapsed));
+				workspace.classList.toggle("is-panel-collapsed", panelCollapsed);
+			}}
+		>
+			{iconEl("panel")}
+			<span>{_("Details")}</span>
+		</button>
+	) as HTMLButtonElement;
+	const fullscreenToggle = (
+		<button
+			type="button"
+			class="topo-tool-btn is-icon"
+			aria-pressed="false"
+			title={_("Toggle fullscreen")}
+			aria-label={_("Toggle fullscreen")}
+			onclick={() => setFullscreen(!fullscreen)}
+		>
+			{iconEl("fullscreenEnter")}
 		</button>
 	) as HTMLButtonElement;
 	const refreshButton = (
-		<button type="button" class="cbi-button cbi-button-action" onclick={() => void refresh()}>
-			{_("Refresh")}
+		<button type="button" class="topo-tool-btn is-primary" onclick={() => void refresh()}>
+			{iconEl("refresh")}
+			<span>{_("Refresh")}</span>
 		</button>
 	) as HTMLButtonElement;
 	const panToggle = (
@@ -149,14 +222,102 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 				graph.setPanning(panMode);
 			}}
 		>
-			✥
+			{iconEl("pan")}
 		</button>
 	) as HTMLButtonElement;
-	const tool = (label: string, symbol: string, action: () => void) => (
-		<button type="button" class="cbi-button cbi-button-neutral" title={label} aria-label={label} onclick={action}>
-			{symbol}
+	const tool = (label: string, icon: TopologyIconName, action: () => void, text?: string) => (
+		<button
+			type="button"
+			class={`topo-tool-btn ${text ? "" : "is-icon"}`}
+			title={label}
+			aria-label={label}
+			onclick={action}
+		>
+			{iconEl(icon)}
+			{text ? <span>{text}</span> : null}
 		</button>
 	);
+	const workspace = (
+		<div class="topo-workspace">
+			<section class="topo-stage" aria-label={_("FTTR topology graph")}>
+				<div class="topo-stage-header">
+					<span class="topo-stage-heading">
+						{_("Network overview")} · {liveState}
+						{updated}
+					</span>
+					<div class="topo-toolbar" role="toolbar" aria-label={_("Topology controls")}>
+						<div class="topo-tool-group">
+							{tool(_("Zoom out"), "zoomOut", () => graph.zoom(1 / 1.2))}
+							{zoomLevel}
+							{tool(_("Zoom in"), "zoomIn", () => graph.zoom(1.2))}
+						</div>
+						<div class="topo-tool-group">
+							{tool(_("Fit topology to view"), "zoomFit", () => graph.fit(), _("Fit"))}
+							{tool(_("Center selected device"), "locate", () => graph.focusNode(selected.id))}
+						</div>
+						{minimapToggle}
+						{panelToggle}
+						{fullscreenToggle}
+						{refreshButton}
+					</div>
+				</div>
+				<div class="topo-viewport-wrap">
+					{viewport}
+					{overlay}
+					{panToggle}
+				</div>
+				<div class="topo-legend">
+					<span>
+						<i />
+						{_("Logical PON")}
+					</span>
+					<span>
+						<i class="is-associated" />
+						{_("Wireless association")}
+					</span>
+					<span>
+						<i class="is-learned" />
+						{_("Learned behind gateway")}
+					</span>
+				</div>
+			</section>
+			{panel}
+		</div>
+	);
+	function applyFullscreenState(next: boolean) {
+		fullscreen = next;
+		fullscreenToggle.setAttribute("aria-pressed", String(fullscreen));
+		fullscreenToggle.replaceChildren(iconEl(fullscreen ? "fullscreenExit" : "fullscreenEnter"));
+		workspace.classList.toggle("is-fullscreen", fullscreen);
+	}
+	function setFullscreen(next: boolean) {
+		if (next) {
+			if (typeof workspace.requestFullscreen === "function") {
+				void workspace
+					.requestFullscreen()
+					.then(() => applyFullscreenState(true))
+					.catch(() => applyFullscreenState(true));
+			} else {
+				applyFullscreenState(true);
+			}
+			return;
+		}
+		if (document.fullscreenElement === workspace && typeof document.exitFullscreen === "function") {
+			void document
+				.exitFullscreen()
+				.then(() => applyFullscreenState(false))
+				.catch(() => applyFullscreenState(false));
+		} else {
+			applyFullscreenState(false);
+		}
+	}
+	const onFullscreenChange = () => {
+		if (dead) return;
+		const active = document.fullscreenElement === workspace;
+		if (!active && fullscreen) applyFullscreenState(false);
+		else if (active && !fullscreen) applyFullscreenState(true);
+	};
+	document.addEventListener("fullscreenchange", onFullscreenChange);
 	const element = (
 		<div class="cbi-map fttr-topology">
 			<style>{TOPOLOGY_CSS}</style>
@@ -174,52 +335,20 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 					{deviceSelect}
 				</label>
 				<div class="topo-filter-bar">
-					{searchInput}
+					<div class="topo-search-wrap">
+						{searchInput}
+						{searchClear}
+					</div>
+					{matchBadge}
 					{statusPills}
 				</div>
 			</div>
-			<div class="topo-workspace">
-				<section class="topo-stage" aria-label={_("FTTR topology graph")}>
-					<div class="topo-stage-header">
-						<span class="topo-stage-heading">
-							{_("Network overview")} · {liveState}
-							{updated}
-						</span>
-						<div class="topo-toolbar" role="toolbar" aria-label={_("Topology controls")}>
-							{tool(_("Zoom in"), "+", () => graph.zoom(1.2))}
-							{tool(_("Zoom out"), "−", () => graph.zoom(1 / 1.2))}
-							{zoomLevel}
-							{tool(_("Reset zoom to 100%"), "1:1", () => graph.reset())}
-							{tool(_("Fit topology to view"), _("Fit"), () => graph.fit())}
-							{minimapToggle}
-							{refreshButton}
-						</div>
-					</div>
-					<div class="topo-viewport-wrap">
-						{viewport}
-						{overlay}
-						{panToggle}
-					</div>
-					<div class="topo-legend">
-						<span>
-							<i />
-							{_("Logical PON")}
-						</span>
-						<span>
-							<i class="is-associated" />
-							{_("Wireless association")}
-						</span>
-						<span>
-							<i class="is-learned" />
-							{_("Learned behind gateway")}
-						</span>
-					</div>
-				</section>
-				{panel}
-			</div>
+			{workspace}
 			<footer class="topo-footer">
 				<span>
-					{_("Drag to pan · Ctrl + wheel or pinch to zoom · Click to inspect · Double-click to focus")}
+					{_(
+						"Drag to pan · Wheel or pinch to zoom · Click to inspect · Double-click node to focus / canvas to fit",
+					)}
 				</span>
 				<span>{`${_("Refresh")}: ${REFRESH_INTERVAL}s`}</span>
 			</footer>
@@ -354,6 +483,15 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			if (snapshot.issues.length)
 				messages.push(`${_("Backend topology issues")}: ${snapshot.issues.map((i) => i.code).join(", ")}`);
 			if (!count.known) messages.push(_("No known sub-gateways in this snapshot."));
+			const hasFilter = Boolean(filter.query.trim()) || filter.status !== "all";
+			searchClear.hidden = !filter.query;
+			if (hasFilter) {
+				const { matched, total } = countFilteredNodes(snapshot, filter);
+				matchBadge.textContent = `${matched} / ${total}`;
+				matchBadge.hidden = false;
+			} else {
+				matchBadge.hidden = true;
+			}
 			graph.update(snapshot, store.clients, selected, filter);
 		}
 		notices.replaceChildren(...messages.map((message) => <p>{message}</p>));
@@ -420,6 +558,50 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		} else if (attached) destroy();
 	});
 	if (document.body) lifecycle.observe(document.body, { childList: true, subtree: true });
+	const onKeyDown = (event: KeyboardEvent) => {
+		if (dead || event.ctrlKey || event.metaKey || event.altKey) return;
+		const target = event.target as HTMLElement | null;
+		const inField = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.tagName === "SELECT";
+		if (event.key === "Escape") {
+			if (target === searchInput && filter.query) {
+				searchInput.value = "";
+				filter = { ...filter, query: "" };
+				render();
+				searchInput.blur();
+				return;
+			}
+			if (fullscreen) {
+				setFullscreen(false);
+				return;
+			}
+			if (!inField && (filter.query || filter.status !== "all")) {
+				searchInput.value = "";
+				filter = { query: "", status: "all" };
+				for (const [key, item] of statusButtons) {
+					const active = key === "all";
+					item.classList.toggle("is-active", active);
+					item.setAttribute("aria-pressed", String(active));
+				}
+				render();
+			}
+			return;
+		}
+		if (inField) return;
+		if (event.key === "+" || event.key === "=") {
+			event.preventDefault();
+			graph.zoom(1.2);
+		} else if (event.key === "-") {
+			event.preventDefault();
+			graph.zoom(1 / 1.2);
+		} else if (event.key === "0") {
+			event.preventDefault();
+			graph.reset();
+		} else if (event.key === "f" || event.key === "F") {
+			event.preventDefault();
+			graph.fit();
+		}
+	};
+	window.addEventListener("keydown", onKeyDown);
 	function destroy() {
 		if (dead) return;
 		dead = true;
@@ -431,6 +613,8 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		scheme?.removeEventListener("change", themeChanged);
 		cancelAnimationFrame(themeFrame);
 		if (renderFrame) cancelAnimationFrame(renderFrame);
+		window.removeEventListener("keydown", onKeyDown);
+		document.removeEventListener("fullscreenchange", onFullscreenChange);
 		window.removeEventListener("pagehide", destroy);
 		if (activePage?.element === element) activePage = null;
 	}
