@@ -20,6 +20,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^2.19.1
         version: 2.34.2
+      '@iconify-json/fluent':
+        specifier: ^1.2.61
+        version: 1.2.61
       '@lazulikao/luci-types':
         specifier: github:LazuliKao/luci-types#90a8e40b9bd5258262394209bccac6b0320549db
         version: https://codeload.github.com/LazuliKao/luci-types/tar.gz/90a8e40b9bd5258262394209bccac6b0320549db
@@ -354,6 +357,12 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@iconify-json/fluent@1.2.61':
+    resolution: {integrity: sha512-QyXqdW1lR9/zFyAh1Z+aK99DAW/QnMpOZoBjbyJ8YoRa0QVRfEAbyvyBRnYPJJoedHu9JKo8woxV01lHOFV3dA==}
+
+  '@iconify/types@2.0.0':
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
   '@lazulikao/luci-types@https://codeload.github.com/LazuliKao/luci-types/tar.gz/90a8e40b9bd5258262394209bccac6b0320549db':
     resolution: {tarball: https://codeload.github.com/LazuliKao/luci-types/tar.gz/90a8e40b9bd5258262394209bccac6b0320549db}
@@ -1392,6 +1401,12 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.2':
     optional: true
+
+  '@iconify-json/fluent@1.2.61':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify/types@2.0.0': {}
 
   '@lazulikao/luci-types@https://codeload.github.com/LazuliKao/luci-types/tar.gz/90a8e40b9bd5258262394209bccac6b0320549db':
     dependencies:

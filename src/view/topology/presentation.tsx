@@ -14,6 +14,7 @@ import {
 	getWifiSyncBadgeSpec,
 } from "../components/badge";
 import { formatUptime } from "../components/formatters";
+import { TOPOLOGY_ICONS, type TopologyIconName } from "./icons";
 import { addressSummary, clientKey, linkFor, measurementAge, type Selection } from "./model";
 import type { ClientState, TopologyStore } from "./store";
 
@@ -74,6 +75,12 @@ function bindingLabel(node: TopologyNode): string {
 			: `${_("ONU ID")} ${active} → ${desired} · ${_("Pending restart")}`;
 }
 
+function deviceIcon(name: TopologyIconName): HTMLElement {
+	const icon = <span class="topo-device-icon" aria-hidden="true" />;
+	icon.innerHTML = TOPOLOGY_ICONS[name];
+	return icon;
+}
+
 export function nodeCard(node: TopologyNode, snapshot: TopologyReply): HTMLElement {
 	const detail = node.detail;
 	const link = linkFor(snapshot, node.id);
@@ -81,9 +88,7 @@ export function nodeCard(node: TopologyNode, snapshot: TopologyReply): HTMLEleme
 	return (
 		<div class="topo-card-content">
 			<div class="topo-card-head">
-				<span class="topo-device-icon" aria-hidden="true">
-					{detail.kind === "controller" ? "⌘" : "▣"}
-				</span>
+				{deviceIcon(detail.kind === "controller" ? "controller" : "onu")}
 				<div class="topo-card-title">
 					<strong title={node.label}>{node.label}</strong>
 					<small>
@@ -137,9 +142,7 @@ export function nodeCard(node: TopologyNode, snapshot: TopologyReply): HTMLEleme
 export function clientCard(client: TopologyClient): HTMLElement {
 	return (
 		<div class="topo-client-content">
-			<span class="topo-device-icon" aria-hidden="true">
-				{client.relation === "associated_with" ? "◉" : "▤"}
-			</span>
+			{deviceIcon(client.relation === "associated_with" ? "wifiClient" : "wiredClient")}
 			<div class="topo-card-title">
 				<strong title={client.hostname ?? client.mac}>{client.hostname ?? client.mac}</strong>
 				<small>{relationText(client)}</small>

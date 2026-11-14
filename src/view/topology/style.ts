@@ -55,7 +55,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-card-content { padding: 14px; width: 100%; height: 100%; }
 .fttr-topology .topo-graph-card::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: linear-gradient(135deg, color-mix(in srgb, var(--topo-blue) 4%, transparent), transparent 55%); }
 .fttr-topology .topo-card-head { display: flex; align-items: center; gap: 10px; }
-.fttr-topology .topo-device-icon { display: inline-flex; flex: 0 0 38px; height: 38px; align-items: center; justify-content: center; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--topo-blue) 28%, transparent); color: var(--topo-blue); background: color-mix(in srgb, var(--topo-blue) 9%, var(--topo-bg)); font-size: 25px; }
+.fttr-topology .topo-device-icon { display: inline-flex; flex: 0 0 38px; height: 38px; align-items: center; justify-content: center; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--topo-blue) 28%, transparent); color: var(--topo-blue); background: color-mix(in srgb, var(--topo-blue) 9%, var(--topo-bg)); }
+.fttr-topology .topo-device-icon svg { width: 22px; height: 22px; display: block; }
 .fttr-topology .topo-card-title { min-width: 0; flex: 1; }
 .fttr-topology .topo-card-title strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; line-height: 21px; }
 .fttr-topology .topo-card-title small { display: block; font-size: 12px; line-height: 18px; color: var(--topo-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -72,7 +73,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-card-foot span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fttr-topology .topo-card-note { font-size: 11px; color: var(--topo-muted); display: block; margin-top: 6px; }
 .fttr-topology .topo-client-content { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
-.fttr-topology .topo-client-content .topo-device-icon { height: 34px; flex-basis: 34px; font-size: 20px; }
+.fttr-topology .topo-client-content .topo-device-icon { height: 34px; flex-basis: 34px; }
+.fttr-topology .topo-client-content .topo-device-icon svg { width: 18px; height: 18px; }
 .fttr-topology .topo-client-content .topo-card-title small { line-height: 16px; }
 .fttr-topology .topo-graph-more, .fttr-topology .topo-graph-note { position: absolute; font-size: 11px; text-align: right; color: var(--topo-blue); background: none; border: 0; padding: 3px 0; }
 .fttr-topology .topo-graph-more { cursor: pointer; text-decoration: underline; }
