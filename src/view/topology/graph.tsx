@@ -340,18 +340,18 @@ export function createTopologyGraph(
 				active: {
 					stroke: palette.selected,
 					strokeOpacity: 1,
-					lineWidth: 3,
+					lineWidth: 3.2,
 					zIndex: 4,
 				},
 				inactive: {
-					opacity: 0.48,
+					opacity: 0.75,
 				},
 			},
 		},
 		node: {
 			state: {
 				active: { zIndex: 3 },
-				inactive: { opacity: 0.55 },
+				inactive: { opacity: 0.75 },
 			},
 		},
 		behaviors: [
@@ -361,7 +361,6 @@ export function createTopologyGraph(
 				preventDefault: true,
 				sensitivity: 0.45,
 			},
-			{ type: "zoom-canvas", key: "pinch-zoom", trigger: ["pinch"] },
 			{
 				type: "hover-activate",
 				key: "hover",
@@ -369,6 +368,9 @@ export function createTopologyGraph(
 				state: "active",
 				inactiveState: "inactive",
 				animation: false,
+				enable: (event: { pointerType?: string }) =>
+					event.pointerType !== "touch" &&
+					(typeof window === "undefined" || window.matchMedia("(hover: hover)").matches),
 			},
 		],
 		plugins: minimapEnabled ? [minimapPlugin()] : [],
@@ -395,8 +397,8 @@ export function createTopologyGraph(
 	let suppressClick = false;
 
 	const onPointerDown = (event: PointerEvent) => {
+		if (event.pointerType === "touch") return;
 		if (event.pointerType === "mouse" && event.button !== 0) return;
-		if (event.pointerType === "touch" && !panEnabled) return;
 		if ((event.target as Element | null)?.closest(".topo-minimap")) return;
 		activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 		if (activePointers.size === 1) {
@@ -404,12 +406,12 @@ export function createTopologyGraph(
 			dragging = false;
 			suppressClick = false;
 		} else {
-			// Yield to two-finger pinch-zoom when a second touch lands.
 			dragging = false;
 			container.classList.remove("is-panning");
 		}
 	};
 	const onPointerMove = (event: PointerEvent) => {
+		if (event.pointerType === "touch") return;
 		const prev = activePointers.get(event.pointerId);
 		if (!prev) return;
 		const dx = event.clientX - prev.x;
@@ -432,6 +434,7 @@ export function createTopologyGraph(
 		}
 	};
 	const endPan = (event: PointerEvent) => {
+		if (event.pointerType === "touch") return;
 		if (!activePointers.delete(event.pointerId)) return;
 		if (activePointers.size === 0 && dragging) {
 			suppressClick = true;
@@ -444,10 +447,138 @@ export function createTopologyGraph(
 			}
 		}
 	};
-	const onTouchMove = (event: TouchEvent) => {
-		if (panEnabled && event.touches.length === 1 && !(event.target as Element | null)?.closest(".topo-minimap")) {
-			event.preventDefault();
+
+	let activeTouchId: number | null = null;
+	let lastTouchX = 0;
+	let lastTouchY = 0;
+	let touchMoved = 0;
+	let touchDragging = false;
+	let lastPinchDist: number | null = null;
+	let pinchRafId = 0;
+	let pendingPinchRatio = 1;
+	let pendingPinchOrigin: [number, number] | null = null;
+
+	const cancelPinchRaf = () => {
+		if (pinchRafId) {
+			cancelAnimationFrame(pinchRafId);
+			pinchRafId = 0;
 		}
+		pendingPinchRatio = 1;
+		pendingPinchOrigin = null;
+	};
+	const resetTouchPan = () => {
+		activeTouchId = null;
+		touchMoved = 0;
+		touchDragging = false;
+		lastPinchDist = null;
+		cancelPinchRaf();
+		container.classList.remove("is-panning");
+	};
+	const findTouch = (touches: TouchList, id: number): Touch | undefined => {
+		for (let i = 0; i < touches.length; i++) {
+			const t = touches[i];
+			if (t && t.identifier === id) return t;
+		}
+		return undefined;
+	};
+	const pinchDistance = (t0: Touch, t1: Touch) => Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+	const flushPinchZoom = () => {
+		pinchRafId = 0;
+		if (dead || !pendingPinchOrigin || Math.abs(pendingPinchRatio - 1) <= 0.002) {
+			pendingPinchRatio = 1;
+			pendingPinchOrigin = null;
+			return;
+		}
+		const ratio = Math.max(0.85, Math.min(1.18, pendingPinchRatio));
+		const origin = pendingPinchOrigin;
+		pendingPinchRatio = 1;
+		pendingPinchOrigin = null;
+		userAdjusted = true;
+		void graph.zoomBy(ratio, false, origin).then(() => {
+			emitScale();
+		});
+	};
+	const onTouchStart = (event: TouchEvent) => {
+		if (!panEnabled) return;
+		const target = event.target as Element | null;
+		if (target?.closest(".topo-minimap") || target?.closest(".topo-pan-toggle")) return;
+		if (event.touches.length === 2) {
+			const t0 = event.touches[0];
+			const t1 = event.touches[1];
+			activeTouchId = null;
+			touchDragging = false;
+			cancelPinchRaf();
+			container.classList.remove("is-panning");
+			lastPinchDist = t0 && t1 ? pinchDistance(t0, t1) : null;
+			return;
+		}
+		if (event.touches.length !== 1) {
+			resetTouchPan();
+			return;
+		}
+		const touch = event.touches[0];
+		if (!touch) return;
+		lastPinchDist = null;
+		cancelPinchRaf();
+		activeTouchId = touch.identifier;
+		lastTouchX = touch.clientX;
+		lastTouchY = touch.clientY;
+		touchMoved = 0;
+		touchDragging = false;
+		suppressClick = false;
+	};
+	const onTouchMove = (event: TouchEvent) => {
+		if (!panEnabled) return;
+		if (event.touches.length === 2) {
+			const t0 = event.touches[0];
+			const t1 = event.touches[1];
+			if (!t0 || !t1) return;
+			event.preventDefault();
+			const dist = pinchDistance(t0, t1);
+			if (lastPinchDist && lastPinchDist > 20 && dist > 20) {
+				const rawRatio = dist / lastPinchDist;
+				if (Math.abs(rawRatio - 1) > 0.006) {
+					lastPinchDist = dist;
+					const damped = Math.max(0.92, Math.min(1.08, 1 + (rawRatio - 1) * 0.65));
+					const box = container.getBoundingClientRect();
+					const ox = Math.max(0, Math.min(box.width, (t0.clientX + t1.clientX) / 2 - box.left));
+					const oy = Math.max(0, Math.min(box.height, (t0.clientY + t1.clientY) / 2 - box.top));
+					pendingPinchRatio *= damped;
+					pendingPinchOrigin = [ox, oy];
+					if (!pinchRafId) pinchRafId = requestAnimationFrame(flushPinchZoom);
+				}
+			} else {
+				lastPinchDist = dist;
+			}
+			return;
+		}
+		if (activeTouchId === null || event.touches.length !== 1) return;
+		const touch = findTouch(event.touches, activeTouchId);
+		if (!touch) return;
+		event.preventDefault();
+		const dx = touch.clientX - lastTouchX;
+		const dy = touch.clientY - lastTouchY;
+		lastTouchX = touch.clientX;
+		lastTouchY = touch.clientY;
+		touchMoved += Math.hypot(dx, dy);
+		if (!touchDragging && touchMoved > 7) {
+			touchDragging = true;
+			container.classList.add("is-panning");
+		}
+		if (touchDragging && (dx !== 0 || dy !== 0)) {
+			userAdjusted = true;
+			void graph.translateBy([dx, dy], false);
+		}
+	};
+	const onTouchEnd = (event: TouchEvent) => {
+		if (event.touches.length < 2) {
+			lastPinchDist = null;
+			cancelPinchRaf();
+		}
+		if (activeTouchId === null) return;
+		if (event.touches.length > 0 && findTouch(event.touches, activeTouchId)) return;
+		if (touchDragging) suppressClick = true;
+		resetTouchPan();
 	};
 	const onClickCapture = (event: MouseEvent) => {
 		if (!suppressClick) return;
@@ -476,7 +607,10 @@ export function createTopologyGraph(
 	container.addEventListener("pointerup", endPan);
 	container.addEventListener("pointercancel", endPan);
 	container.addEventListener("lostpointercapture", endPan);
+	container.addEventListener("touchstart", onTouchStart, { passive: true });
 	container.addEventListener("touchmove", onTouchMove, { passive: false });
+	container.addEventListener("touchend", onTouchEnd);
+	container.addEventListener("touchcancel", onTouchEnd);
 	container.addEventListener("click", onClickCapture, true);
 	container.addEventListener("click", onCardClick);
 	container.addEventListener("dblclick", onCardDblClick);
@@ -630,8 +764,8 @@ export function createTopologyGraph(
 						sourcePort: isVertical ? "bottom" : "right",
 						targetPort: isVertical ? "top" : "left",
 						stroke: isSelected ? palette.selected : isAssociated ? palette.success : palette.muted,
-						strokeOpacity: isSelected ? 1 : 0.78,
-						lineWidth: isSelected ? 2.8 : 1.8,
+						strokeOpacity: isSelected ? 1 : 0.85,
+						lineWidth: isSelected ? 2.8 : 2,
 						lineDash: isAssociated ? [3, 4] : [6, 4],
 						shadowColor: isSelected ? palette.selected : undefined,
 						shadowBlur: isSelected ? 8 : 0,
@@ -670,8 +804,8 @@ export function createTopologyGraph(
 						targetPort: "left",
 						curvePosition: 0.45,
 						stroke: isSelected ? palette.selected : isOffline ? palette.edge : palette[tone],
-						strokeOpacity: isSelected ? 1 : isOffline ? 0.65 : 0.88,
-						lineWidth: isSelected ? 3 : 2.2,
+						strokeOpacity: isSelected ? 1 : isOffline ? 0.78 : 0.92,
+						lineWidth: isSelected ? 3.2 : 2.5,
 						lineDash: isOffline ? [6, 4] : 0,
 						shadowColor: isSelected ? palette.selected : undefined,
 						shadowBlur: isSelected ? 8 : 0,
@@ -791,18 +925,23 @@ export function createTopologyGraph(
 		},
 		setPanning(enabled) {
 			panEnabled = enabled;
+			if (!enabled) resetTouchPan();
 			container.classList.toggle("is-pan-mode", enabled);
 		},
 		destroy() {
 			if (dead) return;
 			dead = true;
+			cancelPinchRaf();
 			observer.disconnect();
 			container.removeEventListener("pointerdown", onPointerDown);
 			container.removeEventListener("pointermove", onPointerMove);
 			container.removeEventListener("pointerup", endPan);
 			container.removeEventListener("pointercancel", endPan);
 			container.removeEventListener("lostpointercapture", endPan);
+			container.removeEventListener("touchstart", onTouchStart);
 			container.removeEventListener("touchmove", onTouchMove);
+			container.removeEventListener("touchend", onTouchEnd);
+			container.removeEventListener("touchcancel", onTouchEnd);
 			container.removeEventListener("click", onClickCapture, true);
 			container.removeEventListener("click", onCardClick);
 			container.removeEventListener("dblclick", onCardDblClick);

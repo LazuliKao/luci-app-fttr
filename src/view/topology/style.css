@@ -569,27 +569,41 @@
 	left: 10px;
 	top: 10px;
 	z-index: 4;
+	box-sizing: border-box;
 	width: 40px;
 	height: 40px;
 	min-width: 0;
+	min-height: 0;
 	margin: 0;
 	padding: 0;
 	align-items: center;
 	justify-content: center;
+	border: 1px solid var(--topo-border);
 	border-radius: 50%;
+	background: var(--topo-card);
+	color: var(--topo-text);
+	cursor: pointer;
 	font-size: 18px;
 	line-height: 1;
 	box-shadow: 0 2px 8px #00000026;
+	transition:
+		background-color 0.12s,
+		border-color 0.12s,
+		color 0.12s;
 }
 .fttr-topology .topo-pan-toggle[aria-pressed="true"] {
 	border-color: var(--topo-blue);
 	color: var(--topo-blue);
+	background: color-mix(in srgb, var(--topo-blue) 12%, var(--topo-card));
 }
-.fttr-topology .topo-pan-toggle .topo-btn-icon,
+.fttr-topology .topo-pan-toggle .topo-btn-icon {
+	width: 20px;
+	height: 20px;
+	flex: 0 0 20px;
+}
 .fttr-topology .topo-pan-toggle .topo-btn-icon svg {
 	width: 20px;
 	height: 20px;
-	flex-basis: 20px;
 }
 .fttr-topology .topo-legend {
 	display: flex;
@@ -885,12 +899,13 @@
 	.fttr-topology .topo-pan-toggle {
 		display: inline-flex;
 	}
-	.fttr-topology .topo-viewport {
-		touch-action: pan-y;
+	.fttr-topology .topo-viewport:not(.is-pan-mode),
+	.fttr-topology .topo-viewport:not(.is-pan-mode) * {
+		touch-action: pan-y !important;
 	}
 	.fttr-topology .topo-viewport.is-pan-mode,
 	.fttr-topology .topo-viewport.is-pan-mode * {
-		touch-action: none;
+		touch-action: none !important;
 	}
 	.fttr-topology pre {
 		max-height: none;

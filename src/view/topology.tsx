@@ -213,7 +213,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	const panToggle = (
 		<button
 			type="button"
-			class="cbi-button cbi-button-neutral topo-pan-toggle"
+			class="topo-pan-toggle"
 			aria-pressed="false"
 			aria-label={_("Drag mode")}
 			title={_("Drag mode")}
