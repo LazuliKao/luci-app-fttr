@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isPageHidden } from "../visibility";
+import badgeCss from "./components/badge.css?inline";
 import { formatDate as date, formatAge, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { capturePanelState } from "./components/panel-state";
+import { ViewStyle } from "./components/view-style";
 import { checkConfig, getStatus, getSync, type SyncAction, sync } from "./contracts/api";
 import { requirePage } from "./contracts/capabilities";
 import type { AcsBootstrap, ConfigCheck, DeviceSync, Lifecycle, SyncItem, SyncStatus } from "./contracts/provisioning";
+import tokensCss from "./styles/tokens.css?inline";
+import syncCss from "./sync.css?inline";
 
 const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | "danger" | "info" | "neutral" }> = {
 	ready: { label: _("Ready"), type: "success" },
@@ -781,223 +785,7 @@ const main = L.view.extend({
 
 		const root = (
 			<div class="cbi-map fttr-sync">
-				<style>
-					{`
-					.fttr-sync {
-						--fttr-success-bg: rgba(46, 204, 113, 0.15);
-						--fttr-success-color: #27ae60;
-						--fttr-success-border: rgba(46, 204, 113, 0.35);
-
-						--fttr-warning-bg: rgba(243, 156, 18, 0.15);
-						--fttr-warning-color: #d35400;
-						--fttr-warning-border: rgba(243, 156, 18, 0.35);
-
-						--fttr-danger-bg: rgba(231, 76, 60, 0.15);
-						--fttr-danger-color: #c0392b;
-						--fttr-danger-border: rgba(231, 76, 60, 0.35);
-
-						--fttr-info-bg: rgba(52, 152, 219, 0.15);
-						--fttr-info-color: #2980b9;
-						--fttr-info-border: rgba(52, 152, 219, 0.35);
-
-						--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
-						--fttr-neutral-color: #7f8c8d;
-						--fttr-neutral-border: rgba(127, 140, 141, 0.25);
-					}
-
-					@media (prefers-color-scheme: dark) {
-						.fttr-sync {
-							--fttr-success-color: #2ecc71;
-							--fttr-warning-color: #f39c12;
-							--fttr-danger-color: #e74c3c;
-							--fttr-info-color: #3498db;
-							--fttr-neutral-color: #bdc3c7;
-						}
-					}
-
-					[data-darkmode="true"] .fttr-sync,
-					[data-theme="dark"] .fttr-sync {
-						--fttr-success-color: #2ecc71;
-						--fttr-warning-color: #f39c12;
-						--fttr-danger-color: #e74c3c;
-						--fttr-info-color: #3498db;
-						--fttr-neutral-color: #bdc3c7;
-					}
-
-					.fttr-sync .fttr-badge {
-						display: inline-block;
-						padding: 0.18em 0.55em;
-						font-size: 85%;
-						font-weight: 600;
-						line-height: 1.25;
-						border-radius: 3px;
-						white-space: nowrap;
-						text-align: center;
-					}
-
-					.fttr-sync .fttr-badge-success {
-						background: var(--fttr-success-bg);
-						color: var(--fttr-success-color);
-						border: 1px solid var(--fttr-success-border);
-					}
-
-					.fttr-sync .fttr-badge-warning {
-						background: var(--fttr-warning-bg);
-						color: var(--fttr-warning-color);
-						border: 1px solid var(--fttr-warning-border);
-					}
-
-					.fttr-sync .fttr-badge-danger {
-						background: var(--fttr-danger-bg);
-						color: var(--fttr-danger-color);
-						border: 1px solid var(--fttr-danger-border);
-					}
-
-					.fttr-sync .fttr-badge-info {
-						background: var(--fttr-info-bg);
-						color: var(--fttr-info-color);
-						border: 1px solid var(--fttr-info-border);
-					}
-
-					.fttr-sync .fttr-badge-neutral {
-						background: var(--fttr-neutral-bg);
-						color: var(--fttr-neutral-color);
-						border: 1px solid var(--fttr-neutral-border);
-					}
-
-					.fttr-sync .fttr-grid-2 {
-						display: grid;
-						grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-						gap: 12px;
-						margin: 8px 0;
-					}
-
-					.fttr-sync .fttr-grid-3 {
-						display: grid;
-						grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-						gap: 12px;
-						margin: 8px 0;
-					}
-
-					.fttr-sync .fttr-card {
-						padding: 10px 14px;
-						border: 1px solid rgba(127, 140, 141, 0.2);
-						border-radius: 6px;
-						background: rgba(127, 140, 141, 0.04);
-					}
-
-					.fttr-sync .fttr-kv-row {
-						display: flex;
-						justify-content: space-between;
-						align-items: center;
-						padding: 4px 0;
-						border-bottom: 1px dashed rgba(127, 140, 141, 0.15);
-						font-size: 88%;
-					}
-
-					.fttr-sync .fttr-kv-row:last-child {
-						border-bottom: none;
-					}
-
-					.fttr-sync .fttr-kv-label {
-						color: #888;
-					}
-
-					.fttr-sync .fttr-pill-label {
-						color: #888;
-						margin-right: 4px;
-						font-size: 90%;
-					}
-
-					.fttr-sync .fttr-device-card {
-						position: relative;
-						margin-bottom: 1.5em;
-					}
-
-					.fttr-sync .fttr-card-header {
-						display: flex;
-						justify-content: space-between;
-						align-items: flex-start;
-						flex-wrap: wrap;
-						gap: 10px;
-						margin-bottom: 10px;
-					}
-
-					.fttr-sync .fttr-card-title-group {
-						display: flex;
-						flex-direction: column;
-						gap: 4px;
-					}
-
-					.fttr-sync .fttr-card-actions {
-						display: flex;
-						gap: 8px;
-						flex-wrap: wrap;
-					}
-
-					.fttr-sync .fttr-card-meta-tags {
-						display: flex;
-						align-items: center;
-						flex-wrap: wrap;
-						gap: 6px;
-					}
-
-					.fttr-sync .fttr-device-status-strip {
-						display: flex;
-						justify-content: space-between;
-						align-items: center;
-						flex-wrap: wrap;
-						gap: 10px;
-						padding: 8px 12px;
-						background: rgba(127, 140, 141, 0.05);
-						border: 1px solid rgba(127, 140, 141, 0.15);
-						border-radius: 5px;
-						margin-bottom: 12px;
-					}
-
-					.fttr-sync .fttr-status-pill-group {
-						display: flex;
-						align-items: center;
-						flex-wrap: wrap;
-						gap: 12px;
-					}
-
-					.fttr-sync .fttr-status-op-info {
-						display: flex;
-						align-items: center;
-						flex-wrap: wrap;
-						gap: 6px;
-						font-size: 85%;
-						color: #666;
-					}
-
-					.fttr-sync .fttr-btn-subtle {
-						font-size: 80%;
-						padding: 3px 8px;
-						border: 1px solid rgba(127, 140, 141, 0.35);
-						background: transparent;
-						color: inherit;
-						border-radius: 4px;
-						cursor: pointer;
-						transition: all 0.2s ease;
-					}
-
-					.fttr-sync .fttr-btn-subtle:hover {
-						background: rgba(231, 76, 60, 0.1);
-						border-color: rgba(231, 76, 60, 0.4);
-						color: #c0392b;
-					}
-
-					.fttr-sync .table th {
-						white-space: nowrap;
-						user-select: none;
-					}
-
-					.fttr-sync .table td {
-						vertical-align: middle;
-					}
-					`}
-				</style>
+				<ViewStyle styles={[tokensCss, badgeCss, syncCss]} />
 				<h2>{_("FTTR synchronization")}</h2>
 				{heading}
 				{error}

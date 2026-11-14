@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isPageHidden } from "../visibility";
+import { ViewStyle } from "./components/view-style";
 import { getNpuStatus, setNpu } from "./contracts/api";
 import { requirePlatformOperation } from "./contracts/capabilities";
 import type { NpuStatus } from "./contracts/status";
+import npuCss from "./npu.css?inline";
 import { exactCounter, maskText } from "./npu-data";
 
 function row(label: string, value: string | number | HTMLElement): HTMLElement {
@@ -340,24 +342,7 @@ function renderPage(): HTMLElement {
 	};
 	const root = (
 		<div class="cbi-map fttr-npu">
-			<style>{`.fttr-npu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.fttr-npu-row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px dashed #8884}.fttr-npu-row strong{text-align:right;overflow-wrap:anywhere}.fttr-npu-note{opacity:.75;font-size:90%;line-height:1.5}.fttr-npu-state{padding:2px 6px;border:1px solid #8886;border-radius:4px}.fttr-npu-state.ready{color:#2b8;border-color:#2b86}.fttr-npu-state.pending{color:#d90;border-color:#d906}.fttr-npu-flows{font-size:85%}.fttr-npu-flows td{overflow-wrap:anywhere}
-.fttr-npu-card{padding:14px 16px;border:1px solid rgba(127,140,141,.25);border-radius:6px;background:rgba(127,140,141,.04);margin-bottom:14px}
-.fttr-npu-field-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.fttr-npu-bridge-row{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(127,140,141,.2)}
-.fttr-npu-checkbox-label{display:inline-flex;align-items:center;gap:10px;cursor:pointer;margin:0;user-select:none}
-.fttr-npu-checkbox-label input[type="checkbox"]{margin:0;cursor:pointer;width:17px;height:17px;flex-shrink:0}
-.fttr-npu-label-text{font-weight:600;font-size:0.95em}
-.fttr-npu-input-wrap input{width:200px;max-width:100%;font-family:monospace;font-size:0.95em;padding:4px 8px}
-.fttr-npu-dir-header{margin:16px 0 10px}
-.fttr-npu-dir-header h4{margin:0;font-size:1.02em;font-weight:600;opacity:.9}
-.fttr-npu-dir-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-bottom:14px}
-.fttr-npu-dir-card{padding:12px 14px;border:1px solid rgba(127,140,141,.25);border-radius:6px;background:rgba(127,140,141,.04);display:flex;flex-direction:column;justify-content:space-between;min-width:0;transition:border-color .2s ease,background .2s ease}
-.fttr-npu-dir-card:hover{border-color:rgba(127,140,141,.45);background:rgba(127,140,141,.07)}
-.fttr-npu-card-desc{margin-top:6px;margin-left:27px;font-size:82%;line-height:1.4;opacity:.8}
-.fttr-npu-notes-box{padding:10px 14px;border-left:3px solid #3498db;background:rgba(52,152,219,.08);border-radius:0 4px 4px 0;margin-bottom:14px;font-size:88%;line-height:1.55}
-.fttr-npu-notes-box p{margin:4px 0}
-.fttr-npu-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
-.fttr-npu-feedback:not(:empty){margin-top:10px;padding:8px 12px;border-radius:4px;background:rgba(127,140,141,.1);font-weight:500}`}</style>
+			<ViewStyle styles={npuCss} />
 			<h2>{_("NPU hardware acceleration")}</h2>
 			<div class="cbi-section">
 				<h3>{_("NPU configuration")}</h3>

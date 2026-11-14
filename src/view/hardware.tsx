@@ -2,14 +2,18 @@
 
 import type { PlatformInfoReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
+import badgeCss from "./components/badge.css?inline";
 import { createFecMonitor } from "./components/fec-monitor";
 import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
 import { createFpgaDiagnostics } from "./components/fpga-diagnostics";
 import { showOnuDetails } from "./components/onu-details";
 import { capturePanelState } from "./components/panel-state";
 import { createTabMenu } from "./components/tabs";
+import { ViewStyle } from "./components/view-style";
 import { getPlatformInfo, getStatus } from "./contracts/api";
 import { eqdText, type FttrStatus as FttrHardwareStatus, type SubGateway } from "./contracts/status";
+import hardwareCss from "./hardware.css?inline";
+import tokensCss from "./styles/tokens.css?inline";
 
 const view = L.view;
 
@@ -333,186 +337,7 @@ function renderHardwarePage(initialStatus: FttrHardwareStatus, platform: Platfor
 
 	const root = (
 		<div class="cbi-map fttr-hardware">
-			<style>
-				{`
-				.fttr-hardware {
-					--fttr-success-bg: rgba(46, 204, 113, 0.15);
-					--fttr-success-color: #27ae60;
-					--fttr-success-border: rgba(46, 204, 113, 0.35);
-
-					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
-					--fttr-warning-color: #d35400;
-					--fttr-warning-border: rgba(243, 156, 18, 0.35);
-
-					--fttr-danger-bg: rgba(231, 76, 60, 0.15);
-					--fttr-danger-color: #c0392b;
-					--fttr-danger-border: rgba(231, 76, 60, 0.35);
-
-					--fttr-info-bg: rgba(52, 152, 219, 0.15);
-					--fttr-info-color: #2980b9;
-					--fttr-info-border: rgba(52, 152, 219, 0.35);
-
-					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
-					--fttr-neutral-color: #7f8c8d;
-					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
-				}
-
-				@media (prefers-color-scheme: dark) {
-					.fttr-hardware {
-						--fttr-success-color: #2ecc71;
-						--fttr-warning-color: #f39c12;
-						--fttr-danger-color: #e74c3c;
-						--fttr-info-color: #3498db;
-						--fttr-neutral-color: #bdc3c7;
-					}
-				}
-
-				[data-darkmode="true"] .fttr-hardware,
-				[data-theme="dark"] .fttr-hardware {
-					--fttr-success-color: #2ecc71;
-					--fttr-warning-color: #f39c12;
-					--fttr-danger-color: #e74c3c;
-					--fttr-info-color: #3498db;
-					--fttr-neutral-color: #bdc3c7;
-				}
-
-				.fttr-hardware .fttr-badge {
-					display: inline-block;
-					padding: 0.18em 0.55em;
-					font-size: 85%;
-					font-weight: 600;
-					line-height: 1.25;
-					border-radius: 3px;
-					white-space: nowrap;
-					text-align: center;
-				}
-
-				.fttr-hardware .fttr-badge-success {
-					background: var(--fttr-success-bg);
-					color: var(--fttr-success-color);
-					border: 1px solid var(--fttr-success-border);
-				}
-
-				.fttr-hardware .fttr-badge-warning {
-					background: var(--fttr-warning-bg);
-					color: var(--fttr-warning-color);
-					border: 1px solid var(--fttr-warning-border);
-				}
-
-				.fttr-hardware .fttr-badge-danger {
-					background: var(--fttr-danger-bg);
-					color: var(--fttr-danger-color);
-					border: 1px solid var(--fttr-danger-border);
-				}
-
-				.fttr-hardware .fttr-badge-info {
-					background: var(--fttr-info-bg);
-					color: var(--fttr-info-color);
-					border: 1px solid var(--fttr-info-border);
-				}
-
-				.fttr-hardware .fttr-badge-neutral {
-					background: var(--fttr-neutral-bg);
-					color: var(--fttr-neutral-color);
-					border: 1px solid var(--fttr-neutral-border);
-				}
-
-				.fttr-hardware .fttr-grid-2 {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-					gap: 12px;
-					margin: 8px 0;
-				}
-
-				.fttr-hardware .fttr-grid-3 {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-					gap: 12px;
-					margin: 8px 0;
-				}
-
-				.fttr-hardware .fttr-card {
-					padding: 12px 14px;
-					border: 1px solid rgba(127, 140, 141, 0.2);
-					border-radius: 6px;
-					background: rgba(127, 140, 141, 0.04);
-				}
-
-				.fttr-hardware .fttr-kv-row {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					padding: 5px 0;
-					border-bottom: 1px dashed rgba(127, 140, 141, 0.15);
-					font-size: 88%;
-				}
-
-				.fttr-hardware .fttr-kv-row:last-child {
-					border-bottom: none;
-				}
-
-				.fttr-hardware .fttr-kv-label {
-					color: #888;
-				}
-
-				.fttr-hardware .fttr-onu-card {
-					position: relative;
-					margin-bottom: 1.2em;
-				}
-
-				.fttr-hardware .fttr-card-header {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					flex-wrap: wrap;
-					gap: 10px;
-					margin-bottom: 10px;
-				}
-
-				.fttr-hardware .fttr-card-title-group {
-					display: flex;
-					align-items: center;
-					gap: 10px;
-					flex-wrap: wrap;
-				}
-
-				.fttr-hardware .fttr-card-meta-tags {
-					display: flex;
-					align-items: center;
-					flex-wrap: wrap;
-					gap: 6px;
-				}
-
-				.fttr-hardware .fttr-btn-subtle {
-					font-size: 82%;
-					padding: 3px 10px;
-					border: 1px solid rgba(127, 140, 141, 0.35);
-					background: transparent;
-					color: inherit;
-					border-radius: 4px;
-					cursor: pointer;
-					text-decoration: none;
-					transition: all 0.2s ease;
-				}
-
-				.fttr-hardware .fttr-btn-subtle:hover {
-					background: rgba(52, 152, 219, 0.1);
-					border-color: rgba(52, 152, 219, 0.4);
-					color: #2980b9;
-				}
-
-				.fttr-hardware .cbi-tabmenu {
-					margin-top: 14px;
-					margin-bottom: 0;
-					user-select: none;
-				}
-
-				.fttr-hardware #fttr-panels-container > .cbi-section {
-					margin-top: 0;
-					border-top-left-radius: 0;
-				}
-				`}
-			</style>
+			<ViewStyle styles={[tokensCss, badgeCss, hardwareCss]} />
 			<h2>{_("FTTR hardware status")}</h2>
 			{staleNotice}
 			{tabMenu}

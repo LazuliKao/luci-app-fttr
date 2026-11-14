@@ -20,7 +20,7 @@
 		"sdk:generate": "node scripts/check-sdk.mjs --generate",
 		"icons:generate": "node scripts/generate-icons.mjs",
 		"check": "pnpm sdk:check && pnpm typecheck && pnpm test && pnpm test:package && pnpm build",
-		"test": "tsx --test tests/config.test.ts tests/npu.test.ts tests/optical.test.ts tests/calibration.test.ts tests/fec-monitor.test.ts tests/fpga.test.ts tests/platform.test.ts tests/topology.test.ts tests/sync.test.ts tests/sdk.test.ts tests/schema-codegen.test.mjs",
+		"test": "tsx --import ./tests/css-inline-hook.mjs --test tests/config.test.ts tests/npu.test.ts tests/optical.test.ts tests/calibration.test.ts tests/fec-monitor.test.ts tests/fpga.test.ts tests/platform.test.ts tests/topology.test.ts tests/sync.test.ts tests/sdk.test.ts tests/schema-codegen.test.mjs",
 		"test:luci": "tsx --test tests/luci-form.test.ts",
 		"test:device": "tsx --test tests/device-contracts.test.ts",
 		"dev:remote": "dotenvx run -- luci-types dev",

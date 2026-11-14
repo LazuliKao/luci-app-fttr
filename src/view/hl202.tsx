@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isPageHidden } from "../visibility";
+import badgeCss from "./components/badge.css?inline";
 import { createTabMenu } from "./components/tabs";
+import { ViewStyle } from "./components/view-style";
 import { requirePage } from "./contracts/capabilities";
 import type { DeviceMeta } from "./contracts/hl202";
 import { setHl202Badge, text } from "./hl202/dom";
 import { createAccountsPanel, createConsolePanel, createReportPanel, isBusy } from "./hl202/panels";
 import { list, type Target } from "./hl202/rpc";
+import hl202Css from "./hl202.css?inline";
+import tokensCss from "./styles/tokens.css?inline";
 
 function renderPage(): HTMLElement {
 	const select = (
@@ -306,224 +310,7 @@ function renderPage(): HTMLElement {
 
 	const root = (
 		<div class="cbi-map hl202-management">
-			<style>
-				{`
-				.hl202-management {
-					--fttr-success-bg: rgba(46, 204, 113, 0.15);
-					--fttr-success-color: #27ae60;
-					--fttr-success-border: rgba(46, 204, 113, 0.35);
-
-					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
-					--fttr-warning-color: #d35400;
-					--fttr-warning-border: rgba(243, 156, 18, 0.35);
-
-					--fttr-danger-bg: rgba(231, 76, 60, 0.15);
-					--fttr-danger-color: #c0392b;
-					--fttr-danger-border: rgba(231, 76, 60, 0.35);
-
-					--fttr-info-bg: rgba(52, 152, 219, 0.15);
-					--fttr-info-color: #2980b9;
-					--fttr-info-border: rgba(52, 152, 219, 0.35);
-
-					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
-					--fttr-neutral-color: #7f8c8d;
-					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
-				}
-
-				@media (prefers-color-scheme: dark) {
-					.hl202-management {
-						--fttr-success-color: #2ecc71;
-						--fttr-warning-color: #f39c12;
-						--fttr-danger-color: #e74c3c;
-						--fttr-info-color: #3498db;
-						--fttr-neutral-color: #bdc3c7;
-					}
-				}
-
-				[data-darkmode="true"] .hl202-management,
-				[data-theme="dark"] .hl202-management {
-					--fttr-success-color: #2ecc71;
-					--fttr-warning-color: #f39c12;
-					--fttr-danger-color: #e74c3c;
-					--fttr-info-color: #3498db;
-					--fttr-neutral-color: #bdc3c7;
-				}
-
-				.hl202-management .hl202-badge {
-					display: inline-block;
-					padding: 0.18em 0.55em;
-					font-size: 85%;
-					font-weight: 600;
-					line-height: 1.25;
-					border-radius: 3px;
-					white-space: nowrap;
-					text-align: center;
-				}
-
-				.hl202-management .hl202-badge-success {
-					background: var(--fttr-success-bg);
-					color: var(--fttr-success-color);
-					border: 1px solid var(--fttr-success-border);
-				}
-
-				.hl202-management .hl202-badge-warning {
-					background: var(--fttr-warning-bg);
-					color: var(--fttr-warning-color);
-					border: 1px solid var(--fttr-warning-border);
-				}
-
-				.hl202-management .hl202-badge-danger {
-					background: var(--fttr-danger-bg);
-					color: var(--fttr-danger-color);
-					border: 1px solid var(--fttr-danger-border);
-				}
-
-				.hl202-management .hl202-badge-info {
-					background: var(--fttr-info-bg);
-					color: var(--fttr-info-color);
-					border: 1px solid var(--fttr-info-border);
-				}
-
-				.hl202-management .hl202-badge-neutral {
-					background: var(--fttr-neutral-bg);
-					color: var(--fttr-neutral-color);
-					border: 1px solid var(--fttr-neutral-border);
-				}
-
-				.hl202-management .hl202-device-card {
-					padding: 12px 16px;
-					border: 1px solid rgba(127, 140, 141, 0.2);
-					border-radius: 6px;
-					background: rgba(127, 140, 141, 0.04);
-					margin-top: 10px;
-					margin-bottom: 0;
-				}
-
-				.hl202-management .hl202-card-header {
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-					flex-wrap: wrap;
-					gap: 12px;
-				}
-
-				.hl202-management .hl202-device-title {
-					display: flex;
-					align-items: center;
-					gap: 8px;
-				}
-
-				.hl202-management .hl202-device-badges {
-					display: flex;
-					align-items: center;
-					gap: 8px;
-					flex-wrap: wrap;
-				}
-
-				.hl202-management .cbi-tabmenu {
-					margin-top: 14px;
-					margin-bottom: 0;
-					user-select: none;
-				}
-
-				.hl202-management #hl202-panels-container > .cbi-section {
-					margin-top: 0;
-					border-top-left-radius: 0;
-				}
-
-				.hl202-management .hl202-terminal {
-					background: #1e1e1e;
-					color: #d4d4d4;
-					font-family: Consolas, Monaco, "Courier New", monospace;
-					border: 1px solid #333;
-					border-radius: 4px;
-					box-sizing: border-box;
-				}
-
-				.hl202-management .hl202-terminal-textarea {
-					width: 100%;
-					padding: 10px 12px;
-					background: transparent;
-					color: inherit;
-					font-family: inherit;
-					font-size: 90%;
-					border: none;
-					resize: vertical;
-					outline: none;
-					line-height: 1.45;
-				}
-
-				.hl202-management .hl202-terminal-output {
-					background: #141414;
-					color: #38ef7d;
-					font-family: Consolas, Monaco, "Courier New", monospace;
-					font-size: 88%;
-					padding: 12px 14px;
-					border-radius: 4px;
-					border: 1px solid #2a2a2a;
-					max-height: 28rem;
-					overflow: auto;
-					white-space: pre-wrap;
-					word-break: break-all;
-					line-height: 1.4;
-					margin-top: 8px;
-				}
-
-				.hl202-management .hl202-snippets {
-					display: flex;
-					align-items: center;
-					flex-wrap: wrap;
-					gap: 6px;
-					margin-bottom: 8px;
-				}
-
-				.hl202-management .hl202-snippet-tag {
-					font-size: 80%;
-					padding: 2px 8px;
-					border-radius: 3px;
-					border: 1px solid rgba(127, 140, 141, 0.35);
-					background: rgba(127, 140, 141, 0.08);
-					color: inherit;
-					cursor: pointer;
-					transition: all 0.15s ease;
-				}
-
-				.hl202-management .hl202-snippet-tag:hover {
-					background: rgba(52, 152, 219, 0.15);
-					border-color: rgba(52, 152, 219, 0.4);
-					color: #2980b9;
-				}
-
-				.hl202-management .fttr-btn-subtle {
-					font-size: 82%;
-					padding: 2px 8px;
-					border: 1px solid rgba(127, 140, 141, 0.35);
-					background: transparent;
-					color: inherit;
-					border-radius: 4px;
-					cursor: pointer;
-					text-decoration: none;
-				}
-
-				.hl202-management .fttr-btn-subtle:hover {
-					background: rgba(52, 152, 219, 0.1);
-					border-color: rgba(52, 152, 219, 0.4);
-					color: #2980b9;
-				}
-
-				.hl202-management :is(.cbi-dropdown,.fluent-custom-select) {
-					width: 100%;
-					max-width: 100%;
-					min-width: 0 !important;
-					box-sizing: border-box;
-				}
-
-				.hl202-management :is(.cbi-dropdown,.fluent-custom-select) > ul > li {
-					white-space: normal;
-					overflow-wrap: anywhere;
-				}
-				`}
-			</style>
+			<ViewStyle styles={[tokensCss, badgeCss, hl202Css]} />
 			<h2>{_("HL202 sub-gateway management")}</h2>
 			<div class="cbi-section">
 				<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">

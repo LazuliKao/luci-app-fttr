@@ -1,0 +1,104 @@
+.fttr-calibration .fttr-grid-2 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 12px;
+	margin: 8px 0;
+}
+
+.fttr-calibration .fttr-grid-3 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 10px;
+	margin: 8px 0;
+}
+
+.fttr-calibration .fttr-grid-4 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 10px;
+	margin: 8px 0;
+}
+
+.fttr-calibration .fttr-card {
+	padding: 12px 14px;
+	border: 1px solid rgba(127, 140, 141, 0.2);
+	border-radius: 6px;
+	background: rgba(127, 140, 141, 0.04);
+}
+
+.fttr-calibration .fttr-stat-tile {
+	padding: 8px 10px;
+	border: 1px solid rgba(127, 140, 141, 0.15);
+	border-radius: 5px;
+	background: rgba(127, 140, 141, 0.03);
+}
+
+.fttr-calibration .fttr-stat-tile .label {
+	font-size: 80%;
+	opacity: 0.75;
+	margin-bottom: 2px;
+}
+
+.fttr-calibration .fttr-stat-tile .val {
+	font-size: 105%;
+	font-weight: 600;
+}
+
+.fttr-calibration .fttr-kv-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px 0;
+	border-bottom: 1px dashed rgba(127, 140, 141, 0.15);
+	font-size: 88%;
+}
+
+.fttr-calibration .fttr-kv-row:last-child {
+	border-bottom: none;
+}
+
+.fttr-calibration .fttr-kv-label {
+	opacity: 0.75;
+}
+
+.fttr-calibration .fttr-dropzone {
+	border: 1px dashed rgba(127, 140, 141, 0.35);
+	border-radius: 6px;
+	padding: 22px;
+	text-align: center;
+	background: rgba(127, 140, 141, 0.03);
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.fttr-calibration .fttr-dropzone:hover {
+	background: rgba(127, 140, 141, 0.08);
+	border-color: rgba(127, 140, 141, 0.6);
+}
+
+.fttr-calibration .fttr-hash {
+	font-family: monospace;
+	font-size: 88%;
+	background: rgba(127, 140, 141, 0.1);
+	padding: 1px 5px;
+	border-radius: 3px;
+	border: 1px solid rgba(127, 140, 141, 0.15);
+	cursor: pointer;
+	user-select: all;
+	transition:
+		border-color 0.2s ease,
+		background-color 0.2s ease;
+}
+
+.fttr-calibration .fttr-hash:hover {
+	border-color: rgba(127, 140, 141, 0.4);
+	background: rgba(127, 140, 141, 0.18);
+}
+
+.fttr-calibration .fttr-hash.copied {
+	background: var(--fttr-success-bg);
+	color: var(--fttr-success-color);
+	border-color: var(--fttr-success-border);
+}

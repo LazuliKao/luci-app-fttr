@@ -1,0 +1,40 @@
+:where(.cbi-map, .onu-details-dialog) {
+	--fttr-success-bg: rgba(46, 204, 113, 0.15);
+	--fttr-success-color: #27ae60;
+	--fttr-success-border: rgba(46, 204, 113, 0.35);
+
+	--fttr-warning-bg: rgba(243, 156, 18, 0.15);
+	--fttr-warning-color: #d35400;
+	--fttr-warning-border: rgba(243, 156, 18, 0.35);
+
+	--fttr-danger-bg: rgba(231, 76, 60, 0.15);
+	--fttr-danger-color: #c0392b;
+	--fttr-danger-border: rgba(231, 76, 60, 0.35);
+
+	--fttr-info-bg: rgba(52, 152, 219, 0.15);
+	--fttr-info-color: #2980b9;
+	--fttr-info-border: rgba(52, 152, 219, 0.35);
+
+	--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
+	--fttr-neutral-color: #7f8c8d;
+	--fttr-neutral-border: rgba(127, 140, 141, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+	:where(.cbi-map, .onu-details-dialog) {
+		--fttr-success-color: #2ecc71;
+		--fttr-warning-color: #f39c12;
+		--fttr-danger-color: #e74c3c;
+		--fttr-info-color: #3498db;
+		--fttr-neutral-color: #bdc3c7;
+	}
+}
+
+[data-darkmode="true"] :where(.cbi-map, .onu-details-dialog),
+[data-theme="dark"] :where(.cbi-map, .onu-details-dialog) {
+	--fttr-success-color: #2ecc71;
+	--fttr-warning-color: #f39c12;
+	--fttr-danger-color: #e74c3c;
+	--fttr-info-color: #3498db;
+	--fttr-neutral-color: #bdc3c7;
+}

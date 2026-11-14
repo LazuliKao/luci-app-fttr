@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { CalibrationMode, CalibrationVersion } from "../api/generated/types";
+import calibrationCss from "./calibration.css?inline";
+import badgeCss from "./components/badge.css?inline";
 import {
 	calibratedAdc,
 	calibratedTemperature,
@@ -9,6 +11,7 @@ import {
 	temperatureTarget,
 } from "./components/calibration-model";
 import { createTabMenu, type TabItem } from "./components/tabs";
+import { ViewStyle } from "./components/view-style";
 import {
 	applyCalibration,
 	type CalibrationInfo,
@@ -17,6 +20,7 @@ import {
 	selectCalibration,
 } from "./contracts/api";
 import { requireCalibrationProfile } from "./contracts/capabilities";
+import tokensCss from "./styles/tokens.css?inline";
 
 const view = L.view;
 
@@ -1285,191 +1289,7 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 
 	root.appendChild(
 		<div>
-			<style>{`
-				.fttr-calibration {
-					--fttr-success-bg: rgba(46, 204, 113, 0.15);
-					--fttr-success-color: #27ae60;
-					--fttr-success-border: rgba(46, 204, 113, 0.35);
-
-					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
-					--fttr-warning-color: #d35400;
-					--fttr-warning-border: rgba(243, 156, 18, 0.35);
-
-					--fttr-danger-bg: rgba(231, 76, 60, 0.15);
-					--fttr-danger-color: #c0392b;
-					--fttr-danger-border: rgba(231, 76, 60, 0.35);
-
-					--fttr-info-bg: rgba(52, 152, 219, 0.15);
-					--fttr-info-color: #2980b9;
-					--fttr-info-border: rgba(52, 152, 219, 0.35);
-
-					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
-					--fttr-neutral-color: #7f8c8d;
-					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
-				}
-
-				@media (prefers-color-scheme: dark) {
-					.fttr-calibration {
-						--fttr-success-color: #2ecc71;
-						--fttr-warning-color: #f39c12;
-						--fttr-danger-color: #e74c3c;
-						--fttr-info-color: #3498db;
-						--fttr-neutral-color: #bdc3c7;
-					}
-				}
-
-				[data-darkmode="true"] .fttr-calibration,
-				[data-theme="dark"] .fttr-calibration {
-					--fttr-success-color: #2ecc71;
-					--fttr-warning-color: #f39c12;
-					--fttr-danger-color: #e74c3c;
-					--fttr-info-color: #3498db;
-					--fttr-neutral-color: #bdc3c7;
-				}
-
-				.fttr-calibration .fttr-badge {
-					display: inline-block;
-					padding: 0.18em 0.55em;
-					font-size: 85%;
-					font-weight: 600;
-					line-height: 1.25;
-					border-radius: 3px;
-					white-space: nowrap;
-					text-align: center;
-				}
-
-				.fttr-calibration .fttr-badge-success {
-					background: var(--fttr-success-bg);
-					color: var(--fttr-success-color);
-					border: 1px solid var(--fttr-success-border);
-				}
-
-				.fttr-calibration .fttr-badge-warning {
-					background: var(--fttr-warning-bg);
-					color: var(--fttr-warning-color);
-					border: 1px solid var(--fttr-warning-border);
-				}
-
-				.fttr-calibration .fttr-badge-danger {
-					background: var(--fttr-danger-bg);
-					color: var(--fttr-danger-color);
-					border: 1px solid var(--fttr-danger-border);
-				}
-
-				.fttr-calibration .fttr-badge-info {
-					background: var(--fttr-info-bg);
-					color: var(--fttr-info-color);
-					border: 1px solid var(--fttr-info-border);
-				}
-
-				.fttr-calibration .fttr-badge-neutral {
-					background: var(--fttr-neutral-bg);
-					color: var(--fttr-neutral-color);
-					border: 1px solid var(--fttr-neutral-border);
-				}
-
-				.fttr-calibration .fttr-grid-2 {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-					gap: 12px;
-					margin: 8px 0;
-				}
-
-				.fttr-calibration .fttr-grid-3 {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-					gap: 10px;
-					margin: 8px 0;
-				}
-
-				.fttr-calibration .fttr-grid-4 {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-					gap: 10px;
-					margin: 8px 0;
-				}
-
-				.fttr-calibration .fttr-card {
-					padding: 12px 14px;
-					border: 1px solid rgba(127, 140, 141, 0.2);
-					border-radius: 6px;
-					background: rgba(127, 140, 141, 0.04);
-				}
-
-				.fttr-calibration .fttr-stat-tile {
-					padding: 8px 10px;
-					border: 1px solid rgba(127, 140, 141, 0.15);
-					border-radius: 5px;
-					background: rgba(127, 140, 141, 0.03);
-				}
-
-				.fttr-calibration .fttr-stat-tile .label {
-					font-size: 80%;
-					opacity: 0.75;
-					margin-bottom: 2px;
-				}
-
-				.fttr-calibration .fttr-stat-tile .val {
-					font-size: 105%;
-					font-weight: 600;
-				}
-
-				.fttr-calibration .fttr-kv-row {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					padding: 5px 0;
-					border-bottom: 1px dashed rgba(127, 140, 141, 0.15);
-					font-size: 88%;
-				}
-
-				.fttr-calibration .fttr-kv-row:last-child {
-					border-bottom: none;
-				}
-
-				.fttr-calibration .fttr-kv-label {
-					opacity: 0.75;
-				}
-
-				.fttr-calibration .fttr-dropzone {
-					border: 1px dashed rgba(127, 140, 141, 0.35);
-					border-radius: 6px;
-					padding: 22px;
-					text-align: center;
-					background: rgba(127, 140, 141, 0.03);
-					cursor: pointer;
-					transition: background 0.15s ease, border-color 0.15s ease;
-				}
-
-				.fttr-calibration .fttr-dropzone:hover {
-					background: rgba(127, 140, 141, 0.08);
-					border-color: rgba(127, 140, 141, 0.6);
-				}
-
-				.fttr-calibration .fttr-hash {
-					font-family: monospace;
-					font-size: 88%;
-					background: rgba(127, 140, 141, 0.1);
-					padding: 1px 5px;
-					border-radius: 3px;
-					border: 1px solid rgba(127, 140, 141, 0.15);
-					cursor: pointer;
-					user-select: all;
-					transition: border-color 0.2s ease, background-color 0.2s ease;
-				}
-
-				.fttr-calibration .fttr-hash:hover {
-					border-color: rgba(127, 140, 141, 0.4);
-					background: rgba(127, 140, 141, 0.18);
-				}
-
-				.fttr-calibration .fttr-hash.copied {
-					background: var(--fttr-success-bg);
-					color: var(--fttr-success-color);
-					border-color: var(--fttr-success-border);
-				}
-
-			`}</style>
+			<ViewStyle styles={[tokensCss, badgeCss, calibrationCss]} />
 
 			<h2 style="margin-bottom:4px">{_("BOSA downstream optical calibration management (UX3326)")}</h2>
 			<p class="cbi-section-descr" style="margin-bottom:12px">

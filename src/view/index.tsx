@@ -2,7 +2,6 @@
 
 import { isPageHidden } from "../visibility";
 import {
-	BADGE_CSS,
 	getBusinessBadgeSpec,
 	getCwmpBadgeSpec,
 	getProvisioningBadgeSpec,
@@ -10,13 +9,17 @@ import {
 	getWifiSyncBadgeSpec,
 	updateBadge,
 } from "./components/badge";
+import badgeCss from "./components/badge.css?inline";
 import { formatBytes, formatFirmware, formatLinkSpeed, formatPackets, text } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { confirmOnuPin } from "./components/onu-pin";
 import { createOpticalControl } from "./components/optical-control";
+import { ViewStyle } from "./components/view-style";
 import type { PlatformInfoReply } from "./contracts/api";
 import { getNetworkDevices, getPlatformInfo, getStatus } from "./contracts/api";
 import type { FttrStatus, NetworkDevices, SubGateway, SwitchPortStatus } from "./contracts/status";
+import indexCss from "./index.css?inline";
+import tokensCss from "./styles/tokens.css?inline";
 
 const view = L.view;
 const poll = L.Poll;
@@ -490,140 +493,7 @@ function createStatusView(
 
 	const element = (
 		<div class="cbi-map fttr-overview">
-			<style>
-				{`
-				.fttr-overview {
-					--fttr-success-bg: rgba(46, 204, 113, 0.15);
-					--fttr-success-color: #27ae60;
-					--fttr-success-border: rgba(46, 204, 113, 0.35);
-
-					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
-					--fttr-warning-color: #d35400;
-					--fttr-warning-border: rgba(243, 156, 18, 0.35);
-
-					--fttr-danger-bg: rgba(231, 76, 60, 0.15);
-					--fttr-danger-color: #c0392b;
-					--fttr-danger-border: rgba(231, 76, 60, 0.35);
-
-					--fttr-info-bg: rgba(52, 152, 219, 0.15);
-					--fttr-info-color: #2980b9;
-					--fttr-info-border: rgba(52, 152, 219, 0.35);
-
-					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
-					--fttr-neutral-color: #7f8c8d;
-					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
-				}
-
-				@media (prefers-color-scheme: dark) {
-					.fttr-overview {
-						--fttr-success-color: #2ecc71;
-						--fttr-warning-color: #f39c12;
-						--fttr-danger-color: #e74c3c;
-						--fttr-info-color: #3498db;
-						--fttr-neutral-color: #bdc3c7;
-					}
-				}
-
-				[data-darkmode="true"] .fttr-overview,
-				[data-theme="dark"] .fttr-overview {
-					--fttr-success-color: #2ecc71;
-					--fttr-warning-color: #f39c12;
-					--fttr-danger-color: #e74c3c;
-					--fttr-info-color: #3498db;
-					--fttr-neutral-color: #bdc3c7;
-				}
-
-				${BADGE_CSS}
-
-				.fttr-overview .fttr-ports-grid {
-					display: grid;
-					grid-template-columns: repeat(8, 100px);
-					gap: 8px;
-					margin-bottom: 1em;
-					margin-inline: auto;
-					width: fit-content;
-					max-width: 100%;
-				}
-
-				@media (max-width: 1100px) {
-					.fttr-overview .fttr-ports-grid {
-						grid-template-columns: repeat(4, 100px);
-					}
-				}
-
-				@media (max-width: 520px) {
-					.fttr-overview .fttr-ports-grid {
-						grid-template-columns: repeat(2, 100px);
-					}
-				}
-
-				.fttr-overview .fttr-port-card {
-					box-sizing: border-box;
-					width: 100px;
-					margin: 0;
-					cursor: pointer;
-					text-align: center;
-					transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
-				}
-
-				.fttr-overview .fttr-port-name {
-					text-align: center;
-				}
-
-				.fttr-overview .fttr-port-identity {
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-				}
-
-				.fttr-overview .fttr-port-identity > span {
-					text-align: center;
-				}
-
-				.fttr-overview .fttr-port-stats {
-					display: flex !important;
-					flex-direction: column !important;
-					align-items: center;
-					font-size: 80%;
-					line-height: 1.4;
-					width: 100%;
-					box-sizing: border-box;
-				}
-
-				.fttr-overview .fttr-port-stats > div {
-					white-space: nowrap;
-				}
-
-				.fttr-overview .fttr-port-card.port-down {
-					opacity: 0.65;
-				}
-
-				.fttr-overview .fttr-port-card.port-down:hover {
-					opacity: 1 !important;
-				}
-
-				.fttr-overview .fttr-row-highlight {
-					background-color: rgba(52, 152, 219, 0.12) !important;
-					outline: 1px solid rgba(52, 152, 219, 0.4);
-				}
-
-				.fttr-overview .fttr-port-highlight {
-					box-shadow: 0 0 0 2px #3498db !important;
-					transform: translateY(-2px);
-				}
-
-				.fttr-overview table.table th {
-					white-space: nowrap;
-					padding: 0.5em 0.7em;
-				}
-
-				.fttr-overview table.table td {
-					white-space: nowrap;
-					padding: 0.5em 0.7em;
-					vertical-align: middle;
-				}
-				`}
-			</style>
+			<ViewStyle styles={[tokensCss, badgeCss, indexCss]} />
 			<h2>{_("FTTR overview")}</h2>
 			{staleNotice}
 			{opticalControl.element}

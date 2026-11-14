@@ -3,6 +3,7 @@ import { getFttrClient } from "../api/client";
 import type { TopologyReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
 import { formatAge } from "./components/formatters";
+import { ViewStyle } from "./components/view-style";
 import {
 	countFilteredNodes,
 	createTopologyGraph,
@@ -14,7 +15,7 @@ import { TOPOLOGY_ICONS, type TopologyIconName } from "./topology/icons";
 import { CONTROLLER_ID, counts, type Selection } from "./topology/model";
 import { badge, renderDetails } from "./topology/presentation";
 import { errorText, TopologyStore } from "./topology/store";
-import { TOPOLOGY_CSS } from "./topology/style";
+import topologyCss from "./topology/style.css?inline";
 
 const view = L.view;
 const poll = L.Poll;
@@ -320,7 +321,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 	document.addEventListener("fullscreenchange", onFullscreenChange);
 	const element = (
 		<div class="cbi-map fttr-topology">
-			<style>{TOPOLOGY_CSS}</style>
+			<ViewStyle styles={topologyCss} />
 			<header class="topo-header">
 				<div>
 					<h2>{_("FTTR Topology")}</h2>

@@ -1,0 +1,90 @@
+.fttr-overview .fttr-ports-grid {
+	display: grid;
+	grid-template-columns: repeat(8, 100px);
+	gap: 8px;
+	margin-bottom: 1em;
+	margin-inline: auto;
+	width: fit-content;
+	max-width: 100%;
+}
+
+@media (max-width: 1100px) {
+	.fttr-overview .fttr-ports-grid {
+		grid-template-columns: repeat(4, 100px);
+	}
+}
+
+@media (max-width: 520px) {
+	.fttr-overview .fttr-ports-grid {
+		grid-template-columns: repeat(2, 100px);
+	}
+}
+
+.fttr-overview .fttr-port-card {
+	box-sizing: border-box;
+	width: 100px;
+	margin: 0;
+	cursor: pointer;
+	text-align: center;
+	transition:
+		opacity 0.2s,
+		box-shadow 0.2s,
+		transform 0.2s;
+}
+
+.fttr-overview .fttr-port-name {
+	text-align: center;
+}
+
+.fttr-overview .fttr-port-identity {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.fttr-overview .fttr-port-identity > span {
+	text-align: center;
+}
+
+.fttr-overview .fttr-port-stats {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center;
+	font-size: 80%;
+	line-height: 1.4;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.fttr-overview .fttr-port-stats > div {
+	white-space: nowrap;
+}
+
+.fttr-overview .fttr-port-card.port-down {
+	opacity: 0.65;
+}
+
+.fttr-overview .fttr-port-card.port-down:hover {
+	opacity: 1 !important;
+}
+
+.fttr-overview .fttr-row-highlight {
+	background-color: rgba(52, 152, 219, 0.12) !important;
+	outline: 1px solid rgba(52, 152, 219, 0.4);
+}
+
+.fttr-overview .fttr-port-highlight {
+	box-shadow: 0 0 0 2px #3498db !important;
+	transform: translateY(-2px);
+}
+
+.fttr-overview table.table th {
+	white-space: nowrap;
+	padding: 0.5em 0.7em;
+}
+
+.fttr-overview table.table td {
+	white-space: nowrap;
+	padding: 0.5em 0.7em;
+	vertical-align: middle;
+}

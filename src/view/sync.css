@@ -1,0 +1,131 @@
+.fttr-sync .fttr-grid-2 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 12px;
+	margin: 8px 0;
+}
+
+.fttr-sync .fttr-grid-3 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 12px;
+	margin: 8px 0;
+}
+
+.fttr-sync .fttr-card {
+	padding: 10px 14px;
+	border: 1px solid rgba(127, 140, 141, 0.2);
+	border-radius: 6px;
+	background: rgba(127, 140, 141, 0.04);
+}
+
+.fttr-sync .fttr-kv-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 4px 0;
+	border-bottom: 1px dashed rgba(127, 140, 141, 0.15);
+	font-size: 88%;
+}
+
+.fttr-sync .fttr-kv-row:last-child {
+	border-bottom: none;
+}
+
+.fttr-sync .fttr-kv-label {
+	color: #888;
+}
+
+.fttr-sync .fttr-pill-label {
+	color: #888;
+	margin-right: 4px;
+	font-size: 90%;
+}
+
+.fttr-sync .fttr-device-card {
+	position: relative;
+	margin-bottom: 1.5em;
+}
+
+.fttr-sync .fttr-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.fttr-sync .fttr-card-title-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.fttr-sync .fttr-card-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.fttr-sync .fttr-card-meta-tags {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.fttr-sync .fttr-device-status-strip {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	padding: 8px 12px;
+	background: rgba(127, 140, 141, 0.05);
+	border: 1px solid rgba(127, 140, 141, 0.15);
+	border-radius: 5px;
+	margin-bottom: 12px;
+}
+
+.fttr-sync .fttr-status-pill-group {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.fttr-sync .fttr-status-op-info {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-size: 85%;
+	color: #666;
+}
+
+.fttr-sync .fttr-btn-subtle {
+	font-size: 80%;
+	padding: 3px 8px;
+	border: 1px solid rgba(127, 140, 141, 0.35);
+	background: transparent;
+	color: inherit;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.fttr-sync .fttr-btn-subtle:hover {
+	background: rgba(231, 76, 60, 0.1);
+	border-color: rgba(231, 76, 60, 0.4);
+	color: #c0392b;
+}
+
+.fttr-sync .table th {
+	white-space: nowrap;
+	user-select: none;
+}
+
+.fttr-sync .table td {
+	vertical-align: middle;
+}

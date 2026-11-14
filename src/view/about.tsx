@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import aboutCss from "./about.css?inline";
+import badgeCss from "./components/badge.css?inline";
+import { ViewStyle } from "./components/view-style";
+import tokensCss from "./styles/tokens.css?inline";
+
 const view = L.view;
 
 interface RepoInfo {
@@ -53,163 +58,7 @@ const REPOSITORIES: RepoInfo[] = [
 function renderAboutPage(): HTMLElement {
 	return (
 		<div class="cbi-map fttr-about">
-			<style>
-				{`
-				.fttr-about {
-					--fttr-success-bg: rgba(46, 204, 113, 0.15);
-					--fttr-success-color: #27ae60;
-					--fttr-success-border: rgba(46, 204, 113, 0.35);
-
-					--fttr-warning-bg: rgba(243, 156, 18, 0.15);
-					--fttr-warning-color: #d35400;
-					--fttr-warning-border: rgba(243, 156, 18, 0.35);
-
-					--fttr-info-bg: rgba(52, 152, 219, 0.15);
-					--fttr-info-color: #2980b9;
-					--fttr-info-border: rgba(52, 152, 219, 0.35);
-
-					--fttr-neutral-bg: rgba(127, 140, 141, 0.12);
-					--fttr-neutral-color: #7f8c8d;
-					--fttr-neutral-border: rgba(127, 140, 141, 0.25);
-				}
-
-				@media (prefers-color-scheme: dark) {
-					.fttr-about {
-						--fttr-success-color: #2ecc71;
-						--fttr-warning-color: #f39c12;
-						--fttr-info-color: #3498db;
-						--fttr-neutral-color: #bdc3c7;
-					}
-				}
-
-				[data-darkmode="true"] .fttr-about,
-				[data-theme="dark"] .fttr-about {
-					--fttr-success-color: #2ecc71;
-					--fttr-warning-color: #f39c12;
-					--fttr-info-color: #3498db;
-					--fttr-neutral-color: #bdc3c7;
-				}
-
-				.fttr-about .fttr-badge {
-					display: inline-block;
-					padding: 0.18em 0.55em;
-					font-size: 85%;
-					font-weight: 600;
-					line-height: 1.25;
-					border-radius: 3px;
-					white-space: nowrap;
-					text-align: center;
-				}
-
-				.fttr-about .fttr-badge-success {
-					background: var(--fttr-success-bg);
-					color: var(--fttr-success-color);
-					border: 1px solid var(--fttr-success-border);
-				}
-
-				.fttr-about .fttr-badge-warning {
-					background: var(--fttr-warning-bg);
-					color: var(--fttr-warning-color);
-					border: 1px solid var(--fttr-warning-border);
-				}
-
-				.fttr-about .fttr-badge-info {
-					background: var(--fttr-info-bg);
-					color: var(--fttr-info-color);
-					border: 1px solid var(--fttr-info-border);
-				}
-
-				.fttr-about .fttr-badge-neutral {
-					background: var(--fttr-neutral-bg);
-					color: var(--fttr-neutral-color);
-					border: 1px solid var(--fttr-neutral-border);
-				}
-
-				.fttr-about .fttr-repo-grid {
-					display: grid;
-					grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-					gap: 16px;
-					margin: 12px 0 20px 0;
-				}
-
-				.fttr-about .fttr-repo-card {
-					display: flex;
-					flex-direction: column;
-					justify-content: space-between;
-					padding: 16px;
-					border: 1px solid rgba(127, 140, 141, 0.25);
-					border-radius: 6px;
-					background: rgba(127, 140, 141, 0.04);
-				}
-
-				.fttr-about .fttr-repo-header {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					margin-bottom: 8px;
-				}
-
-				.fttr-about .fttr-repo-title {
-					font-size: 1.1em;
-					font-weight: 600;
-					margin: 0;
-				}
-
-				.fttr-about .fttr-repo-desc {
-					font-size: 90%;
-					color: #666;
-					margin: 8px 0 14px 0;
-					flex-grow: 1;
-					line-height: 1.5;
-				}
-
-				[data-darkmode="true"] .fttr-about .fttr-repo-desc,
-				[data-theme="dark"] .fttr-about .fttr-repo-desc {
-					color: #aaa;
-				}
-
-				.fttr-about .fttr-repo-footer {
-					margin-top: auto;
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					gap: 8px;
-					flex-wrap: wrap;
-				}
-
-				.fttr-about .fttr-repo-link {
-					font-family: monospace;
-					font-size: 90%;
-					word-break: break-all;
-				}
-
-				.fttr-about .fttr-tutorial-box {
-					padding: 24px 20px;
-					border: 1px dashed rgba(127, 140, 141, 0.35);
-					border-radius: 6px;
-					background: rgba(127, 140, 141, 0.03);
-					text-align: center;
-					margin: 12px 0;
-				}
-
-				.fttr-about .fttr-placeholder-title {
-					font-size: 1.05em;
-					font-weight: 600;
-					margin: 0 0 6px 0;
-				}
-
-				.fttr-about .fttr-placeholder-desc {
-					font-size: 90%;
-					color: #777;
-					margin: 0;
-				}
-
-				[data-darkmode="true"] .fttr-about .fttr-placeholder-desc,
-				[data-theme="dark"] .fttr-about .fttr-placeholder-desc {
-					color: #aaa;
-				}
-				`}
-			</style>
+			<ViewStyle styles={[tokensCss, badgeCss, aboutCss]} />
 
 			<h2>{_("About FTTR")}</h2>
 			<div class="cbi-map-descr">

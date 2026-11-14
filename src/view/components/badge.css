@@ -1,0 +1,83 @@
+:is(.fttr-badge, .hl202-badge) {
+	display: inline-block;
+	padding: 0.18em 0.55em;
+	font-size: 85%;
+	font-weight: 600;
+	line-height: 1.25;
+	border-radius: 3px;
+	white-space: nowrap;
+	text-align: center;
+}
+
+:is(.fttr-badge-success, .hl202-badge-success) {
+	background: var(--fttr-success-bg, rgba(46, 204, 113, 0.15));
+	color: var(--fttr-success-color, #27ae60);
+	border: 1px solid var(--fttr-success-border, rgba(46, 204, 113, 0.35));
+}
+
+:is(.fttr-badge-warning, .hl202-badge-warning) {
+	background: var(--fttr-warning-bg, rgba(243, 156, 18, 0.15));
+	color: var(--fttr-warning-color, #d35400);
+	border: 1px solid var(--fttr-warning-border, rgba(243, 156, 18, 0.35));
+}
+
+:is(.fttr-badge-danger, .hl202-badge-danger) {
+	background: var(--fttr-danger-bg, rgba(231, 76, 60, 0.15));
+	color: var(--fttr-danger-color, #c0392b);
+	border: 1px solid var(--fttr-danger-border, rgba(231, 76, 60, 0.35));
+}
+
+:is(.fttr-badge-info, .hl202-badge-info) {
+	background: var(--fttr-info-bg, rgba(52, 152, 219, 0.15));
+	color: var(--fttr-info-color, #2980b9);
+	border: 1px solid var(--fttr-info-border, rgba(52, 152, 219, 0.35));
+}
+
+:is(.fttr-badge-neutral, .hl202-badge-neutral) {
+	background: var(--fttr-neutral-bg, rgba(127, 140, 141, 0.12));
+	color: var(--fttr-neutral-color, #7f8c8d);
+	border: 1px solid var(--fttr-neutral-border, rgba(127, 140, 141, 0.25));
+}
+
+@media (prefers-color-scheme: dark) {
+	:is(.fttr-badge-success, .hl202-badge-success) {
+		color: var(--fttr-success-color, #2ecc71);
+	}
+	:is(.fttr-badge-warning, .hl202-badge-warning) {
+		color: var(--fttr-warning-color, #f39c12);
+	}
+	:is(.fttr-badge-danger, .hl202-badge-danger) {
+		color: var(--fttr-danger-color, #e74c3c);
+	}
+	:is(.fttr-badge-info, .hl202-badge-info) {
+		color: var(--fttr-info-color, #3498db);
+	}
+	:is(.fttr-badge-neutral, .hl202-badge-neutral) {
+		color: var(--fttr-neutral-color, #bdc3c7);
+	}
+}
+
+[data-darkmode="true"] :is(.fttr-badge-success, .hl202-badge-success),
+[data-theme="dark"] :is(.fttr-badge-success, .hl202-badge-success) {
+	color: var(--fttr-success-color, #2ecc71);
+}
+
+[data-darkmode="true"] :is(.fttr-badge-warning, .hl202-badge-warning),
+[data-theme="dark"] :is(.fttr-badge-warning, .hl202-badge-warning) {
+	color: var(--fttr-warning-color, #f39c12);
+}
+
+[data-darkmode="true"] :is(.fttr-badge-danger, .hl202-badge-danger),
+[data-theme="dark"] :is(.fttr-badge-danger, .hl202-badge-danger) {
+	color: var(--fttr-danger-color, #e74c3c);
+}
+
+[data-darkmode="true"] :is(.fttr-badge-info, .hl202-badge-info),
+[data-theme="dark"] :is(.fttr-badge-info, .hl202-badge-info) {
+	color: var(--fttr-info-color, #3498db);
+}
+
+[data-darkmode="true"] :is(.fttr-badge-neutral, .hl202-badge-neutral),
+[data-theme="dark"] :is(.fttr-badge-neutral, .hl202-badge-neutral) {
+	color: var(--fttr-neutral-color, #bdc3c7);
+}

@@ -1,0 +1,94 @@
+.fttr-hardware .fttr-grid-2 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 12px;
+	margin: 8px 0;
+}
+
+.fttr-hardware .fttr-grid-3 {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 12px;
+	margin: 8px 0;
+}
+
+.fttr-hardware .fttr-card {
+	padding: 12px 14px;
+	border: 1px solid rgba(127, 140, 141, 0.2);
+	border-radius: 6px;
+	background: rgba(127, 140, 141, 0.04);
+}
+
+.fttr-hardware .fttr-kv-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px 0;
+	border-bottom: 1px dashed rgba(127, 140, 141, 0.15);
+	font-size: 88%;
+}
+
+.fttr-hardware .fttr-kv-row:last-child {
+	border-bottom: none;
+}
+
+.fttr-hardware .fttr-kv-label {
+	color: #888;
+}
+
+.fttr-hardware .fttr-onu-card {
+	position: relative;
+	margin-bottom: 1.2em;
+}
+
+.fttr-hardware .fttr-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.fttr-hardware .fttr-card-title-group {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.fttr-hardware .fttr-card-meta-tags {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.fttr-hardware .fttr-btn-subtle {
+	font-size: 82%;
+	padding: 3px 10px;
+	border: 1px solid rgba(127, 140, 141, 0.35);
+	background: transparent;
+	color: inherit;
+	border-radius: 4px;
+	cursor: pointer;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+
+.fttr-hardware .fttr-btn-subtle:hover {
+	background: rgba(52, 152, 219, 0.1);
+	border-color: rgba(52, 152, 219, 0.4);
+	color: #2980b9;
+}
+
+.fttr-hardware .cbi-tabmenu {
+	margin-top: 14px;
+	margin-bottom: 0;
+	user-select: none;
+}
+
+.fttr-hardware #fttr-panels-container > .cbi-section {
+	margin-top: 0;
+	border-top-left-radius: 0;
+}
