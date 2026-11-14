@@ -186,22 +186,19 @@ export function addDevices(
 				return renderOption.call(this, id, index, selected || option.default);
 			};
 		}
-		const validateSelection = (id: string): boolean | string => {
-			const current = (option: any): string =>
-				String(option.formvalue(id) ?? L.uci.get("fttr", id, option.option) ?? "");
-			const selectedOmci = current(omciAdapter);
-			const selectedBootstrap = current(bootstrapAdapter);
-			const selectedProvisioning = current(provisioningAdapter);
-			if (!supportedAdapters.omci.has(selectedOmci))
-				return _("Selected OMCI adapter is unavailable in this build.");
-			if (!supportedAdapters.bootstrap.has(selectedBootstrap))
-				return _("Selected ACS bootstrap is unavailable in this build.");
-			if (!supportedAdapters.provisioning.has(selectedProvisioning))
-				return _("Selected business provisioning option is unavailable in this build.");
-			return true;
-		};
-		bootstrapAdapter.validate = validateSelection;
-		provisioningAdapter.validate = validateSelection;
+		for (const [option, supported, message] of [
+			[omciAdapter, supportedAdapters.omci, _("Selected OMCI adapter is unavailable in this build.")],
+			[bootstrapAdapter, supportedAdapters.bootstrap, _("Selected ACS bootstrap is unavailable in this build.")],
+			[
+				provisioningAdapter,
+				supportedAdapters.provisioning,
+				_("Selected business provisioning option is unavailable in this build."),
+			],
+		] as const) {
+			const fallback = String(option.default);
+			option.validate = (_id: string, value: string): boolean | string =>
+				supported.has(String(value || fallback)) ? true : message;
+		}
 		tabreference(s, "general", "group", _("Group"), "group").modalonly = true;
 		const pin = tabchoice(
 			s,

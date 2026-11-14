@@ -409,7 +409,7 @@ test("read-only users can inspect recovery but cannot edit or delete", async () 
 test("device editor modal configures general, cwmp, and advanced tabs", () => {
 	const map = new L.form.Map("fttr");
 	const root = map.section(L.form.NamedSection, "main", "main");
-	addDevices(root, []);
+	addDevices(root, [], { onus: [] } as any);
 	const deviceGrid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
 	assert.ok(deviceGrid instanceof L.form.GridSection);
 	assert.deepEqual(
@@ -479,7 +479,7 @@ test("device editor presents adapter functions and recommends selections from ca
 		{ serial_number: "STAR12345678", model: "SG631Z-C", vendor: "STAR", state: "o5_operation", onu_id: 1 },
 		{ serial_number: "HWTC12345678", model: "K155", vendor: "HWTC", state: "o5_operation", onu_id: 2 },
 	];
-	addDevices(root, connected, undefined, capabilities);
+	addDevices(root, connected, { onus: [] } as any, undefined, capabilities);
 	const deviceGrid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
 	assert.ok(
 		["omci_adapter", "bootstrap_adapter", "provisioning_adapter"].every((name) =>
@@ -529,4 +529,77 @@ test("device editor presents adapter functions and recommends selections from ca
 			assert.equal(bootstrap.validate("dev1"), true, `${bootstrapId} + ${provisioningId}`);
 		}
 	}
+});
+
+test("device adapter validation uses modal selections, not persisted UCI values", async () => {
+	const capabilities: any = {
+		schema_version: 1,
+		version: "0.1.0",
+		features: {},
+		functions: {},
+		pages: { config: true },
+		adapters: {
+			omci: [
+				{ id: "generic", name: "Generic G.988 Bridge" },
+				{ id: "hl202", name: "H3C HL202" },
+			],
+			bootstrap: [
+				{ id: "none", name: "No ACS bootstrap" },
+				{ id: "manual-acs", name: "Manual ACS" },
+			],
+			provisioning: [
+				{ id: "none", name: "No business provisioning" },
+				{ id: "hl202-mqtt", name: "HL202 MQTT" },
+			],
+		},
+	};
+	const map = new L.form.Map("fttr");
+	map.findElement = () => null;
+	const root = map.section(L.form.NamedSection, "main", "main");
+	addDevices(root, [], { onus: [] } as any, undefined, capabilities);
+	const grid = root.children.find((opt: any) => opt.subsection?.sectiontype === "device").subsection;
+
+	// A device configured before these options existed has no adapter values in UCI.
+	rows.set("dev1", { ".name": "dev1", ".type": "device", optical_sn: "H3CT12345678" });
+	const section = modal(grid, "dev1");
+	const names = ["omci_adapter", "bootstrap_adapter", "provisioning_adapter"];
+	const picks: Row = {
+		omci_adapter: "hl202",
+		bootstrap_adapter: "manual-acs",
+		provisioning_adapter: "hl202-mqtt",
+	};
+	for (const option of section.children) {
+		const active = names.includes(option.option);
+		option.isActive = () => active;
+		if (!active) continue;
+		const widget = new NativeElement();
+		widget.getValue = () => picks[option.option];
+		widget.vfunc = () => {
+			widget.validState = option.getValidator("dev1")(widget.getValue()) === true;
+		};
+		option.getUIElement = () => widget;
+	}
+	section.map.checkDepends = () => {};
+	section.map.load = async () => {};
+	section.map.renderContents = async () => {};
+
+	// Valid modal picks must save even though UCI has no adapter values at all.
+	await assert.doesNotReject(section.map.save(null, true));
+	assert.equal(transports, 1);
+
+	const [omci, bootstrap, provisioning] = names.map((name) => section.getOption(name));
+	assert.equal(omci.getValidator("dev1")("retired"), "Selected OMCI adapter is unavailable in this build.");
+	assert.equal(bootstrap.getValidator("dev1")("retired"), "Selected ACS bootstrap is unavailable in this build.");
+	assert.equal(
+		provisioning.getValidator("dev1")("retired"),
+		"Selected business provisioning option is unavailable in this build.",
+	);
+	assert.equal(bootstrap.validate("dev1"), true);
+
+	// An unavailable adapter blocks only its own field, never leaking the OMCI message.
+	picks.provisioning_adapter = "retired";
+	for (const option of [omci, bootstrap, provisioning]) option.triggerValidation("dev1");
+	assert.equal(omci.isValid("dev1"), true);
+	assert.equal(bootstrap.isValid("dev1"), true);
+	assert.equal(provisioning.isValid("dev1"), false);
 });
