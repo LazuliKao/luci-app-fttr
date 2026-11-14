@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-08 00:13+0800\n"
+"POT-Creation-Date: 2026-11-14 22:07+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -14,30 +14,24 @@ msgstr ""
 msgid "—"
 msgstr "—"
 
-msgid ""
-", and the optical transceiver hardware was reset and the register table was "
-"latched successfully (%s succeeded)"
-msgstr "，且光收发器硬件已复位，寄存器表已成功锁存（%s 成功）"
-
-msgid ", but optical transceiver hardware initialization reported a warning: %s"
-msgstr "，但光收发器硬件初始化报告警告：%s"
-
-msgid "(custom/self-calibrated table)"
-msgstr "（自定义/自行校准表）"
+msgid "(different from historical sample)"
+msgstr "(与历史样本不同)"
 
 msgid "(Entry %s)"
 msgstr "（条目 %s）"
 
-msgid "(exact match with the official factory baseline)"
-msgstr "（与官方原厂基准完全一致）"
+msgid ""
+"(exactly 288 bytes, or 56 register bytes with supplemented telemetry and no "
+"temperature compensation)"
+msgstr "(恰好 288 字节，或 56 寄存器字节附带补充遥测且无温度补偿)"
 
 msgid ""
 "(highlighted in yellow) is the hardware latch register. It is skipped during "
 "sequential writes, then written with"
 msgstr "（黄色高亮）为硬件锁存寄存器。顺序写入时会跳过此寄存器，最后写入"
 
-msgid "(must be exactly %s bytes)"
-msgstr "（必须恰好为 %s 字节）"
+msgid "(historical sample match, not device-specific validation)"
+msgstr "(历史样本匹配，非设备特定验证)"
 
 msgid "(Shortcut: %s)"
 msgstr "（快捷键：%s）"
@@ -46,6 +40,9 @@ msgid ""
 "(the first %s bytes configure registers, followed by ADC diagnostic "
 "conversion coefficients from %s)."
 msgstr "（前 %s 字节用于配置寄存器，后续从 %s 起为 ADC 诊断转换系数）。"
+
+msgid "/lib/firmware file only"
+msgstr "/lib/firmware 文件仅"
 
 msgid ""
 "# Enter shell commands to execute on the selected sub-gateway (Ctrl + Enter "
@@ -97,29 +94,45 @@ msgstr "%s（%s 字节，%s）"
 msgid "%s bytes"
 msgstr "%s 字节"
 
-msgid "1. 1MB Factory partition (highest priority)"
-msgstr "1. 1MB Factory 分区（最高优先级）"
+msgid "1. Factory partition (first in Auto mode)"
+msgstr "1. 工厂分区（Auto 模式下第一个）"
 
 msgid "1MB Factory partition (offset %s)"
 msgstr "1MB Factory 分区（偏移 %s）"
 
+msgid "1MB Factory partition only"
+msgstr "仅 1MB 工厂分区"
+
+msgid "1MB Factory partition parameters (0x2200)"
+msgstr "1MB 工厂分区参数 (0x2200)"
+
 msgid "1MB Factory UBI partition (offset %s)"
 msgstr "1MB Factory UBI 分区（偏移 %s）"
 
-msgid "2. Firmware file path (second priority)"
-msgstr "2. 固件文件路径（第二优先级）"
+msgid "2. Firmware file (second in Auto mode)"
+msgstr "2. 固件文件（Auto 模式下第二个）"
+
+msgid ""
+"56-byte register image supplemented with built-in telemetry coefficients; "
+"temperature compensation disabled."
+msgstr "56 字节寄存器图像附带内置遥测系数；温度补偿已禁用。"
+
+msgid ""
+"A 56-byte register-only file is also accepted with supplemented telemetry "
+"and temperature compensation disabled."
+msgstr "附带补充遥测且温度补偿禁用的 56 字节仅寄存器文件也被接受。"
 
 msgid "A default route does not prove Internet reachability."
 msgstr "默认路由并不能证明互联网可达性。"
+
+msgid "A full UX3326 BOSA calibration file must be exactly"
+msgstr "完整的 UX3326 BOSA 校准文件必须恰好"
 
 msgid ""
 "A missing group means a device points to a deleted group. Edit the device "
 "and select an existing group. If no suitable group exists, close this dialog "
 "and create a group first."
 msgstr "分组不存在表示设备仍关联着已删除的分组。请编辑该设备，选择一个现有分组。如果没有合适的分组，请先关闭此窗口并创建分组。"
-
-msgid "A standard Semtech UX3326 BOSA calibration file must be exactly"
-msgstr "标准 Semtech UX3326 BOSA 校准文件大小必须恰好为"
 
 msgid "About"
 msgstr "关于"
@@ -129,9 +142,6 @@ msgstr "关于 FTTR"
 
 msgid "Account data is unavailable."
 msgstr "账户数据不可用。"
-
-msgid "ACS (CWMP)"
-msgstr "ACS（CWMP）"
 
 msgid "ACS bootstrap"
 msgstr "ACS 引导配置"
@@ -144,15 +154,6 @@ msgstr "ACS URL"
 
 msgid "Active allocation"
 msgstr "当前生效分配"
-
-msgid "Active data size"
-msgstr "当前生效数据大小"
-
-msgid "Active data size: %s bytes"
-msgstr "当前生效数据大小：%s 字节"
-
-msgid "Active data source:"
-msgstr "当前生效数据来源："
 
 msgid "Active hardware offload flows (PPE FOE Bound)"
 msgstr "硬件绑定流明细（PPE FOE BND）"
@@ -209,20 +210,23 @@ msgid ""
 "them, then click the button below to upload to"
 msgstr "所有参数均已成功解析，预览如下。请核对后点击下方按钮上传至"
 
+msgid "All slots"
+msgstr "全部槽位"
+
 msgid "Allow unsupported ONUs as bridge"
 msgstr "允许将不支持的 ONU 作为桥接"
 
 msgid "Alternate temperature parameters (Alt Temp)"
 msgstr "备用温度参数（Alt Temp）"
 
-msgid "and the firmware file"
-msgstr "中未找到有效校准数据，且固件文件"
-
 msgid "Another operation is in progress."
 msgstr "另一个操作正在进行中。"
 
 msgid "Applied"
 msgstr "已应用"
+
+msgid "Applied source (see version above)"
+msgstr "应用源（见上方版本）"
 
 msgid "Applied version"
 msgstr "已应用版本"
@@ -236,8 +240,8 @@ msgstr "应用管理配置"
 msgid "Apply or discard pending FTTR configuration changes first."
 msgstr "请先应用或撤销尚未提交的 FTTR 配置修改。"
 
-msgid "Apply to hardware immediately"
-msgstr "立即应用到硬件"
+msgid "Apply selected calibration"
+msgstr "应用选定校准"
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
 msgstr "确定要重置 %s 的同步状态吗？"
@@ -263,14 +267,16 @@ msgstr "属性"
 msgid "Authorize and apply management settings"
 msgstr "授权并应用管理设置"
 
+msgid ""
+"Authorizes recovery of the child ACS settings after management drift or "
+"service restart. Business synchronization uses its own transport readiness."
+msgstr "授权在管理漂移或服务重启后恢复子 ACS 设置。业务同步使用其自身的传输就绪状态。"
+
+msgid "Auto detection order"
+msgstr "自动检测顺序"
+
 msgid "Automatic"
 msgstr "自动"
-
-msgid "Automatic (HL202 command, otherwise ACS)"
-msgstr "自动（HL202 命令，其它设备使用 ACS）"
-
-msgid "Automatic (read-only capability discovery)"
-msgstr "自动（只读能力发现）"
 
 msgid "Automatic allocation"
 msgstr "自动分配"
@@ -303,6 +309,9 @@ msgstr "后端拓扑问题"
 msgid "Band"
 msgstr "频段"
 
+msgid "Bandwidth (raw units)"
+msgstr "带宽（原始单位）"
+
 msgid "Basic"
 msgstr "基础"
 
@@ -333,6 +342,9 @@ msgstr "仅有绑定记录"
 msgid "Bindings"
 msgstr "绑定"
 
+msgid "bit 28"
+msgstr "第 28 位"
+
 msgid "Blocked"
 msgstr "已阻塞"
 
@@ -362,11 +374,25 @@ msgstr "桥接成员"
 msgid "Bridge offload mask"
 msgstr "桥接卸载掩码"
 
+msgid ""
+"Built-in data may be explicitly selected or chosen by automatic fallback. A "
+"sample hash does not establish calibration accuracy for this device."
+msgstr "内置数据可被显式选择或由自动回退选择。样本哈希不为此设备建立校准精度。"
+
+msgid "Built-in defaults only"
+msgstr "仅内置默认值"
+
 msgid "Built-in static defaults (fallback)"
 msgstr "内置静态默认值（回退）"
 
 msgid "Business"
 msgstr "业务状态"
+
+msgid "Business grant"
+msgstr "业务授权"
+
+msgid "Business provisioning"
+msgstr "业务配置"
 
 msgid ""
 "By default, extra WLANs are disabled and retained. Deleting objects is "
@@ -382,6 +408,9 @@ msgstr "缓存"
 msgid "Cached identity"
 msgstr "已缓存的设备标识"
 
+msgid "Calibration application failed"
+msgstr "校准应用失败"
+
 msgid "Calibration data saved successfully!"
 msgstr "校准数据保存成功！"
 
@@ -391,11 +420,50 @@ msgstr "校准数据来源检测概览"
 msgid "calibration file extracted from the factory backup to"
 msgstr "校准文件（从原厂备份中提取）至"
 
+msgid ""
+"Calibration is pending. Disabled optics remain disabled; the selected "
+"version will load on the next enable. Check candidate and active hashes "
+"above."
+msgstr "校准待处理。禁用的光口保持禁用；选定版本将在下次启用时加载。检查上方的候选和激活哈希。"
+
+msgid "Calibration parameters"
+msgstr "校准参数"
+
+msgid "Calibration SHA-256"
+msgstr "校准 SHA-256"
+
+msgid "Calibration source"
+msgstr "校准源"
+
+msgid "Calibration status refreshed successfully."
+msgstr "校准状态刷新成功。"
+
 msgid "Cancel"
 msgstr "取消"
 
 msgid "Cancel the fixed interface for this device?"
 msgstr "确定取消此设备的固定接口？"
+
+msgid "Candidate (next enable / apply)"
+msgstr "候选（下次启用/应用）"
+
+msgid "Candidate / Active parameters (%s)"
+msgstr "候选/活动参数 (%s)"
+
+msgid "Candidate calibration parameters (%s)"
+msgstr "候选校准参数 (%s)"
+
+msgid "Candidate matches active"
+msgstr "候选与活动匹配"
+
+msgid "Candidate matches Factory partition data"
+msgstr "候选与工厂分区数据匹配"
+
+msgid "Candidate path"
+msgstr "候选路径"
+
+msgid "Candidate uses a built-in historical calibration sample"
+msgstr "候选使用内置的历史校准样本"
 
 msgid "Carrier"
 msgstr "载波"
@@ -426,6 +494,9 @@ msgstr "设备恢复出厂设置后，清除旧任务和受管对象记录。下
 msgid "Clear output"
 msgstr "清空输出"
 
+msgid "Click to copy full SHA-256"
+msgstr "点击复制完整 SHA-256"
+
 msgid "Click to select or drag a %s file here"
 msgstr "点击选择或将 %s 文件拖放到此处"
 
@@ -440,9 +511,6 @@ msgstr "收集 VLAN 表"
 
 msgid "Collecting VLAN tables queries extended filter tables and takes longer."
 msgstr "收集 VLAN 表会查询扩展过滤表，需要更长时间。"
-
-msgid "Command (MQTT / tcapi)"
-msgstr "命令（MQTT / tcapi）"
 
 msgid "Command in progress"
 msgstr "命令执行中"
@@ -490,8 +558,11 @@ msgstr "配置模式"
 msgid "Configuring"
 msgstr "配置中"
 
-msgid "Configuring BOSA optical transceiver hardware..."
-msgstr "正在配置 BOSA 光收发器硬件..."
+msgid "Configuring management WAN"
+msgstr "配置管理 WAN"
+
+msgid "Configuring settings"
+msgstr "配置设置"
 
 msgid "Confirm"
 msgstr "确认"
@@ -605,21 +676,6 @@ msgstr "当前非空 FOE 表项数"
 msgid "Current registration"
 msgstr "当前注册状态"
 
-msgid "Currently active path"
-msgstr "当前生效路径"
-
-msgid "Currently active system calibration data"
-msgstr "系统当前生效的校准数据"
-
-msgid "Currently active system calibration parameters (%s)"
-msgstr "系统当前生效的校准参数（%s）"
-
-msgid "Currently in use"
-msgstr "正在使用"
-
-msgid "Currently running in fallback mode with built-in static defaults"
-msgstr "当前正使用内置静态默认值以回退模式运行"
-
 msgid "Custom calibration data"
 msgstr "自定义校准数据"
 
@@ -644,8 +700,14 @@ msgstr "CWMP 路径"
 msgid "CWMP Settings"
 msgstr "CWMP 设置"
 
+msgid "Daemon"
+msgstr "守护进程实例"
+
 msgid "Data interface"
 msgstr "数据接口"
+
+msgid "Data present (%s bytes)"
+msgstr "数据存在 (%s 字节)"
 
 msgid "Data size"
 msgstr "数据大小"
@@ -677,9 +739,6 @@ msgstr "已删除"
 msgid "Deleting an unused template also deletes its SSIDs and networks."
 msgstr "删除未被使用的模板时，也会删除其下的 SSID 和网络配置。"
 
-msgid "Denominator D"
-msgstr "分母 D"
-
 msgid "Desired version"
 msgstr "目标版本"
 
@@ -691,9 +750,6 @@ msgstr "详情"
 
 msgid "Device"
 msgstr "设备"
-
-msgid "Device adapter"
-msgstr "设备适配器"
 
 msgid "Device already configured."
 msgstr "设备已配置。"
@@ -724,9 +780,6 @@ msgstr "设备类型"
 
 msgid "Device: %s, length %s bytes"
 msgstr "设备：%s，长度 %s 字节"
-
-msgid "Device: %s, length %s bytes (currently in use by the system)"
-msgstr "设备：%s，长度 %s 字节（系统正在使用）"
 
 msgid "Devices"
 msgstr "从网关设备"
@@ -761,15 +814,8 @@ msgstr "禁用（保留 WLAN 对象）"
 msgid "Disabled"
 msgstr "已禁用"
 
-msgid ""
-"Disabled by default. Uses the global management VLAN, priority and ACS URL "
-"for this device only, subject to management application authorization. "
-"Disabling skips future OMCI management writes and retains existing ONU "
-"settings. ME readback does not prove WAN creation or successful Inform; K155 "
-"may clear its local ACS URL when enabled."
-msgstr ""
-"默认禁用。仅针对此设备使用全局管理 VLAN、优先级和 ACS URL，需经管理应用授权。禁用后将跳过后续 OMCI 管理写入并保留现有 ONU "
-"设置。ME 回读不能作为 WAN 创建或 Inform 成功的凭证；K155 启用时可能会清除其本地 ACS URL。"
+msgid "Disabled (56-byte register-only file)"
+msgstr "已禁用（56 字节仅寄存器文件）"
 
 msgid "Disabling"
 msgstr "禁用中"
@@ -783,13 +829,11 @@ msgstr "已断开"
 msgid "Discovering"
 msgstr "发现中"
 
+msgid "Discovering management WAN"
+msgstr "发现管理 WAN"
+
 msgid "Dispatching to %s (timeout: %s s)..."
 msgstr "正在下发至 %s（超时：%s 秒）..."
-
-msgid ""
-"does not exist. The optical module is currently using parameters embedded in "
-"the source at compile time."
-msgstr "不存在。光模块当前使用编译时内嵌于源码中的参数。"
 
 msgid "Down"
 msgstr "断开"
@@ -839,6 +883,12 @@ msgstr "下面列出了存在问题的配置。需要保留的条目可点击“
 
 msgid "Edit to repair"
 msgstr "编辑修复"
+
+msgid "Effective data size: %s bytes"
+msgstr "有效数据大小：%s 字节"
+
+msgid "Effective SHA-256"
+msgstr "有效 SHA-256"
 
 msgid "Enable"
 msgstr "启用"
@@ -922,9 +972,6 @@ msgstr "以太网类型码 (EtherType)"
 msgid "Evidence freshness"
 msgstr "凭据新鲜度"
 
-msgid "Exact match (%s)"
-msgstr "完全一致（%s）"
-
 msgid "Execute on selected HL202"
 msgstr "在所选 HL202 上执行"
 
@@ -945,8 +992,11 @@ msgstr "已存在（%s 字节）"
 msgid "Exit code"
 msgstr "退出码"
 
-msgid "Factory baseline consistency"
-msgstr "原厂基准一致性"
+msgid "Export JSON"
+msgstr "导出 JSON"
+
+msgid "Export NDJSON"
+msgstr "导出 NDJSON"
 
 msgid ""
 "Factory partition extraction and calibration data generation tool for H3C "
@@ -1030,6 +1080,10 @@ msgstr "流表不可用。读取失败不应被视为空表。"
 msgid "FPGA"
 msgstr "FPGA"
 
+# HM2004 structured FPGA diagnostics
+msgid "FPGA diagnostics"
+msgstr "FPGA 诊断"
+
 msgid "FPGA identifier"
 msgstr "FPGA 标识"
 
@@ -1098,6 +1152,17 @@ msgstr "GitHub"
 msgid "GitHub Repositories"
 msgstr "GitHub 代码仓库"
 
+msgid "Global counters (32-bit)"
+msgstr "全局计数（32 位）"
+
+msgid ""
+"Global counters cannot be attributed to a selected ONU. FPGA BCH readings "
+"are separate from ONU FEC PM. Grant bandwidth units are unverified."
+msgstr "全局计数不能归因于所选 ONU。FPGA BCH 读数与 ONU FEC 性能监测分别统计。授权带宽的单位尚未核实。"
+
+msgid "Go to Overview & Control to apply"
+msgstr "转到概览与控制以应用"
+
 msgid "GPON downstream FEC encoding"
 msgstr "GPON下行FEC编码"
 
@@ -1116,6 +1181,15 @@ msgstr "分组管理"
 msgid "Hardware"
 msgstr "硬件"
 
+msgid "Hardware applied"
+msgstr "硬件已应用"
+
+msgid "Hardware epoch"
+msgstr "硬件上下文代次"
+
+msgid "Hardware not applied"
+msgstr "硬件未应用"
+
 msgid "Hardware specifications and firmware images"
 msgstr "硬件规格与固件镜像"
 
@@ -1125,11 +1199,8 @@ msgstr "硬件状态"
 msgid "Hardware version"
 msgstr "硬件版本"
 
-msgid ""
-"HL202 defaults to native command provisioning with readback verification. "
-"Builds without MQTT use ACS. Transport failures require reconciliation and "
-"do not switch to ACS automatically."
-msgstr "HL202 默认使用原生命令进行配置下发并执行回读验证。未集成 MQTT 的固件使用 ACS。传输失败需人工调和，不会自动切换为 ACS。"
+msgid "Historical stock sample match"
+msgstr "历史库存样本匹配"
 
 msgid "HL202 device"
 msgstr "HL202 设备"
@@ -1172,6 +1243,12 @@ msgstr "标识读取错误"
 msgid "Identity source"
 msgstr "标识来源"
 
+msgid "In sync"
+msgstr "同步中"
+
+msgid "In sync with applied version"
+msgstr "与应用版本同步"
+
 msgid "Inactive"
 msgstr "未使用"
 
@@ -1180,12 +1257,6 @@ msgstr "MIB 快照不完整"
 
 msgid "Independent device states"
 msgstr "设备分层状态"
-
-msgid ""
-"Independent of the optical adapter. Parameter paths, types and writable "
-"evidence are discovered before synchronization. Unverified candidates do not "
-"authorize writes."
-msgstr "独立于光纤适配器。参数路径、类型和可写凭据会在同步前完成发现。未校验的候选对象不会被授权写入。"
 
 msgid ""
 "Independent per device; enabled by default for all adapters. Enabled: "
@@ -1204,6 +1275,9 @@ msgstr ""
 
 msgid "Index"
 msgstr "索引"
+
+msgid "Index %s → Code %s"
+msgstr "索引 %s → 代码 %s"
 
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr "内层过滤（优先级 / VID / TPID-DEI）"
@@ -1246,6 +1320,9 @@ msgstr "统计周期"
 msgid "Interval (minutes)"
 msgstr "间隔（分钟）"
 
+msgid "Interval (ms)"
+msgstr "间隔（毫秒）"
+
 msgid "Invalid MIB snapshot"
 msgstr "无效的 MIB 快照"
 
@@ -1282,6 +1359,9 @@ msgstr "激光偏置电流"
 msgid "Last backend check result"
 msgstr "上次后端检查结果"
 
+msgid "Last check: %s"
+msgstr "上次检查：%s"
+
 msgid "Last good report"
 msgstr "最后成功解析的报告"
 
@@ -1297,11 +1377,17 @@ msgstr "最后接收时间"
 msgid "Last successful sample"
 msgstr "最近成功采样"
 
+msgid "Last successfully initialized version"
+msgstr "上次成功初始化的版本"
+
 msgid "Last telemetry"
 msgstr "最后遥测时间"
 
 msgid "Last update / task"
 msgstr "最后更新 / 任务"
+
+msgid "Last write: %s"
+msgstr "上次写入：%s"
 
 msgid "Latest report error"
 msgstr "最新报告错误"
@@ -1333,8 +1419,14 @@ msgid ""
 "when adding a new device."
 msgstr "列出在光纤链路上注册的受支持设备，包括尚未发送 ACS Inform 的设备。添加新设备时会自动忽略已配置的设备。"
 
+msgid "Live hardware status is unavailable. The displayed data may be stale."
+msgstr "实时硬件状态不可用。显示的数据可能已过时。"
+
 msgid "Live NPU data is unavailable. Previous readings are stale."
 msgstr "无法获取 NPU 实时数据，先前读数已失效。"
+
+msgid "Live status is unavailable. The displayed data may be stale."
+msgstr "实时状态不可用。显示的数据可能已过时。"
 
 msgid "Load"
 msgstr "负载"
@@ -1397,22 +1489,25 @@ msgid ""
 "configuration, and optical calibration."
 msgstr "适用于 FTTR 网络监控、设备配置和光路校准的现代化 LuCI Web 管理应用。"
 
+msgid "LUT table index"
+msgstr "LUT 表索引"
+
 msgid "MAC"
 msgstr "MAC"
 
 msgid "MAC address"
 msgstr "MAC 地址"
 
+msgid "Main bandwidth enabled"
+msgstr "主带宽已启用"
+
 msgid "Main gateway"
 msgstr "主网关"
 
 msgid ""
-"Manage calibration data for the Semtech UX3326 BOSA optical transceiver "
-"attached to the HM2004-DU Micro-OLT FPGA subsystem. Calibration data is read "
-"in priority order from"
-msgstr ""
-"管理 HM2004-DU Micro-OLT FPGA 子系统所连接的 Semtech UX3326 BOSA "
-"光收发器校准数据。校准数据按优先级依次读取自"
+"Manage HM2004-DU UX3326 calibration snapshots. Auto selects the first valid "
+"source in this order:"
+msgstr "管理 HM2004-DU UX3326 校准快照。自动按此顺序选择第一个有效源："
 
 msgid "Managed bridge"
 msgstr "管理桥接接口"
@@ -1431,6 +1526,9 @@ msgstr "管理应用模式"
 
 msgid "Management fresh"
 msgstr "管理有效"
+
+msgid "Management grant"
+msgstr "管理授权"
 
 msgid "Management interface"
 msgstr "管理接口"
@@ -1465,6 +1563,9 @@ msgid ""
 "after Save & Apply when Configuration changed is selected."
 msgstr "手动模式仅保存配置；请在“同步”页面中点击“应用差异变更”以推送到设备。若选择了“配置发生变更”，自动模式会在“保存并应用”后自动执行同步。"
 
+msgid "Manual setup required"
+msgstr "需要手动设置"
+
 msgid "Manual synchronization"
 msgstr "手动同步"
 
@@ -1492,6 +1593,20 @@ msgstr "MIB 快照无法序列化"
 msgid "Missing template"
 msgstr "未指定模板"
 
+msgid "Mod_Lut_EN Disabled"
+msgstr "Mod_Lut_EN 已禁用"
+
+msgid "Mod_Lut_EN Enabled"
+msgstr "Mod_Lut_EN 已启用"
+
+msgid "Mod_Lut_EN is disabled."
+msgstr "Mod_Lut_EN 已禁用。"
+
+msgid ""
+"Mod_Lut_EN is enabled. This table controls registers 0x06/0x07; it is not a "
+"dBm target."
+msgstr "Mod_Lut_EN 已启用。此表控制寄存器 0x06/0x07；它不是 dBm 目标。"
+
 msgid "Mode"
 msgstr "模式"
 
@@ -1506,6 +1621,15 @@ msgstr "模块型号"
 
 msgid "Module Tx"
 msgstr "模块发送"
+
+msgid "Modulo delta"
+msgstr "模增量"
+
+msgid "Modulo deltas over"
+msgstr "模增量采样间隔"
+
+msgid "More addresses"
+msgstr "更多地址"
 
 msgid "More identity information"
 msgstr "更多身份信息"
@@ -1545,6 +1669,9 @@ msgid ""
 "template."
 msgstr "网络配置用于将同一模板中的 VLAN 业务绑定到有线端口和可选的 SSID。"
 
+msgid "Never"
+msgstr "从未"
+
 msgid "New calibration tables are always saved to"
 msgstr "新校准表始终保存至"
 
@@ -1572,6 +1699,17 @@ msgstr "否"
 msgid "No bound hardware flows in this snapshot."
 msgstr "本次快照中没有硬件绑定流。"
 
+msgid "No calibration parameters are available to inspect."
+msgstr "没有可供检查的校准参数。"
+
+msgid ""
+"No continuous baseline. Deltas are withheld until daemon and hardware "
+"context continuity can be verified."
+msgstr "缺少连续基线。确认守护进程和硬件上下文连续之前不显示增量。"
+
+msgid "No controller diagnostics are reported by the selected platform."
+msgstr "所选平台未报告任何控制器诊断信息。"
+
 msgid "No default-route uplink reported."
 msgstr "未报告默认路由上行链路。"
 
@@ -1580,6 +1718,9 @@ msgstr "尚未配置目标项目。"
 
 msgid "No device detected"
 msgstr "未检测到设备"
+
+msgid "No downstream ports are reported by the selected platform."
+msgstr "所选平台未报告任何下行端口。"
 
 msgid "No entities recorded for this ME class."
 msgstr "该 ME 类无实体记录。"
@@ -1622,9 +1763,6 @@ msgstr "当前没有已注册的从网关。"
 msgid "No successful snapshot yet"
 msgstr "尚未成功生成快照"
 
-msgid "No valid calibration data was found in the"
-msgstr "在"
-
 msgid "No valid data"
 msgstr "无有效数据"
 
@@ -1652,9 +1790,6 @@ msgstr "未采集"
 msgid "Not configured"
 msgstr "未配置"
 
-msgid "Not factory default (self-calibrated)"
-msgstr "非原厂默认值（自行校准）"
-
 msgid "Not pinned"
 msgstr "未绑定固定接口"
 
@@ -1664,6 +1799,9 @@ msgstr "未就绪"
 msgid "Not registered"
 msgstr "尚未注册"
 
+msgid "Not required"
+msgstr "不需要"
+
 msgid "Not started"
 msgstr "未开始"
 
@@ -1672,9 +1810,6 @@ msgstr "未开始"
 
 msgid "Note: Register"
 msgstr "注意：寄存器"
-
-msgid "Notice"
-msgstr "注意事项"
 
 msgid "NPU configuration"
 msgstr "NPU 配置"
@@ -1693,9 +1828,6 @@ msgstr "当前固件未编译 NPU 硬件加速功能，或此设备不支持。"
 
 msgid "NPU status request timed out"
 msgstr "NPU 状态请求超时"
-
-msgid "Numerator N"
-msgstr "分子 N"
 
 msgid "O1 Initial"
 msgstr "O1 初始"
@@ -1736,20 +1868,23 @@ msgstr "观测到的身份和关系"
 msgid "Observed object"
 msgstr "观测对象"
 
-msgid "Official factory baseline match"
-msgstr "与官方原厂基准一致"
-
 msgid "Offline"
 msgstr "离线"
 
 msgid "Offline or stale"
 msgstr "离线或过期"
 
-msgid "Offset O"
-msgstr "偏移量 O"
+msgid "Offline sample at raw 0x5980:"
+msgstr "原始值 0x5980 处的离线样本："
 
 msgid "OMCC version"
 msgstr "OMCC 版本"
+
+msgid "OMCI ACS association"
+msgstr "OMCI ACS 关联"
+
+msgid "OMCI adapter"
+msgstr "OMCI 适配器"
 
 msgid "OMCI FEC monitoring paused"
 msgstr "OMCI FEC监测已暂停"
@@ -1786,6 +1921,9 @@ msgstr "子网关光路诊断"
 
 msgid "ONU Rx"
 msgstr "从网关收光"
+
+msgid "ONU slot"
+msgstr "ONU 槽位"
 
 msgid "Open optical status and ONU/MIB details"
 msgstr "打开光路状态与 ONU/MIB 详情"
@@ -1863,6 +2001,12 @@ msgstr "外层处理（优先级 / VID / TPID-DEI）"
 msgid "Output was truncated at the byte limit."
 msgstr "输出已因达到字节上限而截断。"
 
+msgid "Overview & Control"
+msgstr "概览与控制"
+
+msgid "Owner temperature compensation"
+msgstr "所有者温度补偿"
+
 msgid "Packets"
 msgstr "包数"
 
@@ -1897,6 +2041,9 @@ msgstr "设备接受并保存密码写入，但这不代表具备 Web 登录权�
 
 msgid "Pending"
 msgstr "等待中"
+
+msgid "Pending / not applied"
+msgstr "待处理 / 未应用"
 
 msgid "Pending apply"
 msgstr "等待应用"
@@ -1973,9 +2120,6 @@ msgstr "进程"
 msgid "Program start"
 msgstr "程序启动"
 
-msgid "Provision management VLAN and ACS via OMCI"
-msgstr "通过 OMCI 下发管理 VLAN 与 ACS 配置"
-
 msgid "Provisioning"
 msgstr "配置下发"
 
@@ -1987,9 +2131,6 @@ msgstr "配置详情"
 
 msgid "Provisioning is disabled"
 msgstr "配置下发已禁用"
-
-msgid "Provisioning method"
-msgstr "配置下发方式"
 
 msgid "Provisioning status unavailable"
 msgstr "配置下发状态不可用"
@@ -2009,13 +2150,25 @@ msgstr "原始数据 / 观测记录"
 msgid "Raw JSON"
 msgstr "原始 JSON"
 
+msgid "Raw SHA-256"
+msgstr "原始 SHA-256"
+
 msgid "Raw source observations (JSON)"
 msgstr "原始来源观测记录（JSON）"
+
+msgid "Raw temperature"
+msgstr "原始温度"
+
+msgid "Read a snapshot or start a bounded sampling window."
+msgstr "读取单次快照或启动限时采样。"
 
 msgid ""
 "Read current device parameters and auto-verify matching settings without "
 "writing to device"
 msgstr "读取设备当前参数并自动校验匹配的设置，不写入设备"
+
+msgid "Read duration"
+msgstr "读取耗时"
 
 msgid "Read MIB"
 msgstr "读取 MIB"
@@ -2029,11 +2182,19 @@ msgstr "按需读取 MIB。结果为瞬时快照，非实时长轮询。"
 msgid "Read MQTT report"
 msgstr "读取 MQTT 报告"
 
+msgid "Read snapshot"
+msgstr "读取快照"
+
 msgid "Read users"
 msgstr "读取用户列表"
 
 msgid "Read-only MQTT source"
 msgstr "只读 MQTT 来源"
+
+msgid ""
+"Read-only observed register diagnostics. Sampling is limited to 120 samples "
+"and 60 seconds; it stops when this panel becomes inactive."
+msgstr "只读寄存器诊断。最多采集 120 个样本、持续 60 秒；离开此面板时停止采样。"
 
 msgid "Reading"
 msgstr "读取中"
@@ -2047,11 +2208,11 @@ msgstr "读取 OMCI MIB 记录"
 msgid "Reading OMCI MIB records…"
 msgstr "读取 OMCI MIB 记录…"
 
+msgid "Reading settings"
+msgstr "读取设置"
+
 msgid "Ready"
 msgstr "已就绪"
-
-msgid "Ready (overridden by Factory)"
-msgstr "已就绪（被 Factory 分区覆盖）"
 
 msgid "Reason / desired changes"
 msgstr "原因 / 目标变更"
@@ -2107,6 +2268,9 @@ msgstr "刷新失败；保留上一次成功的快照。"
 msgid "Refresh interval: 3 seconds"
 msgstr "刷新间隔：3 秒"
 
+msgid "Refresh status"
+msgstr "刷新状态"
+
 msgid "Refresh users to read the current state."
 msgstr "请刷新用户列表以读取当前状态。"
 
@@ -2119,11 +2283,19 @@ msgstr "寄存器 %s：%s（%s）"
 msgid "Register offset"
 msgstr "寄存器偏移"
 
+msgid ""
+"Register-only file: telemetry coefficients are supplemented from built-in "
+"data; temperature compensation is disabled."
+msgstr "仅注册文件：遥测系数由内置数据补充；温度补偿已禁用。"
+
 msgid "Registration"
 msgstr "注册状态"
 
 msgid "Registration freshness unavailable"
 msgstr "注册新鲜度不可用"
+
+msgid "Registration token"
+msgstr "注册代次标识"
 
 msgid "Relationship"
 msgstr "关系"
@@ -2166,11 +2338,6 @@ msgstr "请求失败"
 msgid "Request ID"
 msgstr "请求 ID"
 
-msgid ""
-"Required after management drift or service restart; verifies the child ACS "
-"settings before business synchronization."
-msgstr "管理配置偏移或服务重启后需要执行此操作，以在业务同步前校验子设备的 ACS 设置。"
-
 msgid "Reserved"
 msgstr "已预留"
 
@@ -2188,6 +2355,14 @@ msgstr "待重置"
 
 msgid "Reset synchronization state"
 msgstr "重置同步状态"
+
+msgid "Reset zoom to 100%"
+msgstr "重置缩放为 100%"
+
+msgid ""
+"RESET_N, GPON MAC TX and measured optical emission are separate states. "
+"Compensation codes are not dBm targets."
+msgstr "RESET_N、GPON MAC TX 和测量的光发射是独立状态。补偿代码不是 dBm 目标值。"
 
 msgid "Restart"
 msgstr "重启"
@@ -2213,14 +2388,26 @@ msgstr "路由卸载掩码"
 msgid "rows"
 msgstr "行"
 
-msgid "Running"
-msgstr "运行中"
-
 msgid "RX wavelength"
 msgstr "接收波长"
 
+msgid "Sample time"
+msgstr "采样时间"
+
 msgid "Sampled"
 msgstr "采样"
+
+msgid "samples"
+msgstr "个样本"
+
+msgid "Samples"
+msgstr "样本数"
+
+msgid "Sampling"
+msgstr "采样中"
+
+msgid "Sampling failed; retained samples may be stale."
+msgstr "采样失败，保留的样本可能已过期。"
 
 msgid "Save & Apply"
 msgstr "保存并应用"
@@ -2232,6 +2419,9 @@ msgid ""
 "Save returned success, but configuration readback could not be confirmed. "
 "Refresh before retrying."
 msgstr "保存操作返回成功，但配置回读未能确认。请刷新后再重试。"
+
+msgid "Save source selection"
+msgstr "保存源选择"
 
 msgid "Saved"
 msgstr "已保存"
@@ -2259,6 +2449,11 @@ msgid ""
 "& Apply, open Synchronization and choose Apply differences. Preview "
 "differences is read-only."
 msgstr "在手动模式下保存配置不会同步至设备。在“保存并应用”后，请打开“同步”页面并选择“应用差异变更”。“预览差异变更”为只读操作。"
+
+msgid ""
+"Saving does not switch the source or apply hardware. Select Firmware "
+"explicitly, then apply the selected calibration when ready."
+msgstr "保存不会切换源或应用硬件。请明确选择固件，然后在准备好时应用所选的校准。"
 
 msgid ""
 "Saving in manual mode does not create interfaces, change firewall rules or "
@@ -2302,8 +2497,8 @@ msgstr "请选择已存在的条目。"
 msgid "Select an existing template."
 msgstr "请选择已存在的模板。"
 
-msgid "Select an interface from fttr1 to fttr16."
-msgstr "请选择 fttr1 到 fttr16 范围内的接口。"
+msgid "Select an ONU interface exposed by the selected platform."
+msgstr "选择所选平台暴露的 ONU 接口。"
 
 msgid ""
 "Select at least one of INTERNET, OTHER, IPTV, and VOIP for each custom VLAN. "
@@ -2313,14 +2508,41 @@ msgstr "每个自定义 VLAN 必须至少选择 INTERNET、OTHER、IPTV、VOIP �
 msgid "Select at least one WAN Service List label."
 msgstr "请至少选择一个 WAN 业务列表标签。"
 
+msgid "Select dataset:"
+msgstr "选择数据集："
+
 msgid "Select device."
 msgstr "请选择设备。"
+
+msgid ""
+"Select how ACS settings are established. Bootstrap runs independently, "
+"including when business provisioning is disabled or uses MQTT."
+msgstr "选择如何建立 ACS 设置。Bootstrap 独立运行，包括在业务配置禁用或使用 MQTT 时。"
 
 msgid "Select SSIDs belonging to this network's template."
 msgstr "请选择属于此网络模板的 SSID。"
 
+msgid "Select the OMCI profile used to read and configure this device."
+msgstr "选择用于读取和配置此设备的 OMCI 配置文件。"
+
+msgid ""
+"Select the transport and contract for business configuration. None disables "
+"business delivery only. ACS uses current CWMP reachability; bootstrap status "
+"is shown separately. Candidate contracts require discovery and verified "
+"write support."
+msgstr "选择业务配置的传输和合同。无仅禁用业务交付。ACS 使用当前的 CWMP 可达性；Bootstrap 状态单独显示。候选合同需要发现和验证写入支持。"
+
+msgid "Selected ACS bootstrap is unavailable in this build."
+msgstr "此构建中不可用选定的 ACS Bootstrap。"
+
+msgid "Selected business provisioning option is unavailable in this build."
+msgstr "此构建中不可用选定的业务配置选项。"
+
 msgid "Selected file:"
 msgstr "已选文件："
+
+msgid "Selected OMCI adapter is unavailable in this build."
+msgstr "此构建中不可用选定的 OMCI 适配器。"
 
 msgid "Self-heal / retry"
 msgstr "自愈 / 重试"
@@ -2351,6 +2573,9 @@ msgid ""
 "output can contain secrets."
 msgstr "Shell 命令在所选 ONU 上执行。超时不会取消执行。原始输出可能包含敏感信息。"
 
+msgid "Simulated telemetry readings"
+msgstr "模拟遥测读数"
+
 msgid "Size:"
 msgstr "大小："
 
@@ -2369,8 +2594,19 @@ msgstr "部分数据源不可用"
 msgid "Source"
 msgstr "源"
 
+msgid "Source for the next apply / enable:"
+msgstr "下次应用/启用的源："
+
 msgid "Source member"
 msgstr "来源成员"
+
+msgid ""
+"Source selection saved. Existing hardware and telemetry remain on the "
+"applied version until apply or the next enable."
+msgstr "源选择已保存。现有硬件和遥测在应用或下次启用之前保持在已应用的版本上。"
+
+msgid "Source, limitations and raw registers"
+msgstr "来源、限制与寄存器原值"
 
 msgid ""
 "Source: PPE debugfs bind/entries and driver sysfs. These are global PPE "
@@ -2407,6 +2643,9 @@ msgstr "标准 %s 字节"
 msgid "Start configuration delivery for this device"
 msgstr "为此设备启动配置下发"
 
+msgid "Start sampling"
+msgstr "开始采样"
+
 msgid "Started"
 msgstr "已启动"
 
@@ -2424,6 +2663,21 @@ msgstr "状态"
 
 msgid "Status refresh failed: %s"
 msgstr "状态刷新失败：%s"
+
+msgid "Status:"
+msgstr "状态："
+
+msgid "Stock label / key"
+msgstr "原厂标签 / 字段名"
+
+msgid "Stop"
+msgstr "停止"
+
+msgid "Stopped"
+msgstr "已停止"
+
+msgid "Stored file (selection and application are separate)"
+msgstr "存储的文件（选择和应用是分开的）"
 
 msgid "Sub-gateway %s — %s"
 msgstr "从网关 %s — %s"
@@ -2472,6 +2726,9 @@ msgstr "同步中"
 msgid "Target"
 msgstr "目标"
 
+msgid "Target code"
+msgstr "目标代码"
+
 msgid "Target storage path"
 msgstr "目标存储路径"
 
@@ -2480,6 +2737,9 @@ msgstr "任务"
 
 msgid "Temperature"
 msgstr "温度"
+
+msgid "Temperature compensation table (84 entries, 10-bit hardware codes)"
+msgstr "温度补偿表（84 个条目，10 位硬件代码）"
 
 msgid "Template"
 msgstr "模板"
@@ -2496,13 +2756,20 @@ msgstr "已因达到共享字节上限而省略文本。"
 msgid "The continuation is no longer valid. Refresh the topology."
 msgstr "续传已无效。刷新拓扑。"
 
-msgid "The file must be exactly %s bytes."
-msgstr "文件大小必须恰好为 %s 字节。"
+msgid ""
+"The file must contain 288 bytes, or 56 register bytes with supplemented "
+"telemetry and no temperature compensation."
+msgstr "文件必须包含 288 字节，或 56 个寄存器字节，带有补充遥测且无温度补偿。"
 
 msgid ""
 "The local ACS binds to this address. The child ACS URL is generated from "
 "this address, the ACS port and CWMP path."
 msgstr "本地 ACS 监听此地址。子设备的 ACS URL 将根据该地址、ACS 端口和 CWMP 路径自动生成。"
+
+msgid ""
+"The operation completed without version confirmation. Refresh status before "
+"interpreting the outcome."
+msgstr "操作在没有版本确认的情况下完成。在解释结果之前刷新状态。"
 
 msgid "The path must start with '/'."
 msgstr "路径必须以 '/' 开头。"
@@ -2513,6 +2780,12 @@ msgstr "该响应属于另一个快照。刷新拓扑图。"
 msgid "The selected node is no longer present."
 msgstr "所选节点已不存在。"
 
+msgid "The selected platform does not expose this ONU-ID as an available interface."
+msgstr "选定的平台未将此 ONU-ID 暴露为可用接口。"
+
+msgid "The selected version was applied by the optical owner."
+msgstr "选定的版本由光网络运营商应用。"
+
 msgid "The state file path must be absolute."
 msgstr "状态文件路径必须为绝对路径。"
 
@@ -2520,9 +2793,25 @@ msgid "The tutorial for adding and configuring sub-gateways will be provided her
 msgstr "添加与配置从网关的操作指南将在此展示。"
 
 msgid ""
+"then built-in historical data. Explicit sources never silently fall back. "
+"Upload, source selection and application are separate operations."
+msgstr "然后是内置的历史数据。显式源永远不会静默回退。上传、源选择和应用是单独的操作。"
+
+msgid "then select Firmware and apply it separately."
+msgstr "然后选择固件并单独应用它。"
+
+msgid ""
 "This also deletes the template's SSIDs and networks. Templates used by "
 "groups cannot be deleted."
 msgstr "此操作还会删除该模板的 SSID 和网络。正在被分组使用的模板无法删除。"
+
+msgid ""
+"This backend does not expose versioned calibration state. Update the backend "
+"before selecting or applying a source."
+msgstr "此后端未提供版本化的校准状态。在选择或应用源之前，请更新后端。"
+
+msgid "This calibration profile is not supported by the selected platform."
+msgstr "所选平台不支持此校准配置。"
 
 msgid "This device already has an active synchronization operation"
 msgstr "此设备已有正在进行的同步操作"
@@ -2543,6 +2832,9 @@ msgstr "该节点已不在快照中。"
 
 msgid "This object was not observed in the current snapshot."
 msgstr "该对象在当前快照中未被观测到。"
+
+msgid "This operation is not supported by the selected platform."
+msgstr "所选平台不支持此操作。"
 
 msgid ""
 "This optical device has no fresh, unambiguous MQTT binding. Commands are "
@@ -2572,6 +2864,9 @@ msgid ""
 "the template."
 msgstr "该 SSID 已绑定到网络。请先解除网络中的绑定，再更改所属模板。"
 
+msgid "Threshold ≤ %s °C"
+msgstr "阈值 ≤ %s °C"
+
 msgid "Timeout"
 msgstr "超时"
 
@@ -2583,9 +2878,6 @@ msgstr "超时时间必须为 1–300 秒。"
 
 msgid "to commit all changes."
 msgstr "以提交所有变更。"
-
-msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
-msgstr "，以确保激光发射功率和 ADC 诊断读数准确。"
 
 msgid "To ONU (controller TX)"
 msgstr "至 ONU（控制器 TX）"
@@ -2638,6 +2930,9 @@ msgstr "发送数据包数"
 msgid "Transmitter"
 msgstr "发射器"
 
+msgid "Transport observations"
+msgstr "传输观测"
+
 msgid "Triggers"
 msgstr "触发机制"
 
@@ -2672,6 +2967,9 @@ msgid ""
 "integrity."
 msgstr "无法解析校准文件结构，请检查文件完整性。"
 
+msgid "unavailable"
+msgstr "不可用"
+
 msgid "Unavailable"
 msgstr "不可用"
 
@@ -2690,9 +2988,6 @@ msgstr "未知"
 msgid "Unknown class"
 msgstr "未知类型 (Class)"
 
-msgid "Unknown error"
-msgstr "未知错误"
-
 msgid "Unknown model"
 msgstr "未知型号"
 
@@ -2705,17 +3000,20 @@ msgstr "取消固定"
 msgid "Unpin interface"
 msgstr "取消固定接口"
 
+msgid "Unregistered"
+msgstr "未注册"
+
 msgid "Unsupported"
 msgstr "不支持"
 
 msgid "Unverified"
 msgstr "下发未校验"
 
-msgid "Unverified candidate"
-msgstr "未校验的候选对象"
-
 msgid "Up"
 msgstr "上行"
+
+msgid "Update calibration file"
+msgstr "更新校准文件"
 
 msgid "Uplink PHY rate"
 msgstr "上行物理层速率"
@@ -2728,6 +3026,12 @@ msgstr "上传并保存至 %s"
 
 msgid "Upload blocked."
 msgstr "上传已阻止。"
+
+msgid "Upload calibration"
+msgstr "上传校准"
+
+msgid "Upload calibration file"
+msgstr "上传校准文件"
 
 msgid "Upload complete"
 msgstr "上传完成"
@@ -2758,17 +3062,14 @@ msgid ""
 "hyphens."
 msgstr "桥接接口名须为 1–15 个字母、数字、点、下划线或连字符。"
 
-msgid "Use alternate parameters when the calculated temperature is ≤ %s °C"
-msgstr "计算温度 ≤ %s °C 时使用备用参数"
-
 msgid "Use backend Connection Request defaults"
 msgstr "使用后端连接请求默认值"
 
 msgid "Use current interface"
 msgstr "使用当前接口"
 
-msgid "Use the form below to upload the %s-byte"
-msgstr "请使用下方表单上传 %s 字节的"
+msgid "Use the Upload tab to upload the %s-byte"
+msgstr "使用“上传”标签页上传 %s 字节的"
 
 msgid "User management"
 msgstr "用户管理"
@@ -2778,9 +3079,6 @@ msgid ""
 "Disable to enter this CPE's existing credentials and port. Saved custom "
 "values are retained while hidden."
 msgstr "使用后端预留配置；原厂凭据尚未验证。禁用后可输入此 CPE 现有的凭据和端口。自定义值隐藏时仍会保留已保存的值。"
-
-msgid "Valid data (%s bytes)"
-msgstr "有效数据（%s 字节）"
 
 msgid "Value"
 msgstr "数值"
@@ -2797,8 +3095,17 @@ msgstr "已校验"
 msgid "Verifying"
 msgstr "校验中"
 
+msgid "Verifying management WAN"
+msgstr "验证管理 WAN"
+
+msgid "Verifying settings"
+msgstr "验证设置"
+
 msgid "View all observed objects"
 msgstr "查看全部观测对象"
+
+msgid "View Factory parameters"
+msgstr "查看出厂参数"
 
 msgid "View OMCI / MIB details"
 msgstr "查看 OMCI / MIB 详情"
@@ -2818,11 +3125,20 @@ msgstr "电压"
 msgid "Waiting"
 msgstr "等待中"
 
+msgid "Waiting ACS listener"
+msgstr "等待 ACS 监听器"
+
 msgid "Waiting for device reset recovery"
 msgstr "等待设备重置恢复"
 
 msgid "Waiting for device result…"
 msgstr "正在等待设备结果…"
+
+msgid "Waiting for pending read"
+msgstr "等待已发出的读取完成"
+
+msgid "Waiting identity"
+msgstr "等待身份"
 
 msgid "Waiting Inform"
 msgstr "等待 Inform"
@@ -2839,21 +3155,17 @@ msgstr "等待任务"
 msgid "Waiting Task"
 msgstr "等待任务"
 
+msgid "Waiting to retry"
+msgstr "等待重试"
+
+msgid "Waiting transport"
+msgstr "等待传输"
+
 msgid "WAN / WLAN lifecycle results"
 msgstr "WAN / WLAN 生命周期结果"
 
 msgid "WAN → FTTR ONU routed and inbound NAT hardware acceleration"
 msgstr "WAN → FTTR ONU 路由与反向 NAT 硬件加速"
-
-msgid ""
-"WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge "
-"offload before enabling WAN directions."
-msgstr "WAN 和 ONU 桥接卸载不能同时启用。在启用 WAN 方向之前，请禁用 ONU 桥接卸载。"
-
-msgid ""
-"WAN and ONU bridge offload use exclusive port modes. Disable ONU bridge "
-"offload before enabling either WAN direction."
-msgstr "WAN 和 ONU 桥接卸载使用独占端口模式。在启用任一 WAN 方向之前，请禁用 ONU 桥接卸载。"
 
 msgid ""
 "WAN directions require software and hardware flow offloading in the firewall "
@@ -2881,6 +3193,9 @@ msgstr "WAN 业务列表只能包含 INTERNET、OTHER、IPTV 和 VOIP。"
 msgid "WAN verifying"
 msgstr "WAN 校验中"
 
+msgid "Weight"
+msgstr "权重"
+
 msgid "Wi-Fi cleanup policy"
 msgstr "Wi-Fi 清理策略"
 
@@ -2895,16 +3210,6 @@ msgstr "Wi-Fi 同步"
 
 msgid "Wireless association"
 msgstr "无线关联"
-
-msgid ""
-"with automatic fallback to built-in static defaults if neither source has "
-"valid data."
-msgstr "，若两处均无有效数据，则自动回退到内置静态默认值。"
-
-msgid ""
-"Write %s registers to the BOSA hardware and commit the latch immediately "
-"after saving (%s)"
-msgstr "保存后立即向 BOSA 硬件写入 %s 个寄存器并提交锁存（%s）"
 
 msgid "Write settings and execution"
 msgstr "写入设置与执行"
@@ -2923,112 +3228,3 @@ msgstr "缩小"
 
 msgid "速度：%s Mbit/s，双工：%s"
 msgstr "速度：%s Mbit/s，双工：%s"
-
-# HM2004 structured FPGA diagnostics
-msgid "FPGA diagnostics"
-msgstr "FPGA 诊断"
-
-msgid "All slots"
-msgstr "全部槽位"
-
-msgid "bit 28"
-msgstr "第 28 位"
-
-msgid "Bandwidth (raw units)"
-msgstr "带宽（原始单位）"
-
-msgid "Weight"
-msgstr "权重"
-
-msgid "Sample time"
-msgstr "采样时间"
-
-msgid "Read duration"
-msgstr "读取耗时"
-
-msgid "Main bandwidth enabled"
-msgstr "主带宽已启用"
-
-msgid "Modulo deltas over"
-msgstr "模增量采样间隔"
-
-msgid "No continuous baseline. Deltas are withheld until daemon and hardware context continuity can be verified."
-msgstr "缺少连续基线。确认守护进程和硬件上下文连续之前不显示增量。"
-
-msgid "ONU slot"
-msgstr "ONU 槽位"
-
-msgid "Registration token"
-msgstr "注册代次标识"
-
-msgid "Management grant"
-msgstr "管理授权"
-
-msgid "Business grant"
-msgstr "业务授权"
-
-msgid "Unregistered"
-msgstr "未注册"
-
-msgid "Global counters (32-bit)"
-msgstr "全局计数（32 位）"
-
-msgid "Global counters cannot be attributed to a selected ONU. FPGA BCH readings are separate from ONU FEC PM. Grant bandwidth units are unverified."
-msgstr "全局计数不能归因于所选 ONU。FPGA BCH 读数与 ONU FEC 性能监测分别统计。授权带宽的单位尚未核实。"
-
-msgid "Stock label / key"
-msgstr "原厂标签 / 字段名"
-
-msgid "Modulo delta"
-msgstr "模增量"
-
-msgid "Source, limitations and raw registers"
-msgstr "来源、限制与寄存器原值"
-
-msgid "Daemon"
-msgstr "守护进程实例"
-
-msgid "Hardware epoch"
-msgstr "硬件上下文代次"
-
-msgid "Export JSON"
-msgstr "导出 JSON"
-
-msgid "Export NDJSON"
-msgstr "导出 NDJSON"
-
-msgid "Samples"
-msgstr "样本数"
-
-msgid "samples"
-msgstr "个样本"
-
-msgid "Interval (ms)"
-msgstr "间隔（毫秒）"
-
-msgid "Read a snapshot or start a bounded sampling window."
-msgstr "读取单次快照或启动限时采样。"
-
-msgid "Read snapshot"
-msgstr "读取快照"
-
-msgid "Start sampling"
-msgstr "开始采样"
-
-msgid "Stop"
-msgstr "停止"
-
-msgid "Stopped"
-msgstr "已停止"
-
-msgid "Read-only observed register diagnostics. Sampling is limited to 120 samples and 60 seconds; it stops when this panel becomes inactive."
-msgstr "只读寄存器诊断。最多采集 120 个样本、持续 60 秒；离开此面板时停止采样。"
-
-msgid "Sampling failed; retained samples may be stale."
-msgstr "采样失败，保留的样本可能已过期。"
-
-msgid "Sampling"
-msgstr "采样中"
-
-msgid "Waiting for pending read"
-msgstr "等待已发出的读取完成"

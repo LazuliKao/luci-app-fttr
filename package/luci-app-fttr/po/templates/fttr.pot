@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-08 00:13+0800\n"
+"POT-Creation-Date: 2026-11-14 22:00+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,21 +14,15 @@ msgstr ""
 msgid "—"
 msgstr ""
 
-msgid ""
-", and the optical transceiver hardware was reset and the register table was "
-"latched successfully (%s succeeded)"
-msgstr ""
-
-msgid ", but optical transceiver hardware initialization reported a warning: %s"
-msgstr ""
-
-msgid "(custom/self-calibrated table)"
+msgid "(different from historical sample)"
 msgstr ""
 
 msgid "(Entry %s)"
 msgstr ""
 
-msgid "(exact match with the official factory baseline)"
+msgid ""
+"(exactly 288 bytes, or 56 register bytes with supplemented telemetry and no "
+"temperature compensation)"
 msgstr ""
 
 msgid ""
@@ -36,7 +30,7 @@ msgid ""
 "sequential writes, then written with"
 msgstr ""
 
-msgid "(must be exactly %s bytes)"
+msgid "(historical sample match, not device-specific validation)"
 msgstr ""
 
 msgid "(Shortcut: %s)"
@@ -45,6 +39,9 @@ msgstr ""
 msgid ""
 "(the first %s bytes configure registers, followed by ADC diagnostic "
 "conversion coefficients from %s)."
+msgstr ""
+
+msgid "/lib/firmware file only"
 msgstr ""
 
 msgid ""
@@ -97,28 +94,44 @@ msgstr ""
 msgid "%s bytes"
 msgstr ""
 
-msgid "1. 1MB Factory partition (highest priority)"
+msgid "1. Factory partition (first in Auto mode)"
 msgstr ""
 
 msgid "1MB Factory partition (offset %s)"
 msgstr ""
 
+msgid "1MB Factory partition only"
+msgstr ""
+
+msgid "1MB Factory partition parameters (0x2200)"
+msgstr ""
+
 msgid "1MB Factory UBI partition (offset %s)"
 msgstr ""
 
-msgid "2. Firmware file path (second priority)"
+msgid "2. Firmware file (second in Auto mode)"
+msgstr ""
+
+msgid ""
+"56-byte register image supplemented with built-in telemetry coefficients; "
+"temperature compensation disabled."
+msgstr ""
+
+msgid ""
+"A 56-byte register-only file is also accepted with supplemented telemetry "
+"and temperature compensation disabled."
 msgstr ""
 
 msgid "A default route does not prove Internet reachability."
+msgstr ""
+
+msgid "A full UX3326 BOSA calibration file must be exactly"
 msgstr ""
 
 msgid ""
 "A missing group means a device points to a deleted group. Edit the device "
 "and select an existing group. If no suitable group exists, close this dialog "
 "and create a group first."
-msgstr ""
-
-msgid "A standard Semtech UX3326 BOSA calibration file must be exactly"
 msgstr ""
 
 msgid "About"
@@ -128,9 +141,6 @@ msgid "About FTTR"
 msgstr ""
 
 msgid "Account data is unavailable."
-msgstr ""
-
-msgid "ACS (CWMP)"
 msgstr ""
 
 msgid "ACS bootstrap"
@@ -143,15 +153,6 @@ msgid "ACS URL"
 msgstr ""
 
 msgid "Active allocation"
-msgstr ""
-
-msgid "Active data size"
-msgstr ""
-
-msgid "Active data size: %s bytes"
-msgstr ""
-
-msgid "Active data source:"
 msgstr ""
 
 msgid "Active hardware offload flows (PPE FOE Bound)"
@@ -209,19 +210,22 @@ msgid ""
 "them, then click the button below to upload to"
 msgstr ""
 
+msgid "All slots"
+msgstr ""
+
 msgid "Allow unsupported ONUs as bridge"
 msgstr ""
 
 msgid "Alternate temperature parameters (Alt Temp)"
 msgstr ""
 
-msgid "and the firmware file"
-msgstr ""
-
 msgid "Another operation is in progress."
 msgstr ""
 
 msgid "Applied"
+msgstr ""
+
+msgid "Applied source (see version above)"
 msgstr ""
 
 msgid "Applied version"
@@ -236,7 +240,7 @@ msgstr ""
 msgid "Apply or discard pending FTTR configuration changes first."
 msgstr ""
 
-msgid "Apply to hardware immediately"
+msgid "Apply selected calibration"
 msgstr ""
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
@@ -263,13 +267,15 @@ msgstr ""
 msgid "Authorize and apply management settings"
 msgstr ""
 
+msgid ""
+"Authorizes recovery of the child ACS settings after management drift or "
+"service restart. Business synchronization uses its own transport readiness."
+msgstr ""
+
+msgid "Auto detection order"
+msgstr ""
+
 msgid "Automatic"
-msgstr ""
-
-msgid "Automatic (HL202 command, otherwise ACS)"
-msgstr ""
-
-msgid "Automatic (read-only capability discovery)"
 msgstr ""
 
 msgid "Automatic allocation"
@@ -303,6 +309,9 @@ msgstr ""
 msgid "Band"
 msgstr ""
 
+msgid "Bandwidth (raw units)"
+msgstr ""
+
 msgid "Basic"
 msgstr ""
 
@@ -331,6 +340,9 @@ msgid "Binding only"
 msgstr ""
 
 msgid "Bindings"
+msgstr ""
+
+msgid "bit 28"
 msgstr ""
 
 msgid "Blocked"
@@ -362,10 +374,24 @@ msgstr ""
 msgid "Bridge offload mask"
 msgstr ""
 
+msgid ""
+"Built-in data may be explicitly selected or chosen by automatic fallback. A "
+"sample hash does not establish calibration accuracy for this device."
+msgstr ""
+
+msgid "Built-in defaults only"
+msgstr ""
+
 msgid "Built-in static defaults (fallback)"
 msgstr ""
 
 msgid "Business"
+msgstr ""
+
+msgid "Business grant"
+msgstr ""
+
+msgid "Business provisioning"
 msgstr ""
 
 msgid ""
@@ -382,6 +408,9 @@ msgstr ""
 msgid "Cached identity"
 msgstr ""
 
+msgid "Calibration application failed"
+msgstr ""
+
 msgid "Calibration data saved successfully!"
 msgstr ""
 
@@ -391,10 +420,49 @@ msgstr ""
 msgid "calibration file extracted from the factory backup to"
 msgstr ""
 
+msgid ""
+"Calibration is pending. Disabled optics remain disabled; the selected "
+"version will load on the next enable. Check candidate and active hashes "
+"above."
+msgstr ""
+
+msgid "Calibration parameters"
+msgstr ""
+
+msgid "Calibration SHA-256"
+msgstr ""
+
+msgid "Calibration source"
+msgstr ""
+
+msgid "Calibration status refreshed successfully."
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
 msgid "Cancel the fixed interface for this device?"
+msgstr ""
+
+msgid "Candidate (next enable / apply)"
+msgstr ""
+
+msgid "Candidate / Active parameters (%s)"
+msgstr ""
+
+msgid "Candidate calibration parameters (%s)"
+msgstr ""
+
+msgid "Candidate matches active"
+msgstr ""
+
+msgid "Candidate matches Factory partition data"
+msgstr ""
+
+msgid "Candidate path"
+msgstr ""
+
+msgid "Candidate uses a built-in historical calibration sample"
 msgstr ""
 
 msgid "Carrier"
@@ -426,6 +494,9 @@ msgstr ""
 msgid "Clear output"
 msgstr ""
 
+msgid "Click to copy full SHA-256"
+msgstr ""
+
 msgid "Click to select or drag a %s file here"
 msgstr ""
 
@@ -439,9 +510,6 @@ msgid "Collecting VLAN tables"
 msgstr ""
 
 msgid "Collecting VLAN tables queries extended filter tables and takes longer."
-msgstr ""
-
-msgid "Command (MQTT / tcapi)"
 msgstr ""
 
 msgid "Command in progress"
@@ -490,7 +558,10 @@ msgstr ""
 msgid "Configuring"
 msgstr ""
 
-msgid "Configuring BOSA optical transceiver hardware..."
+msgid "Configuring management WAN"
+msgstr ""
+
+msgid "Configuring settings"
 msgstr ""
 
 msgid "Confirm"
@@ -605,21 +676,6 @@ msgstr ""
 msgid "Current registration"
 msgstr ""
 
-msgid "Currently active path"
-msgstr ""
-
-msgid "Currently active system calibration data"
-msgstr ""
-
-msgid "Currently active system calibration parameters (%s)"
-msgstr ""
-
-msgid "Currently in use"
-msgstr ""
-
-msgid "Currently running in fallback mode with built-in static defaults"
-msgstr ""
-
 msgid "Custom calibration data"
 msgstr ""
 
@@ -644,7 +700,13 @@ msgstr ""
 msgid "CWMP Settings"
 msgstr ""
 
+msgid "Daemon"
+msgstr ""
+
 msgid "Data interface"
+msgstr ""
+
+msgid "Data present (%s bytes)"
 msgstr ""
 
 msgid "Data size"
@@ -677,9 +739,6 @@ msgstr ""
 msgid "Deleting an unused template also deletes its SSIDs and networks."
 msgstr ""
 
-msgid "Denominator D"
-msgstr ""
-
 msgid "Desired version"
 msgstr ""
 
@@ -690,9 +749,6 @@ msgid "Details"
 msgstr ""
 
 msgid "Device"
-msgstr ""
-
-msgid "Device adapter"
 msgstr ""
 
 msgid "Device already configured."
@@ -723,9 +779,6 @@ msgid "Device type"
 msgstr ""
 
 msgid "Device: %s, length %s bytes"
-msgstr ""
-
-msgid "Device: %s, length %s bytes (currently in use by the system)"
 msgstr ""
 
 msgid "Devices"
@@ -761,12 +814,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-msgid ""
-"Disabled by default. Uses the global management VLAN, priority and ACS URL "
-"for this device only, subject to management application authorization. "
-"Disabling skips future OMCI management writes and retains existing ONU "
-"settings. ME readback does not prove WAN creation or successful Inform; K155 "
-"may clear its local ACS URL when enabled."
+msgid "Disabled (56-byte register-only file)"
 msgstr ""
 
 msgid "Disabling"
@@ -781,12 +829,10 @@ msgstr ""
 msgid "Discovering"
 msgstr ""
 
-msgid "Dispatching to %s (timeout: %s s)..."
+msgid "Discovering management WAN"
 msgstr ""
 
-msgid ""
-"does not exist. The optical module is currently using parameters embedded in "
-"the source at compile time."
+msgid "Dispatching to %s (timeout: %s s)..."
 msgstr ""
 
 msgid "Down"
@@ -836,6 +882,12 @@ msgid ""
 msgstr ""
 
 msgid "Edit to repair"
+msgstr ""
+
+msgid "Effective data size: %s bytes"
+msgstr ""
+
+msgid "Effective SHA-256"
 msgstr ""
 
 msgid "Enable"
@@ -920,9 +972,6 @@ msgstr ""
 msgid "Evidence freshness"
 msgstr ""
 
-msgid "Exact match (%s)"
-msgstr ""
-
 msgid "Execute on selected HL202"
 msgstr ""
 
@@ -943,7 +992,10 @@ msgstr ""
 msgid "Exit code"
 msgstr ""
 
-msgid "Factory baseline consistency"
+msgid "Export JSON"
+msgstr ""
+
+msgid "Export NDJSON"
 msgstr ""
 
 msgid ""
@@ -1028,6 +1080,9 @@ msgstr ""
 msgid "FPGA"
 msgstr ""
 
+msgid "FPGA diagnostics"
+msgstr ""
+
 msgid "FPGA identifier"
 msgstr ""
 
@@ -1096,6 +1151,17 @@ msgstr ""
 msgid "GitHub Repositories"
 msgstr ""
 
+msgid "Global counters (32-bit)"
+msgstr ""
+
+msgid ""
+"Global counters cannot be attributed to a selected ONU. FPGA BCH readings "
+"are separate from ONU FEC PM. Grant bandwidth units are unverified."
+msgstr ""
+
+msgid "Go to Overview & Control to apply"
+msgstr ""
+
 msgid "GPON downstream FEC encoding"
 msgstr ""
 
@@ -1114,6 +1180,15 @@ msgstr ""
 msgid "Hardware"
 msgstr ""
 
+msgid "Hardware applied"
+msgstr ""
+
+msgid "Hardware epoch"
+msgstr ""
+
+msgid "Hardware not applied"
+msgstr ""
+
 msgid "Hardware specifications and firmware images"
 msgstr ""
 
@@ -1123,10 +1198,7 @@ msgstr ""
 msgid "Hardware version"
 msgstr ""
 
-msgid ""
-"HL202 defaults to native command provisioning with readback verification. "
-"Builds without MQTT use ACS. Transport failures require reconciliation and "
-"do not switch to ACS automatically."
+msgid "Historical stock sample match"
 msgstr ""
 
 msgid "HL202 device"
@@ -1170,6 +1242,12 @@ msgstr ""
 msgid "Identity source"
 msgstr ""
 
+msgid "In sync"
+msgstr ""
+
+msgid "In sync with applied version"
+msgstr ""
+
 msgid "Inactive"
 msgstr ""
 
@@ -1177,12 +1255,6 @@ msgid "Incomplete MIB snapshot"
 msgstr ""
 
 msgid "Independent device states"
-msgstr ""
-
-msgid ""
-"Independent of the optical adapter. Parameter paths, types and writable "
-"evidence are discovered before synchronization. Unverified candidates do not "
-"authorize writes."
 msgstr ""
 
 msgid ""
@@ -1197,6 +1269,9 @@ msgid ""
 msgstr ""
 
 msgid "Index"
+msgstr ""
+
+msgid "Index %s → Code %s"
 msgstr ""
 
 msgid "Inner filter (priority / VID / TPID-DEI)"
@@ -1240,6 +1315,9 @@ msgstr ""
 msgid "Interval (minutes)"
 msgstr ""
 
+msgid "Interval (ms)"
+msgstr ""
+
 msgid "Invalid MIB snapshot"
 msgstr ""
 
@@ -1276,6 +1354,9 @@ msgstr ""
 msgid "Last backend check result"
 msgstr ""
 
+msgid "Last check: %s"
+msgstr ""
+
 msgid "Last good report"
 msgstr ""
 
@@ -1291,10 +1372,16 @@ msgstr ""
 msgid "Last successful sample"
 msgstr ""
 
+msgid "Last successfully initialized version"
+msgstr ""
+
 msgid "Last telemetry"
 msgstr ""
 
 msgid "Last update / task"
+msgstr ""
+
+msgid "Last write: %s"
 msgstr ""
 
 msgid "Latest report error"
@@ -1327,7 +1414,13 @@ msgid ""
 "when adding a new device."
 msgstr ""
 
+msgid "Live hardware status is unavailable. The displayed data may be stale."
+msgstr ""
+
 msgid "Live NPU data is unavailable. Previous readings are stale."
+msgstr ""
+
+msgid "Live status is unavailable. The displayed data may be stale."
 msgstr ""
 
 msgid "Load"
@@ -1391,19 +1484,24 @@ msgid ""
 "configuration, and optical calibration."
 msgstr ""
 
+msgid "LUT table index"
+msgstr ""
+
 msgid "MAC"
 msgstr ""
 
 msgid "MAC address"
 msgstr ""
 
+msgid "Main bandwidth enabled"
+msgstr ""
+
 msgid "Main gateway"
 msgstr ""
 
 msgid ""
-"Manage calibration data for the Semtech UX3326 BOSA optical transceiver "
-"attached to the HM2004-DU Micro-OLT FPGA subsystem. Calibration data is read "
-"in priority order from"
+"Manage HM2004-DU UX3326 calibration snapshots. Auto selects the first valid "
+"source in this order:"
 msgstr ""
 
 msgid "Managed bridge"
@@ -1422,6 +1520,9 @@ msgid "Management application mode"
 msgstr ""
 
 msgid "Management fresh"
+msgstr ""
+
+msgid "Management grant"
 msgstr ""
 
 msgid "Management interface"
@@ -1457,6 +1558,9 @@ msgid ""
 "after Save & Apply when Configuration changed is selected."
 msgstr ""
 
+msgid "Manual setup required"
+msgstr ""
+
 msgid "Manual synchronization"
 msgstr ""
 
@@ -1484,6 +1588,20 @@ msgstr ""
 msgid "Missing template"
 msgstr ""
 
+msgid "Mod_Lut_EN Disabled"
+msgstr ""
+
+msgid "Mod_Lut_EN Enabled"
+msgstr ""
+
+msgid "Mod_Lut_EN is disabled."
+msgstr ""
+
+msgid ""
+"Mod_Lut_EN is enabled. This table controls registers 0x06/0x07; it is not a "
+"dBm target."
+msgstr ""
+
 msgid "Mode"
 msgstr ""
 
@@ -1497,6 +1615,15 @@ msgid "Module model"
 msgstr ""
 
 msgid "Module Tx"
+msgstr ""
+
+msgid "Modulo delta"
+msgstr ""
+
+msgid "Modulo deltas over"
+msgstr ""
+
+msgid "More addresses"
 msgstr ""
 
 msgid "More identity information"
@@ -1537,6 +1664,9 @@ msgid ""
 "template."
 msgstr ""
 
+msgid "Never"
+msgstr ""
+
 msgid "New calibration tables are always saved to"
 msgstr ""
 
@@ -1564,6 +1694,17 @@ msgstr ""
 msgid "No bound hardware flows in this snapshot."
 msgstr ""
 
+msgid "No calibration parameters are available to inspect."
+msgstr ""
+
+msgid ""
+"No continuous baseline. Deltas are withheld until daemon and hardware "
+"context continuity can be verified."
+msgstr ""
+
+msgid "No controller diagnostics are reported by the selected platform."
+msgstr ""
+
 msgid "No default-route uplink reported."
 msgstr ""
 
@@ -1571,6 +1712,9 @@ msgid "No desired items configured."
 msgstr ""
 
 msgid "No device detected"
+msgstr ""
+
+msgid "No downstream ports are reported by the selected platform."
 msgstr ""
 
 msgid "No entities recorded for this ME class."
@@ -1614,9 +1758,6 @@ msgstr ""
 msgid "No successful snapshot yet"
 msgstr ""
 
-msgid "No valid calibration data was found in the"
-msgstr ""
-
 msgid "No valid data"
 msgstr ""
 
@@ -1644,9 +1785,6 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
-msgid "Not factory default (self-calibrated)"
-msgstr ""
-
 msgid "Not pinned"
 msgstr ""
 
@@ -1656,6 +1794,9 @@ msgstr ""
 msgid "Not registered"
 msgstr ""
 
+msgid "Not required"
+msgstr ""
+
 msgid "Not started"
 msgstr ""
 
@@ -1663,9 +1804,6 @@ msgid "Not Started"
 msgstr ""
 
 msgid "Note: Register"
-msgstr ""
-
-msgid "Notice"
 msgstr ""
 
 msgid "NPU configuration"
@@ -1684,9 +1822,6 @@ msgid "NPU hardware acceleration is not compiled or unsupported on this target."
 msgstr ""
 
 msgid "NPU status request timed out"
-msgstr ""
-
-msgid "Numerator N"
 msgstr ""
 
 msgid "O1 Initial"
@@ -1728,19 +1863,22 @@ msgstr ""
 msgid "Observed object"
 msgstr ""
 
-msgid "Official factory baseline match"
-msgstr ""
-
 msgid "Offline"
 msgstr ""
 
 msgid "Offline or stale"
 msgstr ""
 
-msgid "Offset O"
+msgid "Offline sample at raw 0x5980:"
 msgstr ""
 
 msgid "OMCC version"
+msgstr ""
+
+msgid "OMCI ACS association"
+msgstr ""
+
+msgid "OMCI adapter"
 msgstr ""
 
 msgid "OMCI FEC monitoring paused"
@@ -1777,6 +1915,9 @@ msgid "ONU optical diagnostics"
 msgstr ""
 
 msgid "ONU Rx"
+msgstr ""
+
+msgid "ONU slot"
 msgstr ""
 
 msgid "Open optical status and ONU/MIB details"
@@ -1853,6 +1994,12 @@ msgstr ""
 msgid "Output was truncated at the byte limit."
 msgstr ""
 
+msgid "Overview & Control"
+msgstr ""
+
+msgid "Owner temperature compensation"
+msgstr ""
+
 msgid "Packets"
 msgstr ""
 
@@ -1886,6 +2033,9 @@ msgid ""
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Pending / not applied"
 msgstr ""
 
 msgid "Pending apply"
@@ -1963,9 +2113,6 @@ msgstr ""
 msgid "Program start"
 msgstr ""
 
-msgid "Provision management VLAN and ACS via OMCI"
-msgstr ""
-
 msgid "Provisioning"
 msgstr ""
 
@@ -1976,9 +2123,6 @@ msgid "Provisioning details"
 msgstr ""
 
 msgid "Provisioning is disabled"
-msgstr ""
-
-msgid "Provisioning method"
 msgstr ""
 
 msgid "Provisioning status unavailable"
@@ -1999,12 +2143,24 @@ msgstr ""
 msgid "Raw JSON"
 msgstr ""
 
+msgid "Raw SHA-256"
+msgstr ""
+
 msgid "Raw source observations (JSON)"
+msgstr ""
+
+msgid "Raw temperature"
+msgstr ""
+
+msgid "Read a snapshot or start a bounded sampling window."
 msgstr ""
 
 msgid ""
 "Read current device parameters and auto-verify matching settings without "
 "writing to device"
+msgstr ""
+
+msgid "Read duration"
 msgstr ""
 
 msgid "Read MIB"
@@ -2019,10 +2175,18 @@ msgstr ""
 msgid "Read MQTT report"
 msgstr ""
 
+msgid "Read snapshot"
+msgstr ""
+
 msgid "Read users"
 msgstr ""
 
 msgid "Read-only MQTT source"
+msgstr ""
+
+msgid ""
+"Read-only observed register diagnostics. Sampling is limited to 120 samples "
+"and 60 seconds; it stops when this panel becomes inactive."
 msgstr ""
 
 msgid "Reading"
@@ -2037,10 +2201,10 @@ msgstr ""
 msgid "Reading OMCI MIB records…"
 msgstr ""
 
-msgid "Ready"
+msgid "Reading settings"
 msgstr ""
 
-msgid "Ready (overridden by Factory)"
+msgid "Ready"
 msgstr ""
 
 msgid "Reason / desired changes"
@@ -2097,6 +2261,9 @@ msgstr ""
 msgid "Refresh interval: 3 seconds"
 msgstr ""
 
+msgid "Refresh status"
+msgstr ""
+
 msgid "Refresh users to read the current state."
 msgstr ""
 
@@ -2109,10 +2276,18 @@ msgstr ""
 msgid "Register offset"
 msgstr ""
 
+msgid ""
+"Register-only file: telemetry coefficients are supplemented from built-in "
+"data; temperature compensation is disabled."
+msgstr ""
+
 msgid "Registration"
 msgstr ""
 
 msgid "Registration freshness unavailable"
+msgstr ""
+
+msgid "Registration token"
 msgstr ""
 
 msgid "Relationship"
@@ -2156,11 +2331,6 @@ msgstr ""
 msgid "Request ID"
 msgstr ""
 
-msgid ""
-"Required after management drift or service restart; verifies the child ACS "
-"settings before business synchronization."
-msgstr ""
-
 msgid "Reserved"
 msgstr ""
 
@@ -2177,6 +2347,14 @@ msgid "Reset pending"
 msgstr ""
 
 msgid "Reset synchronization state"
+msgstr ""
+
+msgid "Reset zoom to 100%"
+msgstr ""
+
+msgid ""
+"RESET_N, GPON MAC TX and measured optical emission are separate states. "
+"Compensation codes are not dBm targets."
 msgstr ""
 
 msgid "Restart"
@@ -2203,13 +2381,25 @@ msgstr ""
 msgid "rows"
 msgstr ""
 
-msgid "Running"
-msgstr ""
-
 msgid "RX wavelength"
 msgstr ""
 
+msgid "Sample time"
+msgstr ""
+
 msgid "Sampled"
+msgstr ""
+
+msgid "samples"
+msgstr ""
+
+msgid "Samples"
+msgstr ""
+
+msgid "Sampling"
+msgstr ""
+
+msgid "Sampling failed; retained samples may be stale."
 msgstr ""
 
 msgid "Save & Apply"
@@ -2221,6 +2411,9 @@ msgstr ""
 msgid ""
 "Save returned success, but configuration readback could not be confirmed. "
 "Refresh before retrying."
+msgstr ""
+
+msgid "Save source selection"
 msgstr ""
 
 msgid "Saved"
@@ -2248,6 +2441,11 @@ msgid ""
 "Saving configuration does not synchronize devices in Manual mode. After Save "
 "& Apply, open Synchronization and choose Apply differences. Preview "
 "differences is read-only."
+msgstr ""
+
+msgid ""
+"Saving does not switch the source or apply hardware. Select Firmware "
+"explicitly, then apply the selected calibration when ready."
 msgstr ""
 
 msgid ""
@@ -2292,7 +2490,7 @@ msgstr ""
 msgid "Select an existing template."
 msgstr ""
 
-msgid "Select an interface from fttr1 to fttr16."
+msgid "Select an ONU interface exposed by the selected platform."
 msgstr ""
 
 msgid ""
@@ -2303,13 +2501,40 @@ msgstr ""
 msgid "Select at least one WAN Service List label."
 msgstr ""
 
+msgid "Select dataset:"
+msgstr ""
+
 msgid "Select device."
+msgstr ""
+
+msgid ""
+"Select how ACS settings are established. Bootstrap runs independently, "
+"including when business provisioning is disabled or uses MQTT."
 msgstr ""
 
 msgid "Select SSIDs belonging to this network's template."
 msgstr ""
 
+msgid "Select the OMCI profile used to read and configure this device."
+msgstr ""
+
+msgid ""
+"Select the transport and contract for business configuration. None disables "
+"business delivery only. ACS uses current CWMP reachability; bootstrap status "
+"is shown separately. Candidate contracts require discovery and verified "
+"write support."
+msgstr ""
+
+msgid "Selected ACS bootstrap is unavailable in this build."
+msgstr ""
+
+msgid "Selected business provisioning option is unavailable in this build."
+msgstr ""
+
 msgid "Selected file:"
+msgstr ""
+
+msgid "Selected OMCI adapter is unavailable in this build."
 msgstr ""
 
 msgid "Self-heal / retry"
@@ -2341,6 +2566,9 @@ msgid ""
 "output can contain secrets."
 msgstr ""
 
+msgid "Simulated telemetry readings"
+msgstr ""
+
 msgid "Size:"
 msgstr ""
 
@@ -2359,7 +2587,18 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
+msgid "Source for the next apply / enable:"
+msgstr ""
+
 msgid "Source member"
+msgstr ""
+
+msgid ""
+"Source selection saved. Existing hardware and telemetry remain on the "
+"applied version until apply or the next enable."
+msgstr ""
+
+msgid "Source, limitations and raw registers"
 msgstr ""
 
 msgid ""
@@ -2395,6 +2634,9 @@ msgstr ""
 msgid "Start configuration delivery for this device"
 msgstr ""
 
+msgid "Start sampling"
+msgstr ""
+
 msgid "Started"
 msgstr ""
 
@@ -2411,6 +2653,21 @@ msgid "Status"
 msgstr ""
 
 msgid "Status refresh failed: %s"
+msgstr ""
+
+msgid "Status:"
+msgstr ""
+
+msgid "Stock label / key"
+msgstr ""
+
+msgid "Stop"
+msgstr ""
+
+msgid "Stopped"
+msgstr ""
+
+msgid "Stored file (selection and application are separate)"
 msgstr ""
 
 msgid "Sub-gateway %s — %s"
@@ -2460,6 +2717,9 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
+msgid "Target code"
+msgstr ""
+
 msgid "Target storage path"
 msgstr ""
 
@@ -2467,6 +2727,9 @@ msgid "Task"
 msgstr ""
 
 msgid "Temperature"
+msgstr ""
+
+msgid "Temperature compensation table (84 entries, 10-bit hardware codes)"
 msgstr ""
 
 msgid "Template"
@@ -2484,12 +2747,19 @@ msgstr ""
 msgid "The continuation is no longer valid. Refresh the topology."
 msgstr ""
 
-msgid "The file must be exactly %s bytes."
+msgid ""
+"The file must contain 288 bytes, or 56 register bytes with supplemented "
+"telemetry and no temperature compensation."
 msgstr ""
 
 msgid ""
 "The local ACS binds to this address. The child ACS URL is generated from "
 "this address, the ACS port and CWMP path."
+msgstr ""
+
+msgid ""
+"The operation completed without version confirmation. Refresh status before "
+"interpreting the outcome."
 msgstr ""
 
 msgid "The path must start with '/'."
@@ -2501,6 +2771,12 @@ msgstr ""
 msgid "The selected node is no longer present."
 msgstr ""
 
+msgid "The selected platform does not expose this ONU-ID as an available interface."
+msgstr ""
+
+msgid "The selected version was applied by the optical owner."
+msgstr ""
+
 msgid "The state file path must be absolute."
 msgstr ""
 
@@ -2508,8 +2784,24 @@ msgid "The tutorial for adding and configuring sub-gateways will be provided her
 msgstr ""
 
 msgid ""
+"then built-in historical data. Explicit sources never silently fall back. "
+"Upload, source selection and application are separate operations."
+msgstr ""
+
+msgid "then select Firmware and apply it separately."
+msgstr ""
+
+msgid ""
 "This also deletes the template's SSIDs and networks. Templates used by "
 "groups cannot be deleted."
+msgstr ""
+
+msgid ""
+"This backend does not expose versioned calibration state. Update the backend "
+"before selecting or applying a source."
+msgstr ""
+
+msgid "This calibration profile is not supported by the selected platform."
 msgstr ""
 
 msgid "This device already has an active synchronization operation"
@@ -2530,6 +2822,9 @@ msgid "This node is no longer in the snapshot."
 msgstr ""
 
 msgid "This object was not observed in the current snapshot."
+msgstr ""
+
+msgid "This operation is not supported by the selected platform."
 msgstr ""
 
 msgid ""
@@ -2560,6 +2855,9 @@ msgid ""
 "the template."
 msgstr ""
 
+msgid "Threshold ≤ %s °C"
+msgstr ""
+
 msgid "Timeout"
 msgstr ""
 
@@ -2570,9 +2868,6 @@ msgid "Timeout must be 1–300 seconds."
 msgstr ""
 
 msgid "to commit all changes."
-msgstr ""
-
-msgid "to ensure accurate laser transmit power and ADC diagnostic readings."
 msgstr ""
 
 msgid "To ONU (controller TX)"
@@ -2626,6 +2921,9 @@ msgstr ""
 msgid "Transmitter"
 msgstr ""
 
+msgid "Transport observations"
+msgstr ""
+
 msgid "Triggers"
 msgstr ""
 
@@ -2660,6 +2958,9 @@ msgid ""
 "integrity."
 msgstr ""
 
+msgid "unavailable"
+msgstr ""
+
 msgid "Unavailable"
 msgstr ""
 
@@ -2678,9 +2979,6 @@ msgstr ""
 msgid "Unknown class"
 msgstr ""
 
-msgid "Unknown error"
-msgstr ""
-
 msgid "Unknown model"
 msgstr ""
 
@@ -2693,16 +2991,19 @@ msgstr ""
 msgid "Unpin interface"
 msgstr ""
 
+msgid "Unregistered"
+msgstr ""
+
 msgid "Unsupported"
 msgstr ""
 
 msgid "Unverified"
 msgstr ""
 
-msgid "Unverified candidate"
+msgid "Up"
 msgstr ""
 
-msgid "Up"
+msgid "Update calibration file"
 msgstr ""
 
 msgid "Uplink PHY rate"
@@ -2715,6 +3016,12 @@ msgid "Upload and save to %s"
 msgstr ""
 
 msgid "Upload blocked."
+msgstr ""
+
+msgid "Upload calibration"
+msgstr ""
+
+msgid "Upload calibration file"
 msgstr ""
 
 msgid "Upload complete"
@@ -2746,16 +3053,13 @@ msgid ""
 "hyphens."
 msgstr ""
 
-msgid "Use alternate parameters when the calculated temperature is ≤ %s °C"
-msgstr ""
-
 msgid "Use backend Connection Request defaults"
 msgstr ""
 
 msgid "Use current interface"
 msgstr ""
 
-msgid "Use the form below to upload the %s-byte"
+msgid "Use the Upload tab to upload the %s-byte"
 msgstr ""
 
 msgid "User management"
@@ -2765,9 +3069,6 @@ msgid ""
 "Uses a backend-reserved profile; factory credentials are not yet verified. "
 "Disable to enter this CPE's existing credentials and port. Saved custom "
 "values are retained while hidden."
-msgstr ""
-
-msgid "Valid data (%s bytes)"
 msgstr ""
 
 msgid "Value"
@@ -2785,7 +3086,16 @@ msgstr ""
 msgid "Verifying"
 msgstr ""
 
+msgid "Verifying management WAN"
+msgstr ""
+
+msgid "Verifying settings"
+msgstr ""
+
 msgid "View all observed objects"
+msgstr ""
+
+msgid "View Factory parameters"
 msgstr ""
 
 msgid "View OMCI / MIB details"
@@ -2806,10 +3116,19 @@ msgstr ""
 msgid "Waiting"
 msgstr ""
 
+msgid "Waiting ACS listener"
+msgstr ""
+
 msgid "Waiting for device reset recovery"
 msgstr ""
 
 msgid "Waiting for device result…"
+msgstr ""
+
+msgid "Waiting for pending read"
+msgstr ""
+
+msgid "Waiting identity"
 msgstr ""
 
 msgid "Waiting Inform"
@@ -2827,20 +3146,16 @@ msgstr ""
 msgid "Waiting Task"
 msgstr ""
 
+msgid "Waiting to retry"
+msgstr ""
+
+msgid "Waiting transport"
+msgstr ""
+
 msgid "WAN / WLAN lifecycle results"
 msgstr ""
 
 msgid "WAN → FTTR ONU routed and inbound NAT hardware acceleration"
-msgstr ""
-
-msgid ""
-"WAN and ONU bridge offload cannot be enabled together. Disable ONU bridge "
-"offload before enabling WAN directions."
-msgstr ""
-
-msgid ""
-"WAN and ONU bridge offload use exclusive port modes. Disable ONU bridge "
-"offload before enabling either WAN direction."
 msgstr ""
 
 msgid ""
@@ -2869,6 +3184,9 @@ msgstr ""
 msgid "WAN verifying"
 msgstr ""
 
+msgid "Weight"
+msgstr ""
+
 msgid "Wi-Fi cleanup policy"
 msgstr ""
 
@@ -2882,16 +3200,6 @@ msgid "Wi-Fi sync"
 msgstr ""
 
 msgid "Wireless association"
-msgstr ""
-
-msgid ""
-"with automatic fallback to built-in static defaults if neither source has "
-"valid data."
-msgstr ""
-
-msgid ""
-"Write %s registers to the BOSA hardware and commit the latch immediately "
-"after saving (%s)"
 msgstr ""
 
 msgid "Write settings and execution"
@@ -2910,113 +3218,4 @@ msgid "Zoom out"
 msgstr ""
 
 msgid "速度：%s Mbit/s，双工：%s"
-msgstr ""
-
-# HM2004 structured FPGA diagnostics
-msgid "FPGA diagnostics"
-msgstr ""
-
-msgid "All slots"
-msgstr ""
-
-msgid "bit 28"
-msgstr ""
-
-msgid "Bandwidth (raw units)"
-msgstr ""
-
-msgid "Weight"
-msgstr ""
-
-msgid "Sample time"
-msgstr ""
-
-msgid "Read duration"
-msgstr ""
-
-msgid "Main bandwidth enabled"
-msgstr ""
-
-msgid "Modulo deltas over"
-msgstr ""
-
-msgid "No continuous baseline. Deltas are withheld until daemon and hardware context continuity can be verified."
-msgstr ""
-
-msgid "ONU slot"
-msgstr ""
-
-msgid "Registration token"
-msgstr ""
-
-msgid "Management grant"
-msgstr ""
-
-msgid "Business grant"
-msgstr ""
-
-msgid "Unregistered"
-msgstr ""
-
-msgid "Global counters (32-bit)"
-msgstr ""
-
-msgid "Global counters cannot be attributed to a selected ONU. FPGA BCH readings are separate from ONU FEC PM. Grant bandwidth units are unverified."
-msgstr ""
-
-msgid "Stock label / key"
-msgstr ""
-
-msgid "Modulo delta"
-msgstr ""
-
-msgid "Source, limitations and raw registers"
-msgstr ""
-
-msgid "Daemon"
-msgstr ""
-
-msgid "Hardware epoch"
-msgstr ""
-
-msgid "Export JSON"
-msgstr ""
-
-msgid "Export NDJSON"
-msgstr ""
-
-msgid "Samples"
-msgstr ""
-
-msgid "samples"
-msgstr ""
-
-msgid "Interval (ms)"
-msgstr ""
-
-msgid "Read a snapshot or start a bounded sampling window."
-msgstr ""
-
-msgid "Read snapshot"
-msgstr ""
-
-msgid "Start sampling"
-msgstr ""
-
-msgid "Stop"
-msgstr ""
-
-msgid "Stopped"
-msgstr ""
-
-msgid "Read-only observed register diagnostics. Sampling is limited to 120 samples and 60 seconds; it stops when this panel becomes inactive."
-msgstr ""
-
-msgid "Sampling failed; retained samples may be stale."
-msgstr ""
-
-msgid "Sampling"
-msgstr ""
-
-msgid "Waiting for pending read"
 msgstr ""
