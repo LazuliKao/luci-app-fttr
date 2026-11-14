@@ -1,15 +1,246 @@
 // SPDX-License-Identifier: Apache-2.0
-// LuCI-owned card graph: semantic buttons, explicit layout and a pan/zoom viewport.
-import type { TopologyReply } from "../../api/generated/types";
-import { CLIENT_PREVIEW_LIMIT, clientKey, layout, observedCount, type Selection } from "./model";
-import { badge, clientCard, nodeCard, nodeState, nodeTone, relationText } from "./presentation";
+// G6-backed FTTR topology canvas: renders rich HTML device cards inside an
+// interactive AntV G6 viewport with optical link labels, hover neighbor
+// highlighting, minimap navigation, and theme-synchronized palettes.
+
+import { DragCanvas } from "@antv/g6/esm/behaviors/drag-canvas";
+import { HoverActivate } from "@antv/g6/esm/behaviors/hover-activate";
+import { ZoomCanvas } from "@antv/g6/esm/behaviors/zoom-canvas";
+import { EdgeEvent, GraphEvent, NodeEvent } from "@antv/g6/esm/constants";
+import { CubicHorizontal } from "@antv/g6/esm/elements/edges/cubic-horizontal";
+import { CubicVertical } from "@antv/g6/esm/elements/edges/cubic-vertical";
+import { Polyline } from "@antv/g6/esm/elements/edges/polyline";
+import { HTML as G6HtmlNode } from "@antv/g6/esm/elements/nodes/html";
+import { Minimap } from "@antv/g6/esm/plugins/minimap";
+import { register } from "@antv/g6/esm/registry/register";
+import { Graph as G6Graph } from "@antv/g6/esm/runtime/graph";
+import type { EdgeData, NodeData } from "@antv/g6/esm/spec";
+import { dark, light } from "@antv/g6/esm/themes";
+import { ArrangeDrawOrder } from "@antv/g6/esm/transforms/arrange-draw-order";
+import { CollapseExpandCombo } from "@antv/g6/esm/transforms/collapse-expand-combo";
+import { CollapseExpandNode } from "@antv/g6/esm/transforms/collapse-expand-node";
+import { GetEdgeActualEnds } from "@antv/g6/esm/transforms/get-edge-actual-ends";
+import { UpdateRelatedEdge } from "@antv/g6/esm/transforms/update-related-edge";
+import type { ElementType, IElementEvent } from "@antv/g6/esm/types";
+import type { TopologyClient, TopologyNode, TopologyReply } from "../../api/generated/types";
+import {
+	CLIENT_PREVIEW_LIMIT,
+	clientKey,
+	layout,
+	linkFor,
+	nodeAddresses,
+	observedCount,
+	type Selection,
+} from "./model";
+import { badge, clientCard, nodeCard, nodeTone, num, type Tone } from "./presentation";
 import type { ClientState } from "./store";
 
+// Register only the minimal G6 ESM extensions required by the FTTR topology view.
+let registered = false;
+function ensureRegistered() {
+	if (registered) return;
+	registered = true;
+	register("node", "html", G6HtmlNode);
+	register("edge", "cubic-horizontal", CubicHorizontal);
+	register("edge", "cubic-vertical", CubicVertical);
+	register("edge", "polyline", Polyline);
+	register("behavior", "drag-canvas", DragCanvas);
+	register("behavior", "zoom-canvas", ZoomCanvas);
+	register("behavior", "hover-activate", HoverActivate);
+	register("plugin", "minimap", Minimap);
+	register("transform", "update-related-edges", UpdateRelatedEdge);
+	register("transform", "collapse-expand-node", CollapseExpandNode);
+	register("transform", "collapse-expand-combo", CollapseExpandCombo);
+	register("transform", "get-edge-actual-ends", GetEdgeActualEnds);
+	register("transform", "arrange-draw-order", ArrangeDrawOrder);
+	register("theme", "light", light);
+	register("theme", "dark", dark);
+}
+
+export interface TopologyPalette {
+	dark: boolean;
+	nodeFill: string;
+	nodeStroke: string;
+	text: string;
+	muted: string;
+	edge: string;
+	selected: string;
+	labelBackground: string;
+	success: string;
+	warning: string;
+	danger: string;
+	info: string;
+	neutral: string;
+}
+
+const LIGHT: TopologyPalette = {
+	dark: false,
+	nodeFill: "#f7f8fa",
+	nodeStroke: "#d0d7de",
+	text: "#1f2328",
+	muted: "#656d76",
+	edge: "#8c959f",
+	selected: "#2876df",
+	labelBackground: "rgba(255, 255, 255, 0.92)",
+	success: "#158353",
+	warning: "#a96908",
+	danger: "#b42318",
+	info: "#2876df",
+	neutral: "#6e7781",
+};
+
+const DARK: TopologyPalette = {
+	dark: true,
+	nodeFill: "#1f242c",
+	nodeStroke: "#3b434f",
+	text: "#e6edf3",
+	muted: "#9198a1",
+	edge: "#656d76",
+	selected: "#75adff",
+	labelBackground: "rgba(22, 27, 34, 0.9)",
+	success: "#51d9a2",
+	warning: "#eab969",
+	danger: "#ff8078",
+	info: "#75adff",
+	neutral: "#8b949e",
+};
+
+function parseColor(value: string): [number, number, number, number] | null {
+	const match = value.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+%?))?\s*\)/i);
+	if (!match) return null;
+	let alpha = match[4] === undefined ? 1 : Number.parseFloat(match[4]);
+	if (match[4]?.endsWith("%")) alpha /= 100;
+	return [Number(match[1]), Number(match[2]), Number(match[3]), alpha];
+}
+
+function luminance([r, g, b]: [number, number, number, number]): number {
+	const channel = (value: number) => {
+		const c = value / 255;
+		return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+	};
+	return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+function effectiveBackground(element: Element): [number, number, number, number] | null {
+	let current: Element | null = element;
+	while (current) {
+		const color = parseColor(getComputedStyle(current).backgroundColor);
+		if (color && color[3] > 0.5) return color;
+		current = current.parentElement;
+	}
+	return null;
+}
+
+export function readPalette(element: Element): TopologyPalette {
+	const root = document.documentElement;
+	const background = effectiveBackground(element);
+	const hinted =
+		root.getAttribute("data-darkmode") === "true" ||
+		root.getAttribute("data-theme") === "dark" ||
+		document.body?.getAttribute("data-darkmode") === "true" ||
+		document.body?.getAttribute("data-theme") === "dark";
+	const isDark = background ? luminance(background) < 0.35 : hinted;
+	const base = isDark ? DARK : LIGHT;
+	const color = parseColor(getComputedStyle(element).color);
+	const text = color && luminance(color) > 0.5 === isDark ? getComputedStyle(element).color : base.text;
+	return { ...base, text };
+}
+
+export function samePalette(a: TopologyPalette, b: TopologyPalette): boolean {
+	return (Object.keys(a) as (keyof TopologyPalette)[]).every((key) => a[key] === b[key]);
+}
+
+export type StatusFilter = "all" | "online" | "attention" | "offline";
+
+export interface GraphFilter {
+	query: string;
+	status: StatusFilter;
+}
+
+function matchesStatus(node: TopologyNode, snapshot: TopologyReply, status: StatusFilter): boolean {
+	if (status === "all") return true;
+	const tone = nodeTone(node, snapshot);
+	if (status === "online") return tone === "success" || tone === "info";
+	if (status === "attention") return tone === "warning" || tone === "danger";
+	return tone === "neutral";
+}
+
+function matchesQuery(text: string, values: Array<string | null | undefined>): boolean {
+	if (!text) return true;
+	return values.some((value) => value?.toLowerCase().includes(text));
+}
+
+function nodeMatchesFilter(node: TopologyNode, snapshot: TopologyReply, filter: GraphFilter): boolean {
+	if (!matchesStatus(node, snapshot, filter.status)) return false;
+	const query = filter.query.trim().toLowerCase();
+	if (!query) return true;
+	const detail = node.detail;
+	return matchesQuery(query, [
+		node.id,
+		node.label,
+		detail.model,
+		...nodeAddresses(node),
+		...(detail.kind === "onu" ? [detail.serial_number, detail.vendor, detail.extensions.hl202?.mac] : []),
+	]);
+}
+
+function clientMatchesFilter(client: TopologyClient, filter: GraphFilter): boolean {
+	if (filter.status !== "all" && filter.status !== "online") return false;
+	const query = filter.query.trim().toLowerCase();
+	if (!query) return true;
+	return matchesQuery(query, [client.hostname, client.mac, client.interface, ...client.addresses]);
+}
+
+function buildNodeElement(
+	node: TopologyNode | undefined,
+	client: { parent: string; client: TopologyClient } | undefined,
+	snapshot: TopologyReply,
+	clientState: ClientState | undefined,
+	selected: boolean,
+	dimmed: boolean,
+): HTMLElement {
+	const tone: Tone = node ? nodeTone(node, snapshot) : "neutral";
+	const kindClass = node?.detail.kind === "controller" ? "is-controller" : client ? "is-client" : "is-onu";
+	const card = (
+		<div
+			class={`topo-graph-card topo-${tone} ${kindClass} ${selected ? "is-selected" : ""} ${dimmed ? "is-dimmed" : ""}`}
+			style="width:100%;height:100%"
+		>
+			{node ? nodeCard(node, snapshot) : client ? clientCard(client.client) : null}
+		</div>
+	);
+	if (node) {
+		const total = observedCount(clientState);
+		const overflow = Boolean(
+			clientState && (clientState.clients.length > CLIENT_PREVIEW_LIMIT || clientState.result?.next_cursor),
+		);
+		if (total > 0 && overflow) {
+			card.append(
+				<div class="topo-card-overflow">
+					{_("View all observed objects")} · {total}
+					{clientState?.result?.next_cursor ? "+" : ""}
+				</div>,
+			);
+		} else if (clientState?.error) {
+			card.append(<div class="topo-card-overflow is-warn">{badge(_("Objects unavailable"), "warning")}</div>);
+		}
+	}
+	return card;
+}
+
 export interface TopologyGraph {
-	update(snapshot: TopologyReply, clients: ReadonlyMap<string, ClientState>, selected: Selection): void;
+	update(
+		snapshot: TopologyReply,
+		clients: ReadonlyMap<string, ClientState>,
+		selected: Selection,
+		filter?: GraphFilter,
+	): void;
+	setPalette(palette: TopologyPalette): void;
+	setMinimap(enabled: boolean): void;
 	fit(): void;
 	zoom(factor: number): void;
 	reset(): void;
+	focusNode(id: string): void;
 	setPanning(enabled: boolean): void;
 	destroy(): void;
 }
@@ -18,380 +249,433 @@ export function createTopologyGraph(
 	container: HTMLElement,
 	onSelect: (selection: Selection) => void,
 	onScale?: (scale: number) => void,
+	initialPalette?: TopologyPalette,
 ): TopologyGraph {
-	const world = <div class="topo-world" />;
-	container.replaceChildren(world);
-	let dimensions = { width: 1000, height: 600 };
-	let position = { x: 0, y: 0, scale: 1 };
-	let adjusted = false;
-	let dead = false;
-	let panEnabled = false;
-	let moved = 0;
-	let dragging = false;
-	let suppressClick = false;
-	let painted = "";
-	let lastWidth = 0;
-	let initialized = false;
-	let gesture: { x: number; y: number; distance: number } | null = null;
-	const pointers = new Map<number, { x: number; y: number }>();
+	ensureRegistered();
 
-	function transform() {
-		world.style.transform = `translate(${position.x}px, ${position.y}px) scale(${position.scale})`;
-		onScale?.(position.scale);
-	}
-	function fit(full = true) {
-		if (dead || !container.clientWidth || !container.clientHeight) return;
-		adjusted = false;
-		// A true fit may shrink everything; the automatic fit keeps text readable and
-		// lets the user pan the overflow instead.
-		const scale = Math.max(
-			full ? 0.15 : 0.7,
-			Math.min(
-				1,
-				(container.clientWidth - 40) / dimensions.width,
-				(container.clientHeight - 40) / dimensions.height,
+	let palette = initialPalette ?? readPalette(container);
+	let dead = false;
+	let rendered = false;
+	let fitting = false;
+	let userAdjusted = false;
+	let panEnabled = false;
+	let minimapEnabled = (container.clientWidth || 800) >= 640;
+	let lastWidth = 0;
+	let lastSignature = "";
+	let lastSnapshot: TopologyReply | null = null;
+	let lastClients: ReadonlyMap<string, ClientState> = new Map();
+	let lastSelected: Selection = { kind: "node", id: "" };
+	let lastFilter: GraphFilter = { query: "", status: "all" };
+	let selectionLookup = new Map<string, Selection>();
+	let toneLookup = new Map<string, Tone>();
+	let queue: Promise<void> = Promise.resolve();
+
+	const width = Math.max(container.clientWidth || 800, 320);
+	const height = Math.max(container.clientHeight || 500, 320);
+
+	const minimapPlugin = () => ({
+		type: "minimap",
+		key: "minimap",
+		size: [176, 112] as [number, number],
+		padding: 8,
+		position: "right-bottom" as const,
+		containerStyle: {
+			background: palette.nodeFill,
+			border: `1px solid ${palette.nodeStroke}`,
+			borderRadius: "8px",
+			boxShadow: "0 4px 16px rgba(0, 0, 0, 0.14)",
+			overflow: "hidden",
+		},
+		maskStyle: {
+			border: `1.5px solid ${palette.selected}`,
+			background: palette.dark ? "rgba(117, 173, 255, 0.14)" : "rgba(40, 118, 223, 0.12)",
+		},
+		shape: (
+			id: string,
+			elementType: ElementType,
+			element: { getShape: (name: string) => { cloneNode: () => unknown } },
+		) => {
+			if (elementType === "edge") return element.getShape("key").cloneNode();
+			const rect = element.getShape("key-container").cloneNode() as {
+				style: Record<string, unknown>;
+			};
+			const tone = toneLookup.get(id) ?? "neutral";
+			rect.style.opacity = 0.9;
+			rect.style.fill = palette.nodeFill;
+			rect.style.stroke = palette[tone];
+			rect.style.lineWidth = 2;
+			rect.style.radius = 6;
+			return rect;
+		},
+	});
+
+	const graph = new G6Graph({
+		container,
+		width,
+		height,
+		theme: palette.dark ? "dark" : "light",
+		animation: false,
+		padding: 28,
+		zoomRange: [0.15, 2.5],
+		edge: {
+			state: {
+				active: {
+					stroke: palette.selected,
+					lineWidth: 2.8,
+					zIndex: 4,
+				},
+				inactive: {
+					opacity: 0.22,
+				},
+			},
+		},
+		node: {
+			state: {
+				active: { zIndex: 3 },
+				inactive: { opacity: 0.35 },
+			},
+		},
+		behaviors: [
+			{
+				type: "drag-canvas",
+				key: "drag",
+				enable: (event: { pointerType?: string }) => event.pointerType !== "touch" || panEnabled,
+			},
+			{
+				type: "zoom-canvas",
+				key: "wheel-zoom",
+				preventDefault: false,
+				enable: (event: { ctrlKey?: boolean; metaKey?: boolean }) => Boolean(event.ctrlKey || event.metaKey),
+			},
+			{ type: "zoom-canvas", key: "pinch-zoom", trigger: ["pinch"] },
+			{
+				type: "hover-activate",
+				key: "hover",
+				degree: 1,
+				state: "active",
+				inactiveState: "inactive",
+				animation: false,
+			},
+		],
+		plugins: minimapEnabled ? [minimapPlugin()] : [],
+	});
+
+	const onWheel = (event: WheelEvent) => {
+		if (event.ctrlKey || event.metaKey) event.preventDefault();
+	};
+	container.addEventListener("wheel", onWheel, { passive: false });
+
+	const emitScale = () => {
+		if (!dead) onScale?.(graph.getZoom());
+	};
+
+	graph.on(GraphEvent.AFTER_TRANSFORM, () => {
+		if (!fitting) userAdjusted = true;
+		emitScale();
+	});
+
+	graph.on(NodeEvent.CLICK, (event: IElementEvent) => {
+		const id = String(event.target.id);
+		const target = selectionLookup.get(id);
+		if (target) onSelect(target);
+	});
+
+	graph.on(NodeEvent.DBLCLICK, (event: IElementEvent) => {
+		const id = String(event.target.id);
+		if (selectionLookup.has(id)) {
+			void enqueue(async () => {
+				userAdjusted = true;
+				await graph.focusElement(id, { duration: 220 });
+			});
+		}
+	});
+
+	graph.on(EdgeEvent.CLICK, (event: IElementEvent) => {
+		const edgeIdValue = String(event.target.id);
+		const edge = graph.getEdgeData(edgeIdValue);
+		if (!edge?.target) return;
+		const target = selectionLookup.get(String(edge.target));
+		if (target) onSelect(target);
+	});
+
+	const enqueue = (task: () => Promise<void>): Promise<void> => {
+		queue = queue
+			.then(async () => {
+				if (!dead) await task();
+			})
+			.catch(() => {
+				// Ignore transient errors on destroyed/updating graphs.
+			});
+		return queue;
+	};
+
+	const autoFit = async (full = false) => {
+		fitting = true;
+		try {
+			await graph.zoomTo(1, false);
+			await graph.fitCenter(false);
+			await graph.fitView({ when: "overflow", direction: "both" }, false);
+			if (!full && graph.getZoom() < 0.7) {
+				await graph.zoomTo(0.7, false);
+				await graph.fitCenter(false);
+			}
+			emitScale();
+		} finally {
+			fitting = false;
+		}
+	};
+
+	const redraw = async (
+		snapshot: TopologyReply,
+		clients: ReadonlyMap<string, ClientState>,
+		selected: Selection,
+		filter: GraphFilter,
+	) => {
+		const data = layout(snapshot, clients);
+		const byId = new Map(data.positions.map((p) => [p.id, p]));
+		const nodesMap = new Map(snapshot.nodes.map((n) => [n.id, n]));
+		const objectsMap = new Map(
+			[...clients].flatMap(([parent, state]) =>
+				state.clients
+					.slice(0, CLIENT_PREVIEW_LIMIT)
+					.map((client) => [clientKey(parent, client), { parent, client }] as const),
 			),
 		);
-		position = {
-			scale,
-			x: Math.max(12, (container.clientWidth - dimensions.width * scale) / 2),
-			y: Math.max(12, (container.clientHeight - dimensions.height * scale) / 2),
-		};
-		transform();
-	}
-	function zoomAt(factor: number, x = container.clientWidth / 2, y = container.clientHeight / 2) {
-		const scale = Math.max(0.15, Math.min(2, position.scale * factor));
-		const ratio = scale / position.scale;
-		position = { scale, x: x - (x - position.x) * ratio, y: y - (y - position.y) * ratio };
-		adjusted = true;
-		transform();
-	}
-	function centerGesture() {
-		const points = [...pointers.values()];
-		if (!points.length) return null;
-		return {
-			x: points.reduce((sum, p) => sum + p.x, 0) / points.length,
-			y: points.reduce((sum, p) => sum + p.y, 0) / points.length,
-			distance: points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y) : 0,
-		};
-	}
-	function capture(id: number) {
-		try {
-			container.setPointerCapture(id);
-		} catch {
-			// The pointer may already have been released.
+
+		const nextSelectionLookup = new Map<string, Selection>();
+		const nextToneLookup = new Map<string, Tone>();
+		const g6Nodes: NodeData[] = [];
+		const g6Edges: EdgeData[] = [];
+		const selectedId = selected.id;
+		const hasFilter = Boolean(filter.query.trim()) || filter.status !== "all";
+
+		for (const p of data.positions) {
+			const node = nodesMap.get(p.id);
+			const object = objectsMap.get(p.id);
+			if (!node && !object) continue;
+
+			const tone: Tone = node ? nodeTone(node, snapshot) : "neutral";
+			nextToneLookup.set(p.id, tone);
+			nextSelectionLookup.set(
+				p.id,
+				node ? { kind: "node", id: node.id } : { kind: "client", parent: object?.parent ?? "", id: p.id },
+			);
+
+			const matches = node
+				? nodeMatchesFilter(node, snapshot, filter)
+				: object
+					? clientMatchesFilter(object.client, filter)
+					: true;
+
+			const el = buildNodeElement(
+				node,
+				object,
+				snapshot,
+				node ? clients.get(node.id) : undefined,
+				selectedId === p.id,
+				hasFilter && !matches,
+			);
+
+			g6Nodes.push({
+				id: p.id,
+				type: "html",
+				style: {
+					x: p.x + p.width / 2,
+					y: p.y + p.height / 2,
+					size: [p.width, p.height],
+					dx: -p.width / 2,
+					dy: -p.height / 2,
+					innerHTML: el,
+					cursor: "pointer",
+					zIndex: selectedId === p.id ? 3 : 1,
+					ports: [
+						{ key: "left", placement: [0, 0.5] },
+						{ key: "right", placement: [1, 0.5] },
+						{ key: "top", placement: [0.5, 0] },
+						{ key: "bottom", placement: [0.5, 1] },
+					],
+				},
+			});
 		}
-	}
-	const down = (event: PointerEvent) => {
-		if (event.pointerType === "mouse" && event.button !== 0) return;
-		// Reset bookkeeping only when a brand-new gesture starts.
-		if (pointers.size === 0) {
-			moved = 0;
-			dragging = false;
-			suppressClick = false;
-		}
-		// In scroll mode a touch gesture belongs to the page, not the canvas.
-		if (event.pointerType === "touch" && !panEnabled) return;
-		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-		gesture = centerGesture();
-		// Capturing on pointerdown would retarget the compatibility click to the
-		// container and swallow card selection. Defer it until we know it is a drag.
-		if (dragging) capture(event.pointerId);
-	};
-	const move = (event: PointerEvent) => {
-		if (!pointers.has(event.pointerId)) return;
-		pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-		const next = centerGesture();
-		if (gesture && next) {
-			const dx = next.x - gesture.x;
-			const dy = next.y - gesture.y;
-			moved += Math.hypot(dx, dy);
-			if (!dragging && moved > 8) {
-				dragging = true;
-				container.classList.add("is-panning");
-				for (const id of pointers.keys()) capture(id);
+
+		for (const target of data.positions) {
+			const source = target.parent ? byId.get(target.parent) : null;
+			if (!source) continue;
+
+			const object = objectsMap.get(target.id);
+			const targetNode = nodesMap.get(target.id);
+			const isVertical = target.x === source.x;
+			const isSelected = selectedId === target.id;
+			const tone = nextToneLookup.get(target.id) ?? "neutral";
+
+			if (object) {
+				const isAssociated = object.client.relation === "associated_with";
+				g6Edges.push({
+					id: `edge:${target.id}`,
+					source: source.id,
+					target: target.id,
+					type: isVertical ? "cubic-vertical" : "cubic-horizontal",
+					style: {
+						sourcePort: isVertical ? "bottom" : "right",
+						targetPort: isVertical ? "top" : "left",
+						stroke: isSelected ? palette.selected : isAssociated ? palette.success : palette.muted,
+						lineWidth: isSelected ? 2.5 : 1.6,
+						lineDash: isAssociated ? [3, 4] : [6, 4],
+						cursor: "pointer",
+						zIndex: isSelected ? 3 : 0,
+						endArrow: false,
+						labelText: isAssociated ? _("Wi-Fi") : undefined,
+						labelFill: palette.muted,
+						labelFontSize: 10,
+						labelBackground: isAssociated,
+						labelBackgroundFill: palette.labelBackground,
+						labelBackgroundRadius: 4,
+						labelPadding: [1, 5],
+					},
+				});
+			} else if (targetNode) {
+				const link = linkFor(snapshot, targetNode.id);
+				const isOffline = targetNode.detail.kind === "onu" && targetNode.detail.registration === null;
+				const rxText =
+					link?.onu_rx_power_dbm != null
+						? `${link.data_interface ? `${link.data_interface} · ` : ""}${num(link.onu_rx_power_dbm, "dBm", 1)}`
+						: isOffline
+							? _("Binding only")
+							: (link?.data_interface ?? _("Logical PON"));
+
+				g6Edges.push({
+					id: `edge:${target.id}`,
+					source: source.id,
+					target: target.id,
+					type: "cubic-horizontal",
+					style: {
+						sourcePort: "right",
+						targetPort: "left",
+						curvePosition: 0.45,
+						stroke: isSelected ? palette.selected : isOffline ? palette.edge : palette[tone],
+						lineWidth: isSelected ? 2.8 : 2,
+						lineDash: isOffline ? [6, 4] : 0,
+						cursor: "pointer",
+						zIndex: isSelected ? 3 : 1,
+						endArrow: false,
+						labelText: rxText,
+						labelFill: isSelected ? palette.selected : isOffline ? palette.muted : palette.text,
+						labelFontSize: 10,
+						labelBackground: true,
+						labelBackgroundFill: palette.labelBackground,
+						labelBackgroundRadius: 4,
+						labelPadding: [2, 6],
+					},
+				});
 			}
-			if (dragging) {
-				position.x += dx;
-				position.y += dy;
-				if (next.distance > 0 && gesture.distance > 0) {
-					const box = container.getBoundingClientRect();
-					zoomAt(next.distance / gesture.distance, next.x - box.left, next.y - box.top);
-				}
-				adjusted = true;
-				transform();
-			}
 		}
-		gesture = next;
-	};
-	const up = (event: PointerEvent) => {
-		const tracked = pointers.delete(event.pointerId);
-		gesture = centerGesture();
-		if (!pointers.size && tracked) {
-			container.classList.remove("is-panning");
-			// A drag that starts on a card must not also select it.
-			suppressClick = dragging;
-			dragging = false;
+
+		selectionLookup = nextSelectionLookup;
+		toneLookup = nextToneLookup;
+
+		const signature = JSON.stringify({
+			width: data.width,
+			height: data.height,
+			selectedId,
+			palette,
+			filter,
+			nodes: g6Nodes.map((n) => [
+				n.id,
+				n.style?.x,
+				n.style?.y,
+				(n.style?.innerHTML as HTMLElement | undefined)?.outerHTML ?? "",
+			]),
+			edges: g6Edges.map((e) => [e.id, e.style?.stroke, e.style?.labelText, e.style?.lineWidth]),
+		});
+
+		if (rendered && signature === lastSignature) return;
+		lastSignature = signature;
+
+		graph.setData({ nodes: g6Nodes, edges: g6Edges });
+		if (!rendered) {
+			await graph.render();
+			rendered = true;
+		} else {
+			await graph.draw();
 		}
-	};
-	const click = (event: MouseEvent) => {
-		if (!suppressClick) return;
-		suppressClick = false;
-		event.preventDefault();
-		event.stopPropagation();
-	};
-	const wheel = (event: WheelEvent) => {
-		if (!event.ctrlKey && !event.metaKey) return;
-		event.preventDefault();
-		const box = container.getBoundingClientRect();
-		zoomAt(Math.exp(-event.deltaY * 0.002), event.clientX - box.left, event.clientY - box.top);
-	};
-	const focus = (event: FocusEvent) => {
-		const button = (event.target as Element).closest<HTMLElement>(".topo-graph-card");
-		if (!button) return;
-		const node = button.getBoundingClientRect();
-		const box = container.getBoundingClientRect();
-		if (node.left < box.left || node.right > box.right || node.top < box.top || node.bottom > box.bottom) {
-			position.x += box.left + box.width / 2 - (node.left + node.width / 2);
-			position.y += box.top + box.height / 2 - (node.top + node.height / 2);
-			adjusted = true;
-			transform();
+
+		if (!userAdjusted && (lastWidth === 0 || data.width > lastWidth)) {
+			await autoFit(false);
 		}
+		lastWidth = data.width;
 	};
-	container.addEventListener("pointerdown", down);
-	container.addEventListener("pointermove", move);
-	container.addEventListener("pointerup", up);
-	container.addEventListener("pointercancel", up);
-	container.addEventListener("lostpointercapture", up);
-	container.addEventListener("wheel", wheel, { passive: false });
-	container.addEventListener("focusin", focus);
-	container.addEventListener("click", click, true);
+
 	const observer = new ResizeObserver(() => {
-		if (!dead && !adjusted) fit(false);
+		if (dead || !container.clientWidth || !container.clientHeight) return;
+		void enqueue(async () => {
+			graph.resize(container.clientWidth, container.clientHeight);
+			if (rendered && !userAdjusted) await autoFit(false);
+		});
 	});
 	observer.observe(container);
 
 	return {
-		update(snapshot, clients, selected) {
-			if (dead) return;
-			const data = layout(snapshot, clients);
-			dimensions = data;
-			const byId = new Map(data.positions.map((p) => [p.id, p]));
-			const objects = new Map(
-				[...clients].flatMap(([parent, state]) =>
-					state.clients
-						.slice(0, CLIENT_PREVIEW_LIMIT)
-						.map((client) => [clientKey(parent, client), { parent, client }] as const),
-				),
-			);
-			const selectedId = selected.id;
-			const nodes = new Map(snapshot.nodes.map((n) => [n.id, n]));
-			const parts: HTMLElement[] = [];
-			const highlight = (id: string | null) => {
-				for (const wire of world.querySelectorAll<HTMLElement>("[data-target]")) {
-					wire.classList.toggle(
-						"is-hovered",
-						id !== null && (wire.dataset.target === id || wire.dataset.source === id),
-					);
-				}
-			};
-			for (const target of data.positions) {
-				const source = target.parent ? byId.get(target.parent) : null;
-				if (!source) continue;
-				const object = objects.get(target.id);
-				const dashed = object?.client.relation === "learned_behind";
-				const dotted = object?.client.relation === "associated_with";
-				const selectLink = () =>
-					onSelect(
-						object
-							? { kind: "client", parent: object.parent, id: target.id }
-							: { kind: "node", id: target.id },
-					);
-				const label = `${object ? relationText(object.client) : _("Logical PON link")} · ${nodes.get(target.id)?.label ?? object?.client.hostname ?? object?.client.mac ?? target.id}`;
-				const segment = (
-					vertical: boolean,
-					x: number,
-					y: number,
-					length: number,
-					hit = false,
-					focus = false,
-				) => (
-					<button
-						type="button"
-						class={`topo-wire-hit ${vertical ? "is-vertical" : "is-horizontal"} ${hit ? "is-hit" : ""}`}
-						style={`left:${x}px;top:${y}px;${vertical ? "height" : "width"}:${Math.max(length, 2)}px`}
-						tabIndex={focus ? 0 : -1}
-						aria-hidden={focus ? undefined : "true"}
-						aria-label={focus ? label : undefined}
-						title={hit ? label : undefined}
-						data-key={focus ? `link:${target.id}` : undefined}
-						onclick={selectLink}
-					/>
-				);
-				if (target.x === source.x) {
-					const sx = source.x + source.width / 2,
-						sy = source.y + source.height;
-					const tx = target.x + target.width / 2,
-						ty = target.y,
-						middle = (sy + ty) / 2;
-					parts.push(
-						<div
-							class={`topo-wire ${dotted ? "is-associated" : "is-learned"} ${selectedId === target.id ? "is-selected" : ""}`}
-							data-source={source.id}
-							data-target={target.id}
-						>
-							{segment(true, sx, sy, middle - sy)}
-							{segment(false, Math.min(sx, tx), middle, Math.abs(tx - sx))}
-							{segment(true, tx, middle, ty - middle, true, true)}
-						</div>,
-					);
-					continue;
-				}
-				const sx = source.x + source.width,
-					sy = source.y + source.height / 2;
-				const tx = target.x,
-					ty = target.y + target.height / 2;
-				const middle = (sx + tx) / 2;
-				const wire = (
-					<div
-						class={`topo-wire ${dashed ? "is-learned" : dotted ? "is-associated" : "is-pon"} ${selectedId === target.id ? "is-selected" : ""}`}
-						data-source={source.id}
-						data-target={target.id}
-						title={object ? relationText(object.client) : _("Logical PON link")}
-					/>
-				);
-				wire.append(
-					segment(false, sx, sy, middle - sx),
-					segment(true, middle, Math.min(sy, ty), Math.abs(ty - sy)),
-					segment(false, middle, ty, tx - middle, true, true),
-				);
-				parts.push(wire);
-			}
-			for (const p of data.positions) {
-				const node = nodes.get(p.id);
-				const object = objects.get(p.id);
-				if (!node && !object) continue;
-				const tone = node ? nodeTone(node, snapshot) : "neutral";
-				const button = (
-					<button
-						type="button"
-						class={`topo-graph-card topo-${tone} ${node?.detail.kind === "controller" ? "is-controller" : object ? "is-client" : "is-onu"} ${selectedId === p.id ? "is-selected" : ""}`}
-						style={`left:${p.x}px;top:${p.y}px;width:${p.width}px;height:${p.height}px`}
-						data-key={p.id}
-						onpointerenter={() => highlight(p.id)}
-						onpointerleave={() => highlight(null)}
-						onfocus={() => highlight(p.id)}
-						onblur={() => highlight(null)}
-						aria-pressed={String(selectedId === p.id)}
-						aria-label={
-							node
-								? `${node.label} · ${nodeState(node)}`
-								: `${object?.client.hostname ?? object?.client.mac} · ${object ? relationText(object.client) : ""}`
-						}
-						onclick={() =>
-							onSelect(
-								node
-									? { kind: "node", id: node.id }
-									: { kind: "client", parent: object?.parent ?? "", id: p.id },
-							)
-						}
-					>
-						{node ? nodeCard(node, snapshot) : object ? clientCard(object.client) : null}
-					</button>
-				);
-				parts.push(button);
-				if (node) {
-					const state = clients.get(node.id);
-					const total = observedCount(state);
-					const overflow = Boolean(
-						state && (state.clients.length > CLIENT_PREVIEW_LIMIT || state.result?.next_cursor),
-					);
-					if (total > 0 && overflow) {
-						parts.push(
-							<button
-								type="button"
-								class="topo-graph-more"
-								style={`left:${p.x}px;top:${p.y + p.height + 4}px;width:${p.width}px`}
-								onclick={() => onSelect({ kind: "node", id: node.id })}
-							>
-								{_("View all observed objects")} · {total}
-								{state?.result?.next_cursor ? "+" : ""}
-							</button>,
-						);
-					} else if (state?.error)
-						parts.push(
-							<div
-								class="topo-graph-note"
-								style={`left:${p.x}px;top:${p.y + p.height + 4}px;width:${p.width}px`}
-							>
-								{badge(_("Objects unavailable"), "warning")}
-							</div>,
-						);
-				}
-			}
-			const syncSelection = () => {
-				for (const card of world.querySelectorAll<HTMLElement>(".topo-graph-card")) {
-					const current = card.dataset.key === selectedId;
-					card.classList.toggle("is-selected", current);
-					card.setAttribute("aria-pressed", String(current));
-				}
-				for (const wire of world.querySelectorAll<HTMLElement>(".topo-wire"))
-					wire.classList.toggle("is-selected", wire.dataset.target === selectedId);
-			};
-			// Ignore the selection-only classes so a click updates classes instead of
-			// rebuilding the whole world and dropping hover or text selection.
-			const signature = parts
-				.map((part) =>
-					part.outerHTML
-						.replace(/class="([^"]*)"/g, (_, value: string) => {
-							return `class="${value
-								.replace(/\bis-selected\b/g, "")
-								.replace(/\s+/g, " ")
-								.trim()}"`;
-						})
-						.replace(/\saria-pressed="(?:true|false)"/g, ""),
-				)
-				.join("");
-			if (initialized && signature === painted) {
-				syncSelection();
-				return;
-			}
-			const focused =
-				document.activeElement instanceof HTMLElement && world.contains(document.activeElement)
-					? document.activeElement.dataset.key
-					: null;
-			world.replaceChildren(...parts);
-			painted = signature;
-			if (focused)
-				[...world.querySelectorAll<HTMLElement>("[data-key]")]
-					.find((n) => n.dataset.key === focused)
-					?.focus({ preventScroll: true });
-			// Only refit when the third column appears (the canvas gets wider). Row
-			// height changes from refreshed inventories must not move the viewport.
-			if (!initialized || (!adjusted && dimensions.width > lastWidth)) fit(false);
-			lastWidth = dimensions.width;
-			initialized = true;
+		update(snapshot, clients, selected, filter = { query: "", status: "all" }) {
+			lastSnapshot = snapshot;
+			lastClients = clients;
+			lastSelected = selected;
+			lastFilter = filter;
+			void enqueue(() => redraw(snapshot, clients, selected, filter));
 		},
-		fit: () => fit(),
-		zoom: (factor) => zoomAt(factor),
-		reset: () => zoomAt(1 / position.scale),
+		setPalette(next) {
+			if (samePalette(palette, next)) return;
+			palette = next;
+			void enqueue(async () => {
+				graph.setTheme(palette.dark ? "dark" : "light");
+				if (minimapEnabled) graph.setPlugins([minimapPlugin()]);
+				if (lastSnapshot) await redraw(lastSnapshot, lastClients, lastSelected, lastFilter);
+			});
+		},
+		setMinimap(enabled) {
+			if (minimapEnabled === enabled) return;
+			minimapEnabled = enabled;
+			void enqueue(async () => {
+				graph.setPlugins(enabled ? [minimapPlugin()] : []);
+			});
+		},
+		fit() {
+			void enqueue(async () => {
+				userAdjusted = false;
+				if (rendered) await autoFit(true);
+			});
+		},
+		zoom(factor) {
+			void enqueue(async () => {
+				userAdjusted = true;
+				await graph.zoomBy(factor, { duration: 120 });
+				emitScale();
+			});
+		},
+		reset() {
+			void enqueue(async () => {
+				userAdjusted = true;
+				await graph.zoomTo(1, { duration: 120 });
+				emitScale();
+			});
+		},
+		focusNode(id) {
+			if (!selectionLookup.has(id)) return;
+			void enqueue(async () => {
+				userAdjusted = true;
+				await graph.focusElement(id, { duration: 220 });
+			});
+		},
 		setPanning(enabled) {
 			panEnabled = enabled;
 			container.classList.toggle("is-pan-mode", enabled);
 		},
 		destroy() {
+			if (dead) return;
 			dead = true;
 			observer.disconnect();
-			container.removeEventListener("pointerdown", down);
-			container.removeEventListener("pointermove", move);
-			container.removeEventListener("pointerup", up);
-			container.removeEventListener("pointercancel", up);
-			container.removeEventListener("lostpointercapture", up);
-			container.removeEventListener("wheel", wheel);
-			container.removeEventListener("focusin", focus);
-			container.removeEventListener("click", click, true);
-			pointers.clear();
-			world.remove();
+			container.removeEventListener("wheel", onWheel);
+			graph.off();
+			graph.destroy();
 		},
 	};
 }

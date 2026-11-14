@@ -5,8 +5,8 @@ export const TOPOLOGY_CSS = `
 .fttr-topology *, .fttr-topology *::before, .fttr-topology *::after { box-sizing: border-box; }
 .fttr-topology [hidden] { display: none !important; }
 .fttr-topology button { font: inherit; }
-.fttr-topology button:focus-visible, .fttr-topology summary:focus-visible, .fttr-topology .topo-viewport:focus-visible { outline: 3px solid var(--topo-blue); outline-offset: 3px; }
-.fttr-topology .topo-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; }
+.fttr-topology button:focus-visible, .fttr-topology summary:focus-visible, .fttr-topology input:focus-visible, .fttr-topology .topo-viewport:focus-visible { outline: 3px solid var(--topo-blue); outline-offset: 2px; }
+.fttr-topology .topo-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
 .fttr-topology .topo-header h2 { margin: 0 0 6px; }
 .fttr-topology .topo-subtitle { margin: 0; font-size: 12px; color: var(--topo-muted); }
 .fttr-topology .topo-counts, .fttr-topology .topo-toolbar, .fttr-topology .topo-client-counts { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
@@ -15,44 +15,34 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-notices:empty { display: none; }
 .fttr-topology .topo-notices { border-left: 3px solid var(--topo-amber); padding: 8px 12px; margin-bottom: 12px; background: color-mix(in srgb, var(--topo-amber) 7%, var(--topo-bg)); }
 .fttr-topology .topo-notices p { margin: 4px 0; }
-.fttr-topology .topo-workspace { --topo-stage-h: clamp(420px, calc(100vh - 300px), 920px); display: grid; grid-template-columns: minmax(0, 1fr) 350px; height: var(--topo-stage-h); border: 1px solid var(--topo-border); border-radius: 12px; overflow: hidden; background: var(--topo-bg); }
+.fttr-topology .topo-controls-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.fttr-topology .topo-device-picker { display: flex; gap: 8px; align-items: center; font-size: 12px; margin: 0; }
+.fttr-topology .topo-device-picker select { max-width: 240px; min-width: 0; }
+.fttr-topology .topo-filter-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.fttr-topology .topo-search { min-width: 210px; max-width: 280px; padding: 5px 10px; font-size: 12px; border: 1px solid var(--topo-border); border-radius: 7px; background: var(--topo-card); color: var(--topo-text); }
+.fttr-topology .topo-filter-pills { display: inline-flex; align-items: center; gap: 2px; margin: 0; padding: 2px; border: 1px solid var(--topo-border); border-radius: 8px; background: var(--topo-card); }
+.fttr-topology .topo-filter-pill { border: 0; background: transparent; color: var(--topo-muted); font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: background-color .12s, color .12s; }
+.fttr-topology .topo-filter-pill:hover { color: var(--topo-text); }
+.fttr-topology .topo-filter-pill.is-active { background: color-mix(in srgb, var(--topo-blue) 14%, transparent); color: var(--topo-blue); font-weight: 600; }
+.fttr-topology .topo-workspace { --topo-stage-h: clamp(440px, calc(100vh - 300px), 920px); display: grid; grid-template-columns: minmax(0, 1fr) 350px; height: var(--topo-stage-h); border: 1px solid var(--topo-border); border-radius: 12px; overflow: hidden; background: var(--topo-bg); }
 .fttr-topology .topo-stage { min-width: 0; display: flex; flex-direction: column; }
-.fttr-topology .topo-stage-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--topo-border); flex-wrap: wrap; }
+.fttr-topology .topo-stage-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--topo-border); flex-wrap: wrap; }
 .fttr-topology .topo-stage-heading { font-size: 13px; font-weight: 600; }
 .fttr-topology .topo-sampled { margin-left: 10px; font-size: 11px; font-weight: normal; color: var(--topo-muted); }
 .fttr-topology .topo-sampled[data-stale="true"] { color: var(--topo-amber); }
 .fttr-topology .topo-zoom { min-width: 38px; text-align: right; font: 11px ui-monospace, monospace; color: var(--topo-muted); }
 .fttr-topology .topo-toolbar .cbi-button { min-width: 32px; margin: 0; }
+.fttr-topology .topo-toolbar .cbi-button[aria-pressed="true"] { border-color: var(--topo-blue); color: var(--topo-blue); background: color-mix(in srgb, var(--topo-blue) 10%, transparent); }
 .fttr-topology .topo-viewport-wrap { position: relative; flex: 1; min-height: 0; }
 .fttr-topology .topo-viewport { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; background-color: color-mix(in srgb, var(--topo-bg) 96%, var(--topo-text)); background-image: radial-gradient(var(--topo-border) 1px, transparent 1px); background-size: 24px 24px; }
-.fttr-topology .topo-viewport.is-panning { cursor: grabbing; user-select: none; }
-.fttr-topology .topo-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
-.fttr-topology .topo-wire { --wire-color: color-mix(in srgb, var(--topo-blue) 65%, var(--topo-border)); pointer-events: none; }
-.fttr-topology .topo-wire.is-learned { --wire-color: var(--topo-muted); }
-.fttr-topology .topo-wire.is-associated { --wire-color: var(--topo-green); }
-.fttr-topology .topo-wire.is-selected { --wire-color: var(--topo-blue); }
-.fttr-topology .topo-wire-hit { position: absolute; display: block; padding: 0; margin: 0; border: 0; background: transparent; color: var(--wire-color); pointer-events: none; border-radius: 6px; }
-.fttr-topology .topo-wire-hit.is-hit { pointer-events: auto; cursor: pointer; }
-.fttr-topology .topo-wire-hit.is-horizontal { height: 16px; transform: translateY(-8px); }
-.fttr-topology .topo-wire-hit.is-vertical { width: 16px; transform: translateX(-8px); }
-.fttr-topology .topo-wire-hit::after { content: ''; position: absolute; border-color: currentColor; border-style: solid; border-width: 0; opacity: .7; transition: opacity .15s, filter .15s; }
-.fttr-topology .topo-wire-hit.is-horizontal::after { left: 0; right: 0; top: 7px; border-top-width: 2px; }
-.fttr-topology .topo-wire-hit.is-vertical::after { top: 0; bottom: 0; left: 7px; border-left-width: 2px; }
-.fttr-topology .is-learned .topo-wire-hit::after { border-style: dashed; }
-.fttr-topology .is-associated .topo-wire-hit::after { border-style: dotted; }
-.fttr-topology .topo-wire:has(.topo-wire-hit:hover), .fttr-topology .topo-wire:focus-within, .fttr-topology .topo-wire.is-hovered { --wire-color: var(--topo-blue); }
-.fttr-topology .topo-wire:has(.topo-wire-hit:hover) .topo-wire-hit::after, .fttr-topology .topo-wire:focus-within .topo-wire-hit::after, .fttr-topology .topo-wire.is-hovered .topo-wire-hit::after, .fttr-topology .topo-wire.is-selected .topo-wire-hit::after { opacity: 1; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--topo-blue) 35%, transparent)); }
-.fttr-topology .topo-wire-h, .fttr-topology .topo-wire-v { position: absolute; border-color: var(--wire-color); border-style: solid; border-width: 0; }
-.fttr-topology .topo-wire-h { border-top-width: 2px; }
-.fttr-topology .topo-wire-v { border-left-width: 2px; }
-.fttr-topology .is-learned .topo-wire-h, .fttr-topology .is-learned .topo-wire-v { border-style: dashed; }
-.fttr-topology .is-associated .topo-wire-h, .fttr-topology .is-associated .topo-wire-v { border-style: dotted; }
-.fttr-topology .topo-graph-card { position: absolute; display: block; text-align: left; padding: 0; border: 1px solid var(--topo-border); border-radius: 12px; background: var(--topo-card); color: var(--topo-text); box-shadow: 0 4px 14px #0000000b; cursor: pointer; overflow: hidden; transition: border-color .12s, box-shadow .12s; }
+.fttr-topology .topo-viewport:active { cursor: grabbing; }
+.fttr-topology .topo-graph-card { position: relative; display: block; text-align: left; padding: 0; border: 1px solid var(--topo-border); border-radius: 12px; background: var(--topo-card); color: var(--topo-text); box-shadow: 0 4px 14px #0000000b; cursor: pointer; overflow: hidden; transition: border-color .12s, box-shadow .12s, opacity .15s, filter .15s; }
 .fttr-topology .topo-graph-card:hover { border-color: var(--topo-blue); box-shadow: 0 8px 22px #00000018; }
 .fttr-topology .topo-graph-card.is-selected { border: 2px solid var(--topo-blue); box-shadow: 0 0 0 3px color-mix(in srgb, var(--topo-blue) 20%, transparent); }
+.fttr-topology .topo-graph-card.is-dimmed { opacity: 0.28; filter: grayscale(0.35); }
 .fttr-topology .topo-graph-card.is-controller { border-top: 3px solid var(--topo-blue); }
 .fttr-topology .topo-graph-card.is-onu.topo-neutral { border-style: dashed; }
-.fttr-topology .topo-card-content { padding: 14px; width: 100%; height: 100%; }
+.fttr-topology .topo-card-content { padding: 12px 14px; width: 100%; height: 100%; }
 .fttr-topology .topo-graph-card::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; background: linear-gradient(135deg, color-mix(in srgb, var(--topo-blue) 4%, transparent), transparent 55%); }
 .fttr-topology .topo-card-head { display: flex; align-items: center; gap: 10px; }
 .fttr-topology .topo-device-icon { display: inline-flex; flex: 0 0 38px; height: 38px; align-items: center; justify-content: center; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--topo-blue) 28%, transparent); color: var(--topo-blue); background: color-mix(in srgb, var(--topo-blue) 9%, var(--topo-bg)); }
@@ -66,22 +56,22 @@ export const TOPOLOGY_CSS = `
 .fttr-topology .topo-dot.topo-warning { background: var(--topo-amber); }
 .fttr-topology .topo-dot.topo-danger { background: var(--topo-red); }
 .fttr-topology .topo-card-address { font: 11px/20px ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 3px 0 5px; color: var(--topo-muted); }
-.fttr-topology .topo-card-metric { border-top: 1px solid var(--topo-border); padding-top: 7px; display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.fttr-topology .topo-card-metric { border-top: 1px solid var(--topo-border); padding-top: 6px; display: flex; align-items: center; gap: 7px; font-size: 12px; }
 .fttr-topology .topo-card-metric strong { color: var(--topo-blue); font: 600 14px ui-monospace, monospace; white-space: nowrap; }
 .fttr-topology .topo-card-metric .topo-chip { margin-left: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
-.fttr-topology .topo-card-foot { display: flex; justify-content: space-between; gap: 8px; color: var(--topo-muted); font-size: 11px; margin-top: 6px; }
+.fttr-topology .topo-card-foot { display: flex; justify-content: space-between; gap: 8px; color: var(--topo-muted); font-size: 11px; margin-top: 5px; }
 .fttr-topology .topo-card-foot span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fttr-topology .topo-card-note { font-size: 11px; color: var(--topo-muted); display: block; margin-top: 6px; }
+.fttr-topology .topo-card-note { font-size: 11px; color: var(--topo-muted); display: block; margin-top: 5px; }
+.fttr-topology .topo-card-overflow { position: absolute; right: 10px; top: 6px; font-size: 10px; line-height: 15px; padding: 1px 6px; border-radius: 999px; color: var(--topo-blue); background: color-mix(in srgb, var(--topo-blue) 11%, var(--topo-card)); border: 1px solid color-mix(in srgb, var(--topo-blue) 28%, transparent); pointer-events: none; }
+.fttr-topology .topo-card-overflow.is-warn { background: transparent; border: 0; padding: 0; }
 .fttr-topology .topo-client-content { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
 .fttr-topology .topo-client-content .topo-device-icon { height: 34px; flex-basis: 34px; }
 .fttr-topology .topo-client-content .topo-device-icon svg { width: 18px; height: 18px; }
 .fttr-topology .topo-client-content .topo-card-title small { line-height: 16px; }
-.fttr-topology .topo-graph-more, .fttr-topology .topo-graph-note { position: absolute; font-size: 11px; text-align: right; color: var(--topo-blue); background: none; border: 0; padding: 3px 0; }
-.fttr-topology .topo-graph-more { cursor: pointer; text-decoration: underline; }
-.fttr-topology .topo-overlay { position: absolute; inset: 0; display: grid; place-content: center; padding: 32px; text-align: center; gap: 12px; background: var(--topo-bg); }
-.fttr-topology .topo-pan-toggle { display: none; position: absolute; left: 10px; top: 10px; z-index: 2; width: 40px; height: 40px; min-width: 0; margin: 0; padding: 0; align-items: center; justify-content: center; border-radius: 50%; font-size: 18px; line-height: 1; box-shadow: 0 2px 8px #00000026; }
+.fttr-topology .topo-overlay { position: absolute; inset: 0; display: grid; place-content: center; padding: 32px; text-align: center; gap: 12px; background: var(--topo-bg); z-index: 5; }
+.fttr-topology .topo-pan-toggle { display: none; position: absolute; left: 10px; top: 10px; z-index: 4; width: 40px; height: 40px; min-width: 0; margin: 0; padding: 0; align-items: center; justify-content: center; border-radius: 50%; font-size: 18px; line-height: 1; box-shadow: 0 2px 8px #00000026; }
 .fttr-topology .topo-pan-toggle[aria-pressed="true"] { border-color: var(--topo-blue); color: var(--topo-blue); }
-.fttr-topology .topo-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 12px 16px; font-size: 11px; color: var(--topo-muted); border-top: 1px solid var(--topo-border); }
+.fttr-topology .topo-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 10px 16px; font-size: 11px; color: var(--topo-muted); border-top: 1px solid var(--topo-border); }
 .fttr-topology .topo-legend i { width: 22px; display: inline-block; vertical-align: middle; border-top: 2px solid var(--topo-blue); margin-right: 6px; }
 .fttr-topology .topo-legend i.is-learned { border-top-style: dashed; border-color: var(--topo-muted); }
 .fttr-topology .topo-legend i.is-associated { border-top-style: dotted; border-color: var(--topo-green); }
@@ -124,12 +114,10 @@ export const TOPOLOGY_CSS = `
 .fttr-topology summary { cursor: pointer; line-height: 22px; }
 .fttr-topology pre { max-width: 100%; max-height: 300px; overflow: auto; font-size: 10px; background: var(--topo-bg); color: var(--topo-text); padding: 8px; }
 .fttr-topology .topo-footer { padding: 10px 0; color: var(--topo-muted); font-size: 11px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; }
-.fttr-topology .topo-device-picker { display: flex; gap: 8px; align-items: center; font-size: 12px; margin-bottom: 12px; }
-.fttr-topology .topo-device-picker select { max-width: 100%; min-width: 0; }
 @media (min-width: 1700px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 390px; } }
 @media (max-width: 1100px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr) 310px; } .fttr-topology .topo-detail-section, .fttr-topology .topo-panel-title { padding: 16px; } }
 @media (max-width: 850px) { .fttr-topology .topo-workspace { grid-template-columns: minmax(0, 1fr); height: auto; } .fttr-topology .topo-panel { height: auto; max-height: none; overflow: visible; scrollbar-gutter: auto; border-left: 0; border-top: 1px solid var(--topo-border); } .fttr-topology .topo-viewport-wrap { min-height: 460px; } }
-@media (max-width: 480px) { .fttr-topology .topo-count { padding: 6px 9px; } .fttr-topology .topo-count strong { font-size: 17px; } .fttr-topology .topo-viewport-wrap { min-height: 380px; } .fttr-topology .topo-toolbar { gap: 4px; } }
+@media (max-width: 480px) { .fttr-topology .topo-count { padding: 6px 9px; } .fttr-topology .topo-count strong { font-size: 17px; } .fttr-topology .topo-viewport-wrap { min-height: 380px; } .fttr-topology .topo-toolbar { gap: 4px; } .fttr-topology .topo-search { min-width: 0; width: 100%; } }
 @media (pointer: coarse) { .fttr-topology .topo-pan-toggle { display: inline-flex; } .fttr-topology .topo-viewport { touch-action: pan-y; } .fttr-topology .topo-viewport.is-pan-mode { touch-action: none; } .fttr-topology pre { max-height: none; } }
 @media (prefers-reduced-motion: reduce) { .fttr-topology * { transition: none !important; } }
 `;

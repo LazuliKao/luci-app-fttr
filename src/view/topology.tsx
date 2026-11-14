@@ -3,7 +3,7 @@ import { getFttrClient } from "../api/client";
 import type { TopologyReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
 import { formatAge } from "./components/formatters";
-import { createTopologyGraph } from "./topology/graph";
+import { createTopologyGraph, type GraphFilter, readPalette, type StatusFilter } from "./topology/graph";
 import { CONTROLLER_ID, counts, type Selection } from "./topology/model";
 import { badge, renderDetails } from "./topology/presentation";
 import { errorText, TopologyStore } from "./topology/store";
@@ -30,6 +30,8 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		id: initial.snapshot?.nodes.find((n) => n.detail.kind === "controller")?.id ?? CONTROLLER_ID,
 	};
 	let panMode = false;
+	let minimapEnabled = typeof window !== "undefined" ? window.innerWidth >= 640 : true;
+	let filter: GraphFilter = { query: "", status: "all" };
 	let panelKey = "";
 	let panelSelection = "";
 	let themeFrame = 0;
@@ -61,9 +63,74 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		<select
 			id="fttr-topology-device"
 			aria-label={_("Select a topology device")}
-			onchange={(event: Event) => select({ kind: "node", id: (event.target as HTMLSelectElement).value })}
+			onchange={(event: Event) => {
+				const id = (event.target as HTMLSelectElement).value;
+				select({ kind: "node", id });
+				graph.focusNode(id);
+			}}
 		/>
 	) as HTMLSelectElement;
+	const searchInput = (
+		<input
+			type="search"
+			class="topo-search"
+			aria-label={_("Filter devices by name, serial, MAC or IP")}
+			placeholder={_("Filter by name, serial, MAC or IP…")}
+			oninput={(event: Event) => {
+				filter = { ...filter, query: (event.target as HTMLInputElement).value };
+				render();
+			}}
+		/>
+	) as HTMLInputElement;
+	const statusOptions: Array<[StatusFilter, string]> = [
+		["all", _("All")],
+		["online", _("Online")],
+		["attention", _("Attention")],
+		["offline", _("Offline")],
+	];
+	const statusButtons = new Map<StatusFilter, HTMLButtonElement>();
+	const statusPills = (
+		<div class="topo-filter-pills">
+			{statusOptions.map(([value, label]) => {
+				const btn = (
+					<button
+						type="button"
+						class={`topo-filter-pill ${value === "all" ? "is-active" : ""}`}
+						aria-pressed={String(value === "all")}
+						onclick={() => {
+							filter = { ...filter, status: value };
+							for (const [key, item] of statusButtons) {
+								const active = key === value;
+								item.classList.toggle("is-active", active);
+								item.setAttribute("aria-pressed", String(active));
+							}
+							render();
+						}}
+					>
+						{label}
+					</button>
+				) as HTMLButtonElement;
+				statusButtons.set(value, btn);
+				return btn;
+			})}
+		</div>
+	);
+	const minimapToggle = (
+		<button
+			type="button"
+			class="cbi-button cbi-button-neutral"
+			aria-pressed={String(minimapEnabled)}
+			title={_("Toggle minimap")}
+			aria-label={_("Toggle minimap")}
+			onclick={() => {
+				minimapEnabled = !minimapEnabled;
+				minimapToggle.setAttribute("aria-pressed", String(minimapEnabled));
+				graph.setMinimap(minimapEnabled);
+			}}
+		>
+			{_("Map")}
+		</button>
+	) as HTMLButtonElement;
 	const refreshButton = (
 		<button type="button" class="cbi-button cbi-button-action" onclick={() => void refresh()}>
 			{_("Refresh")}
@@ -101,10 +168,16 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 				{countsNode}
 			</header>
 			{notices}
-			<label class="topo-device-picker" htmlFor="fttr-topology-device">
-				<span>{_("Device")}</span>
-				{deviceSelect}
-			</label>
+			<div class="topo-controls-bar">
+				<label class="topo-device-picker" htmlFor="fttr-topology-device">
+					<span>{_("Device")}</span>
+					{deviceSelect}
+				</label>
+				<div class="topo-filter-bar">
+					{searchInput}
+					{statusPills}
+				</div>
+			</div>
 			<div class="topo-workspace">
 				<section class="topo-stage" aria-label={_("FTTR topology graph")}>
 					<div class="topo-stage-header">
@@ -118,6 +191,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 							{zoomLevel}
 							{tool(_("Reset zoom to 100%"), "1:1", () => graph.reset())}
 							{tool(_("Fit topology to view"), _("Fit"), () => graph.fit())}
+							{minimapToggle}
 							{refreshButton}
 						</div>
 					</div>
@@ -144,7 +218,9 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 				{panel}
 			</div>
 			<footer class="topo-footer">
-				<span>{_("Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details")}</span>
+				<span>
+					{_("Drag to pan · Ctrl + wheel or pinch to zoom · Click to inspect · Double-click to focus")}
+				</span>
 				<span>{`${_("Refresh")}: ${REFRESH_INTERVAL}s`}</span>
 			</footer>
 		</div>
@@ -278,7 +354,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			if (snapshot.issues.length)
 				messages.push(`${_("Backend topology issues")}: ${snapshot.issues.map((i) => i.code).join(", ")}`);
 			if (!count.known) messages.push(_("No known sub-gateways in this snapshot."));
-			graph.update(snapshot, store.clients, selected);
+			graph.update(snapshot, store.clients, selected, filter);
 		}
 		notices.replaceChildren(...messages.map((message) => <p>{message}</p>));
 		renderPanel();
@@ -320,6 +396,7 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			?.slice(0, 3)
 			.map(Number);
 		element.dataset.dark = String(channels ? channels.reduce((sum, value) => sum + value, 0) / 3 < 128 : false);
+		graph.setPalette(readPalette(element));
 	}
 	const themeChanged = () => {
 		cancelAnimationFrame(themeFrame);
