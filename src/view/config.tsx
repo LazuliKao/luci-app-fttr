@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import { addAuth } from "./config/auth";
 import { addBasic } from "./config/basic";
 import { addDevices } from "./config/devices";
 import { openRecovery } from "./config/recovery";
@@ -46,6 +47,11 @@ const main = view.extend({
 		await uci.load("fttr");
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
+		if (!uci.sections("fttr", "omci_auth").length) {
+			uci.add("fttr", "omci_auth", "omci_auth_global");
+			uci.set("fttr", "omci_auth_global", "schema_version", "1");
+			uci.set("fttr", "omci_auth_global", "auth_mode", "disabled");
+		}
 		const [check, status] = await Promise.all([
 			checkConfig().catch((error: unknown) => ({ error: String(error) })),
 			getStatus().catch((error: unknown) => ({ error: String(error), sub_gateways: [] })),
@@ -66,6 +72,7 @@ const main = view.extend({
 
 		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
 		addBasic(section, _("Basic"), globalId);
+		addAuth(section);
 		addDevices(
 			section,
 			initialCheck.connectedDevices ?? [],

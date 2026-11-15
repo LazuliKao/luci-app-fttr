@@ -785,8 +785,7 @@
 	color: var(--topo-muted);
 	font-size: 11px;
 }
-.fttr-topology .topo-error,
-.fttr-topology .topo-panel-status {
+.fttr-topology .topo-error {
 	color: var(--topo-amber);
 	padding: 0 20px;
 	font-size: 12px;

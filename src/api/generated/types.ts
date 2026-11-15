@@ -36,7 +36,7 @@ export type CwmpContract = { state: string, requested: string, contract: string 
 export type DataPathOffloadStatus = { enabled: boolean | null, routed_enabled: boolean | null, bridge_enabled: boolean | null, engine_attached: boolean | null, forwarding_verified: boolean | null, };
 export type DataPathStatus = { interface: string, gem_ports: Array<number> | null, vlan_id: number | null, onu_inventory: OnuOmciInventory | null, tx_bytes: number | null, rx_bytes: number | null, current_tx_kbps: number | null, current_rx_kbps: number | null, olt_channel_gem?: number, forwarding_verified?: boolean, offload: DataPathOffloadStatus, measurements: { [key in string]: MeasurementEvidence }, };
 export type DeviceOmciManagement = { state: string, enabled: boolean, reason?: string | null, revision?: string, vlan?: number, updated_at?: number, };
-export type DeviceSync = { device: string, name: string | null, group: string | null, group_name: string | null, template: string | null, template_name: string | null, optical_sn: string, omci_adapter: string, bootstrap_adapter: string, provisioning_adapter: string, omci_management: DeviceOmciManagement, management: ManagementStatus | null, mqtt: MqttStatus | null, acs_bootstrap: AcsBootstrap, provisioning: ProvisioningStatus, services: Array<SyncItem>, ssids: Array<SyncItem>, wifi_sync: WifiSync, };
+export type DeviceSync = { device: string, name: string | null, group: string | null, group_name: string | null, template: string | null, template_name: string | null, optical_sn: string, omci_adapter: string, omci_auth?: OmciAuthStatus, bootstrap_adapter: string, provisioning_adapter: string, omci_management: DeviceOmciManagement, management: ManagementStatus | null, mqtt: MqttStatus | null, acs_bootstrap: AcsBootstrap, provisioning: ProvisioningStatus, services: Array<SyncItem>, ssids: Array<SyncItem>, wifi_sync: WifiSync, };
 export type EmptyRequest = Record<symbol, never>;
 export type FactoryCalibration = { detected: boolean, device: string, has_data: boolean, sha256: string, data: string, };
 export type FecPmCounters = { entity_id: number, interval_end_time: number, corrected_bytes: number, corrected_code_words: number, uncorrectable_code_words: number, total_code_words: number, fec_seconds: number, };
@@ -131,6 +131,11 @@ export type NetworkPlan = { operation: string, key: string, value: Array<string>
 export type NpuSetReply = { "status": "success", enabled: boolean, } | { "status": "error", error: string, };
 export type NpuSetRequest = { enabled: boolean, bridge: string, wan_upstream: boolean, wan_downstream: boolean, onu_bridge: boolean, };
 export type NpuStatus = { sampled_at_ms: number, errors: Array<string>, config_valid: boolean, engine_valid: boolean, mask_valid: boolean, routed_mask_valid: boolean, debug_valid: boolean, flows_valid: boolean, entries_valid: boolean, counters_valid: boolean, hooks_valid: boolean, total_packets_exact: string, total_bytes_exact: string, supported: boolean, engine_attached: boolean, bridge_offload_enabled: boolean, wan_upstream: boolean, wan_downstream: boolean, onu_bridge: boolean, bridge_offload_mask: number, routed_offload_mask: number, bridge_offload_debug: boolean, bridge: string, active_ports: Array<string>, fw4_hooks_ready: boolean, total_entries: number, bound_entries: number, bound_ipv4_entries: number, bound_ipv6_entries: number, total_packets: number, total_bytes: number, bound_flows: Array<PpeFlowEntry>, };
+export type OmciAuthStatus = { mode: string, source: string, state: string, backend: string | null,
+/**
+ * Actual ONU-reported credentials, never the configured comparison values.
+ */
+reported_loid: string | null, reported_password: string | null, };
 export type OmciManagement = { desired: ManagementDesired | null, state: string, };
 export type OnuGemPort = { entity_id: number, port_id: number | null, };
 export type OnuIdentity = { equipment_id: string | null, hardware_version: string | null, software_images: Array<string>, omcc_version: number | null, errors: Array<string>, };

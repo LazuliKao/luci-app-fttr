@@ -58,8 +58,22 @@ export function validateConfig(data: ConfigSnapshot): ConfigIssue[] {
 				add("network", row, "ssid", _("Select SSIDs belonging to this network's template."));
 		}
 	}
-	for (const row of data.device)
+	for (const row of data.device) {
 		if (!groups.has(String(row.group || ""))) add("device", row, "group", _("Select an existing group."));
+		const mode = String(row.auth_mode || "inherit");
+		if (!["inherit", "disabled", "loid_password"].includes(mode))
+			add("device", row, "auth_mode", _("Select a supported authentication mode."));
+		if (mode === "loid_password") {
+			for (const [field, max] of [
+				["auth_loid", 24],
+				["auth_password", 12],
+			] as const) {
+				const value = String(row[field] || "");
+				if (!value.length || value.length > max || !/^[\x20-\x7e]+$/.test(value))
+					add("device", row, field, _("Enter printable ASCII credentials within the supported length."));
+			}
+		}
+	}
 	return issues;
 }
 

@@ -383,20 +383,25 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		const clientState = store.clients.get(parentId);
 		const detailState = store.details.get(parentId);
 		const selectionKey = JSON.stringify(selected);
+		// Loading flags flip on every poll; rebuilding the panel for them makes
+		// the right-hand side flash even when the displayed data is unchanged.
 		const nextKey = JSON.stringify([
 			selectionKey,
 			store.snapshot?.nodes.find((node) => node.id === parentId),
 			clientState?.clients.length,
-			clientState?.loading,
 			clientState?.error,
 			clientState?.result?.next_cursor,
 			clientState?.result?.associated_client_count,
 			clientState?.result?.learned_host_count,
 			clientState?.result?.sources,
-			detailState?.loading,
 			detailState?.error,
 		]);
-		if (panelKey === nextKey) return;
+		if (panelKey === nextKey) {
+			// Loading no longer rebuilds the panel, so sync the button locally.
+			const moreButton = panel.querySelector<HTMLButtonElement>('[data-focus-key="more-clients"]');
+			if (moreButton) moreButton.disabled = Boolean(clientState?.loading);
+			return;
+		}
 		const sameSelection = panelSelection === selectionKey;
 		const scroll = sameSelection ? panel.scrollTop : 0;
 		const open = sameSelection
@@ -424,18 +429,13 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 		const snapshot = store.snapshot;
 		refreshButton.disabled = store.refreshing;
 		retryButton.disabled = store.refreshing;
-		liveState.replaceChildren(
-			badge(
-				store.refreshing
-					? _("Refreshing…")
-					: store.error
-						? snapshot
-							? _("Stale snapshot")
-							: _("Unavailable")
-						: _("Snapshot"),
-				store.error ? "warning" : "info",
-			),
-		);
+		// A transient "Refreshing…" chip changes the header width and shifts the
+		// right-hand controls on every poll, so keep the chip on the data state.
+		const stateLabel = store.error ? (snapshot ? _("Stale snapshot") : _("Unavailable")) : _("Snapshot");
+		if (liveState.dataset.state !== stateLabel) {
+			liveState.dataset.state = stateLabel;
+			liveState.replaceChildren(badge(stateLabel, store.error ? "warning" : "info"));
+		}
 		const age = snapshot ? Math.max(0, Math.round(Date.now() / 1000 - snapshot.generated_at)) : null;
 		const ageText = age === null ? null : formatAge(age);
 		updated.textContent = snapshot ? `${_("Sampled")} · ${ageText ?? "—"}` : _("No successful snapshot yet");

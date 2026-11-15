@@ -64,6 +64,25 @@ test("valid configuration, including wired-only networks and empty SSID collecti
 	assert.deepEqual(wifiChoices(data, "t1"), []);
 });
 
+test("device authentication overrides require complete local credentials and preserve spaces", () => {
+	Object.assign(data.device[0], { auth_mode: "loid_password", auth_loid: "test-onu " });
+	assert.deepEqual(
+		validateConfig(data).map((issue) => issue.field),
+		["auth_password"],
+	);
+	data.device[0].auth_password = "test-pass";
+	assert.deepEqual(validateConfig(data), []);
+	data.device[0].auth_loid = "non-ascii-中";
+	assert.deepEqual(
+		validateConfig(data).map((issue) => issue.field),
+		["auth_loid"],
+	);
+	data.device[0].auth_mode = "inherit";
+	assert.deepEqual(validateConfig(data), []);
+	data.device[0].auth_mode = "disabled";
+	assert.deepEqual(validateConfig(data), []);
+});
+
 test("validation is deterministic and does not mutate its input", () => {
 	data.network[0].service_list = [];
 	const original = structuredClone(data);

@@ -4,6 +4,7 @@ import type { PlatformInfoReply } from "../contracts/api";
 import { adaptersFromCapabilities, type Capabilities } from "../contracts/capabilities";
 import { platformOnu, platformOnuLabel } from "../contracts/platform";
 import type { FttrStatus } from "../contracts/status";
+import { authFields } from "./auth";
 import { field, grid, guardRemoval, preview, reference, tabchoice, tabfield, tabreference } from "./form";
 import { removeGroup } from "./operations";
 
@@ -98,6 +99,8 @@ export function addDevices(
 		s.tab("general", _("General Settings"));
 		s.tab("cwmp", _("CWMP Settings"));
 		s.tab("advanced", _("Advanced Settings"));
+		s.tab("auth", _("ONU authentication"));
+		authFields(s, true);
 
 		const serial = tabfield(s, "general", L.form.ListValue, "optical_sn", _("Connected device"));
 		serial.modalonly = true;

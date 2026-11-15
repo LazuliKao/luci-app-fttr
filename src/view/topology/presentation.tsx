@@ -480,7 +480,9 @@ export function clientList(
 					<span>{relationText(client)}</span>
 				</button>
 			))}
-			{state?.loading ? <p role="status">{_("Loading objects…")}</p> : null}
+			{state?.loading && !state.clients.length && !state.result ? (
+				<p role="status">{_("Loading objects…")}</p>
+			) : null}
 			{state?.error ? (
 				<div class="topo-error" role="status">
 					<p>{queryError(state.error)}</p>
@@ -561,11 +563,6 @@ export function renderDetails(
 					selected.kind === "client" ? "info" : nodeTone(parent, snapshot),
 				)}
 			</div>
-			{detailState?.loading ? (
-				<p class="topo-panel-status" role="status">
-					{_("Loading node details…")}
-				</p>
-			) : null}
 			{detailState?.error ? (
 				<p class="topo-error" role="status">
 					{queryError(detailState.error)}
@@ -591,7 +588,7 @@ export function renderDetails(
 						)
 					) : (
 						<p class="topo-empty">
-							{clientState?.loading
+							{!clientState?.result && !clientState?.error
 								? _("Loading objects for the current snapshot…")
 								: _("This object was not observed in the current snapshot.")}
 						</p>
