@@ -32,9 +32,10 @@ export function fpgaDelta(first: FpgaSnapshot, second: FpgaSnapshot): FpgaDelta 
 		}),
 		counters_modulo_4294967296: continuous
 			? Object.fromEntries(
-					Object.entries(second.counters)
-						.filter(([key]) => Object.keys(first.counters).includes(key))
-						.map(([key, value]) => [key, modulo(first.counters[key], value, 32)]),
+					Object.entries(second.counters).flatMap(([key, value]) => {
+						const previous = first.counters[key];
+						return previous === undefined ? [] : [[key, modulo(previous, value, 32)]];
+					}),
 				)
 			: null,
 	};

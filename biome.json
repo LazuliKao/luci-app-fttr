@@ -1,4 +1,5 @@
 {
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
 		"ignoreUnknown": true,
 		"includes": [
@@ -20,9 +21,9 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "error"
 			}
 		}
 	},

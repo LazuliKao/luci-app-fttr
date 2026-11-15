@@ -5,7 +5,7 @@ import { removeTemplate } from "./operations";
 import { validateServiceList } from "./validation";
 import { addWifi } from "./wifi";
 
-export function addServices(section: any): void {
+export function addServices(section: LuCI.form.AbstractSection): void {
 	section.tab("templates", _("Templates"));
 	const templates = grid(section, "templates", "_templates", "template", _("Templates"), (s) => {
 		s.description =
@@ -19,7 +19,7 @@ export function addServices(section: any): void {
 			["wifi", _("SSIDs")],
 			["network", _("Networks")],
 			["group", _("Groups")],
-		])
+		] as const)
 			preview(s, `_${kind}_count`, title, (id) =>
 				String(L.uci.sections("fttr", kind).filter((item) => item.template === id).length),
 			);
@@ -47,7 +47,7 @@ export function addServices(section: any): void {
 		const name = field(s, L.form.Value, "name", _("Name"));
 		name.modalonly = true;
 		name.rmempty = false;
-		const services = field(s, (L.form as any).MultiValue, "service_list", _("WAN Service List (multi-select)"));
+		const services = field(s, L.form.MultiValue, "service_list", _("WAN Service List (multi-select)"));
 		services.modalonly = true;
 		services.rmempty = false;
 		services.validate = (_id: string, value: unknown) => validateServiceList(value);
@@ -58,13 +58,13 @@ export function addServices(section: any): void {
 		for (const [key, title, datatype] of [
 			["vlan", _("VLAN"), "range(0,4094)"],
 			["priority", _("Priority"), "range(0,7)"],
-		]) {
+		] as const) {
 			const option = field(s, L.form.Value, key, title, datatype);
 			option.default = "0";
 			option.rmempty = false;
 			option.modalonly = true;
 		}
-		const ssids = field(s, (L.form as any).MultiValue, "ssid", _("SSIDs"));
+		const ssids = field(s, L.form.MultiValue, "ssid", _("SSIDs"));
 		ssids.modalonly = true;
 		ssids.rmempty = true;
 		ssids.placeholder = _("No SSIDs selected");
@@ -79,23 +79,23 @@ export function addServices(section: any): void {
 		});
 		ssids.validate = function (id: string, value: unknown): boolean | string {
 			const selected = this.section.getOption("template");
-			const owner = String(selected.formvalue(id) ?? L.uci.get("fttr", id, "template") ?? "");
+			const owner = String(selected?.formvalue(id) ?? L.uci.get("fttr", id, "template") ?? "");
 			const allowed = new Set(wifiChoices(snapshot(), owner).map(([key]) => key));
 			return list(value).every((key) => allowed.has(key))
 				? true
 				: _("Select SSIDs belonging to this network's template.");
 		};
-		template.onchange = function (_event: Event, id: string, value: string): void {
-			const widget = this.section.getOption("ssid").getUIElement(id);
-			if (!widget) return;
-			const choices = wifiChoices(snapshot(), value);
+		template.onchange = function (_event, id, value): void {
+			const widget = this.section.getOption("ssid")?.getUIElement(id);
+			if (!(widget instanceof L.ui.Dropdown)) return;
+			const choices = wifiChoices(snapshot(), String(value ?? ""));
 			widget.clearChoices(true);
 			widget.addChoices(
 				choices.map(([key]) => key),
 				Object.fromEntries(choices),
 			);
 		};
-		const ports = field(s, (L.form as any).MultiValue, "port", _("Ports"));
+		const ports = field(s, L.form.MultiValue, "port", _("Ports"));
 		ports.modalonly = true;
 		for (let i = 1; i <= 4; i++) ports.value(`lan${i}`, `LAN${i}`);
 	});

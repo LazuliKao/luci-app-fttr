@@ -46,7 +46,7 @@ export function updateBadge(node: HTMLElement, tone: BadgeTone, label: string, t
 // Registration State
 // ---------------------------------------------------------------------------
 
-export const REGISTRATION_STATE_LABELS: Record<string, string> = {
+export const REGISTRATION_STATE_LABELS = {
 	o1_initial: _("O1 Initial"),
 	o2_standby: _("O2 Standby"),
 	o3_serial_number: _("O3 Serial Number"),
@@ -71,7 +71,7 @@ export function getRegistrationBadgeSpec(state?: string): {
 			title: state,
 		};
 	}
-	const label = REGISTRATION_STATE_LABELS[state] ?? text(state);
+	const label = Object.entries(REGISTRATION_STATE_LABELS).find(([key]) => key === state)?.[1] ?? text(state);
 	return {
 		tone: "warning",
 		label,
@@ -124,7 +124,7 @@ export function BusinessBadge(props: { status?: BusinessStatus | null }): HTMLEl
 // CWMP Status
 // ---------------------------------------------------------------------------
 
-export const CWMP_STATE_LABELS: Record<string, string> = {
+export const CWMP_STATE_LABELS = {
 	disabled: _("Disabled"),
 	online: _("Online"),
 	waiting_inform: _("Waiting Inform"),
@@ -180,7 +180,7 @@ export function CwmpBadge(props: { management?: SubGateway["management"] }): HTM
 // Provisioning Status
 // ---------------------------------------------------------------------------
 
-export const PROVISIONING_STATE_LABELS: Record<string, string> = {
+export const PROVISIONING_STATE_LABELS = {
 	disabled: _("Disabled"),
 	waiting: _("Waiting"),
 	wan_reconciling: _("WAN reconciling"),
@@ -263,7 +263,7 @@ export function getProvisioningBadgeSpec(
 		return { tone: "danger", label, title };
 	}
 	if (state === "waiting" || state === "pending" || state === "waiting_management" || state === "reset_pending") {
-		const label = PROVISIONING_STATE_LABELS[state] ?? PROVISIONING_STATE_LABELS.waiting;
+		const label = state === "pending" ? PROVISIONING_STATE_LABELS.waiting : PROVISIONING_STATE_LABELS[state];
 		return { tone: "warning", label, title };
 	}
 	return { tone: "neutral", label: text(state), title };
@@ -285,7 +285,7 @@ export function ProvisioningBadge(props: {
 // Wi-Fi Sync Status
 // ---------------------------------------------------------------------------
 
-export const WIFI_SYNC_STATE_LABELS: Record<string, string> = {
+export const WIFI_SYNC_STATE_LABELS = {
 	disabled: _("Disabled"),
 	not_configured: _("Not configured"),
 	stale_revision: _("Stale revision"),

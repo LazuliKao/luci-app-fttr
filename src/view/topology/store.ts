@@ -104,7 +104,8 @@ export class TopologyStore {
 			let index = 0;
 			const worker = async () => {
 				while (index < ids.length && this.current(snapshot, epoch)) {
-					await this.loadClients(ids[index++]);
+					const id = ids[index++];
+					if (id !== undefined) await this.loadClients(id);
 				}
 			};
 			await Promise.all(Array.from({ length: Math.min(3, ids.length) }, worker));

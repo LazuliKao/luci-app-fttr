@@ -109,7 +109,7 @@ function browser(report: MibReport): HTMLElement {
 		if (group) group.push(record);
 		else recordsByEntity.set(key, [record]);
 	}
-	let selectedId: number | null = report.classes.length ? report.classes[0].class_id : null;
+	let selectedId: number | null = report.classes[0]?.class_id ?? null;
 	const content = <div class="mib-content" />;
 	const filter = (
 		<input type="search" class="cbi-input-text mib-search-input" placeholder={_("Search ME name or Class ID…")} />
@@ -283,7 +283,7 @@ function browser(report: MibReport): HTMLElement {
 		}, 150);
 	});
 	list();
-	if (report.classes.length) select(report.classes[0].class_id);
+	if (selectedId !== null) select(selectedId);
 
 	return (
 		<div class="mib-browser">

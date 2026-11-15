@@ -2,16 +2,16 @@
 import { choice, field, grid, guardRemoval, preview, templateReference } from "./form";
 import { canMoveWifi, removeWifi } from "./operations";
 
-export function addWifi(section: any): void {
+export function addWifi(section: LuCI.form.AbstractSection): void {
 	section.tab("wifi", _("SSIDs"));
 	const wifi = grid(section, "wifi", "_wifi", "wifi", _("SSIDs"), (s) => {
 		s.description = _("Create SSIDs here before selecting them in a network. Every SSID belongs to one template.");
 		const template = templateReference(s);
 		const validateTemplate = template.validate;
-		template.validate = function (id: string, value: string): boolean | string {
+		template.validate = function (id, value): boolean | string {
 			const valid = validateTemplate.call(this, id, value);
 			if (valid !== true) return valid;
-			return canMoveWifi(id, value)
+			return typeof value === "string" && canMoveWifi(id, value)
 				? true
 				: _("This SSID is bound to a network. Remove its network bindings before changing the template.");
 		};
@@ -24,8 +24,10 @@ export function addWifi(section: any): void {
 		const ssid = field(s, L.form.Value, "ssid", _("SSID"));
 		ssid.modalonly = true;
 		ssid.rmempty = false;
-		ssid.validate = (_id: string, value: string) =>
-			new TextEncoder().encode(value).length >= 1 && new TextEncoder().encode(value).length <= 32
+		ssid.validate = (_id, value) =>
+			typeof value === "string" &&
+			new TextEncoder().encode(value).length >= 1 &&
+			new TextEncoder().encode(value).length <= 32
 				? true
 				: _("SSID must be 1–32 bytes.");
 		const radio = choice(s, "radio", _("Band"), [
@@ -57,8 +59,8 @@ export function addWifi(section: any): void {
 		key.depends("security", "wpa2-psk/wpa3-sae");
 		key.depends("security", "wpa-psk/wpa2-psk");
 		key.rmempty = false;
-		key.validate = (_id: string, value: string) => {
-			const length = new TextEncoder().encode(value).length;
+		key.validate = (_id, value) => {
+			const length = typeof value === "string" ? new TextEncoder().encode(value).length : 0;
 			return length >= 8 && length <= 63 ? true : _("Password must be 8–63 bytes.");
 		};
 	});

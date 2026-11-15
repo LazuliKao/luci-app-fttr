@@ -49,7 +49,7 @@ function selectionFor(
 }
 
 export function addDevices(
-	section: any,
+	section: LuCI.form.AbstractSection,
 	connected: ConnectedDevice[],
 	platform: PlatformInfoReply,
 	pinning?: FttrStatus["onu_pinning"],
@@ -110,7 +110,7 @@ export function addDevices(
 			"Lists supported devices registered on the optical link, including devices that have not sent an ACS Inform. Devices already configured are omitted when adding a new device.",
 		);
 		const render = serial.renderWidget;
-		serial.renderWidget = function (id: string, index: number, configured: string | null): any {
+		serial.renderWidget = function (id, index, configured) {
 			this.keylist = [];
 			this.vallist = [];
 			const current = String(L.uci.get("fttr", id, "optical_sn") || "");
@@ -161,14 +161,15 @@ export function addDevices(
 			bootstrapAdapter.getUIElement(id)?.setValue(selected.bootstrap);
 			provisioningAdapter.getUIElement(id)?.setValue(selected.provisioning);
 		};
-		serial.onchange = (_event: Event, id: string, value: string): void => setRecommendations(id, value);
-		serial.validate = (id: string, value: string): boolean | string => {
-			if (!value) return _("Select device.");
+		serial.onchange = (_event, id, value): void => setRecommendations(id, String(value ?? ""));
+		serial.validate = (id, value): boolean | string => {
+			if (typeof value !== "string" || !value) return _("Select device.");
 			return L.uci.sections("fttr", "device").some((item) => item[".name"] !== id && item.optical_sn === value)
 				? _("Device already configured.")
 				: true;
 		};
-		serial.write = (id: string, value: string): void => {
+		serial.write = (id, input): void => {
+			const value = String(input);
 			const previous = String(L.uci.get("fttr", id, "optical_sn") || "");
 			L.uci.set("fttr", id, "optical_sn", value);
 			const selection = selectionFor(bySerial.get(value), supportedAdapters);
@@ -183,10 +184,10 @@ export function addDevices(
 		};
 		for (const option of [omciAdapter, bootstrapAdapter, provisioningAdapter]) {
 			const renderOption = option.renderWidget;
-			option.renderWidget = function (id: string, index: number, configured: string | null): any {
+			option.renderWidget = function (id, index, configured) {
 				const selected = configured || String(L.uci.get("fttr", id, option.option) || "");
-				if (selected && !this.keylist.includes(selected))
-					this.value(selected, `${selected} (${_("unavailable")})`);
+				if (selected && !this.keylist?.includes(String(selected)))
+					this.value(String(selected), `${selected} (${_("unavailable")})`);
 				return renderOption.call(this, id, index, selected || option.default);
 			};
 		}
@@ -200,7 +201,7 @@ export function addDevices(
 			],
 		] as const) {
 			const fallback = String(option.default);
-			option.validate = (_id: string, value: string): boolean | string =>
+			option.validate = (_id, value): boolean | string =>
 				supported.has(String(value || fallback)) ? true : message;
 		}
 		tabreference(s, "general", "group", _("Group"), "group").modalonly = true;
@@ -248,7 +249,7 @@ export function addDevices(
 			}
 			pin.getUIElement(id)?.setValue(String(current.onu_id));
 		};
-		pin.validate = (id: string, value: string): boolean | string => {
+		pin.validate = (id, value): boolean | string => {
 			if (!value) return true;
 			const selectedId = Number(value);
 			if (!Number.isInteger(selectedId) || !platformOnu(platform, selectedId))

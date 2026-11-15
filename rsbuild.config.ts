@@ -68,9 +68,7 @@ export default defineConfig({
 			config.plugins.push(
 				new rspack.BannerPlugin({
 					// LuCI injects dependency aliases as parameters; avoid bundled local names.
-					banner: [
-						"'use strict';",
-					].join("\n"),
+					banner: ["'use strict';"].join("\n"),
 					raw: true,
 					entryOnly: true,
 					// Add LuCI directives and the top-level return only after minification.

@@ -7,6 +7,7 @@
 		"jsxImportSource": "@lazulikao/luci-types",
 		"types": ["@lazulikao/luci-types"],
 		"strict": true,
+		"noUncheckedIndexedAccess": true,
 		"noEmit": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,

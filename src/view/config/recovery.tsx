@@ -26,8 +26,16 @@ export function recoveryEntries(data: ConfigSnapshot): RecoveryEntry[] {
 	return [...entries.values()];
 }
 
-export function recoveryEditor(root: any, kind: ConfigKind): any {
-	return root.children.find((option: any) => option.subsection?.sectiontype === kind)?.subsection;
+export function recoveryEditor(root: LuCI.form.AbstractSection, kind: ConfigKind): LuCI.form.GridSection | undefined {
+	for (const option of root.children) {
+		if (
+			option instanceof L.form.SectionValue &&
+			option.subsection instanceof L.form.GridSection &&
+			option.subsection.sectiontype === kind
+		)
+			return option.subsection;
+	}
+	return undefined;
 }
 
 function kindTitle(kind: ConfigKind): string {
@@ -64,7 +72,7 @@ async function perform(event: Event, action: () => Promise<unknown>): Promise<vo
 	}
 }
 
-function confirmRemoval(root: any, entry: RecoveryEntry, backendError?: string): void {
+function confirmRemoval(root: LuCI.form.AbstractSection, entry: RecoveryEntry, backendError?: string): void {
 	L.ui.showModal(
 		_("Delete this configuration?"),
 		<div>
@@ -114,7 +122,7 @@ function confirmRemoval(root: any, entry: RecoveryEntry, backendError?: string):
 	);
 }
 
-export function openRecovery(root: any, backendError?: string): void {
+export function openRecovery(root: LuCI.form.AbstractSection, backendError?: string): void {
 	const entries = recoveryEntries(snapshot());
 	L.ui.showModal(
 		_("Review and repair configuration"),

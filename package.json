@@ -39,7 +39,7 @@
 		"@commitlint/config-conventional": "^19.8.1",
 		"@dotenvx/dotenvx": "^2.19.1",
 		"@iconify-json/fluent": "^1.2.61",
-		"@lazulikao/luci-types": "github:LazuliKao/luci-types#90a8e40b9bd5258262394209bccac6b0320549db",
+		"@lazulikao/luci-types": "github:LazuliKao/luci-types#4794a5462f1ba66bff5e3cf13058feab09c20eb4",
 		"@rsbuild/core": "^2.1.9",
 		"@types/node": "^22.19.21",
 		"husky": "^9.1.7",

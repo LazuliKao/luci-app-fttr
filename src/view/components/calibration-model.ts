@@ -45,7 +45,7 @@ export function temperatureTarget(
 	if (q > 0x7fffffff || q < -0x80000000) return null;
 	const index = ((q >> 8) + 40) >> 1;
 	const code = table[index];
-	return index >= 0 && index < 84 && code >= 0 && code <= 1023 ? { index, code } : null;
+	return code !== undefined && index >= 0 && index < 84 && code >= 0 && code <= 1023 ? { index, code } : null;
 }
 
 export function calibrationApplyOutcome(result: CalibrationApplied): "failed" | "deferred" | "applied" | "unknown" {

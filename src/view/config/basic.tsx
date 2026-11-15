@@ -2,13 +2,13 @@
 
 import { choice, field } from "./form";
 
-export function addBasic(section: any, tab: string, globalId: string): void {
+export function addBasic(section: LuCI.form.AbstractSection, tab: string, globalId: string): void {
 	section.tab("basic", tab);
 	const acs = section.taboption("basic", L.form.SectionValue, "_acs", L.form.NamedSection, "acs", "acs");
 	const a = acs.subsection;
 	a.addremove = false;
 	a.anonymous = false;
-	let option: any = field(a, L.form.Flag, "enabled", _("Enable ACS"));
+	let option: LuCI.form.Value = field(a, L.form.Flag, "enabled", _("Enable ACS"));
 	option.default = "1";
 	option.rmempty = false;
 	option = field(a, L.form.Value, "port", _("Listen port"), "port");
@@ -17,13 +17,13 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option = field(a, L.form.Value, "path", _("CWMP path"));
 	option.default = "/cwmp";
 	option.rmempty = false;
-	option.validate = (_id: string, value: string) =>
-		value.startsWith("/") ? true : _("The path must start with '/'.");
+	option.validate = (_id, value) =>
+		typeof value === "string" && value.startsWith("/") ? true : _("The path must start with '/'.");
 	option = field(a, L.form.Value, "state_file", _("ACS state file"));
 	option.default = "/var/lib/fttr/acs-state.json";
 	option.rmempty = false;
-	option.validate = (_id: string, value: string) =>
-		value.startsWith("/") ? true : _("The state file path must be absolute.");
+	option.validate = (_id, value) =>
+		typeof value === "string" && value.startsWith("/") ? true : _("The state file path must be absolute.");
 	option = field(a, L.form.Value, "username", _("HTTP Basic username"));
 	option.optional = true;
 	option.rmempty = true;
@@ -70,13 +70,15 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.description = _(
 		"All listed VLANs share one management bridge and DHCP pool. Retain an existing listed management VLAN; the first VLAN is the fallback.",
 	);
-	option.validate = (_id: string, value: string) =>
-		value === "" || (/^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 4094)
+	option.validate = (_id, value) =>
+		typeof value === "string" &&
+		(value === "" || (/^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 4094))
 			? true
 			: _("Enter a VLAN ID in 1–4094.");
 	const parseVlans = option.parse;
 	option.parse = function (id: string) {
-		const values: string[] = this.formvalue(id) || [];
+		const input = this.formvalue(id);
+		const values = Array.isArray(input) ? input.map(String) : [];
 		if (!values.length) return Promise.reject(new Error(_("Enter at least one VLAN ID in 1–4094.")));
 		if (new Set(values.map(Number)).size !== values.length)
 			return Promise.reject(new Error(_("Duplicate VLAN IDs are not allowed.")));
@@ -92,7 +94,7 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 		["dhcp_start", _("DHCP start offset"), "100"],
 		["dhcp_limit", _("DHCP address count"), "100"],
 		["dhcp_leasetime", _("DHCP lease time"), "12h"],
-	]) {
+	] as const) {
 		option = field(management, L.form.Value, key, label);
 		option.default = value;
 		option.rmempty = false;
@@ -127,14 +129,14 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.description = _(
 		"Manual mode only saves configuration; use Apply differences on the Synchronization page to send it to devices. Automatic mode synchronizes after Save & Apply when Configuration changed is selected.",
 	);
-	option = field(p, (L.form as any).MultiValue, "trigger", _("Automatic triggers"));
+	option = field(p, L.form.MultiValue, "trigger", _("Automatic triggers"));
 	for (const [value, label] of [
 		["config_change", _("Configuration changed")],
 		["device_online", _("Device online")],
 		["cwmp_boot", _("CWMP boot")],
 		["program_start", _("Program start")],
 		["periodic", _("Periodic")],
-	])
+	] as const)
 		option.value(value, label);
 	option.default = ["config_change", "device_online", "cwmp_boot", "program_start", "periodic"];
 	option.retain = true;
@@ -143,8 +145,10 @@ export function addBasic(section: any, tab: string, globalId: string): void {
 	option.default = "30";
 	option.retain = true;
 	option.depends("mode", "auto");
-	option.validate = (_id: string, value: string) =>
-		/^(0|[1-9][0-9]*)$/.test(value) && (Number(value) === 0 || (Number(value) >= 1 && Number(value) <= 1440))
+	option.validate = (_id, value) =>
+		typeof value === "string" &&
+		/^(0|[1-9][0-9]*)$/.test(value) &&
+		(Number(value) === 0 || (Number(value) >= 1 && Number(value) <= 1440))
 			? true
 			: _("Use 0 to disable, or 1–1440 minutes.");
 	option = field(p, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)");

@@ -2,7 +2,7 @@
 
 import { grid, preview, reference } from "./form";
 
-export function addBindings(section: any): void {
+export function addBindings(section: LuCI.form.AbstractSection): void {
 	section.tab("bindings", _("Port bindings"));
 	grid(section, "bindings", "_bindings", "port_binding", _("LAN / WLAN port bindings"), (s) => {
 		preview(
@@ -23,8 +23,11 @@ export function addBindings(section: any): void {
 		interfaces.modalonly = true;
 		interfaces.rmempty = false;
 		interfaces.placeholder = "InternetGatewayDevice.LANDevice.1.WLANConfiguration.1";
-		interfaces.validate = (_id: string, value: string) =>
-			value.startsWith("InternetGatewayDevice.LANDevice.1.") && !value.endsWith(".") && !value.includes(",")
+		interfaces.validate = (_id, value) =>
+			typeof value === "string" &&
+			value.startsWith("InternetGatewayDevice.LANDevice.1.") &&
+			!value.endsWith(".") &&
+			!value.includes(",")
 				? true
 				: _("Enter a complete LANDevice.1 interface reference, without trailing dot or comma.");
 	});

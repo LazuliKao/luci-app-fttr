@@ -35,6 +35,11 @@ export function createOpticalControl() {
 	let stale = true;
 	const inputs = new Map<keyof OpticalSettings, HTMLInputElement>();
 	const states = new Map<keyof OpticalSettings, HTMLElement>();
+	const required = <T,>(items: Map<keyof OpticalSettings, T>, key: keyof OpticalSettings): T => {
+		const item = items.get(key);
+		if (item === undefined) throw new Error(`Missing optical control: ${key}`);
+		return item;
+	};
 	const message = <p role="status" aria-live="polite" />;
 	const value = (state: boolean | null | undefined) =>
 		state == null ? _("Unknown") : state ? _("Enabled") : _("Disabled");
@@ -44,13 +49,13 @@ export function createOpticalControl() {
 		</button>
 	) as HTMLButtonElement;
 	const read = (): OpticalSettings => ({
-		enabled: inputs.get("enabled")!.checked,
-		downstream_tx_enabled: inputs.get("downstream_tx_enabled")!.checked,
-		fec_enabled: inputs.get("fec_enabled")!.checked,
+		enabled: required(inputs, "enabled").checked,
+		downstream_tx_enabled: required(inputs, "downstream_tx_enabled").checked,
+		fec_enabled: required(inputs, "fec_enabled").checked,
 	});
 	const render = () => {
 		for (const [key] of definitions) {
-			const input = inputs.get(key)!;
+			const input = required(inputs, key);
 			input.disabled = busy || stale || !saved || !L.hasViewPermission();
 			if (!dirty && saved) input.checked = saved[key];
 			const actual =
@@ -59,7 +64,8 @@ export function createOpticalControl() {
 					: key === "downstream_tx_enabled"
 						? reply?.pon_mac?.tx_enabled
 						: reply?.pon_mac?.fec_enabled;
-			states.get(key)!.textContent = `${_("Saved")}: ${value(saved?.[key])} · ${_("Hardware")}: ${value(actual)}`;
+			required(states, key).textContent =
+				`${_("Saved")}: ${value(saved?.[key])} · ${_("Hardware")}: ${value(actual)}`;
 		}
 		save.disabled =
 			busy || stale || !saved || !L.hasViewPermission() || (!dirty && !reply?.error && !reply?.pon_mac?.error);

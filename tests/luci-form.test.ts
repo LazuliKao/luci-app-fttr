@@ -406,7 +406,7 @@ test("read-only users can inspect recovery but cannot edit or delete", async () 
 	assert.equal(transports, 0);
 });
 
-test("device editor modal configures general, cwmp, and advanced tabs", () => {
+test("device editor modal configures general, cwmp, advanced, and auth tabs", () => {
 	const map = new L.form.Map("fttr");
 	const root = map.section(L.form.NamedSection, "main", "main");
 	addDevices(root, [], { onus: [] } as any);
@@ -414,7 +414,7 @@ test("device editor modal configures general, cwmp, and advanced tabs", () => {
 	assert.ok(deviceGrid instanceof L.form.GridSection);
 	assert.deepEqual(
 		deviceGrid.tabs.map((t: any) => t.name),
-		["general", "cwmp", "advanced"],
+		["general", "cwmp", "advanced", "auth"],
 	);
 
 	const general = deviceGrid.children.filter((opt: any) => opt.tab === "general").map((opt: any) => opt.option);

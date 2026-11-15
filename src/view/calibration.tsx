@@ -59,9 +59,8 @@ async function computeSha256(buffer: ArrayBuffer): Promise<string> {
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
 	let binary = "";
 	const bytes = new Uint8Array(buffer);
-	const len = bytes.byteLength;
-	for (let i = 0; i < len; i++) {
-		binary += String.fromCharCode(bytes[i]);
+	for (const byte of bytes) {
+		binary += String.fromCharCode(byte);
 	}
 	return window.btoa(binary);
 }
@@ -84,10 +83,7 @@ function parseCalibrationBuffer(buffer: ArrayBuffer, sha256Hex: string): ParsedC
 	}
 
 	const view = new DataView(buffer);
-	const registers: number[] = [];
-	for (let i = 0; i < Math.min(56, size); i++) {
-		registers.push(bytes[i]);
-	}
+	const registers = Array.from(bytes.subarray(0, 56));
 
 	const tempPrimary =
 		size >= 0x46
@@ -120,7 +116,7 @@ function parseCalibrationBuffer(buffer: ArrayBuffer, sha256Hex: string): ParsedC
 	if (
 		bytes.every((v) => v === 0) ||
 		bytes.every((v) => v === 255) ||
-		(size === 288 && bytes[0x60] > 1) ||
+		(size === 288 && view.getUint8(0x60) > 1) ||
 		(tableEnabled && (tempPrimary.d === 0 || table.some((code) => code > 1023)))
 	)
 		return null;
@@ -1030,15 +1026,13 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	dropZone.addEventListener("drop", (e) => {
 		e.preventDefault();
 		dropZone.style.opacity = "1";
-		if (e.dataTransfer?.files.length) {
-			handleFile(e.dataTransfer.files[0]);
-		}
+		const file = e.dataTransfer?.files.item(0);
+		if (file) handleFile(file);
 	});
 
 	fileInput.addEventListener("change", () => {
-		if (fileInput.files?.length) {
-			handleFile(fileInput.files[0]);
-		}
+		const file = fileInput.files?.item(0);
+		if (file) handleFile(file);
 	});
 
 	async function handleFile(file: File) {
