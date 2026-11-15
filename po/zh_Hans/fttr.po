@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-15 14:50+0800\n"
+"POT-Creation-Date: 2026-11-15 18:01+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -280,6 +280,9 @@ msgid ""
 "Authorizes recovery of the child ACS settings after management drift or "
 "service restart. Business synchronization uses its own transport readiness."
 msgstr "授权在管理漂移或服务重启后恢复子 ACS 设置。业务同步使用其自身的传输就绪状态。"
+
+msgid "Auto"
+msgstr "自动"
 
 msgid "Auto detection order"
 msgstr "自动检测顺序"
