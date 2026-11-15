@@ -37,11 +37,12 @@ function selectionFor(
 		provisioning: Set<string>;
 	},
 ): { omci: string; bootstrap: string; provisioning: string } {
-	const omci = adapterFor(device, supported.omci);
-	if (omci === "hl202" && supported.provisioning.has("hl202-mqtt")) {
+	const detected = adapterFor(device, supported.omci);
+	const omci = supported.omci.has("auto") ? "auto" : detected;
+	if (detected === "hl202" && supported.provisioning.has("hl202-mqtt")) {
 		return { omci, bootstrap: "none", provisioning: "hl202-mqtt" };
 	}
-	if (omci === "hwtc" && supported.bootstrap.has("manual-acs") && supported.provisioning.has("hwtc-hw")) {
+	if (detected === "hwtc" && supported.bootstrap.has("manual-acs") && supported.provisioning.has("hwtc-hw")) {
 		return { omci, bootstrap: "manual-acs", provisioning: "hwtc-hw" };
 	}
 	return { omci, bootstrap: "none", provisioning: "none" };
@@ -144,7 +145,7 @@ export function addDevices(
 			option.rmempty = false;
 			option.retain = true;
 		}
-		omciAdapter.default = "generic";
+		omciAdapter.default = supportedAdapters.omci.has("auto") ? "auto" : "generic";
 		bootstrapAdapter.default = "none";
 		provisioningAdapter.default = "none";
 		omciAdapter.description = _("Select the OMCI profile used to read and configure this device.");

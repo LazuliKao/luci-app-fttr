@@ -12,7 +12,7 @@ export function adaptersFromCapabilities(
 ): Array<[string, string]> {
 	return (capabilities?.adapters[layer] ?? []).map((item) => [
 		item.id,
-		item.id === "generic" ? _("Generic G.988 Bridge") : item.name,
+		item.id === "auto" ? _("Auto") : item.id === "generic" ? _("Generic G.988 Bridge") : item.name,
 	]);
 }
 

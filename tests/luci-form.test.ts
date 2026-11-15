@@ -458,6 +458,7 @@ test("device editor presents adapter functions and recommends selections from ca
 		pages: { status: true, config: true, sync: true, hl202: true, hardware: true, calibration: true, about: true },
 		adapters: {
 			omci: [
+				{ id: "auto", name: "Auto" },
 				{ id: "hl202", name: "H3C HL202" },
 				{ id: "hwtc", name: "Huawei HWTC" },
 				{ id: "star", name: "STAR SG631" },
@@ -488,30 +489,30 @@ test("device editor presents adapter functions and recommends selections from ca
 	);
 	const choices = (name: string): string[] =>
 		deviceGrid.children.find((option: any) => option.option === name).keylist;
-	assert.deepEqual(choices("omci_adapter"), ["hl202", "hwtc", "star", "generic"]);
+	assert.deepEqual(choices("omci_adapter"), ["auto", "hl202", "hwtc", "star", "generic"]);
 	assert.deepEqual(choices("bootstrap_adapter"), ["none", "manual-acs"]);
 	assert.deepEqual(choices("provisioning_adapter"), ["none", "hl202-mqtt", "hwtc-hw"]);
 
-	// Save a newly assigned HL202; the editor fills internal choices automatically.
+	// Save a newly assigned HL202; the editor selects auto OMCI and recommends transport choices.
 	const serialOpt = deviceGrid.children.find((opt: any) => opt.option === "optical_sn");
 	rows.set("dev1", { ".name": "dev1", ".type": "device" });
 	serialOpt.write("dev1", "H3CT12345678");
 	assert.equal(rows.get("dev1")?.optical_sn, "H3CT12345678");
-	assert.equal(rows.get("dev1")?.omci_adapter, "hl202");
+	assert.equal(rows.get("dev1")?.omci_adapter, "auto");
 	assert.equal(rows.get("dev1")?.bootstrap_adapter, "none");
 	assert.equal(rows.get("dev1")?.provisioning_adapter, "hl202-mqtt");
 
-	// Unknown business contracts stay disabled while OMCI uses the known vendor adapter.
+	// Unknown business contracts stay disabled while OMCI defaults to auto.
 	rows.set("dev2", { ".name": "dev2", ".type": "device" });
 	serialOpt.write("dev2", "STAR12345678");
 	assert.equal(rows.get("dev2")?.optical_sn, "STAR12345678");
-	assert.equal(rows.get("dev2")?.omci_adapter, "star");
+	assert.equal(rows.get("dev2")?.omci_adapter, "auto");
 	assert.equal(rows.get("dev2")?.bootstrap_adapter, "none");
 	assert.equal(rows.get("dev2")?.provisioning_adapter, "none");
 
 	rows.set("dev3", { ".name": "dev3", ".type": "device" });
 	serialOpt.write("dev3", "HWTC12345678");
-	assert.equal(rows.get("dev3")?.omci_adapter, "hwtc");
+	assert.equal(rows.get("dev3")?.omci_adapter, "auto");
 	assert.equal(rows.get("dev3")?.bootstrap_adapter, "manual-acs");
 	assert.equal(rows.get("dev3")?.provisioning_adapter, "hwtc-hw");
 
