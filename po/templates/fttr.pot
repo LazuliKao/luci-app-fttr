@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-14 22:00+0800\n"
+"POT-Creation-Date: 2026-11-15 14:50+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -197,6 +197,9 @@ msgstr ""
 msgid "ago"
 msgstr ""
 
+msgid "All"
+msgstr ""
+
 msgid "All devices"
 msgstr ""
 
@@ -258,10 +261,16 @@ msgstr ""
 msgid "Attempts"
 msgstr ""
 
+msgid "Attention"
+msgstr ""
+
 msgid "Attention required"
 msgstr ""
 
 msgid "Attribute"
+msgstr ""
+
+msgid "Authentication mode"
 msgstr ""
 
 msgid "Authorize and apply management settings"
@@ -477,6 +486,9 @@ msgstr ""
 msgid "CDR lock"
 msgstr ""
 
+msgid "Center selected device"
+msgstr ""
+
 msgid "Check"
 msgstr ""
 
@@ -484,6 +496,9 @@ msgid "Check management differences (read-only)"
 msgstr ""
 
 msgid "Clear backoff delays and retry safe difference synchronization"
+msgstr ""
+
+msgid "Clear filter"
 msgstr ""
 
 msgid ""
@@ -817,6 +832,9 @@ msgstr ""
 msgid "Disabled (56-byte register-only file)"
 msgstr ""
 
+msgid "Disabled (skip authentication)"
+msgstr ""
+
 msgid "Disabling"
 msgstr ""
 
@@ -861,7 +879,9 @@ msgstr ""
 msgid "Drag mode"
 msgstr ""
 
-msgid "Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details"
+msgid ""
+"Drag to pan · Wheel or pinch to zoom · Click to inspect · Double-click node "
+"to focus / canvas to fit"
 msgstr ""
 
 msgid "Driver debug logging"
@@ -940,6 +960,9 @@ msgstr ""
 msgid "Enter at least one VLAN ID in 1–4094."
 msgstr ""
 
+msgid "Enter printable ASCII credentials within the supported length."
+msgstr ""
+
 msgid ""
 "Enter this CPE's existing Connection Request credentials, not the ACS "
 "inbound HTTP Basic credentials. No custom credential defaults are assumed."
@@ -992,6 +1015,12 @@ msgstr ""
 msgid "Exit code"
 msgstr ""
 
+msgid "Expected LOID"
+msgstr ""
+
+msgid "Expected password"
+msgstr ""
+
 msgid "Export JSON"
 msgstr ""
 
@@ -1037,6 +1066,12 @@ msgid "File validation succeeded: %s (%s bytes)"
 msgstr ""
 
 msgid "File written to"
+msgstr ""
+
+msgid "Filter by name, serial, MAC or IP…"
+msgstr ""
+
+msgid "Filter devices by name, serial, MAC or IP"
 msgstr ""
 
 msgid "Firewall hooks"
@@ -1274,6 +1309,15 @@ msgstr ""
 msgid "Index %s → Code %s"
 msgstr ""
 
+msgid "Inherit global policy"
+msgstr ""
+
+msgid ""
+"Inheritance uses the complete global policy. A device override requires its "
+"own LOID and password. Authentication is separate from optical identity and "
+"forwarding verification."
+msgstr ""
+
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr ""
 
@@ -1432,9 +1476,6 @@ msgstr ""
 msgid "Loading devices…"
 msgstr ""
 
-msgid "Loading node details…"
-msgstr ""
-
 msgid "Loading object…"
 msgstr ""
 
@@ -1474,6 +1515,9 @@ msgid "Logical PON connections and observed devices"
 msgstr ""
 
 msgid "Logical PON link"
+msgstr ""
+
+msgid "LOID and password"
 msgstr ""
 
 msgid "LuCI FTTR App"
@@ -1562,6 +1606,9 @@ msgid "Manual setup required"
 msgstr ""
 
 msgid "Manual synchronization"
+msgstr ""
+
+msgid "Map"
 msgstr ""
 
 msgid "Master switch for FTTR port NPU hardware acceleration admission"
@@ -1788,6 +1835,9 @@ msgstr ""
 msgid "Not pinned"
 msgstr ""
 
+msgid "Not read"
+msgstr ""
+
 msgid "Not ready"
 msgstr ""
 
@@ -1899,6 +1949,9 @@ msgstr ""
 msgid "ONU allocation blocked by invalid startup configuration."
 msgstr ""
 
+msgid "ONU authentication"
+msgstr ""
+
 msgid "ONU bridge offload"
 msgstr ""
 
@@ -1918,6 +1971,12 @@ msgid "ONU Rx"
 msgstr ""
 
 msgid "ONU slot"
+msgstr ""
+
+msgid "ONU-reported LOID"
+msgstr ""
+
+msgid "ONU-reported password"
 msgstr ""
 
 msgid "Open optical status and ONU/MIB details"
@@ -2267,9 +2326,6 @@ msgstr ""
 msgid "Refresh users to read the current state."
 msgstr ""
 
-msgid "Refreshing…"
-msgstr ""
-
 msgid "Register %s: %s (%s)"
 msgstr ""
 
@@ -2367,6 +2423,9 @@ msgid "Retrying"
 msgstr ""
 
 msgid "Retrying identity"
+msgstr ""
+
+msgid "Reveal password"
 msgstr ""
 
 msgid "Review and repair configuration"
@@ -2473,6 +2532,9 @@ msgid "Select a device to inspect reports and run operations."
 msgstr ""
 
 msgid "Select a registered O5 device first."
+msgstr ""
+
+msgid "Select a supported authentication mode."
 msgstr ""
 
 msgid "Select a topology device"
@@ -2873,6 +2935,15 @@ msgstr ""
 msgid "To ONU (controller TX)"
 msgstr ""
 
+msgid "Toggle details panel"
+msgstr ""
+
+msgid "Toggle fullscreen"
+msgstr ""
+
+msgid "Toggle minimap"
+msgstr ""
+
 msgid "Topology"
 msgstr ""
 
@@ -3048,6 +3119,9 @@ msgstr ""
 msgid "Use 0 to disable, or 1–1440 minutes."
 msgstr ""
 
+msgid "Use 1–%s printable ASCII characters; spaces are significant."
+msgstr ""
+
 msgid ""
 "Use a bridge interface name of 1–15 letters, digits, dots, underscores or "
 "hyphens."
@@ -3185,6 +3259,9 @@ msgid "WAN verifying"
 msgstr ""
 
 msgid "Weight"
+msgstr ""
+
+msgid "Wi-Fi"
 msgstr ""
 
 msgid "Wi-Fi cleanup policy"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-14 22:07+0800\n"
+"POT-Creation-Date: 2026-11-15 14:50+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -197,6 +197,9 @@ msgstr "高级设置"
 msgid "ago"
 msgstr "之前"
 
+msgid "All"
+msgstr "全部"
+
 msgid "All devices"
 msgstr "所有设备"
 
@@ -258,11 +261,17 @@ msgstr "已挂接"
 msgid "Attempts"
 msgstr "尝试次数"
 
+msgid "Attention"
+msgstr "注意"
+
 msgid "Attention required"
 msgstr "需注意"
 
 msgid "Attribute"
 msgstr "属性"
+
+msgid "Authentication mode"
+msgstr "认证模式"
 
 msgid "Authorize and apply management settings"
 msgstr "授权并应用管理设置"
@@ -477,6 +486,9 @@ msgstr "载波连接"
 msgid "CDR lock"
 msgstr "CDR 锁定状态"
 
+msgid "Center selected device"
+msgstr "居中选中设备"
+
 msgid "Check"
 msgstr "检查"
 
@@ -485,6 +497,9 @@ msgstr "检查管理配置差异（只读）"
 
 msgid "Clear backoff delays and retry safe difference synchronization"
 msgstr "清除退避延迟并重试安全的差异同步"
+
+msgid "Clear filter"
+msgstr "清除筛选"
 
 msgid ""
 "Clear old tasks and managed-object records after a device factory reset. The "
@@ -817,6 +832,9 @@ msgstr "已禁用"
 msgid "Disabled (56-byte register-only file)"
 msgstr "已禁用（56 字节仅寄存器文件）"
 
+msgid "Disabled (skip authentication)"
+msgstr "禁用（跳过认证）"
+
 msgid "Disabling"
 msgstr "禁用中"
 
@@ -861,8 +879,10 @@ msgstr "下联端口"
 msgid "Drag mode"
 msgstr "拖动模式"
 
-msgid "Drag to pan · Ctrl + wheel or pinch to zoom · Click a card for details"
-msgstr "拖动画布平移 · Ctrl + 滚轮或双指缩放 · 点击卡片或连线查看详情"
+msgid ""
+"Drag to pan · Wheel or pinch to zoom · Click to inspect · Double-click node "
+"to focus / canvas to fit"
+msgstr "拖拽平移 · 滚轮或双指缩放 · 点击检查 · 双击节点聚焦 / 画布适配"
 
 msgid "Driver debug logging"
 msgstr "驱动调试日志"
@@ -940,6 +960,9 @@ msgstr "请输入 1–4094 之间的 VLAN ID。"
 msgid "Enter at least one VLAN ID in 1–4094."
 msgstr "请至少输入一个 1–4094 之间的 VLAN ID。"
 
+msgid "Enter printable ASCII credentials within the supported length."
+msgstr "请输入长度符合限制的可打印 ASCII 认证凭据。"
+
 msgid ""
 "Enter this CPE's existing Connection Request credentials, not the ACS "
 "inbound HTTP Basic credentials. No custom credential defaults are assumed."
@@ -992,6 +1015,12 @@ msgstr "已存在（%s 字节）"
 msgid "Exit code"
 msgstr "退出码"
 
+msgid "Expected LOID"
+msgstr "期望 LOID"
+
+msgid "Expected password"
+msgstr "期望密码"
+
 msgid "Export JSON"
 msgstr "导出 JSON"
 
@@ -1038,6 +1067,12 @@ msgstr "文件校验成功：%s（%s 字节）"
 
 msgid "File written to"
 msgstr "文件已写入"
+
+msgid "Filter by name, serial, MAC or IP…"
+msgstr "按名称、序列号、MAC 或 IP 筛选…"
+
+msgid "Filter devices by name, serial, MAC or IP"
+msgstr "按名称、序列号、MAC 或 IP 筛选设备"
 
 msgid "Firewall hooks"
 msgstr "防火墙钩子"
@@ -1279,6 +1314,15 @@ msgstr "索引"
 msgid "Index %s → Code %s"
 msgstr "索引 %s → 代码 %s"
 
+msgid "Inherit global policy"
+msgstr "继承全局策略"
+
+msgid ""
+"Inheritance uses the complete global policy. A device override requires its "
+"own LOID and password. Authentication is separate from optical identity and "
+"forwarding verification."
+msgstr "继承时使用完整的全局策略；设备覆盖时必须单独填写完整的 LOID 和密码。认证与光侧身份、转发验证分别判定。"
+
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr "内层过滤（优先级 / VID / TPID-DEI）"
 
@@ -1437,9 +1481,6 @@ msgstr "加载更多"
 msgid "Loading devices…"
 msgstr "正在加载设备…"
 
-msgid "Loading node details…"
-msgstr "正在加载节点详情…"
-
 msgid "Loading object…"
 msgstr "正在加载对象…"
 
@@ -1480,6 +1521,9 @@ msgstr "PON 逻辑连接与已观测设备"
 
 msgid "Logical PON link"
 msgstr "PON 逻辑链路"
+
+msgid "LOID and password"
+msgstr "LOID 和密码"
 
 msgid "LuCI FTTR App"
 msgstr "LuCI FTTR 管理界面"
@@ -1568,6 +1612,9 @@ msgstr "需要手动设置"
 
 msgid "Manual synchronization"
 msgstr "手动同步"
+
+msgid "Map"
+msgstr "地图"
 
 msgid "Master switch for FTTR port NPU hardware acceleration admission"
 msgstr "FTTR 端口 NPU 硬件加速与流表绑定的总准入开关"
@@ -1793,6 +1840,9 @@ msgstr "未配置"
 msgid "Not pinned"
 msgstr "未绑定固定接口"
 
+msgid "Not read"
+msgstr "尚未读取"
+
 msgid "Not ready"
 msgstr "未就绪"
 
@@ -1904,6 +1954,9 @@ msgstr "ONU"
 msgid "ONU allocation blocked by invalid startup configuration."
 msgstr "启动配置无效，已暂停 ONU 分配。"
 
+msgid "ONU authentication"
+msgstr "子猫 OMCI 认证"
+
 msgid "ONU bridge offload"
 msgstr "从网关桥接加速"
 
@@ -1924,6 +1977,12 @@ msgstr "从网关收光"
 
 msgid "ONU slot"
 msgstr "ONU 槽位"
+
+msgid "ONU-reported LOID"
+msgstr "子猫实际上报的 LOID"
+
+msgid "ONU-reported password"
+msgstr "子猫实际上报的密码"
 
 msgid "Open optical status and ONU/MIB details"
 msgstr "打开光路状态与 ONU/MIB 详情"
@@ -2274,9 +2333,6 @@ msgstr "刷新状态"
 msgid "Refresh users to read the current state."
 msgstr "请刷新用户列表以读取当前状态。"
 
-msgid "Refreshing…"
-msgstr "正在刷新…"
-
 msgid "Register %s: %s (%s)"
 msgstr "寄存器 %s：%s（%s）"
 
@@ -2375,6 +2431,9 @@ msgstr "重试中"
 
 msgid "Retrying identity"
 msgstr "正在重试采集设备标识"
+
+msgid "Reveal password"
+msgstr "显示密码"
 
 msgid "Review and repair configuration"
 msgstr "检查并修复配置"
@@ -2481,6 +2540,9 @@ msgstr "请选择设备以查看报告并执行操作。"
 
 msgid "Select a registered O5 device first."
 msgstr "请先选择已进入 O5 状态的设备。"
+
+msgid "Select a supported authentication mode."
+msgstr "请选择支持的认证模式。"
 
 msgid "Select a topology device"
 msgstr "选择拓扑设备"
@@ -2882,6 +2944,15 @@ msgstr "以提交所有变更。"
 msgid "To ONU (controller TX)"
 msgstr "至 ONU（控制器 TX）"
 
+msgid "Toggle details panel"
+msgstr "切换详情面板"
+
+msgid "Toggle fullscreen"
+msgstr "切换全屏"
+
+msgid "Toggle minimap"
+msgstr "切换小地图"
+
 msgid "Topology"
 msgstr "拓扑图"
 
@@ -3057,6 +3128,9 @@ msgstr "使用状态"
 msgid "Use 0 to disable, or 1–1440 minutes."
 msgstr "设为 0 表示禁用，或输入 1–1440 分钟。"
 
+msgid "Use 1–%s printable ASCII characters; spaces are significant."
+msgstr "请输入 1–%s 个可打印 ASCII 字符；空格参与匹配。"
+
 msgid ""
 "Use a bridge interface name of 1–15 letters, digits, dots, underscores or "
 "hyphens."
@@ -3195,6 +3269,9 @@ msgstr "WAN 校验中"
 
 msgid "Weight"
 msgstr "权重"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
 
 msgid "Wi-Fi cleanup policy"
 msgstr "Wi-Fi 清理策略"
