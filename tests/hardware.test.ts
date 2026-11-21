@@ -52,4 +52,11 @@ test("controller identity and optical PHY survive unsupported advanced diagnosti
 	assert.match(content, /Applied by hardware owner/);
 	assert.match(content, /Live transceiver measurements are not supported/);
 	assert.doesNotMatch(content, /No controller diagnostics|0x01000004/);
+	status.optical_transceiver.temperature_celsius = 47.0859375;
+	status.optical_transceiver.vcc_voltage = 3.2112998962402344;
+	status.optical_transceiver.laser_bias_current_ma = 24.211999893188477;
+	const live = (createControllerPanel(status, platform) as unknown as TestNode).textContent;
+	assert.match(live, /47\.09 °C/);
+	assert.match(live, /3\.2113 V/);
+	assert.match(live, /24\.212 mA/);
 });

@@ -148,7 +148,9 @@ export function createControllerPanel(status: FttrHardwareStatus, platform: Plat
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Temperature")}</span>
-					<span>{optical.temperature_celsius == null ? "—" : `${optical.temperature_celsius} °C`}</span>
+					<span>
+						{optical.temperature_celsius == null ? "—" : `${optical.temperature_celsius.toFixed(2)} °C`}
+					</span>
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("TX power")}</span>
@@ -156,11 +158,13 @@ export function createControllerPanel(status: FttrHardwareStatus, platform: Plat
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Voltage")}</span>
-					<span>{optical.vcc_voltage == null ? "—" : `${optical.vcc_voltage} V`}</span>
+					<span>{optical.vcc_voltage == null ? "—" : `${optical.vcc_voltage.toFixed(4)} V`}</span>
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Bias current")}</span>
-					<span>{optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma} mA`}</span>
+					<span>
+						{optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma.toFixed(3)} mA`}
+					</span>
 				</div>
 			</div>,
 		);
