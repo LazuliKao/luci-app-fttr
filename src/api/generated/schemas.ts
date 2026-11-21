@@ -23,8 +23,12 @@ export const CalibrationAppliedSchema = z.object({ "success": z.boolean(), "stat
 export const FactoryCalibrationSchema = z.object({ "detected": z.boolean(), "device": z.string(), "has_data": z.boolean(), "sha256": z.string(), "data": z.string() }) satisfies z.ZodMiniType<wire.FactoryCalibration>;
 export const FirmwareCalibrationSchema = z.object({ "exists": z.boolean(), "path": z.string(), "size": z.number(), "sha256": z.string(), "data": z.string() }) satisfies z.ZodMiniType<wire.FirmwareCalibration>;
 export const CalibrationInfoSchema = z.object({ "source": CalibrationSourceSchema, "active_path": z.string(), "size": z.number(), "sha256": z.string(), "data": z.string(), "factory": FactoryCalibrationSchema, "firmware": FirmwareCalibrationSchema, "state": z.optional(CalibrationStateSchema) }) satisfies z.ZodMiniType<wire.CalibrationInfo>;
+export const PlatformCalibrationProfileSchema = z.union([z.literal("ux3326"), z.literal("ux3326s_factory")]) satisfies z.ZodMiniType<wire.PlatformCalibrationProfile>;
+export const NativeCalibrationTableSchema = z.object({ "source": z.string(), "offset": z.number(), "size": z.number(), "payload_bytes": z.number(), "chip_id": z.union([z.number(), z.null()]), "sha256": z.union([z.string(), z.null()]), "valid": z.boolean(), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.NativeCalibrationTable>;
+export const NativeCalibrationApplicationSchema = z.object({ "applied": z.boolean(), "sha256": z.union([z.string(), z.null()]), "applied_unix": z.union([z.number(), z.null()]), "register_writes": z.number(), "live_signature_verified": z.boolean(), "error": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.NativeCalibrationApplication>;
+export const NativeCalibrationInfoSchema = z.object({ "profile": PlatformCalibrationProfileSchema, "factory_table": NativeCalibrationTableSchema, "application": NativeCalibrationApplicationSchema, "can_apply": z.boolean(), "can_upload": z.boolean(), "can_select": z.boolean() }) satisfies z.ZodMiniType<wire.NativeCalibrationInfo>;
 export const CommandErrorSchema = z.object({ "error": z.string() }) satisfies z.ZodMiniType<wire.CommandError>;
-export const CalibrationInfoReplySchema = z.union([CalibrationInfoSchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.CalibrationInfoReply>;
+export const CalibrationInfoReplySchema = z.union([CalibrationInfoSchema, NativeCalibrationInfoSchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.CalibrationInfoReply>;
 export const CalibrationSavedSchema = z.object({ "success": z.boolean(), "path": z.string(), "size": z.number(), "sha256": z.string() }) satisfies z.ZodMiniType<wire.CalibrationSaved>;
 export const CalibrationSaveReplySchema = z.union([CalibrationSavedSchema, CommandErrorSchema]) satisfies z.ZodMiniType<wire.CalibrationSaveReply>;
 export const CalibrationSaveRequestSchema = z.object({ "data": z.string() }) satisfies z.ZodMiniType<wire.CalibrationSaveRequest>;
@@ -158,7 +162,6 @@ export const ReplyStatusSchema = z.union([z.literal("success"), z.literal("error
 export const OpticalStateSchema = z.union([z.literal("enabled"), z.literal("disabled"), z.literal("unknown")]) satisfies z.ZodMiniType<wire.OpticalState>;
 export const OpticalReplySchema = z.object({ "settings": z.optional(OpticalSettingsSchema), "pon_mac": z.optional(PonMacStatusSchema), "schema_version": z.literal(1), "status": ReplyStatusSchema, "action": OpticalActionSchema, "desired_enabled": z.union([z.boolean(), z.null()]), "tx_enabled": z.union([z.boolean(), z.null()]), "actor_state": OpticalStateSchema, "hardware_ready": z.boolean(), "discovery_active": z.boolean(), "cleanup_pending": z.boolean(), "error": z.union([OpticalErrorSchema, z.null()]) }) satisfies z.ZodMiniType<wire.OpticalReply>;
 export const OpticalTransceiverStatusSchema = z.object({ "calibration_sha256": z.optional(z.string()), "calibration_applied": z.boolean(), "model": z.string(), "wavelength_tx_nm": z.number(), "wavelength_rx_nm": z.number(), "phy_rate_downlink_gbps": z.number(), "phy_rate_uplink_gbps": z.number(), "tx_power_dbm": z.union([z.number(), z.null()]), "laser_bias_current_ma": z.union([z.number(), z.null()]), "temperature_celsius": z.union([z.number(), z.null()]), "vcc_voltage": z.union([z.number(), z.null()]), "cdr_locked": z.union([z.boolean(), z.null()]), "tx_enabled": z.optional(z.boolean()), "measurements": z.record(z.string(), MeasurementEvidenceSchema) }) satisfies z.ZodMiniType<wire.OpticalTransceiverStatus>;
-export const PlatformCalibrationProfileSchema = z.literal("ux3326") satisfies z.ZodMiniType<wire.PlatformCalibrationProfile>;
 export const PlatformSelectionSchema = z.literal("selected") satisfies z.ZodMiniType<wire.PlatformSelection>;
 export const PlatformOnuResourceSchema = z.object({ "onu_id": z.number(), "interface": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.PlatformOnuResource>;
 export const PlatformOperationsSchema = z.object({ "optical_control": z.boolean(), "transceiver_telemetry": z.boolean(), "fpga_diagnostics": z.boolean(), "bosa_diagnostics": z.boolean(), "calibration_profile": z.union([PlatformCalibrationProfileSchema, z.null()]), "npu_offload": z.boolean(), "omci_mib": z.boolean(), "downstream_fec": z.boolean() }) satisfies z.ZodMiniType<wire.PlatformOperations>;
@@ -178,7 +181,7 @@ export const TopologyBindingStateSchema = z.union([z.literal("none"), z.literal(
 export const TopologyBindingSchema = z.object({ "active_onu_id": z.union([z.number(), z.null()]), "desired_onu_id": z.union([z.number(), z.null()]), "state": TopologyBindingStateSchema, "pending_restart": z.boolean() }) satisfies z.ZodMiniType<wire.TopologyBinding>;
 export const TopologyRelationSchema = z.union([z.literal("pon_logical"), z.literal("associated_with"), z.literal("learned_behind")]) satisfies z.ZodMiniType<wire.TopologyRelation>;
 export const TopologyClientSchema = z.object({ "id": z.string(), "mac": z.string(), "hostname": z.union([z.string(), z.null()]), "addresses": z.array(z.string()), "relation": TopologyRelationSchema, "source": z.string(), "interface": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.TopologyClient>;
-export const TopologySourceStateSchema = z.union([z.literal("ok"), z.literal("partial"), z.literal("unavailable")]) satisfies z.ZodMiniType<wire.TopologySourceState>;
+export const TopologySourceStateSchema = z.union([z.literal("ok"), z.literal("partial"), z.literal("unavailable"), z.literal("not_applicable")]) satisfies z.ZodMiniType<wire.TopologySourceState>;
 export const TopologySourceSchema = z.object({ "id": z.string(), "state": TopologySourceStateSchema, "sampled_at": z.number(), "reason": z.union([z.string(), z.null()]) }) satisfies z.ZodMiniType<wire.TopologySource>;
 export const TopologyQueryErrorSchema = z.union([z.literal("snapshot_expired"), z.literal("node_not_found"), z.literal("invalid_cursor")]) satisfies z.ZodMiniType<wire.TopologyQueryError>;
 export const TopologyClientsReplySchema = z.union([z.object({ "status": z.literal("ok"), "snapshot_id": z.string(), "parent_node_id": z.string(), "clients": z.array(TopologyClientSchema), "associated_client_count": z.union([z.number(), z.null()]), "learned_host_count": z.union([z.number(), z.null()]), "complete": z.boolean(), "next_cursor": z.union([z.string(), z.null()]), "sources": z.array(TopologySourceSchema) }), z.object({ "status": z.literal("error"), "code": TopologyQueryErrorSchema })]) satisfies z.ZodMiniType<wire.TopologyClientsReply>;
@@ -244,6 +247,14 @@ export type SchemaContracts = [
 	Assert<[wire.FirmwareCalibration] extends [z.infer<typeof FirmwareCalibrationSchema>] ? true : false>,
 	Assert<[z.infer<typeof CalibrationInfoSchema>] extends [wire.CalibrationInfo] ? true : false>,
 	Assert<[wire.CalibrationInfo] extends [z.infer<typeof CalibrationInfoSchema>] ? true : false>,
+	Assert<[z.infer<typeof PlatformCalibrationProfileSchema>] extends [wire.PlatformCalibrationProfile] ? true : false>,
+	Assert<[wire.PlatformCalibrationProfile] extends [z.infer<typeof PlatformCalibrationProfileSchema>] ? true : false>,
+	Assert<[z.infer<typeof NativeCalibrationTableSchema>] extends [wire.NativeCalibrationTable] ? true : false>,
+	Assert<[wire.NativeCalibrationTable] extends [z.infer<typeof NativeCalibrationTableSchema>] ? true : false>,
+	Assert<[z.infer<typeof NativeCalibrationApplicationSchema>] extends [wire.NativeCalibrationApplication] ? true : false>,
+	Assert<[wire.NativeCalibrationApplication] extends [z.infer<typeof NativeCalibrationApplicationSchema>] ? true : false>,
+	Assert<[z.infer<typeof NativeCalibrationInfoSchema>] extends [wire.NativeCalibrationInfo] ? true : false>,
+	Assert<[wire.NativeCalibrationInfo] extends [z.infer<typeof NativeCalibrationInfoSchema>] ? true : false>,
 	Assert<[z.infer<typeof CommandErrorSchema>] extends [wire.CommandError] ? true : false>,
 	Assert<[wire.CommandError] extends [z.infer<typeof CommandErrorSchema>] ? true : false>,
 	Assert<[z.infer<typeof CalibrationInfoReplySchema>] extends [wire.CalibrationInfoReply] ? true : false>,
@@ -514,8 +525,6 @@ export type SchemaContracts = [
 	Assert<[wire.OpticalReply] extends [z.infer<typeof OpticalReplySchema>] ? true : false>,
 	Assert<[z.infer<typeof OpticalTransceiverStatusSchema>] extends [wire.OpticalTransceiverStatus] ? true : false>,
 	Assert<[wire.OpticalTransceiverStatus] extends [z.infer<typeof OpticalTransceiverStatusSchema>] ? true : false>,
-	Assert<[z.infer<typeof PlatformCalibrationProfileSchema>] extends [wire.PlatformCalibrationProfile] ? true : false>,
-	Assert<[wire.PlatformCalibrationProfile] extends [z.infer<typeof PlatformCalibrationProfileSchema>] ? true : false>,
 	Assert<[z.infer<typeof PlatformSelectionSchema>] extends [wire.PlatformSelection] ? true : false>,
 	Assert<[wire.PlatformSelection] extends [z.infer<typeof PlatformSelectionSchema>] ? true : false>,
 	Assert<[z.infer<typeof PlatformOnuResourceSchema>] extends [wire.PlatformOnuResource] ? true : false>,

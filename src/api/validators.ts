@@ -4,6 +4,7 @@ import { checked } from "./common";
 // Validators needed by api/client.ts live here so api/* never has to import
 // from view/contracts/*. Contracts modules re-export these for view code.
 import {
+	CalibrationInfoReplySchema,
 	ConfigCheckReplySchema,
 	HlAccountReplySchema,
 	HlExecReplySchema,
@@ -73,3 +74,4 @@ export const deviceList = success(HlListReplySchema);
 export const reportReply = success(HlReportReplySchema);
 export const accountReply = success(HlAccountReplySchema);
 export const execReply = success(HlExecReplySchema);
+export const calibrationDetails = success(CalibrationInfoReplySchema);

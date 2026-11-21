@@ -486,7 +486,7 @@ function createStatusView(
 			{_("Live status is unavailable. The displayed data may be stale.")}
 		</p>
 	);
-	const opticalControl = createOpticalControl();
+	const opticalControl = createOpticalControl(platform.platform_id);
 	poll.add(async () => {
 		if (!isPageHidden() && opticalControl.element.isConnected) await opticalControl.refresh();
 	}, 2);
@@ -504,7 +504,7 @@ function createStatusView(
 				<table class="table">
 					<tbody>
 						<tr>
-							<th style="width:15%">{_("FPGA status")}</th>
+							<th style="width:15%">{_("Controller status")}</th>
 							<td style="width:35%">{fpgaNode}</td>
 							<th style="width:15%">{_("CDR lock")}</th>
 							<td style="width:35%">{cdrNode}</td>

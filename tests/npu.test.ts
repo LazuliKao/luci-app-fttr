@@ -59,7 +59,10 @@ test("NPU page preserves edits, invalidates pre-save polls, rejects failed opera
 		},
 	});
 	const { main } = await import("../src/view/npu");
-	const root = (main as any).render() as TestNode;
+	const unsupported = (main as any).render(false) as TestNode;
+	assert.match(unsupported.textContent, /unsupported on this target/);
+	assert.equal(unsupported.all("input").length, 0);
+	const root = (main as any).render(true) as TestNode;
 	const tick = () => new Promise(resolve => setImmediate(resolve));
 	await tick();
 	const [enabled, bridge, wanUpstream, wanDownstream, onuBridge] = root.all("input");

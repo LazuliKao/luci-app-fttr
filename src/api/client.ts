@@ -4,7 +4,7 @@ import { createFttrClient } from "./generated/luci-client";
 import { TopologyClientsReplySchema, TopologyNodeReplySchema, TopologyReplySchema } from "./generated/schemas";
 import {
 	actionResult,
-	calibrationInfo,
+	calibrationDetails,
 	capabilities,
 	configCheck,
 	deviceList,
@@ -46,8 +46,8 @@ export const fttrValidators = {
 	hl202AccountUpdate: { parse: (value: unknown) => jobStart.parse(checked(value)) },
 	hl202ExecStart: { parse: (value: unknown) => jobStart.parse(checked(value)) },
 	jobResult: { parse: (value: unknown) => jobChunk.parse(checked(value)) },
-	getCalibration: { parse: (value: unknown) => calibrationInfo.parse(checked(value)) },
-	selectCalibration: { parse: (value: unknown) => calibrationInfo.parse(checked(value)) },
+	getCalibration: { parse: (value: unknown) => calibrationDetails.parse(checked(value)) },
+	selectCalibration: { parse: (value: unknown) => calibrationDetails.parse(checked(value)) },
 	saveCalibration: { parse: (value: unknown) => saveCalibrationResult.parse(checked(value)) },
 	applyCalibration: { parse: (value: unknown) => jobStart.parse(checked(value)) },
 };

@@ -2,21 +2,30 @@
 import type { OpticalReply, OpticalSettings } from "../../api/generated/types";
 import { getOpticalStatus, setOptical } from "../contracts/api";
 
-export function createOpticalControl() {
+export function createOpticalControl(platformId?: string | null) {
+	const fsl = platformId === "fiberhome-an4475-g2";
 	const definitions = [
 		[
 			"enabled",
-			_("FPGA master switch"),
-			_(
-				"Controls optical module reset and ONU discovery. Turning it off resets the module and disconnects all ONUs.",
-			),
+			fsl ? _("Optical controller master switch") : _("FPGA master switch"),
+			fsl
+				? _(
+						"Controls the optical hardware owner and ONU discovery. Turning it off disables GPON transmission and disconnects all ONUs; it does not reset the optical module.",
+					)
+				: _(
+						"Controls optical module reset and ONU discovery. Turning it off resets the module and disconnects all ONUs.",
+					),
 		],
 		[
 			"downstream_tx_enabled",
-			_("GPON downstream optical emission"),
-			_(
-				"Controls GPON downstream 1490 nm optical emission. Turning it off removes the downstream optical signal and disconnects ONUs.",
-			),
+			fsl ? _("GPON downstream transmission") : _("GPON downstream optical emission"),
+			fsl
+				? _(
+						"Controls GPON downstream frame transmission. Turning it off stops ONU communication without resetting the optical module.",
+					)
+				: _(
+						"Controls GPON downstream 1490 nm optical emission. Turning it off removes the downstream optical signal and disconnects ONUs.",
+					),
 		],
 		[
 			"fec_enabled",
@@ -53,6 +62,19 @@ export function createOpticalControl() {
 		downstream_tx_enabled: required(inputs, "downstream_tx_enabled").checked,
 		fec_enabled: required(inputs, "fec_enabled").checked,
 	});
+	const isApplied = () =>
+		Boolean(
+			saved &&
+				reply?.status === "success" &&
+				reply.hardware_ready &&
+				reply.actor_state === (saved.enabled ? "enabled" : "disabled") &&
+				reply.tx_enabled === saved.enabled &&
+				reply.pon_mac?.tx_enabled === (saved.enabled && saved.downstream_tx_enabled) &&
+				reply.pon_mac?.fec_enabled === (saved.enabled && saved.fec_enabled) &&
+				!reply.error &&
+				!reply.pon_mac.error &&
+				!reply.cleanup_pending,
+		);
 	const render = () => {
 		for (const [key] of definitions) {
 			const input = required(inputs, key);
@@ -65,10 +87,9 @@ export function createOpticalControl() {
 						? reply?.pon_mac?.tx_enabled
 						: reply?.pon_mac?.fec_enabled;
 			required(states, key).textContent =
-				`${_("Saved")}: ${value(saved?.[key])} · ${_("Hardware")}: ${value(actual)}`;
+				`${_("Saved")}: ${value(saved?.[key])} · ${fsl && key === "enabled" ? _("Controller") : _("Hardware")}: ${value(actual)}`;
 		}
-		save.disabled =
-			busy || stale || !saved || !L.hasViewPermission() || (!dirty && !reply?.error && !reply?.pon_mac?.error);
+		save.disabled = busy || stale || !saved || !L.hasViewPermission() || (!dirty && isApplied());
 	};
 	const element = (
 		<div class="cbi-section" data-fttr="optical-control">
@@ -111,18 +132,12 @@ export function createOpticalControl() {
 		reply = next;
 		saved = next.settings ?? null;
 		const mac = next.pon_mac;
-		const applied =
-			saved &&
-			next.tx_enabled === saved.enabled &&
-			mac &&
-			mac.tx_enabled === (saved.enabled && saved.downstream_tx_enabled) &&
-			mac.fec_enabled === (saved.enabled && saved.fec_enabled) &&
-			!next.cleanup_pending;
 		message.textContent =
-			next.error?.message || mac?.error || (applied ? "" : _("Saved; applying hardware configuration"));
+			next.error?.message || mac?.error || (isApplied() ? "" : _("Saved; applying hardware configuration"));
 		render();
 	};
 	const applySettings = async (settings: OpticalSettings) => {
+		if (busy || stale || !saved || !L.hasViewPermission()) return;
 		busy = true;
 		revision++;
 		render();
@@ -131,6 +146,7 @@ export function createOpticalControl() {
 			if (next.status === "success") dirty = false;
 			accept(next);
 		} catch (error) {
+			stale = true;
 			message.textContent = String(error);
 		} finally {
 			busy = false;

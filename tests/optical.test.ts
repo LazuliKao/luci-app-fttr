@@ -49,6 +49,10 @@ test("optical controls submit all flags atomically, preserve edits, reject stale
 	});
 	const { createOpticalControl } = await import("../src/view/components/optical-control");
 	const panel = createOpticalControl();
+	const fslPanel = createOpticalControl("fiberhome-an4475-g2");
+	assert.match((fslPanel.element as unknown as TestNode).textContent, /does not reset the optical module/);
+	await fslPanel.refresh();
+	assert.match((fslPanel.element as unknown as TestNode).textContent, /Controller: Enabled/);
 	const root = panel.element as unknown as TestNode;
 	await panel.refresh();
 	assert.equal(root.all("h3").length, 0);
@@ -86,7 +90,22 @@ test("optical controls submit all flags atomically, preserve edits, reject stale
 	assert.equal(save.disabled, true);
 	assert.equal(fec.disabled, true);
 	get = async () => snapshot;
+	await panel.refresh();
+	// An unconfirmed readback must remain retryable even without a top-level error.
+	get = async () => ({ ...snapshot, actor_state: "unknown", pon_mac: { ...snapshot.pon_mac, tx_enabled: false } });
+	await panel.refresh();
+	assert.equal(save.disabled, false);
+	get = async () => snapshot;
+	await panel.refresh();
+	assert.equal(save.disabled, true);
+	// Permission and busy checks must also run after a delayed confirmation.
+	downstream.checked = false; downstream.onchange!();
+	save.onclick!();
+	const lateConfirm = modal?.all("button").find(b => b.textContent === "Confirm");
+	assert.ok(lateConfirm);
 	writable = false;
+	set = () => { assert.fail("a delayed confirmation must not bypass permissions"); };
+	await lateConfirm.onclick!();
 	await panel.refresh();
 	assert.equal(master.disabled, true);
 	assert.equal(save.disabled, true);

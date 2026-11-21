@@ -48,9 +48,14 @@ export const setOptical = async (settings: OpticalSettings): Promise<OpticalRepl
 export const getNpuStatus = async (): Promise<NpuStatus> => getFttrClient().npuStatus();
 export const setNpu = async (request: NpuSetRequest): Promise<NpuReply> => getFttrClient().npuSet(request);
 export const sync = async (action: SyncAction, target: string) => getFttrClient().sync({ action, target });
-export const getCalibration = async (): Promise<CalibrationInfo> => getFttrClient().getCalibration();
+export const getCalibrationDetails = async () => getFttrClient().getCalibration();
+function hmCalibration(info: Awaited<ReturnType<typeof getCalibrationDetails>>): CalibrationInfo {
+	if ("factory_table" in info) throw new Error(_("This calibration profile requires the factory-table page."));
+	return info;
+}
+export const getCalibration = async (): Promise<CalibrationInfo> => hmCalibration(await getCalibrationDetails());
 export const selectCalibration = async (source: CalibrationMode): Promise<CalibrationInfo> =>
-	getFttrClient().selectCalibration({ source });
+	hmCalibration(await getFttrClient().selectCalibration({ source }));
 export const saveCalibration = async (data: string): Promise<SaveCalibrationResult> =>
 	getFttrClient().saveCalibration({ data });
 export const applyCalibration = async (): Promise<ApplyCalibrationResult> =>

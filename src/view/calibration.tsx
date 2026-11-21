@@ -10,16 +10,18 @@ import {
 	calibrationApplyOutcome,
 	temperatureTarget,
 } from "./components/calibration-model";
+import { renderFactoryCalibration } from "./components/factory-calibration";
 import { createTabMenu, type TabItem } from "./components/tabs";
 import { ViewStyle } from "./components/view-style";
 import {
 	applyCalibration,
 	type CalibrationInfo,
 	getCalibration,
+	getCalibrationDetails,
+	getPlatformInfo,
 	saveCalibration,
 	selectCalibration,
 } from "./contracts/api";
-import { requireCalibrationProfile } from "./contracts/capabilities";
 import tokensCss from "./styles/tokens.css?inline";
 
 const view = L.view;
@@ -1309,12 +1311,30 @@ function renderCalibrationPage(currentInfo: CalibrationInfo): HTMLElement {
 	return root;
 }
 
+export async function loadCalibrationPage() {
+	const platform = await getPlatformInfo();
+	const profile = platform.operations.calibration_profile;
+	if (profile !== "ux3326" && profile !== "ux3326s_factory") return null;
+	const info = await getCalibrationDetails();
+	if (
+		profile === "ux3326s_factory" ? !("factory_table" in info) || info.profile !== profile : "factory_table" in info
+	) {
+		throw new Error(_("The calibration profile changed. Reload this page."));
+	}
+	return info;
+}
+
 const main = view.extend({
-	async load(): Promise<CalibrationInfo> {
-		await requireCalibrationProfile("ux3326");
-		return getCalibration();
-	},
-	render(info: CalibrationInfo): HTMLElement {
+	load: loadCalibrationPage,
+	render(info: Awaited<ReturnType<typeof loadCalibrationPage>>): HTMLElement {
+		if (!info)
+			return (
+				<div class="cbi-section">
+					<h2>{_("Optical calibration")}</h2>
+					<p>{_("Optical calibration is not supported by the selected platform.")}</p>
+				</div>
+			);
+		if ("factory_table" in info) return renderFactoryCalibration(info);
 		return renderCalibrationPage(info);
 	},
 	handleSaveApply: null,

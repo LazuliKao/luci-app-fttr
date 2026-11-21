@@ -49,7 +49,7 @@ function renderCdrBadge(locked: boolean | null): HTMLElement {
 	);
 }
 
-function createControllerPanel(status: FttrHardwareStatus, platform: PlatformInfoReply): HTMLElement {
+export function createControllerPanel(status: FttrHardwareStatus, platform: PlatformInfoReply): HTMLElement {
 	const optical = status.optical_transceiver;
 	const mac = status.pon_mac;
 	const fpgaStatusNode = (
@@ -62,29 +62,41 @@ function createControllerPanel(status: FttrHardwareStatus, platform: PlatformInf
 	);
 
 	const cards: HTMLElement[] = [];
-	if (platform.operations.fpga_diagnostics) {
+	if (platform.selection === "selected") {
 		cards.push(
 			<div class="fttr-card">
-				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("FPGA status")}</h4>
+				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Controller status")}</h4>
 				<div class="fttr-kv-row">
-					<span class="fttr-kv-label">0x01000004</span>
+					<span class="fttr-kv-label">{_("Platform")}</span>
+					<strong>{platform.model}</strong>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("GPON TX control register")}</span>
 					<code>
 						{mac?.register == null ? _("Unknown") : `0x${mac.register.toString(16).padStart(8, "0")}`}
 					</code>
 				</div>
 				{mac?.error ? <p class="alert-message warning">{mac.error}</p> : null}
 				<div class="fttr-kv-row">
-					<span class="fttr-kv-label">{_("FPGA status")}</span>
+					<span class="fttr-kv-label">{_("Controller status")}</span>
 					<span>{fpgaStatusNode}</span>
 				</div>
 				<div class="fttr-kv-row">
-					<span class="fttr-kv-label">{_("FPGA identifier")}</span>
-					<code>{text(status.fpga_status)}</code>
+					<span class="fttr-kv-label">{_("GPON downstream transmission")}</span>
+					<span>
+						{mac?.tx_enabled == null ? _("Unknown") : mac.tx_enabled ? _("Enabled") : _("Disabled")}
+					</span>
+				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("GPON downstream FEC encoding")}</span>
+					<span>
+						{mac?.fec_enabled == null ? _("Unknown") : mac.fec_enabled ? _("Enabled") : _("Disabled")}
+					</span>
 				</div>
 			</div>,
 		);
 	}
-	if (platform.operations.transceiver_telemetry) {
+	if (optical.model && optical.model !== "Unknown") {
 		cards.push(
 			<div class="fttr-card">
 				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Optical transceiver")}</h4>
@@ -104,18 +116,35 @@ function createControllerPanel(status: FttrHardwareStatus, platform: PlatformInf
 					<span class="fttr-kv-label">{_("CDR lock")}</span>
 					<span>{renderCdrBadge(optical.cdr_locked)}</span>
 				</div>
+				<div class="fttr-kv-row">
+					<span class="fttr-kv-label">{_("Calibration")}</span>
+					<span>{optical.calibration_applied ? _("Applied by hardware owner") : _("Not applied")}</span>
+				</div>
 			</div>,
 		);
 		cards.push(
 			<div class="fttr-card">
 				<h4 style="margin-top:0;margin-bottom:8px;font-size:95%">{_("Physical rates and diagnostics")}</h4>
+				{!platform.operations.transceiver_telemetry ? (
+					<p class="cbi-value-description">
+						{_(
+							"Live transceiver measurements are not supported by this platform. Module identity and PHY rates remain available.",
+						)}
+					</p>
+				) : null}
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Downlink PHY rate")}</span>
-					<span>{optical.phy_rate_downlink_gbps ? `${optical.phy_rate_downlink_gbps} Gbps` : "—"}</span>
+					<span>
+						{optical.phy_rate_downlink_gbps
+							? `${Number(optical.phy_rate_downlink_gbps.toFixed(3))} Gbps`
+							: "—"}
+					</span>
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Uplink PHY rate")}</span>
-					<span>{optical.phy_rate_uplink_gbps ? `${optical.phy_rate_uplink_gbps} Gbps` : "—"}</span>
+					<span>
+						{optical.phy_rate_uplink_gbps ? `${Number(optical.phy_rate_uplink_gbps.toFixed(3))} Gbps` : "—"}
+					</span>
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Temperature")}</span>

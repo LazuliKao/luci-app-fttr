@@ -2,8 +2,7 @@
 
 import { isPageHidden } from "../visibility";
 import { ViewStyle } from "./components/view-style";
-import { getNpuStatus, setNpu } from "./contracts/api";
-import { requirePlatformOperation } from "./contracts/capabilities";
+import { getNpuStatus, getPlatformInfo, setNpu } from "./contracts/api";
 import type { NpuStatus } from "./contracts/status";
 import npuCss from "./npu.css?inline";
 import { exactCounter, maskText } from "./npu-data";
@@ -437,10 +436,19 @@ function renderPage(): HTMLElement {
 }
 
 const main = L.view.extend({
-	async load(): Promise<void> {
-		await requirePlatformOperation("npu_offload");
+	async load(): Promise<boolean> {
+		return (await getPlatformInfo()).operations.npu_offload;
 	},
-	render: renderPage,
+	render(supported: boolean): HTMLElement {
+		if (!supported)
+			return (
+				<div class="cbi-section">
+					<h2>{_("NPU")}</h2>
+					<p>{_("NPU hardware acceleration is not compiled or unsupported on this target.")}</p>
+				</div>
+			);
+		return renderPage();
+	},
 	handleSaveApply: null,
 	handleSave: null,
 	handleReset: null,

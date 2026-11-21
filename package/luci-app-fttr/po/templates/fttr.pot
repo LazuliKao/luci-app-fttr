@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-15 18:01+0800\n"
+"POT-Creation-Date: 2026-11-21 00:42+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -222,10 +222,31 @@ msgstr ""
 msgid "Alternate temperature parameters (Alt Temp)"
 msgstr ""
 
+msgid "AN4475-G2 factory optical calibration"
+msgstr ""
+
 msgid "Another operation is in progress."
 msgstr ""
 
+msgid ""
+"Application confirms the checked I2C sequence, not full register readback, "
+"measured optical power or HM2004 temperature compensation. Unverified live "
+"measurements remain unavailable."
+msgstr ""
+
+msgid "Application status"
+msgstr ""
+
 msgid "Applied"
+msgstr ""
+
+msgid "Applied at"
+msgstr ""
+
+msgid "Applied by hardware owner"
+msgstr ""
+
+msgid "Applied SHA-256"
 msgstr ""
 
 msgid "Applied source (see version above)"
@@ -244,6 +265,9 @@ msgid "Apply or discard pending FTTR configuration changes first."
 msgstr ""
 
 msgid "Apply selected calibration"
+msgstr ""
+
+msgid "Applying…"
 msgstr ""
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
@@ -420,6 +444,9 @@ msgstr ""
 msgid "Cached identity"
 msgstr ""
 
+msgid "Calibration"
+msgstr ""
+
 msgid "Calibration application failed"
 msgstr ""
 
@@ -498,6 +525,9 @@ msgstr ""
 msgid "Check management differences (read-only)"
 msgstr ""
 
+msgid "Chip discriminator"
+msgstr ""
+
 msgid "Clear backoff delays and retry safe difference synchronization"
 msgstr ""
 
@@ -542,6 +572,9 @@ msgid "Committed configuration is invalid: %s"
 msgstr ""
 
 msgid "Completed"
+msgstr ""
+
+msgid "Completed register writes"
 msgstr ""
 
 msgid "Configuration"
@@ -606,6 +639,9 @@ msgstr ""
 msgid "Controller hardware"
 msgstr ""
 
+msgid "Controller status"
+msgstr ""
+
 msgid ""
 "Controls GPON downstream 1490 nm optical emission. Turning it off removes "
 "the downstream optical signal and disconnects ONUs."
@@ -617,8 +653,19 @@ msgid ""
 msgstr ""
 
 msgid ""
+"Controls GPON downstream frame transmission. Turning it off stops ONU "
+"communication without resetting the optical module."
+msgstr ""
+
+msgid ""
 "Controls optical module reset and ONU discovery. Turning it off resets the "
 "module and disconnects all ONUs."
+msgstr ""
+
+msgid ""
+"Controls the optical hardware owner and ONU discovery. Turning it off "
+"disables GPON transmission and disconnects all ONUs; it does not reset the "
+"optical module."
 msgstr ""
 
 msgid "Conversion formula"
@@ -1030,6 +1077,12 @@ msgstr ""
 msgid "Export NDJSON"
 msgstr ""
 
+msgid "Factory calibration applied through checked I2C transactions."
+msgstr ""
+
+msgid "Factory calibration was not applied."
+msgstr ""
+
 msgid ""
 "Factory partition extraction and calibration data generation tool for H3C "
 "HM2004-DU."
@@ -1121,13 +1174,7 @@ msgstr ""
 msgid "FPGA diagnostics"
 msgstr ""
 
-msgid "FPGA identifier"
-msgstr ""
-
 msgid "FPGA master switch"
-msgstr ""
-
-msgid "FPGA status"
 msgstr ""
 
 msgid "Fresh discovery"
@@ -1206,6 +1253,12 @@ msgstr ""
 msgid "GPON downstream optical emission"
 msgstr ""
 
+msgid "GPON downstream transmission"
+msgstr ""
+
+msgid "GPON TX control register"
+msgstr ""
+
 msgid "Group"
 msgstr ""
 
@@ -1234,6 +1287,9 @@ msgid "Hardware status"
 msgstr ""
 
 msgid "Hardware version"
+msgstr ""
+
+msgid "Header, payload CRC and chip discriminator"
 msgstr ""
 
 msgid "Historical stock sample match"
@@ -1315,12 +1371,6 @@ msgstr ""
 msgid "Inherit global policy"
 msgstr ""
 
-msgid ""
-"Inheritance uses the complete global policy. A device override requires its "
-"own LOID and password. Authentication is separate from optical identity and "
-"forwarding verification."
-msgstr ""
-
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr ""
 
@@ -1363,6 +1413,9 @@ msgid "Interval (minutes)"
 msgstr ""
 
 msgid "Interval (ms)"
+msgstr ""
+
+msgid "Invalid"
 msgstr ""
 
 msgid "Invalid MIB snapshot"
@@ -1461,6 +1514,9 @@ msgid ""
 "when adding a new device."
 msgstr ""
 
+msgid "Live chip signature verified"
+msgstr ""
+
 msgid "Live hardware status is unavailable. The displayed data may be stale."
 msgstr ""
 
@@ -1468,6 +1524,11 @@ msgid "Live NPU data is unavailable. Previous readings are stale."
 msgstr ""
 
 msgid "Live status is unavailable. The displayed data may be stale."
+msgstr ""
+
+msgid ""
+"Live transceiver measurements are not supported by this platform. Module "
+"identity and PHY rates remain available."
 msgstr ""
 
 msgid "Load"
@@ -1829,6 +1890,9 @@ msgstr ""
 msgid "Not admitted"
 msgstr ""
 
+msgid "Not applied"
+msgstr ""
+
 msgid "Not collected"
 msgstr ""
 
@@ -1857,6 +1921,9 @@ msgid "Not Started"
 msgstr ""
 
 msgid "Note: Register"
+msgstr ""
+
+msgid "NPU"
 msgstr ""
 
 msgid "NPU configuration"
@@ -2009,6 +2076,12 @@ msgstr ""
 msgid "Optical calibration"
 msgstr ""
 
+msgid "Optical calibration is not supported by the selected platform."
+msgstr ""
+
+msgid "Optical controller master switch"
+msgstr ""
+
 msgid "Optical module"
 msgstr ""
 
@@ -2131,6 +2204,9 @@ msgid "Pin interface"
 msgstr ""
 
 msgid "Pinned ONU ID"
+msgstr ""
+
+msgid "Platform"
 msgstr ""
 
 msgid "PONWrt Firmware"
@@ -2267,6 +2343,15 @@ msgid "Reading settings"
 msgstr ""
 
 msgid "Ready"
+msgstr ""
+
+msgid "Reapply factory calibration"
+msgstr ""
+
+msgid ""
+"Reapplying temporarily stops ONU service, disables downstream transmission, "
+"verifies the live chip signature, writes the factory sequence and restores "
+"the saved optical settings. The factory partition is never written."
 msgstr ""
 
 msgid "Reason / desired changes"
@@ -2779,6 +2864,9 @@ msgstr ""
 msgid "Syncing"
 msgstr ""
 
+msgid "Table / payload bytes"
+msgstr ""
+
 msgid "Target"
 msgstr ""
 
@@ -2807,6 +2895,9 @@ msgid "Templates"
 msgstr ""
 
 msgid "Text omitted at the shared byte limit."
+msgstr ""
+
+msgid "The calibration profile changed. Reload this page."
 msgstr ""
 
 msgid "The continuation is no longer valid. Refresh the topology."
@@ -2867,6 +2958,9 @@ msgid ""
 msgstr ""
 
 msgid "This calibration profile is not supported by the selected platform."
+msgstr ""
+
+msgid "This calibration profile requires the factory-table page."
 msgstr ""
 
 msgid "This device already has an active synchronization operation"
@@ -3146,6 +3240,14 @@ msgid ""
 "Uses a backend-reserved profile; factory credentials are not yet verified. "
 "Disable to enter this CPE's existing credentials and port. Saved custom "
 "values are retained while hidden."
+msgstr ""
+
+msgid ""
+"UX3326S1 uses this device's original factory table. HM2004 coefficient "
+"editing, firmware uploads and source selection do not apply to this profile."
+msgstr ""
+
+msgid "Valid"
 msgstr ""
 
 msgid "Value"

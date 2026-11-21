@@ -12,7 +12,7 @@ export type BusinessPhase = "not_started" | "collecting_identity" | "retrying_id
 export type BusinessStatus = { phase: BusinessPhase, generation: number, error: string | null, };
 export type CalibrationApplied = { success: boolean, state?: CalibrationState, output?: string, error?: string, };
 export type CalibrationInfo = { source: CalibrationSource, active_path: string, size: number, sha256: string, data: string, factory: FactoryCalibration, firmware: FirmwareCalibration, state?: CalibrationState, };
-export type CalibrationInfoReply = CalibrationInfo | CommandError;
+export type CalibrationInfoReply = CalibrationInfo | NativeCalibrationInfo | CommandError;
 export type CalibrationMode = "auto" | "factory" | "firmware" | "builtin";
 export type CalibrationSaveReply = CalibrationSaved | CommandError;
 export type CalibrationSaveRequest = { data: string, };
@@ -124,6 +124,9 @@ export type MibValue = { "type": "unsigned", value: number, } | { "type": "signe
 export type MibVlanRule = { raw_hex: string, filter_outer_priority: number, filter_outer_vid: number, filter_outer_tpid_dei: number, filter_inner_priority: number, filter_inner_vid: number, filter_inner_tpid_dei: number, filter_ethertype: number, tags_to_remove: number, treatment_outer_priority: number, treatment_outer_vid: number, treatment_outer_tpid_dei: number, treatment_inner_priority: number, treatment_inner_vid: number, treatment_inner_tpid_dei: number, delete_entry: boolean, };
 export type MqttSource = { mqtt_mac: string, optical_sn: string | null, onu_id: number | null, binding_generation: string, last_seen: number, reason: string, };
 export type MqttStatus = { state: ManagementState, optical_online: boolean, };
+export type NativeCalibrationApplication = { applied: boolean, sha256: string | null, applied_unix: number | null, register_writes: number, live_signature_verified: boolean, error: string | null, };
+export type NativeCalibrationInfo = { profile: PlatformCalibrationProfile, factory_table: NativeCalibrationTable, application: NativeCalibrationApplication, can_apply: boolean, can_upload: boolean, can_select: boolean, };
+export type NativeCalibrationTable = { source: string, offset: number, size: number, payload_bytes: number, chip_id: number | null, sha256: string | null, valid: boolean, error: string | null, };
 export type NativeWanOwned = { parent: number, child: number, service: string, vlan: string, };
 export type NetworkConfig = { enabled: boolean, mode: SyncMode, vlan: Array<number>, priority: number, address: string, acs_url: string, port: number, path: string, dhcp_enabled: boolean, };
 export type NetworkPhase = "discovering" | "comparing" | "planning" | "applying" | "verifying" | "configuring_listener" | "cleaning_previous" | "waiting_devices" | "ready" | "awaiting_apply" | "verified" | "blocked" | "retry_wait";
@@ -152,7 +155,7 @@ export type OpticalSettings = { enabled: boolean, downstream_tx_enabled: boolean
 export type OpticalState = "enabled" | "disabled" | "unknown";
 export type OpticalTransceiverStatus = { calibration_sha256?: string, calibration_applied: boolean, model: string, wavelength_tx_nm: number, wavelength_rx_nm: number, phy_rate_downlink_gbps: number, phy_rate_uplink_gbps: number, tx_power_dbm: number | null, laser_bias_current_ma: number | null, temperature_celsius: number | null, vcc_voltage: number | null, cdr_locked: boolean | null, tx_enabled?: boolean, measurements: { [key in string]: MeasurementEvidence }, };
 export type PendingStatus = "pending";
-export type PlatformCalibrationProfile = "ux3326";
+export type PlatformCalibrationProfile = "ux3326" | "ux3326s_factory";
 export type PlatformInfoReply = { schema_version: 1, selection: PlatformSelection, platform_id: string, vendor: string, model: string, onus: Array<PlatformOnuResource>, operations: PlatformOperations, };
 export type PlatformOnuResource = { onu_id: number, interface: string | null, };
 export type PlatformOperations = { optical_control: boolean, transceiver_telemetry: boolean, fpga_diagnostics: boolean, bosa_diagnostics: boolean, calibration_profile: PlatformCalibrationProfile | null, npu_offload: boolean, omci_mib: boolean, downstream_fec: boolean, };
@@ -245,7 +248,7 @@ export type TopologySource = { id: string, state: TopologySourceState,
  * Unix time at which this source was sampled (not a promise of atomicity).
  */
 sampled_at: number, reason: string | null, };
-export type TopologySourceState = "ok" | "partial" | "unavailable";
+export type TopologySourceState = "ok" | "partial" | "unavailable" | "not_applicable";
 export type TopologyUplink = { interface: string, device: string | null, protocol: string | null, up: boolean, addresses: Array<string>, };
 export type UbusMethodStats = { calls: number, failures: number, last_us: number, max_us: number, total_us: number, };
 export type WanOwned = { parent: number, connection: number, state: string, service_list: string, kind: string, baseline: Array<number> | null, };

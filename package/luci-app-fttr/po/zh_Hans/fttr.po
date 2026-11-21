@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-15 18:01+0800\n"
+"POT-Creation-Date: 2026-11-21 00:42+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -222,11 +222,32 @@ msgstr "允许将不支持的 ONU 作为桥接"
 msgid "Alternate temperature parameters (Alt Temp)"
 msgstr "备用温度参数（Alt Temp）"
 
+msgid "AN4475-G2 factory optical calibration"
+msgstr "AN4475-G2 原厂光路校准"
+
 msgid "Another operation is in progress."
 msgstr "另一个操作正在进行中。"
 
+msgid ""
+"Application confirms the checked I2C sequence, not full register readback, "
+"measured optical power or HM2004 temperature compensation. Unverified live "
+"measurements remain unavailable."
+msgstr "应用成功表示已完成经检查的 I²C 写入序列，不代表完整寄存器回读、实测光功率或 HM2004 温度补偿。未经验证的实时测量仍显示为不可用。"
+
+msgid "Application status"
+msgstr "应用状态"
+
 msgid "Applied"
 msgstr "已应用"
+
+msgid "Applied at"
+msgstr "应用时间"
+
+msgid "Applied by hardware owner"
+msgstr "已由硬件控制服务应用"
+
+msgid "Applied SHA-256"
+msgstr "已应用表的 SHA-256"
 
 msgid "Applied source (see version above)"
 msgstr "应用源（见上方版本）"
@@ -245,6 +266,9 @@ msgstr "请先应用或撤销尚未提交的 FTTR 配置修改。"
 
 msgid "Apply selected calibration"
 msgstr "应用选定校准"
+
+msgid "Applying…"
+msgstr ""
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
 msgstr "确定要重置 %s 的同步状态吗？"
@@ -420,6 +444,9 @@ msgstr "缓存"
 msgid "Cached identity"
 msgstr "已缓存的设备标识"
 
+msgid "Calibration"
+msgstr "校准"
+
 msgid "Calibration application failed"
 msgstr "校准应用失败"
 
@@ -498,6 +525,9 @@ msgstr "检查"
 msgid "Check management differences (read-only)"
 msgstr "检查管理配置差异（只读）"
 
+msgid "Chip discriminator"
+msgstr "芯片标识码"
+
 msgid "Clear backoff delays and retry safe difference synchronization"
 msgstr "清除退避延迟并重试安全的差异同步"
 
@@ -543,6 +573,9 @@ msgstr "已提交的配置无效：%s"
 
 msgid "Completed"
 msgstr "已完成"
+
+msgid "Completed register writes"
+msgstr "已完成的寄存器写入次数"
 
 msgid "Configuration"
 msgstr "配置"
@@ -606,6 +639,9 @@ msgstr "控制器与光收发器"
 msgid "Controller hardware"
 msgstr "控制器硬件"
 
+msgid "Controller status"
+msgstr "控制器状态"
+
 msgid ""
 "Controls GPON downstream 1490 nm optical emission. Turning it off removes "
 "the downstream optical signal and disconnects ONUs."
@@ -617,9 +653,20 @@ msgid ""
 msgstr "控制GPON下行FEC编码；下行发射开启时，同时采集ONU侧OMCI FEC性能数据。"
 
 msgid ""
+"Controls GPON downstream frame transmission. Turning it off stops ONU "
+"communication without resetting the optical module."
+msgstr "控制 GPON 下行帧传输。关闭后停止 ONU 通信，但不会复位光模块。"
+
+msgid ""
 "Controls optical module reset and ONU discovery. Turning it off resets the "
 "module and disconnects all ONUs."
 msgstr "控制光模块复位与ONU发现流程。关闭后光模块复位，所有ONU连接中断。"
+
+msgid ""
+"Controls the optical hardware owner and ONU discovery. Turning it off "
+"disables GPON transmission and disconnects all ONUs; it does not reset the "
+"optical module."
+msgstr "控制光硬件服务与 ONU 发现流程。关闭后停止 GPON 传输并断开所有 ONU，但不会复位光模块。"
 
 msgid "Conversion formula"
 msgstr "转换公式"
@@ -1030,6 +1077,12 @@ msgstr "导出 JSON"
 msgid "Export NDJSON"
 msgstr "导出 NDJSON"
 
+msgid "Factory calibration applied through checked I2C transactions."
+msgstr "原厂校准已通过经检查的 I²C 事务完成应用。"
+
+msgid "Factory calibration was not applied."
+msgstr "原厂校准未成功应用。"
+
 msgid ""
 "Factory partition extraction and calibration data generation tool for H3C "
 "HM2004-DU."
@@ -1122,14 +1175,8 @@ msgstr "FPGA"
 msgid "FPGA diagnostics"
 msgstr "FPGA 诊断"
 
-msgid "FPGA identifier"
-msgstr "FPGA 标识"
-
 msgid "FPGA master switch"
 msgstr "FPGA总开关"
-
-msgid "FPGA status"
-msgstr "FPGA 状态"
 
 msgid "Fresh discovery"
 msgstr "重新发现"
@@ -1207,6 +1254,12 @@ msgstr "GPON下行FEC编码"
 msgid "GPON downstream optical emission"
 msgstr "GPON下行发光"
 
+msgid "GPON downstream transmission"
+msgstr "GPON 下行传输"
+
+msgid "GPON TX control register"
+msgstr "GPON TX 控制寄存器"
+
 msgid "Group"
 msgstr "分组"
 
@@ -1236,6 +1289,9 @@ msgstr "硬件状态"
 
 msgid "Hardware version"
 msgstr "硬件版本"
+
+msgid "Header, payload CRC and chip discriminator"
+msgstr "表头、载荷 CRC 和芯片标识校验"
 
 msgid "Historical stock sample match"
 msgstr "历史库存样本匹配"
@@ -1320,12 +1376,6 @@ msgstr "索引 %s → 代码 %s"
 msgid "Inherit global policy"
 msgstr "继承全局策略"
 
-msgid ""
-"Inheritance uses the complete global policy. A device override requires its "
-"own LOID and password. Authentication is separate from optical identity and "
-"forwarding verification."
-msgstr "继承时使用完整的全局策略；设备覆盖时必须单独填写完整的 LOID 和密码。认证与光侧身份、转发验证分别判定。"
-
 msgid "Inner filter (priority / VID / TPID-DEI)"
 msgstr "内层过滤（优先级 / VID / TPID-DEI）"
 
@@ -1369,6 +1419,9 @@ msgstr "间隔（分钟）"
 
 msgid "Interval (ms)"
 msgstr "间隔（毫秒）"
+
+msgid "Invalid"
+msgstr ""
 
 msgid "Invalid MIB snapshot"
 msgstr "无效的 MIB 快照"
@@ -1466,6 +1519,9 @@ msgid ""
 "when adding a new device."
 msgstr "列出在光纤链路上注册的受支持设备，包括尚未发送 ACS Inform 的设备。添加新设备时会自动忽略已配置的设备。"
 
+msgid "Live chip signature verified"
+msgstr "已验证在线芯片签名"
+
 msgid "Live hardware status is unavailable. The displayed data may be stale."
 msgstr "实时硬件状态不可用。显示的数据可能已过时。"
 
@@ -1474,6 +1530,11 @@ msgstr "无法获取 NPU 实时数据，先前读数已失效。"
 
 msgid "Live status is unavailable. The displayed data may be stale."
 msgstr "实时状态不可用。显示的数据可能已过时。"
+
+msgid ""
+"Live transceiver measurements are not supported by this platform. Module "
+"identity and PHY rates remain available."
+msgstr "此平台尚不支持光模块实时测量，仍可查看模块标识与 PHY 速率。"
 
 msgid "Load"
 msgstr "负载"
@@ -1834,6 +1895,9 @@ msgstr "无（开放网络）"
 msgid "Not admitted"
 msgstr "未准入"
 
+msgid "Not applied"
+msgstr "未应用"
+
 msgid "Not collected"
 msgstr "未采集"
 
@@ -1863,6 +1927,9 @@ msgstr "未开始"
 
 msgid "Note: Register"
 msgstr "注意：寄存器"
+
+msgid "NPU"
+msgstr ""
 
 msgid "NPU configuration"
 msgstr "NPU 配置"
@@ -2016,6 +2083,12 @@ msgstr "光路与链路状态"
 msgid "Optical calibration"
 msgstr "光路校准"
 
+msgid "Optical calibration is not supported by the selected platform."
+msgstr "当前平台不支持光路校准。"
+
+msgid "Optical controller master switch"
+msgstr "光控制器总开关"
+
 msgid "Optical module"
 msgstr "光模块"
 
@@ -2139,6 +2212,9 @@ msgstr "固定接口"
 
 msgid "Pinned ONU ID"
 msgstr "固定 ONU ID"
+
+msgid "Platform"
+msgstr "平台"
 
 msgid "PONWrt Firmware"
 msgstr "PONWrt 固件"
@@ -2275,6 +2351,15 @@ msgstr "读取设置"
 
 msgid "Ready"
 msgstr "已就绪"
+
+msgid "Reapply factory calibration"
+msgstr "重新应用原厂校准"
+
+msgid ""
+"Reapplying temporarily stops ONU service, disables downstream transmission, "
+"verifies the live chip signature, writes the factory sequence and restores "
+"the saved optical settings. The factory partition is never written."
+msgstr "重新应用会暂时停止 ONU 业务、关闭下行传输，验证在线芯片签名并执行原厂写入序列，完成后恢复已保存的光学设置。此操作不写入原厂分区。"
 
 msgid "Reason / desired changes"
 msgstr "原因 / 目标变更"
@@ -2788,6 +2873,9 @@ msgstr "已同步"
 msgid "Syncing"
 msgstr "同步中"
 
+msgid "Table / payload bytes"
+msgstr "校准表 / 载荷字节数"
+
 msgid "Target"
 msgstr "目标"
 
@@ -2817,6 +2905,9 @@ msgstr "模板配置"
 
 msgid "Text omitted at the shared byte limit."
 msgstr "已因达到共享字节上限而省略文本。"
+
+msgid "The calibration profile changed. Reload this page."
+msgstr "校准类型已发生变化，请重新加载页面。"
 
 msgid "The continuation is no longer valid. Refresh the topology."
 msgstr "续传已无效。刷新拓扑。"
@@ -2877,6 +2968,9 @@ msgstr "此后端未提供版本化的校准状态。在选择或应用源之前
 
 msgid "This calibration profile is not supported by the selected platform."
 msgstr "所选平台不支持此校准配置。"
+
+msgid "This calibration profile requires the factory-table page."
+msgstr "此校准类型需要使用原厂校准表页面。"
 
 msgid "This device already has an active synchronization operation"
 msgstr "此设备已有正在进行的同步操作"
@@ -3156,6 +3250,14 @@ msgid ""
 "Disable to enter this CPE's existing credentials and port. Saved custom "
 "values are retained while hidden."
 msgstr "使用后端预留配置；原厂凭据尚未验证。禁用后可输入此 CPE 现有的凭据和端口。自定义值隐藏时仍会保留已保存的值。"
+
+msgid ""
+"UX3326S1 uses this device's original factory table. HM2004 coefficient "
+"editing, firmware uploads and source selection do not apply to this profile."
+msgstr "UX3326S1 使用本机原始出厂校准表，不适用 HM2004 的系数编辑、校准文件上传和来源选择。"
+
+msgid "Valid"
+msgstr ""
 
 msgid "Value"
 msgstr "数值"
