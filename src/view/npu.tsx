@@ -5,7 +5,7 @@ import { ViewStyle } from "./components/view-style";
 import { getNpuStatus, getPlatformInfo, setNpu } from "./contracts/api";
 import type { NpuStatus } from "./contracts/status";
 import npuCss from "./npu.css?inline";
-import { exactCounter, maskText } from "./npu-data";
+import { directionMaskText, exactCounter, maskText } from "./npu-data";
 
 function row(label: string, value: string | number | HTMLElement): HTMLElement {
 	return (
@@ -32,8 +32,22 @@ function renderStatus(npu: NpuStatus): HTMLElement {
 			</div>
 		);
 	const routed = npu.wan_upstream || npu.wan_downstream;
+	const directionOnly = npu.admission_model === "direction_only";
 	const admissionMask = routed ? npu.routed_offload_mask : npu.bridge_offload_mask;
-	const admissionValid = routed ? npu.routed_mask_valid : npu.mask_valid;
+	const admissionValid = directionOnly
+		? npu.direction_mask_valid === true
+		: routed
+			? npu.routed_mask_valid
+			: npu.mask_valid;
+	const admitted = directionOnly ? npu.direction_mask !== 0 : admissionMask !== 0;
+	const configuredMode =
+		routed && npu.onu_bridge
+			? `${_("WAN routed offload")} + ${_("ONU bridge offload")}`
+			: routed
+				? _("WAN routed offload")
+				: npu.onu_bridge
+					? _("ONU bridge offload")
+					: _("None");
 	return (
 		<div>
 			{npu.sampled_at_ms === undefined ? (
@@ -60,24 +74,27 @@ function renderStatus(npu: NpuStatus): HTMLElement {
 					)}
 					{row(_("NPU engine"), flag(npu.engine_attached, npu.engine_valid, _("Attached"), _("Detached")))}
 					{row(
-						_("Port admission"),
-						flag(admissionMask !== 0, admissionValid, _("Admitted"), _("Not admitted")),
+						directionOnly ? _("Direction admission") : _("Port admission"),
+						flag(admitted, admissionValid, _("Admitted"), _("Not admitted")),
 					)}
-					{row(
-						_("Configured mode"),
-						routed && npu.onu_bridge
-							? `${_("WAN routed offload")} + ${_("ONU bridge offload")}`
-							: routed
-								? _("WAN routed offload")
-								: _("ONU bridge offload"),
-					)}
+					{row(_("Configured mode"), configuredMode)}
 					{row(_("Managed bridge"), npu.config_valid ? npu.bridge : "—")}
-					{row(_("Bridge offload mask"), maskText(npu.bridge_offload_mask, npu.mask_valid))}
-					{row(_("Admitted ports"), admissionValid ? npu.active_ports.join(", ") || _("None") : "—")}
-					{row(_("Firewall hooks"), flag(npu.fw4_hooks_ready, npu.hooks_valid, _("Ready"), _("Not ready")))}
-					{row(_("Routed offload mask"), maskText(npu.routed_offload_mask, npu.routed_mask_valid))}
+					{directionOnly
+						? row(
+								_("Direction admission mask"),
+								directionMaskText(npu.direction_mask, npu.direction_mask_valid),
+							)
+						: row(_("Bridge offload mask"), maskText(npu.bridge_offload_mask, npu.mask_valid))}
 					{row(
-						_("Driver debug logging"),
+						directionOnly ? _("Eligible ports") : _("Admitted ports"),
+						admissionValid ? npu.active_ports.join(", ") || _("None") : "—",
+					)}
+					{row(_("Firewall hooks"), flag(npu.fw4_hooks_ready, npu.hooks_valid, _("Ready"), _("Not ready")))}
+					{directionOnly
+						? null
+						: row(_("Routed offload mask"), maskText(npu.routed_offload_mask, npu.routed_mask_valid))}
+					{row(
+						directionOnly ? _("PPE debug logging") : _("Driver debug logging"),
 						flag(npu.bridge_offload_debug, npu.debug_valid, _("Enabled"), _("Disabled")),
 					)}
 					<p class="fttr-npu-note">

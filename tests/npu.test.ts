@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { exactCounter, maskText } from "../src/view/npu-data";
+import { directionMaskText, exactCounter, maskText } from "../src/view/npu-data";
 
 test("u64 counters remain exact; unknowns and L2B placeholders never become measured zero", () => {
 	assert.equal(exactCounter("9007199254740993", true), BigInt("9007199254740993").toLocaleString());
@@ -12,6 +12,11 @@ test("u64 counters remain exact; unknowns and L2B placeholders never become meas
 	assert.equal(exactCounter("42", undefined), "—");
 	assert.equal(maskText(14, true), "0x000e (14)");
 	assert.equal(maskText(0, false), "—");
+	assert.equal(directionMaskText(0, true), "0x0 (none)");
+	assert.equal(directionMaskText(3, true), "0x3 (WAN US + WAN DS)");
+	assert.equal(directionMaskText(7, true), "0x7 (WAN US + WAN DS + ONU bridge)");
+	assert.equal(directionMaskText(3, false), "—");
+	assert.equal(directionMaskText(8, true), "—");
 });
 
 class TestNode {
@@ -35,7 +40,8 @@ class TestNode {
 
 test("NPU page preserves edits, invalidates pre-save polls, rejects failed operations and hides stale status", async () => {
 	const snapshot = {
-		supported: true, sampled_at_ms: Date.now(), errors: [], config_valid: true, engine_valid: true,
+		supported: true, admission_model: "port_mask", direction_mask: 4, direction_mask_valid: true,
+		sampled_at_ms: Date.now(), errors: [], config_valid: true, engine_valid: true,
 		mask_valid: true, routed_mask_valid: true, debug_valid: true, flows_valid: true, entries_valid: true,
 		counters_valid: true, hooks_valid: true, total_packets_exact: "9007199254740993", total_bytes_exact: "1000",
 		engine_attached: true, bridge_offload_enabled: true, bridge: "br-lan", bridge_offload_mask: 14,
@@ -128,4 +134,25 @@ test("NPU page preserves edits, invalidates pre-save polls, rejects failed opera
 	writable = false;
 	await poll();
 	assert.equal(save.disabled, true);
+
+	// DirectionOnly (AN4475-G2) renders direction admission and hides HM2004-only port mask rows.
+	writable = true;
+	get = async () => ({
+		supported: true, admission_model: "direction_only", direction_mask: 3, direction_mask_valid: true,
+		sampled_at_ms: Date.now(), errors: [], config_valid: true, engine_valid: true,
+		mask_valid: false, routed_mask_valid: false, debug_valid: true, flows_valid: true, entries_valid: true,
+		counters_valid: true, hooks_valid: true, total_packets_exact: "0", total_bytes_exact: "0",
+		engine_attached: true, bridge_offload_enabled: true, bridge: "br-lan", bridge_offload_mask: 0,
+		wan_upstream: true, wan_downstream: true, onu_bridge: false,
+		routed_offload_mask: 0, bridge_offload_debug: false, active_ports: ["fttr1", "fttr2", "fttr3"],
+		fw4_hooks_ready: true, total_entries: 0, bound_entries: 0, bound_ipv4_entries: 0, bound_ipv6_entries: 0,
+		total_packets: 0, total_bytes: 0, bound_flows: [],
+	});
+	await poll();
+	assert.match(root.textContent, /Direction admission Admitted/);
+	assert.match(root.textContent, /Direction admission mask 0x3 \(WAN US \+ WAN DS\)/);
+	assert.match(root.textContent, /Eligible ports fttr1, fttr2, fttr3/);
+	assert.match(root.textContent, /PPE debug logging Disabled/);
+	assert.doesNotMatch(root.textContent, /Bridge offload mask/);
+	assert.doesNotMatch(root.textContent, /Routed offload mask/);
 });
