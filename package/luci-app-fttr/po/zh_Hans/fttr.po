@@ -2267,9 +2267,6 @@ msgstr "配置详情"
 msgid "Provisioning is disabled"
 msgstr "配置下发已禁用"
 
-msgid "Provisioning status unavailable"
-msgstr "配置下发状态不可用"
-
 msgid "Quick diagnostic commands"
 msgstr "快捷诊断命令"
 

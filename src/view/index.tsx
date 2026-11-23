@@ -459,31 +459,6 @@ function createStatusView(
 	const portsGrid = <div class="fttr-ports-grid" />;
 	const noPortsNode = <p>{_("No downstream ports are reported by the selected platform.")}</p>;
 
-	const provisioningStatusNode = <span class="fttr-badge" />;
-	const provisioningModeNode = <span class="fttr-badge fttr-badge-info" />;
-	const provisioningRevNode = <code style="font-size:90%" />;
-	const provisioningErrorNode = <span class="fttr-badge fttr-badge-danger" style="margin-left:.5em" />;
-	const provisioningNode = (
-		<div
-			data-provisioning-summary="true"
-			style="display:flex;align-items:center;flex-wrap:wrap;gap:0.75em;margin-top:.25em;margin-bottom:1.2em;font-size:92%"
-		>
-			<span>
-				<strong style="margin-right:.4em">{_("Provisioning")}:</strong>
-				{provisioningStatusNode}
-			</span>
-			<span>
-				<span style="color:#888;margin-right:.3em">{_("Mode")}:</span>
-				{provisioningModeNode}
-			</span>
-			<span>
-				<span style="color:#888;margin-right:.3em">{_("Revision")}:</span>
-				{provisioningRevNode}
-			</span>
-			{provisioningErrorNode}
-		</div>
-	);
-
 	const fpgaNode = <span class="fttr-badge" />;
 	const opticalNode = <span>{text(initialOptical.model)}</span>;
 	const temperatureNode = <span />;
@@ -507,7 +482,6 @@ function createStatusView(
 			<h2>{_("FTTR overview")}</h2>
 			{staleNotice}
 			{opticalControl.element}
-			{provisioningNode}
 			{pinningNode}
 			<div class="cbi-section">
 				<h3>{_("Controller")}</h3>
@@ -549,7 +523,6 @@ function createStatusView(
 	const update = (status: FttrStatus, devices: NetworkDevices) => {
 		currentDevices = devices;
 		const optical = status.optical_transceiver;
-		const provisioning = status.provisioning;
 		const pinning = status.onu_pinning;
 		pinningNode.textContent = pinning
 			? [
@@ -561,25 +534,6 @@ function createStatusView(
 					.join(" ")
 			: "";
 		pinningNode.hidden = !pinningNode.textContent;
-
-		if (provisioning) {
-			updateBadge(
-				provisioningStatusNode,
-				provisioning.enabled ? "success" : "neutral",
-				provisioning.enabled ? _("Enabled") : _("Disabled"),
-			);
-			provisioningModeNode.textContent = text(provisioning.mode);
-			provisioningRevNode.textContent = text(provisioning.revision);
-			if (provisioning.error) {
-				provisioningErrorNode.textContent = provisioning.error;
-				provisioningErrorNode.style.display = "";
-			} else {
-				provisioningErrorNode.style.display = "none";
-			}
-			provisioningNode.style.display = "";
-		} else {
-			provisioningNode.textContent = _("Provisioning status unavailable");
-		}
 
 		if (status.fpga_status === "ready") {
 			updateBadge(fpgaNode, "success", _("Ready"));

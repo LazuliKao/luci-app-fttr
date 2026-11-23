@@ -2260,9 +2260,6 @@ msgstr ""
 msgid "Provisioning is disabled"
 msgstr ""
 
-msgid "Provisioning status unavailable"
-msgstr ""
-
 msgid "Quick diagnostic commands"
 msgstr ""
 
