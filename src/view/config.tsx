@@ -68,8 +68,8 @@ const main = view.extend({
 			platform,
 		};
 	},
-	render(initialCheck: InitialCheck): Promise<Node> {
-		const map = new form.Map("fttr", _("FTTR configuration"));
+	async render(initialCheck: InitialCheck): Promise<Node> {
+		const map = new form.Map("fttr");
 		const section = map.section(form.NamedSection, "acs", "acs");
 		section.addremove = false;
 		section.anonymous = false;
@@ -114,60 +114,59 @@ const main = view.extend({
 		};
 		showCheck(initialCheck);
 		const actions = (
-			<div class="cbi-section">
-				<p>
-					{_(
-						"Saving configuration does not synchronize devices in Manual mode. After Save & Apply, open Synchronization and choose Apply differences. Preview differences is read-only.",
-					)}{" "}
-					<a href={L.url("admin", "network", "fttr", "sync")}>{_("Open Synchronization")}</a>
-				</p>
-				<h3>{_("Configuration diagnostics")}</h3>
-				<button
-					class="cbi-button cbi-button-action"
-					type="button"
-					onclick={() => openRecovery(section, backendError)}
-				>
-					{_("Review and repair configuration")}
-				</button>{" "}
-				<button
-					class="cbi-button cbi-button-action"
-					type="button"
-					onclick={() => command<ConfigCheck>(checkConfig, output, showCheck)}
-				>
-					{_("Check")}
-				</button>{" "}
-				<button
-					class="cbi-button cbi-button-action"
-					type="button"
-					disabled={!L.hasViewPermission()}
-					onclick={() =>
-						command<ConfigCheck>(
-							async () => {
-								await reloadConfig();
-								return await checkConfig();
-							},
-							output,
-							showCheck,
-						)
-					}
-				>
-					{_("Reload")}
-				</button>{" "}
-				<button
-					class="cbi-button cbi-button-negative"
-					type="button"
-					disabled={!L.hasViewPermission()}
-					onclick={() => command(restartService, output)}
-				>
-					{_("Restart")}
-				</button>
+			<div class="cbi-section" style="margin-bottom:16px">
+				<div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
+					<button
+						class="cbi-button cbi-button-action"
+						type="button"
+						onclick={() => openRecovery(section, backendError)}
+					>
+						{_("Review and repair configuration")}
+					</button>
+					<button
+						class="cbi-button cbi-button-action"
+						type="button"
+						onclick={() => command<ConfigCheck>(checkConfig, output, showCheck)}
+					>
+						{_("Check")}
+					</button>
+					<button
+						class="cbi-button cbi-button-action"
+						type="button"
+						disabled={!L.hasViewPermission()}
+						onclick={() =>
+							command<ConfigCheck>(
+								async () => {
+									await reloadConfig();
+									return await checkConfig();
+								},
+								output,
+								showCheck,
+							)
+						}
+					>
+						{_("Reload")}
+					</button>
+					<button
+						class="cbi-button cbi-button-negative"
+						type="button"
+						disabled={!L.hasViewPermission()}
+						onclick={() => command(restartService, output)}
+					>
+						{_("Restart")}
+					</button>
+				</div>
 				{output}
 			</div>
 		);
-		section.tab("diagnostics", _("Configuration diagnostics"));
-		const diagnostics = section.taboption("diagnostics", form.DummyValue, "_diagnostics", "");
-		diagnostics.render = () => Promise.resolve(actions);
-		return map.render();
+		const renderedMap = await map.render();
+		return (
+			<div>
+				<h2 style="margin-bottom:16px">{_("FTTR configuration")}</h2>
+				{actions}
+				{renderedMap}
+			</div>
+		);
 	},
 });
 

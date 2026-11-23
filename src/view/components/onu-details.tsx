@@ -589,7 +589,9 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		</>
 	) as HTMLElement;
 
-	const active = (): boolean => !closed && dialogRoot.isConnected && dialogRoot.getClientRects().length > 0;
+	// showModal consumes the JSX fragment; its header remains attached until the
+	// modal is replaced or closed, even when the MIB tab itself is hidden.
+	const active = (): boolean => !closed && header.isConnected && header.getClientRects().length > 0;
 
 	async function run(withTables: boolean): Promise<void> {
 		if (busy) return;
