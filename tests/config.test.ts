@@ -8,6 +8,7 @@ import { saveConfiguration } from "../src/view/config/save";
 import { formatIssues, validateConfig, validateServiceList } from "../src/view/config/validation";
 
 let data: ConfigSnapshot;
+let fiberhomeCount: string | undefined;
 const row = (id: string, values: Record<string, unknown> = {}): ConfigRow => ({ ".name": id, ...values });
 const find = (id: string): ConfigRow | undefined =>
 	Object.values(data)
@@ -19,7 +20,8 @@ Object.assign(globalThis, {
 	L: {
 		uci: {
 			sections: (_config: string, kind: keyof ConfigSnapshot) => data[kind],
-			get: (_config: string, id: string, field: string) => find(id)?.[field],
+			get: (_config: string, id: string, field: string) =>
+				id === "fiberhome" && field === "onu_count" ? fiberhomeCount : find(id)?.[field],
 			set: (_config: string, id: string, field: string, value: unknown) => {
 				find(id)![field] = value;
 			},
@@ -35,6 +37,7 @@ Object.assign(globalThis, {
 });
 
 beforeEach(() => {
+	fiberhomeCount = undefined;
 	data = {
 		template: [row("t1", { name: "Home" }), row("t2", { name: "Guest" })],
 		wifi: [
@@ -222,21 +225,35 @@ function mapAdapter(parse: () => void = () => {}) {
 	};
 }
 const asMap = (map: ReturnType<typeof mapAdapter>) => map as unknown as Parameters<typeof saveConfiguration>[0];
+const platform = { platform_id: "other" } as Parameters<typeof saveConfiguration>[1];
 
 test("page save validates the parsed result before transport", async () => {
 	data.network[0].service_list = [];
 	const map = mapAdapter(() => {
 		data.network[0].service_list = ["INTERNET"];
 	});
-	await saveConfiguration(asMap(map));
+	await saveConfiguration(asMap(map), platform);
 	assert.deepEqual(map.calls, ["parse", "transport"]);
+});
+
+test("AN4475 save rejects a pin outside the parsed count without exposing identity", async () => {
+	const an4475 = { platform_id: "fiberhome-an4475-g2" } as Parameters<typeof saveConfiguration>[1];
+	data.device[0].onu_id = "31";
+	data.device[0].optical_sn = "TESTREDACTED";
+	fiberhomeCount = "32";
+	const accepted = mapAdapter();
+	await saveConfiguration(asMap(accepted), an4475);
+	const rejected = mapAdapter(() => { fiberhomeCount = "31"; });
+	await assert.rejects(saveConfiguration(asMap(rejected), an4475), (error: Error) =>
+		/outside the configured count/.test(error.message) && !error.message.includes("TESTREDACTED"));
+	assert.deepEqual(rejected.calls, ["parse"]);
 });
 
 test("failed global validation stops transport; subsequent internal saves remain native", async () => {
 	data.network[0].service_list = [];
 	const map = mapAdapter();
 	const nativeSave = map.save;
-	await assert.rejects(saveConfiguration(asMap(map)), /n1.service_list/);
+	await assert.rejects(saveConfiguration(asMap(map), platform), /n1.service_list/);
 	assert.deepEqual(map.calls, ["parse"]);
 	assert.equal(map.save, nativeSave);
 	await map.save();
@@ -252,5 +269,5 @@ test("an unrelated invalid network does not prevent group removal", async () => 
 	await map.save();
 	assert.deepEqual(data.group, []);
 	assert.deepEqual(map.calls, ["parse", "transport"]);
-	await assert.rejects(saveConfiguration(asMap(map)), /n1.service_list/);
+	await assert.rejects(saveConfiguration(asMap(map), platform), /n1.service_list/);
 });

@@ -289,7 +289,7 @@ test("native row removal and native Map.save stay independent of global page val
 	headlessSave(map);
 	rows.get("n1")!.service_list = [];
 	const nativeSave = map.save;
-	await assert.rejects(saveConfiguration(map), /n1.service_list/);
+	await assert.rejects(saveConfiguration(map, { platform_id: "other" } as Parameters<typeof saveConfiguration>[1]), /n1.service_list/);
 	assert.equal(transports, 0);
 	assert.equal(map.save, nativeSave);
 	assert.equal(notifications.length, 1);
@@ -300,7 +300,7 @@ test("native row removal and native Map.save stay independent of global page val
 	map.parse = async () => {
 		rows.get("n1")!.service_list = ["INTERNET"];
 	};
-	await saveConfiguration(map);
+	await saveConfiguration(map, { platform_id: "other" } as Parameters<typeof saveConfiguration>[1]);
 	assert.equal(transports, 2);
 });
 

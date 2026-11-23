@@ -1,9 +1,38 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import type { PlatformInfoReply } from "../contracts/api";
 import { choice, field } from "./form";
 
-export function addBasic(section: LuCI.form.AbstractSection, tab: string, globalId: string): void {
+export function addBasic(
+	section: LuCI.form.AbstractSection,
+	tab: string,
+	globalId: string,
+	platform: PlatformInfoReply,
+): void {
 	section.tab("basic", tab);
+	if (platform.platform_id === "fiberhome-an4475-g2") {
+		const fiberhome = section.taboption(
+			"basic",
+			L.form.SectionValue,
+			"_fiberhome",
+			L.form.NamedSection,
+			"fiberhome",
+			"fiberhome",
+		).subsection;
+		fiberhome.addremove = false;
+		const count = field(fiberhome, L.form.Value, "onu_count", _("ONU interface count"), "range(1,128)");
+		count.default = "128";
+		count.rmempty = false;
+		count.description = _(
+			"Reserves ONU IDs 0 through count − 1. Restart FTTR to apply; this does not guarantee concurrent ONU capacity.",
+		);
+		const status = field(fiberhome, L.form.DummyValue, "_count_status", _("Saved / active count"));
+		status.cfgvalue = () => {
+			const saved = Number(L.uci.get("fttr", "fiberhome", "onu_count") || 128);
+			const active = platform.onus.length;
+			return `${saved} / ${active}${saved !== active ? ` · ${_("Pending restart")}` : ""}`;
+		};
+	}
 	const acs = section.taboption("basic", L.form.SectionValue, "_acs", L.form.NamedSection, "acs", "acs");
 	const a = acs.subsection;
 	a.addremove = false;

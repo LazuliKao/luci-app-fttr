@@ -212,7 +212,10 @@ export function addDevices(
 			_("Fixed interface"),
 			[
 				["", _("Automatic allocation")],
-				...platform.onus.map(({ onu_id, interface: ifname }): [string, string] => [
+				...(platform.platform_id === "fiberhome-an4475-g2"
+					? Array.from({ length: 128 }, (_, onu_id) => ({ onu_id, interface: `fttr${onu_id + 1}` }))
+					: platform.onus
+				).map(({ onu_id, interface: ifname }): [string, string] => [
 					String(onu_id),
 					ifname ? `${ifname} · ONU-ID ${onu_id}` : `ONU-ID ${onu_id}`,
 				]),
@@ -252,7 +255,12 @@ export function addDevices(
 		pin.validate = (id, value): boolean | string => {
 			if (!value) return true;
 			const selectedId = Number(value);
-			if (!Number.isInteger(selectedId) || !platformOnu(platform, selectedId))
+			if (
+				!Number.isInteger(selectedId) ||
+				(platform.platform_id === "fiberhome-an4475-g2"
+					? selectedId < 0 || selectedId >= 128
+					: !platformOnu(platform, selectedId))
+			)
 				return _("Select an ONU interface exposed by the selected platform.");
 			return L.uci.sections("fttr", "device").some((item) => {
 				if (item[".name"] === id) return false;

@@ -45,6 +45,10 @@ const main = view.extend({
 			throw new Error(_("This page is not supported by the installed FTTR build."));
 		}
 		await uci.load("fttr");
+		if (platform.platform_id === "fiberhome-an4475-g2" && !uci.sections("fttr", "fiberhome").length) {
+			uci.add("fttr", "fiberhome", "fiberhome");
+			uci.set("fttr", "fiberhome", "onu_count", "128");
+		}
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
 		if (!uci.sections("fttr", "omci_auth").length) {
@@ -71,7 +75,7 @@ const main = view.extend({
 		section.anonymous = false;
 
 		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
-		addBasic(section, _("Basic"), globalId);
+		addBasic(section, _("Basic"), globalId, initialCheck.platform);
 		addAuth(section);
 		addDevices(
 			section,
@@ -82,7 +86,7 @@ const main = view.extend({
 		);
 		addServices(section);
 		// The inherited Save & Apply handler calls this explicit page-save entry.
-		this.handleSave = () => saveConfiguration(map);
+		this.handleSave = () => saveConfiguration(map, initialCheck.platform);
 
 		const output = <pre style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite" />;
 		let checkNotification: Node | null = null;
