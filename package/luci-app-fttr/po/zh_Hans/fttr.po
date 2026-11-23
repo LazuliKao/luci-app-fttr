@@ -513,9 +513,6 @@ msgstr "载波断开"
 msgid "Carrier up"
 msgstr "载波连接"
 
-msgid "CDR lock"
-msgstr "CDR 锁定状态"
-
 msgid "Center selected device"
 msgstr "居中选中设备"
 

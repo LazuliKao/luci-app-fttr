@@ -183,7 +183,6 @@ test("generated nested contracts reject drift and preserve unknown measurements 
 		laser_bias_current_ma: null,
 		temperature_celsius: null,
 		vcc_voltage: null,
-		cdr_locked: null,
 		measurements: {},
 		calibration_applied: false,
 	};

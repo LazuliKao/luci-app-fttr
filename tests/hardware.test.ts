@@ -41,7 +41,6 @@ test("controller identity and optical PHY survive unsupported advanced diagnosti
 			phy_rate_downlink_gbps: 2.4879999160766602,
 			phy_rate_uplink_gbps: 1.2439999580383301,
 			calibration_applied: true,
-			cdr_locked: null,
 		},
 	} as StatusReply;
 	const content = (createControllerPanel(status, platform) as unknown as TestNode).textContent;
@@ -55,8 +54,11 @@ test("controller identity and optical PHY survive unsupported advanced diagnosti
 	status.optical_transceiver.temperature_celsius = 47.0859375;
 	status.optical_transceiver.vcc_voltage = 3.2112998962402344;
 	status.optical_transceiver.laser_bias_current_ma = 24.211999893188477;
+	status.optical_transceiver.tx_power_dbm = 1.2345;
 	const live = (createControllerPanel(status, platform) as unknown as TestNode).textContent;
 	assert.match(live, /47\.09 °C/);
 	assert.match(live, /3\.2113 V/);
 	assert.match(live, /24\.212 mA/);
+	assert.match(live, /1\.234 dBm/);
+	assert.doesNotMatch(live, /CDR lock/);
 });

@@ -513,9 +513,6 @@ msgstr ""
 msgid "Carrier up"
 msgstr ""
 
-msgid "CDR lock"
-msgstr ""
-
 msgid "Center selected device"
 msgstr ""
 

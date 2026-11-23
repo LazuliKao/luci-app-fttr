@@ -40,15 +40,6 @@ function renderStateBadge(stateVal?: string): HTMLElement {
 	);
 }
 
-function renderCdrBadge(locked: boolean | null): HTMLElement {
-	if (locked === null) return <span class="fttr-badge fttr-badge-neutral">{_("Unknown")}</span>;
-	return locked ? (
-		<span class="fttr-badge fttr-badge-success">{_("Locked")}</span>
-	) : (
-		<span class="fttr-badge fttr-badge-warning">{_("Unlocked")}</span>
-	);
-}
-
 export function createControllerPanel(status: FttrHardwareStatus, platform: PlatformInfoReply): HTMLElement {
 	const optical = status.optical_transceiver;
 	const mac = status.pon_mac;
@@ -111,10 +102,6 @@ export function createControllerPanel(status: FttrHardwareStatus, platform: Plat
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("RX wavelength")}</span>
 					<span>{optical.wavelength_rx_nm ? `${optical.wavelength_rx_nm} nm` : "—"}</span>
-				</div>
-				<div class="fttr-kv-row">
-					<span class="fttr-kv-label">{_("CDR lock")}</span>
-					<span>{renderCdrBadge(optical.cdr_locked)}</span>
 				</div>
 				<div class="fttr-kv-row">
 					<span class="fttr-kv-label">{_("Calibration")}</span>

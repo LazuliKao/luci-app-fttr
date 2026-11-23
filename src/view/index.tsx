@@ -10,7 +10,14 @@ import {
 	updateBadge,
 } from "./components/badge";
 import badgeCss from "./components/badge.css?inline";
-import { formatBytes, formatFirmware, formatLinkSpeed, formatPackets, text } from "./components/formatters";
+import {
+	formatBytes,
+	formatFirmware,
+	formatLinkSpeed,
+	formatPackets,
+	formatPower,
+	text,
+} from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
 import { confirmOnuPin } from "./components/onu-pin";
 import { createOpticalControl } from "./components/optical-control";
@@ -479,7 +486,10 @@ function createStatusView(
 
 	const fpgaNode = <span class="fttr-badge" />;
 	const opticalNode = <span>{text(initialOptical.model)}</span>;
-	const cdrNode = <span class="fttr-badge" />;
+	const temperatureNode = <span />;
+	const voltageNode = <span />;
+	const biasNode = <span />;
+	const txPowerNode = <span />;
 	const pinningNode = <p role="status" />;
 	const staleNotice = (
 		<p class="alert-message warning" role="status" hidden>
@@ -506,12 +516,20 @@ function createStatusView(
 						<tr>
 							<th style="width:15%">{_("Controller status")}</th>
 							<td style="width:35%">{fpgaNode}</td>
-							<th style="width:15%">{_("CDR lock")}</th>
-							<td style="width:35%">{cdrNode}</td>
+							<th style="width:15%">{_("Optical module")}</th>
+							<td style="width:35%">{opticalNode}</td>
 						</tr>
 						<tr>
-							<th>{_("Optical module")}</th>
-							<td colSpan={3}>{opticalNode}</td>
+							<th>{_("Temperature")}</th>
+							<td>{temperatureNode}</td>
+							<th>{_("Voltage")}</th>
+							<td>{voltageNode}</td>
+						</tr>
+						<tr>
+							<th>{_("Bias current")}</th>
+							<td>{biasNode}</td>
+							<th>{_("TX power")}</th>
+							<td>{txPowerNode}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -573,13 +591,12 @@ function createStatusView(
 
 		opticalNode.textContent = text(optical.model);
 
-		if (optical.cdr_locked == null) {
-			updateBadge(cdrNode, "none", _("Unknown"));
-		} else if (optical.cdr_locked) {
-			updateBadge(cdrNode, "success", _("Locked"));
-		} else {
-			updateBadge(cdrNode, "warning", _("Unlocked"));
-		}
+		temperatureNode.textContent =
+			optical.temperature_celsius == null ? "—" : `${optical.temperature_celsius.toFixed(2)} °C`;
+		voltageNode.textContent = optical.vcc_voltage == null ? "—" : `${optical.vcc_voltage.toFixed(4)} V`;
+		biasNode.textContent =
+			optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma.toFixed(3)} mA`;
+		txPowerNode.textContent = formatPower(optical.tx_power_dbm);
 
 		onuTable.update(status.sub_gateways ?? [], status.onu_pinning, status.switch_ports ?? []);
 		const currentPorts = new Set<number>();
