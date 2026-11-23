@@ -14,6 +14,7 @@ import {
 } from "../contracts/mib";
 import type { SubGateway as OnuDetails } from "../contracts/status";
 import tokensCss from "../styles/tokens.css?inline";
+import { withTimeout } from "../timeout";
 import { BusinessBadge, CwmpBadge, ProvisioningBadge, RegistrationBadge, WifiSyncBadge } from "./badge";
 import badgeCss from "./badge.css?inline";
 import { formatPower, formatUptime, text } from "./formatters";
@@ -599,12 +600,18 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		(progressBar.firstElementChild as HTMLElement).style.width = "0%";
 		statusContainer.textContent = _("Reading MIB…");
 		try {
-			const status = await getStatus();
+			const timeoutMessage = _("MIB request timed out; check the FTTR service and retry.");
+			const status = await withTimeout(getStatus(), 15000, timeoutMessage);
 			const current = status.sub_gateways?.find((o) => o.serial_number === initial.serial_number);
 			if (current?.state !== "o5_operation")
 				throw new Error(_("Device is offline; reopen details after registration."));
 			if (!active()) return;
-			const started = await startMib(current.onu_id, current.serial_number, withTables);
+			const started = await withTimeout(
+				startMib(current.onu_id, current.serial_number, withTables),
+				15000,
+				timeoutMessage,
+				(late) => releaseMib(late.job).then(() => {}),
+			);
 			job = started.job;
 			let deadline = Date.now() + 140000;
 			while (active()) {
@@ -616,7 +623,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					deadline += Date.now() - hiddenAt;
 					if (!active()) return;
 				}
-				const result = await getMib(started.job, 0);
+				const result = await withTimeout(getMib(started.job, 0), 15000, timeoutMessage);
 				if (!active()) return;
 				if (result.status === "ready") {
 					if (
@@ -631,7 +638,8 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 					const buffer = new Uint8Array(result.bytes);
 					let offset = 0;
 					for (let chunk = 0; chunk < result.chunks; chunk++) {
-						const part = chunk === 0 ? result : await getMib(started.job, chunk);
+						const part =
+							chunk === 0 ? result : await withTimeout(getMib(started.job, chunk), 15000, timeoutMessage);
 						if (!active()) return;
 						if (
 							part.status !== "ready" ||
@@ -714,7 +722,7 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 		const completedJob = job;
 		job = null;
 		try {
-			await releaseMib(completedJob);
+			await withTimeout(releaseMib(completedJob), 15000, _("MIB release timed out"));
 		} catch (error) {
 			console.warn("Failed to release MIB snapshot", error);
 		}
