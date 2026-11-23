@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-21 00:42+0800\n"
+"POT-Creation-Date: 2026-11-23 19:06+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -124,6 +124,9 @@ msgstr "附带补充遥测且温度补偿禁用的 56 字节仅寄存器文件�
 
 msgid "A default route does not prove Internet reachability."
 msgstr "默认路由并不能证明互联网可达性。"
+
+msgid "A fixed ONU interface is outside the configured count."
+msgstr "固定 ONU 接口超出配置数量。"
 
 msgid "A full UX3326 BOSA calibration file must be exactly"
 msgstr "完整的 UX3326 BOSA 校准文件必须恰好"
@@ -268,7 +271,7 @@ msgid "Apply selected calibration"
 msgstr "应用选定校准"
 
 msgid "Applying…"
-msgstr ""
+msgstr "应用中…"
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
 msgstr "确定要重置 %s 的同步状态吗？"
@@ -583,9 +586,6 @@ msgstr "配置发生变更"
 msgid "Configuration delivery started for %s. Operation IDs: %s"
 msgstr "配置下发已为 %s 启动。操作 ID：%s"
 
-msgid "Configuration diagnostics"
-msgstr "配置诊断"
-
 msgid "Configuration editor is unavailable."
 msgstr "无法打开此配置的编辑器。"
 
@@ -864,6 +864,12 @@ msgstr "DHCP 起始偏移"
 msgid "Diagnostic measurement channel"
 msgstr "诊断测量通道"
 
+msgid "Direction admission"
+msgstr "方向准入"
+
+msgid "Direction admission mask"
+msgstr "方向准入掩码"
+
 msgid "Directional offload modes"
 msgstr "流向加速模式"
 
@@ -956,6 +962,9 @@ msgstr "有效数据大小：%s 字节"
 
 msgid "Effective SHA-256"
 msgstr "有效 SHA-256"
+
+msgid "Eligible ports"
+msgstr "可用端口"
 
 msgid "Enable"
 msgstr "启用"
@@ -1418,7 +1427,7 @@ msgid "Interval (ms)"
 msgstr "间隔（毫秒）"
 
 msgid "Invalid"
-msgstr ""
+msgstr "无效"
 
 msgid "Invalid MIB snapshot"
 msgstr "无效的 MIB 快照"
@@ -1563,9 +1572,6 @@ msgstr "本地 ACS 监听服务"
 msgid "Local interfaces"
 msgstr "本地接口"
 
-msgid "Locked"
-msgstr "已锁定"
-
 msgid ""
 "Logical interface, not a physical splitter port. Counters do not prove "
 "current end-to-end connectivity."
@@ -1694,6 +1700,12 @@ msgstr "方法"
 
 msgid "MIB query timed out; retry."
 msgstr "MIB 查询超时；请重试。"
+
+msgid "MIB release timed out"
+msgstr "MIB 释放超时"
+
+msgid "MIB request timed out; check the FTTR service and retry."
+msgstr "MIB 请求超时；请检查 FTTR 服务并重试。"
 
 msgid "MIB snapshot cannot be serialized"
 msgstr "MIB 快照无法序列化"
@@ -1926,7 +1938,7 @@ msgid "Note: Register"
 msgstr "注意：寄存器"
 
 msgid "NPU"
-msgstr ""
+msgstr "NPU"
 
 msgid "NPU configuration"
 msgstr "NPU 配置"
@@ -2036,6 +2048,9 @@ msgstr "ONU FEC监测详情"
 msgid "ONU ID"
 msgstr "ONU ID"
 
+msgid "ONU interface count"
+msgstr "ONU 接口数量"
+
 msgid "ONU optical diagnostics"
 msgstr "子网关光路诊断"
 
@@ -2053,9 +2068,6 @@ msgstr "子猫实际上报的密码"
 
 msgid "Open optical status and ONU/MIB details"
 msgstr "打开光路状态与 ONU/MIB 详情"
-
-msgid "Open Synchronization"
-msgstr "打开同步页面"
 
 msgid ""
 "Open-source Fiber-To-The-Room (FTTR) solution for OpenWrt, providing unified "
@@ -2228,6 +2240,9 @@ msgstr "端口状态"
 msgid "Ports"
 msgstr "端口"
 
+msgid "PPE debug logging"
+msgstr "PPE 调试日志"
+
 msgid "PPE flow snapshot"
 msgstr "PPE 流表快照"
 
@@ -2266,9 +2281,6 @@ msgstr "配置详情"
 
 msgid "Provisioning is disabled"
 msgstr "配置下发已禁用"
-
-msgid "Provisioning status unavailable"
-msgstr "配置下发状态不可用"
 
 msgid "Quick diagnostic commands"
 msgstr "快捷诊断命令"
@@ -2486,6 +2498,11 @@ msgid "Reserved (offline)"
 msgstr "已预留（离线）"
 
 msgid ""
+"Reserves ONU IDs 0 through count − 1. Restart FTTR to apply; this does not "
+"guarantee concurrent ONU capacity."
+msgstr "保留 ONU ID 从 0 到 count − 1。重启 FTTR 以应用；这不保证并发 ONU 容量。"
+
+msgid ""
 "Reserves this interface by optical serial number, even while offline. "
 "Changes take effect after restarting FTTR; Reload does not move registered "
 "devices."
@@ -2570,6 +2587,9 @@ msgstr "保存源选择"
 msgid "Saved"
 msgstr "已保存"
 
+msgid "Saved / active count"
+msgstr "已保存/活动数量"
+
 msgid "Saved configuration"
 msgstr "已保存配置"
 
@@ -2587,12 +2607,6 @@ msgstr "已保存，正在应用硬件配置"
 
 msgid "Saved; waiting to load automatically"
 msgstr "已保存，等待自动加载"
-
-msgid ""
-"Saving configuration does not synchronize devices in Manual mode. After Save "
-"& Apply, open Synchronization and choose Apply differences. Preview "
-"differences is read-only."
-msgstr "在手动模式下保存配置不会同步至设备。在“保存并应用”后，请打开“同步”页面并选择“应用差异变更”。“预览差异变更”为只读操作。"
 
 msgid ""
 "Saving does not switch the source or apply hardware. Select Firmware "
@@ -3156,9 +3170,6 @@ msgstr "未知类型 (Class)"
 msgid "Unknown model"
 msgstr "未知型号"
 
-msgid "Unlocked"
-msgstr "未锁定"
-
 msgid "Unpin"
 msgstr "取消固定"
 
@@ -3254,7 +3265,7 @@ msgid ""
 msgstr "UX3326S1 使用本机原始出厂校准表，不适用 HM2004 的系数编辑、校准文件上传和来源选择。"
 
 msgid "Valid"
-msgstr ""
+msgstr "有效"
 
 msgid "Value"
 msgstr "数值"

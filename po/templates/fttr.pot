@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-21 00:42+0800\n"
+"POT-Creation-Date: 2026-11-23 19:05+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -123,6 +123,9 @@ msgid ""
 msgstr ""
 
 msgid "A default route does not prove Internet reachability."
+msgstr ""
+
+msgid "A fixed ONU interface is outside the configured count."
 msgstr ""
 
 msgid "A full UX3326 BOSA calibration file must be exactly"
@@ -583,9 +586,6 @@ msgstr ""
 msgid "Configuration delivery started for %s. Operation IDs: %s"
 msgstr ""
 
-msgid "Configuration diagnostics"
-msgstr ""
-
 msgid "Configuration editor is unavailable."
 msgstr ""
 
@@ -864,6 +864,12 @@ msgstr ""
 msgid "Diagnostic measurement channel"
 msgstr ""
 
+msgid "Direction admission"
+msgstr ""
+
+msgid "Direction admission mask"
+msgstr ""
+
 msgid "Directional offload modes"
 msgstr ""
 
@@ -955,6 +961,9 @@ msgid "Effective data size: %s bytes"
 msgstr ""
 
 msgid "Effective SHA-256"
+msgstr ""
+
+msgid "Eligible ports"
 msgstr ""
 
 msgid "Enable"
@@ -1558,9 +1567,6 @@ msgstr ""
 msgid "Local interfaces"
 msgstr ""
 
-msgid "Locked"
-msgstr ""
-
 msgid ""
 "Logical interface, not a physical splitter port. Counters do not prove "
 "current end-to-end connectivity."
@@ -1688,6 +1694,12 @@ msgid "Method"
 msgstr ""
 
 msgid "MIB query timed out; retry."
+msgstr ""
+
+msgid "MIB release timed out"
+msgstr ""
+
+msgid "MIB request timed out; check the FTTR service and retry."
 msgstr ""
 
 msgid "MIB snapshot cannot be serialized"
@@ -2031,6 +2043,9 @@ msgstr ""
 msgid "ONU ID"
 msgstr ""
 
+msgid "ONU interface count"
+msgstr ""
+
 msgid "ONU optical diagnostics"
 msgstr ""
 
@@ -2047,9 +2062,6 @@ msgid "ONU-reported password"
 msgstr ""
 
 msgid "Open optical status and ONU/MIB details"
-msgstr ""
-
-msgid "Open Synchronization"
 msgstr ""
 
 msgid ""
@@ -2221,6 +2233,9 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
+msgid "PPE debug logging"
+msgstr ""
+
 msgid "PPE flow snapshot"
 msgstr ""
 
@@ -2258,9 +2273,6 @@ msgid "Provisioning details"
 msgstr ""
 
 msgid "Provisioning is disabled"
-msgstr ""
-
-msgid "Provisioning status unavailable"
 msgstr ""
 
 msgid "Quick diagnostic commands"
@@ -2479,6 +2491,11 @@ msgid "Reserved (offline)"
 msgstr ""
 
 msgid ""
+"Reserves ONU IDs 0 through count − 1. Restart FTTR to apply; this does not "
+"guarantee concurrent ONU capacity."
+msgstr ""
+
+msgid ""
 "Reserves this interface by optical serial number, even while offline. "
 "Changes take effect after restarting FTTR; Reload does not move registered "
 "devices."
@@ -2563,6 +2580,9 @@ msgstr ""
 msgid "Saved"
 msgstr ""
 
+msgid "Saved / active count"
+msgstr ""
+
 msgid "Saved configuration"
 msgstr ""
 
@@ -2579,12 +2599,6 @@ msgid "Saved; applying hardware configuration"
 msgstr ""
 
 msgid "Saved; waiting to load automatically"
-msgstr ""
-
-msgid ""
-"Saving configuration does not synchronize devices in Manual mode. After Save "
-"& Apply, open Synchronization and choose Apply differences. Preview "
-"differences is read-only."
 msgstr ""
 
 msgid ""
@@ -3145,9 +3159,6 @@ msgid "Unknown class"
 msgstr ""
 
 msgid "Unknown model"
-msgstr ""
-
-msgid "Unlocked"
 msgstr ""
 
 msgid "Unpin"
