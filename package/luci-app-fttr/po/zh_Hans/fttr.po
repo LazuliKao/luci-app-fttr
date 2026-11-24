@@ -14,6 +14,12 @@ msgstr ""
 msgid "—"
 msgstr "—"
 
+msgid "FSL RX register snapshots"
+msgstr "FSL 接收寄存器快照"
+
+msgid "Off by default. Logs up to three RX register snapshots at 30-second intervals after restart. Restart FTTR to apply changes."
+msgstr "默认关闭。重启后每隔 30 秒记录一次接收寄存器快照，最多三次。修改后须重启 FTTR 才能生效。"
+
 msgid "(different from historical sample)"
 msgstr "(与历史样本不同)"
 

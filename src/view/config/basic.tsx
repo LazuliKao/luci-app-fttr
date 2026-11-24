@@ -28,6 +28,12 @@ export function addBasic(
 		count.description = _(
 			"Reserves ONU IDs 0 through count − 1. Restart FTTR to apply; this does not guarantee concurrent ONU capacity.",
 		);
+		const snapshot = field(fiberhome, L.form.Flag, "rx_snapshot", _("FSL RX register snapshots"));
+		snapshot.default = "0";
+		snapshot.rmempty = false;
+		snapshot.description = _(
+			"Off by default. Logs up to three RX register snapshots at 30-second intervals after restart. Restart FTTR to apply changes.",
+		);
 		const status = field(fiberhome, L.form.DummyValue, "_count_status", _("Saved / active count"));
 		status.cfgvalue = () => {
 			const saved = Number(L.uci.get("fttr", "fiberhome", "onu_count") || 128);
