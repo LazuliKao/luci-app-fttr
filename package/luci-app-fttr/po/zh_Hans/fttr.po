@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 13:42+0800\n"
+"POT-Creation-Date: 2026-11-24 17:31+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -553,7 +553,7 @@ msgid "Chip discriminator"
 msgstr "芯片标识码"
 
 msgid "Cleanup failed"
-msgstr ""
+msgstr "清理失败"
 
 msgid "Clear backoff delays and retry safe difference synchronization"
 msgstr "清除退避延迟并重试安全的差异同步"
