@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 17:31+0800\n"
+"POT-Creation-Date: 2026-11-24 19:12+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -549,6 +549,9 @@ msgstr ""
 msgid "Check management differences (read-only)"
 msgstr ""
 
+msgid "Checking"
+msgstr ""
+
 msgid "Chip discriminator"
 msgstr ""
 
@@ -835,6 +838,9 @@ msgid "Deleted"
 msgstr ""
 
 msgid "Deleting an unused template also deletes its SSIDs and networks."
+msgstr ""
+
+msgid "Denied"
 msgstr ""
 
 msgid "Desired version"
@@ -1291,6 +1297,9 @@ msgid "GitHub"
 msgstr ""
 
 msgid "GitHub Repositories"
+msgstr ""
+
+msgid "Global"
 msgstr ""
 
 msgid "Global counters (32-bit)"
@@ -2824,6 +2833,9 @@ msgid "Simulated telemetry readings"
 msgstr ""
 
 msgid "Size:"
+msgstr ""
+
+msgid "Skipped"
 msgstr ""
 
 msgid "Snapshot"
