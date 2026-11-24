@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 10:13+0800\n"
+"POT-Creation-Date: 2026-11-24 13:42+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -13,12 +13,6 @@ msgstr ""
 
 msgid "—"
 msgstr "—"
-
-msgid "FSL RX register snapshots"
-msgstr "FSL 接收寄存器快照"
-
-msgid "Off by default. Logs up to three RX register snapshots at 30-second intervals after restart. Restart FTTR to apply changes."
-msgstr "默认关闭。重启后每隔 30 秒记录一次接收寄存器快照，最多三次。修改后须重启 FTTR 才能生效。"
 
 msgid "(different from historical sample)"
 msgstr "(与历史样本不同)"
@@ -428,6 +422,9 @@ msgid ""
 "Wi-Fi attachment."
 msgstr "桥接学习显示该网关后方的设备，而非直接的以太网或 Wi-Fi 连接。"
 
+msgid "Bridge MAC"
+msgstr "网桥 MAC"
+
 msgid "Bridge members"
 msgstr "桥接成员"
 
@@ -577,6 +574,9 @@ msgstr "点击复制完整 SHA-256"
 
 msgid "Click to select or drag a %s file here"
 msgstr "点击选择或将 %s 文件拖放到此处"
+
+msgid "Client"
+msgstr "客户端"
 
 msgid "Client IPv4"
 msgstr "客户端 IPv4"
@@ -1241,6 +1241,9 @@ msgstr "来自 ONU（控制器接收）"
 msgid "Frontend"
 msgstr "前端"
 
+msgid "FSL RX register snapshots"
+msgstr "FSL 接收寄存器快照"
+
 msgid "FTTR"
 msgstr "FTTR"
 
@@ -1870,6 +1873,9 @@ msgstr "下次重试"
 msgid "Next self-healing retry in %d seconds"
 msgstr "%d 秒后进行下次自愈重试"
 
+msgid "nftables redirect rules"
+msgstr "nftables 重定向规则"
+
 msgid "No"
 msgstr "否"
 
@@ -2066,9 +2072,13 @@ msgid ""
 "MQTT (TCP 1883) connections to this controller's embedded broker without "
 "altering NAT-mode ONUs or downstream clients."
 msgstr ""
-"默认关闭。在主路由 LAN 通过上游 DHCP 获取 IPv4 的纯桥接模式下，仅对已验证的 "
-"HL202 子猫定向重定向其上行 MQTT（TCP 1883）连接到本控制器内置 Broker，不"
-"影响 NAT 模式 ONU 或普通下挂终端。"
+"默认关闭。在主路由 LAN 通过上游 DHCP 获取 IPv4 的纯桥接模式下，仅对已验证的 HL202 子猫定向重定向其上行 MQTT（TCP "
+"1883）连接到本控制器内置 Broker，不影响 NAT 模式 ONU 或普通下挂终端。"
+
+msgid ""
+"Off by default. Logs up to three RX register snapshots at 30-second "
+"intervals after restart. Restart FTTR to apply changes."
+msgstr "默认关闭。重启后每隔 30 秒记录一次接收寄存器快照，最多三次。修改后须重启 FTTR 才能生效。"
 
 msgid "Offline"
 msgstr "离线"
@@ -2487,6 +2497,9 @@ msgstr "恢复中"
 
 msgid "Redirect installed"
 msgstr "已安装重定向"
+
+msgid "Redirect target"
+msgstr "重定向目标"
 
 msgid "Refresh"
 msgstr "刷新"
