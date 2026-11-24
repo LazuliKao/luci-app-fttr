@@ -279,6 +279,131 @@ function mqttBridgeDeviceCard(bridge: DeviceSync["mqtt_bridge"]): HTMLElement | 
 	);
 }
 
+function mqttBridgeGlobalCard(
+	mb: NonNullable<SyncStatus["mqtt_bridge"]>,
+	devices: DeviceSync[],
+	rawRulesOpen = false,
+): HTMLElement {
+	const rules = mb.rules ?? [];
+	const deviceNameFor = (rule: (typeof rules)[number]): string => {
+		const matched = devices.find(
+			(d) => (rule.device && d.device === rule.device) || (rule.optical_sn && d.optical_sn === rule.optical_sn),
+		);
+		return matched?.name || rule.device || rule.optical_sn || "—";
+	};
+	return (
+		<div>
+			<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+				<span>
+					<span class="fttr-pill-label">{_("Switch")}:</span>{" "}
+					<span class={`fttr-badge ${mb.enabled ? "fttr-badge-success" : "fttr-badge-neutral"}`}>
+						{mb.enabled ? _("Enabled") : _("Disabled")}
+					</span>
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("State")}:</span> {renderStateBadge(mb.state)}
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("LAN origin")}:</span>{" "}
+					<span>{renderOriginLabel(mb.lan_origin)}</span>
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("Active rules")}:</span> <strong>{mb.active_rules}</strong>
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("Broker")}:</span> <code>{text(mb.broker_listen)}</code>
+				</span>
+				{mb.upstream_gateway ? (
+					<span>
+						<span class="fttr-pill-label">{_("Upstream gateway")}:</span> <code>{mb.upstream_gateway}</code>
+					</span>
+				) : null}
+			</div>
+			{mb.error ? (
+				<div class="alert-message danger" style="margin-top:6px;overflow-wrap:anywhere">
+					{mb.error}
+				</div>
+			) : mb.reason ? (
+				<div style="font-size:85%;color:#666;overflow-wrap:anywhere">{mb.reason}</div>
+			) : null}
+			{rules.length ? (
+				<div style="margin-top:10px">
+					<div class="table-wrapper">
+						<table class="table" style="font-size:85%">
+							<thead>
+								<tr>
+									<th>{_("Device")}</th>
+									<th>{_("Optical port")}</th>
+									<th>{_("Client")}</th>
+									<th>{_("Redirect target")}</th>
+									<th>{_("State")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{rules.map((rule) => {
+									const name = deviceNameFor(rule);
+									return (
+										<tr>
+											<td>
+												<strong>{name}</strong>
+												{rule.optical_sn && rule.optical_sn !== name ? (
+													<div style="font-size:85%;color:#888">
+														<code>{rule.optical_sn}</code>
+													</div>
+												) : null}
+											</td>
+											<td>
+												<code>{rule.interface}</code>
+											</td>
+											<td>
+												<div>
+													<code>{rule.client_ip}</code>
+												</div>
+												<div style="font-size:85%;color:#888">
+													<code>{rule.client_mac}</code>
+												</div>
+											</td>
+											<td>
+												<div>
+													<code>{`${rule.target_gw}:1883 -> ${rule.broker_ip}:1883`}</code>
+												</div>
+												<div style="font-size:85%;color:#888">
+													<span>{_("Bridge MAC")}: </span>
+													<code>{rule.bridge_mac}</code>
+												</div>
+											</td>
+											<td>
+												<div>{renderStateBadge(rule.state ?? undefined)}</div>
+												{rule.binding_source || rule.evidence_source ? (
+													<div style="font-size:85%;color:#888;margin-top:2px">
+														<code>
+															{[rule.binding_source, rule.evidence_source]
+																.filter(Boolean)
+																.join(" / ")}
+														</code>
+													</div>
+												) : null}
+											</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+					</div>
+					<details open={rawRulesOpen} style="margin-top:8px">
+						<summary style="cursor:pointer;user-select:none;font-size:85%;color:#666">
+							{_("nftables redirect rules")}
+						</summary>
+						<pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:80%;max-height:220px;overflow-y:auto;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;margin-top:6px">
+							{`table bridge fttr_mqtt_redirect\n${rules.map((r) => `  ${r.bridge_rule}`).join("\n")}\n\ntable ip fttr_mqtt_redirect\n${rules.map((r) => `  ${r.ip_rule}`).join("\n")}`}
+						</pre>
+					</details>
+				</div>
+			) : null}
+		</div>
+	);
+}
+
 function bootstrapCard(
 	bootstrap: AcsBootstrap | undefined,
 	applyManagement: () => Promise<void>,
@@ -1054,46 +1179,8 @@ const main = L.view.extend({
 			const mb = status.mqtt_bridge;
 			mqttBridgePanel.hidden = !mb;
 			if (mb) {
-				mqttBridgeContent.replaceChildren(
-					<div>
-						<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-							<span>
-								<span class="fttr-pill-label">{_("Switch")}:</span>{" "}
-								<span class={`fttr-badge ${mb.enabled ? "fttr-badge-success" : "fttr-badge-neutral"}`}>
-									{mb.enabled ? _("Enabled") : _("Disabled")}
-								</span>
-							</span>
-							<span>
-								<span class="fttr-pill-label">{_("State")}:</span> {renderStateBadge(mb.state)}
-							</span>
-							<span>
-								<span class="fttr-pill-label">{_("LAN origin")}:</span>{" "}
-								<span>{renderOriginLabel(mb.lan_origin)}</span>
-							</span>
-							<span>
-								<span class="fttr-pill-label">{_("Active rules")}:</span>{" "}
-								<strong>{mb.active_rules}</strong>
-							</span>
-							<span>
-								<span class="fttr-pill-label">{_("Broker")}:</span>{" "}
-								<code>{text(mb.broker_listen)}</code>
-							</span>
-							{mb.upstream_gateway ? (
-								<span>
-									<span class="fttr-pill-label">{_("Upstream gateway")}:</span>{" "}
-									<code>{mb.upstream_gateway}</code>
-								</span>
-							) : null}
-						</div>
-						{mb.error ? (
-							<div class="alert-message danger" style="margin-top:6px;overflow-wrap:anywhere">
-								{mb.error}
-							</div>
-						) : mb.reason ? (
-							<div style="font-size:85%;color:#666;overflow-wrap:anywhere">{mb.reason}</div>
-						) : null}
-					</div>,
-				);
+				const rawRulesOpen = Boolean(mqttBridgeContent.querySelector("details[open]"));
+				mqttBridgeContent.replaceChildren(mqttBridgeGlobalCard(mb, status.devices ?? [], rawRulesOpen));
 			}
 
 			const host = status.management_network;
@@ -1291,4 +1378,4 @@ const main = L.view.extend({
 	handleReset: null,
 });
 
-export { deviceCard, main };
+export { deviceCard, main, mqttBridgeGlobalCard };

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 10:13+0800\n"
+"POT-Creation-Date: 2026-11-24 13:42+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -422,6 +422,9 @@ msgid ""
 "Wi-Fi attachment."
 msgstr ""
 
+msgid "Bridge MAC"
+msgstr ""
+
 msgid "Bridge members"
 msgstr ""
 
@@ -570,6 +573,9 @@ msgid "Click to copy full SHA-256"
 msgstr ""
 
 msgid "Click to select or drag a %s file here"
+msgstr ""
+
+msgid "Client"
 msgstr ""
 
 msgid "Client IPv4"
@@ -1234,6 +1240,9 @@ msgstr ""
 msgid "Frontend"
 msgstr ""
 
+msgid "FSL RX register snapshots"
+msgstr ""
+
 msgid "FTTR"
 msgstr ""
 
@@ -1859,6 +1868,9 @@ msgstr ""
 msgid "Next self-healing retry in %d seconds"
 msgstr ""
 
+msgid "nftables redirect rules"
+msgstr ""
+
 msgid "No"
 msgstr ""
 
@@ -2054,6 +2066,11 @@ msgid ""
 "IPv4 via DHCP, selectively redirects verified HL202 sub-gateways' upstream "
 "MQTT (TCP 1883) connections to this controller's embedded broker without "
 "altering NAT-mode ONUs or downstream clients."
+msgstr ""
+
+msgid ""
+"Off by default. Logs up to three RX register snapshots at 30-second "
+"intervals after restart. Restart FTTR to apply changes."
 msgstr ""
 
 msgid "Offline"
@@ -2470,6 +2487,9 @@ msgid "Recovering"
 msgstr ""
 
 msgid "Redirect installed"
+msgstr ""
+
+msgid "Redirect target"
 msgstr ""
 
 msgid "Refresh"

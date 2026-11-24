@@ -196,3 +196,48 @@ test("bridge-mode MQTT access card distinguishes rule_installed from telemetry_v
 	assert.match(root.textContent, /Bridge-mode MQTT access.*Redirect installed.*Rule installed.*Telemetry unverified/);
 	assert.match(root.textContent, /Upstream DHCP \(Bridge\).*fttr127.*1c:94:68:5d:f9:98/);
 });
+
+test("global bridge-mode MQTT panel renders active redirect rules and nftables expressions", async () => {
+	const { mqttBridgeGlobalCard } = await import("../src/view/sync");
+	const card = mqttBridgeGlobalCard(
+		{
+			enabled: true,
+			state: "active",
+			lan_origin: "upstream",
+			broker_listen: "192.0.2.44:1883",
+			upstream_gateway: "192.0.2.1",
+			active_rules: 1,
+			rules: [
+				{
+					interface: "fttr127",
+					client_mac: "1c:94:68:5d:f9:98",
+					client_ip: "192.0.2.244",
+					target_gw: "192.0.2.1",
+					broker_ip: "192.0.2.44",
+					bridge_mac: "d4:a0:29:03:20:94",
+					device: "onu_1",
+					optical_sn: "H3CT1234ABCD",
+					state: "verified",
+					binding_source: "verified_report",
+					evidence_source: "dhcp_ack",
+					bridge_rule:
+						'iifname "fttr127" ether saddr 1c:94:68:5d:f9:98 ip saddr 192.0.2.244 ip daddr 192.0.2.1 tcp dport 1883 meta pkttype set host ether daddr set d4:a0:29:03:20:94 counter',
+					ip_rule: "ip saddr 192.0.2.244 ip daddr 192.0.2.1 tcp dport 1883 counter dnat to 192.0.2.44:1883",
+				},
+			],
+		},
+		[
+			{
+				device: "onu_1",
+				name: "Living Room HL202",
+				optical_sn: "H3CT1234ABCD",
+			} as DeviceSync,
+		],
+	) as unknown as TestNode;
+
+	assert.match(card.textContent, /Active rules\s*:.*1/);
+	assert.match(card.textContent, /Living Room HL202.*H3CT1234ABCD.*fttr127/);
+	assert.match(card.textContent, /192\.0\.2\.244.*1c:94:68:5d:f9:98/);
+	assert.match(card.textContent, /192\.0\.2\.1:1883 -> 192\.0\.2\.44:1883.*d4:a0:29:03:20:94/);
+	assert.match(card.textContent, /table bridge fttr_mqtt_redirect.*table ip fttr_mqtt_redirect/s);
+});
