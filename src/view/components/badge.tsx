@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
+import type { OmciAuthMode, OmciAuthSource, OmciAuthState } from "../../api/generated/types";
 import { type BusinessStatus, businessText, type SubGateway } from "../contracts/status";
 import { formatAge, text } from "./formatters";
 
@@ -327,6 +328,61 @@ export function getWifiSyncBadgeSpec(state?: string): {
 
 export function WifiSyncBadge(props: { state?: string }): HTMLElement {
 	const spec = getWifiSyncBadgeSpec(props.state);
+	return (
+		<Badge tone={spec.tone} title={spec.title}>
+			{spec.label}
+		</Badge>
+	);
+}
+
+// ---------------------------------------------------------------------------
+// OMCI Authentication
+// ---------------------------------------------------------------------------
+
+export const OMCI_AUTH_STATE_LABELS: Record<OmciAuthState, string> = {
+	pending: _("Pending"),
+	checking: _("Checking"),
+	verified: _("Verified"),
+	skipped: _("Skipped"),
+	denied: _("Denied"),
+	error: _("Error"),
+};
+
+export const OMCI_AUTH_MODE_LABELS: Record<OmciAuthMode, string> = {
+	disabled: _("Disabled"),
+	loid_password: _("LOID and password"),
+};
+
+export const OMCI_AUTH_SOURCE_LABELS: Record<OmciAuthSource, string> = {
+	global: _("Global"),
+	device: _("Device"),
+};
+
+export function getOmciAuthBadgeSpec(state?: OmciAuthState): {
+	tone: BadgeTone;
+	label: string;
+	title?: string;
+} {
+	if (!state) return { tone: "none", label: "—" };
+	const tone: BadgeTone =
+		state === "verified"
+			? "success"
+			: state === "checking"
+				? "info"
+				: state === "pending"
+					? "warning"
+					: state === "denied" || state === "error"
+						? "danger"
+						: "neutral";
+	return {
+		tone,
+		label: OMCI_AUTH_STATE_LABELS[state] ?? text(state),
+		title: state,
+	};
+}
+
+export function OmciAuthStateBadge(props: { state?: OmciAuthState }): HTMLElement {
+	const spec = getOmciAuthBadgeSpec(props.state);
 	return (
 		<Badge tone={spec.tone} title={spec.title}>
 			{spec.label}

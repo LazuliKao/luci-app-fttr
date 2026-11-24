@@ -15,7 +15,17 @@ import {
 import type { SubGateway as OnuDetails } from "../contracts/status";
 import tokensCss from "../styles/tokens.css?inline";
 import { withTimeout } from "../timeout";
-import { BusinessBadge, CwmpBadge, ProvisioningBadge, RegistrationBadge, WifiSyncBadge } from "./badge";
+import {
+	Badge,
+	BusinessBadge,
+	CwmpBadge,
+	OMCI_AUTH_MODE_LABELS,
+	OMCI_AUTH_SOURCE_LABELS,
+	OmciAuthStateBadge,
+	ProvisioningBadge,
+	RegistrationBadge,
+	WifiSyncBadge,
+} from "./badge";
 import badgeCss from "./badge.css?inline";
 import { formatPower, formatUptime, text } from "./formatters";
 import onuDetailsCss from "./onu-details.css?inline";
@@ -414,6 +424,59 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 				[_("Identity read errors"), initial.identity?.errors?.join("; ")],
 			],
 		},
+		...(initial.omci_auth
+			? [
+					{
+						title: _("ONU authentication"),
+						rows: [
+							[_("State"), <OmciAuthStateBadge state={initial.omci_auth.state} />],
+							[
+								_("Mode"),
+								<Badge
+									tone={initial.omci_auth.mode === "loid_password" ? "info" : "neutral"}
+									title={initial.omci_auth.mode}
+								>
+									{OMCI_AUTH_MODE_LABELS[initial.omci_auth.mode]}
+								</Badge>,
+							],
+							[
+								_("Source"),
+								<Badge
+									tone={initial.omci_auth.source === "device" ? "info" : "neutral"}
+									title={initial.omci_auth.source}
+								>
+									{OMCI_AUTH_SOURCE_LABELS[initial.omci_auth.source]}
+								</Badge>,
+							],
+							...(initial.omci_auth.backend
+								? ([[_("Backend"), <code style="font-size:90%">{initial.omci_auth.backend}</code>]] as [
+										string,
+										DetailRowValue,
+									][])
+								: []),
+							[
+								_("ONU-reported LOID"),
+								initial.omci_auth.reported_loid == null ? (
+									_("Not read")
+								) : (
+									<code style="font-size:90%">{initial.omci_auth.reported_loid}</code>
+								),
+							],
+							[
+								_("ONU-reported password"),
+								initial.omci_auth.reported_password == null ? (
+									_("Not read")
+								) : (
+									<details>
+										<summary style="cursor:pointer">{_("Reveal password")}</summary>
+										<code style="font-size:90%">{initial.omci_auth.reported_password}</code>
+									</details>
+								),
+							],
+						] as [string, DetailRowValue][],
+					},
+				]
+			: []),
 	];
 
 	const basic = (

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 17:31+0800\n"
+"POT-Creation-Date: 2026-11-24 19:12+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -549,6 +549,9 @@ msgstr "检查"
 msgid "Check management differences (read-only)"
 msgstr "检查管理配置差异（只读）"
 
+msgid "Checking"
+msgstr "检查中"
+
 msgid "Chip discriminator"
 msgstr "芯片标识码"
 
@@ -836,6 +839,9 @@ msgstr "已删除"
 
 msgid "Deleting an unused template also deletes its SSIDs and networks."
 msgstr "删除未被使用的模板时，也会删除其下的 SSID 和网络配置。"
+
+msgid "Denied"
+msgstr "已拒绝"
 
 msgid "Desired version"
 msgstr "目标版本"
@@ -1293,6 +1299,9 @@ msgstr "GitHub"
 
 msgid "GitHub Repositories"
 msgstr "GitHub 代码仓库"
+
+msgid "Global"
+msgstr "全局"
 
 msgid "Global counters (32-bit)"
 msgstr "全局计数（32 位）"
@@ -2834,6 +2843,9 @@ msgstr "模拟遥测读数"
 
 msgid "Size:"
 msgstr "大小："
+
+msgid "Skipped"
+msgstr "已跳过"
 
 msgid "Snapshot"
 msgstr "数据快照"

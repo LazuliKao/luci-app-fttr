@@ -671,27 +671,6 @@ function deviceCard(
 				) : null}
 			</div>
 
-			{device.omci_auth ? (
-				<section class="cbi-section" aria-label={_("ONU authentication")}>
-					<strong>{_("ONU authentication")}</strong> {device.omci_auth.state} · {device.omci_auth.mode} ·{" "}
-					{device.omci_auth.source}
-					{device.omci_auth.backend ? ` · ${device.omci_auth.backend}` : ""}
-					<div>
-						{_("ONU-reported LOID")}: <code>{device.omci_auth.reported_loid ?? _("Not read")}</code>
-					</div>
-					<div>
-						{_("ONU-reported password")}:{" "}
-						{device.omci_auth.reported_password == null ? (
-							_("Not read")
-						) : (
-							<details>
-								<summary>{_("Reveal password")}</summary>
-								<code>{device.omci_auth.reported_password}</code>
-							</details>
-						)}
-					</div>
-				</section>
-			) : null}
 			<section class="fttr-device-status-strip" aria-label={_("Transport observations")}>
 				<div class="fttr-status-pill-group">
 					<span>
