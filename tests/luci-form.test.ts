@@ -229,6 +229,7 @@ test("native add/cancel removes a new section for every editor and preserves exi
 		await grid.handleAdd(null);
 		const id = map.addedSection;
 		assert.ok(rows.has(id));
+		assert.match(id, new RegExp(`^fttr_${grid.sectiontype}_[0-9]+$`));
 		await grid.handleModalCancel(null, null, false);
 		assert.deepEqual([...rows], original);
 		assert.equal(map.addedSection, undefined);

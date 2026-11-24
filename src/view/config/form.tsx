@@ -141,6 +141,20 @@ export function grid(
 	const section = value.subsection;
 	section.anonymous = true;
 	section.addremove = true;
+	const gridSection = section as typeof section & {
+		handleAdd(event: Event | null, name?: string): Promise<void>;
+	};
+	const add = gridSection.handleAdd;
+	gridSection.handleAdd = function (event, name): Promise<void> {
+		// References must survive UCI commits and changes to section ordering.
+		let id = name;
+		if (!id) {
+			let index = 1;
+			do id = `fttr_${kind}_${index++}`;
+			while (L.uci.get("fttr", id));
+		}
+		return add.call(this, event, id);
+	};
 	section.modaltitle = (id: string) =>
 		String(L.uci.get("fttr", id, "name") || L.uci.get("fttr", id, "ssid") || title);
 	setup(section);
