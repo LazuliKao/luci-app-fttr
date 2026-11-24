@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { PlatformInfoReply } from "../contracts/api";
+import type { Capabilities } from "../contracts/capabilities";
 import { choice, field } from "./form";
 
 export function addBasic(
@@ -8,6 +9,7 @@ export function addBasic(
 	tab: string,
 	globalId: string,
 	platform: PlatformInfoReply,
+	capabilities?: Capabilities,
 ): void {
 	section.tab("basic", tab);
 	if (platform.platform_id === "fiberhome-an4475-g2") {
@@ -182,4 +184,23 @@ export function addBasic(
 			: _("Use 0 to disable, or 1–1440 minutes.");
 	option = field(p, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)");
 	option.default = "180";
+
+	if (capabilities?.features.mqtt ?? true) {
+		const mqttBridge = section.taboption(
+			"basic",
+			L.form.SectionValue,
+			"_mqtt_bridge",
+			L.form.NamedSection,
+			"mqtt_bridge",
+			"mqtt_bridge",
+		).subsection;
+		mqttBridge.addremove = false;
+		mqttBridge.anonymous = false;
+		const enabled = field(mqttBridge, L.form.Flag, "enabled", _("Enable bridge-mode MQTT redirect"));
+		enabled.default = "0";
+		enabled.rmempty = false;
+		enabled.description = _(
+			"Off by default. In pure bridge mode where the upstream router assigns LAN IPv4 via DHCP, selectively redirects verified HL202 sub-gateways' upstream MQTT (TCP 1883) connections to this controller's embedded broker without altering NAT-mode ONUs or downstream clients.",
+		);
+	}
 }

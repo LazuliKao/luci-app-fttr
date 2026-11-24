@@ -163,3 +163,36 @@ test("getCwmpBadgeSpec and sync card render disabled badge when CWMP is disabled
 	const root = deviceCard(device, false, noop, noop, noop, noop, false, true, false) as unknown as TestNode;
 	assert.match(root.textContent, /CWMP:.*Disabled.*MQTT:.*Online/);
 });
+
+test("bridge-mode MQTT access card distinguishes rule_installed from telemetry_verified", async () => {
+	const { deviceCard } = await import("../src/view/sync");
+	const device = {
+		device: "onu_bridge",
+		optical_sn: "H3CT1234ABCD",
+		omci_adapter: "hl202",
+		bootstrap_adapter: "none",
+		provisioning_adapter: "hl202-mqtt",
+		management: { state: "disabled" },
+		mqtt: { state: "waiting_transport" },
+		mqtt_bridge: {
+			state: "redirected",
+			address_origin: "upstream",
+			mode: "redirected",
+			rule_installed: true,
+			telemetry_verified: false,
+			interface: "fttr127",
+			client_mac: "1c:94:68:5d:f9:98",
+			client_ip: "192.0.2.244",
+			target_broker: "192.0.2.1:1883 -> 192.0.2.44:1883",
+			binding_source: "verified_report",
+			evidence_source: "dhcp_ack",
+			reason: "Redirect rule installed; waiting for HL202 MQTT reconnect",
+		},
+		acs_bootstrap: { state: "not_required", reason: "disabled" },
+		provisioning: { state: "not_started", items: [] },
+	} as unknown as DeviceSync;
+	const noop = async () => {};
+	const root = deviceCard(device, false, noop, noop, noop, noop, false, true, false) as unknown as TestNode;
+	assert.match(root.textContent, /Bridge-mode MQTT access.*Redirect installed.*Rule installed.*Telemetry unverified/);
+	assert.match(root.textContent, /Upstream DHCP \(Bridge\).*fttr127.*1c:94:68:5d:f9:98/);
+});

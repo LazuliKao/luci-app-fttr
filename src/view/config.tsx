@@ -51,6 +51,10 @@ const main = view.extend({
 		}
 		if (!uci.sections("fttr", "provisioning").length) uci.add("fttr", "provisioning", "provisioning");
 		if (!uci.sections("fttr", "management").length) uci.add("fttr", "management", "management");
+		if (!uci.sections("fttr", "mqtt_bridge").length) {
+			uci.add("fttr", "mqtt_bridge", "mqtt_bridge");
+			uci.set("fttr", "mqtt_bridge", "enabled", "0");
+		}
 		if (!uci.sections("fttr", "omci_auth").length) {
 			uci.add("fttr", "omci_auth", "omci_auth_global");
 			uci.set("fttr", "omci_auth_global", "schema_version", "1");
@@ -75,7 +79,7 @@ const main = view.extend({
 		section.anonymous = false;
 
 		const globalId = uci.sections("fttr", "provisioning")[0]?.[".name"] ?? "provisioning";
-		addBasic(section, _("Basic"), globalId, initialCheck.platform);
+		addBasic(section, _("Basic"), globalId, initialCheck.platform, initialCheck.capabilities);
 		addAuth(section);
 		addDevices(
 			section,

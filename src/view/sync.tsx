@@ -49,6 +49,20 @@ const STATE_I18N: Record<string, { label: string; type: "success" | "warning" | 
 	stale: { label: _("Stale"), type: "warning" },
 	error: { label: _("Error"), type: "danger" },
 	deleted: { label: _("Deleted"), type: "neutral" },
+	active: { label: _("Active"), type: "success" },
+	waiting: { label: _("Waiting"), type: "warning" },
+	waiting_optical: { label: _("Waiting optical"), type: "warning" },
+	waiting_evidence: { label: _("Waiting evidence"), type: "warning" },
+	waiting_broker: { label: _("Waiting broker"), type: "warning" },
+	local_nat: { label: _("Local NAT (direct)"), type: "neutral" },
+	direct: { label: _("Direct"), type: "info" },
+	direct_verified: { label: _("Direct (verified)"), type: "success" },
+	trial: { label: _("Trial redirect (15s)"), type: "info" },
+	trial_cooldown: { label: _("Trial cooldown"), type: "warning" },
+	redirected: { label: _("Redirect installed"), type: "info" },
+	cleanup_failed: { label: _("Cleanup failed"), type: "danger" },
+	not_applicable: { label: _("Not applicable"), type: "neutral" },
+	unavailable: { label: _("Unavailable"), type: "neutral" },
 };
 
 function renderStateBadge(value?: string, customTitle?: string): HTMLElement {
@@ -175,6 +189,92 @@ function itemTable(items: ItemRow[]): HTMLElement {
 					)}
 				</tbody>
 			</table>
+		</div>
+	);
+}
+
+function renderOriginLabel(origin?: string): string {
+	switch (origin) {
+		case "local":
+			return _("Master LAN DHCP (NAT)");
+		case "upstream":
+			return _("Upstream DHCP (Bridge)");
+		default:
+			return _("Unknown");
+	}
+}
+
+function mqttBridgeDeviceCard(bridge: DeviceSync["mqtt_bridge"]): HTMLElement | null {
+	if (!bridge) return null;
+	return (
+		<div style="margin-top:1em">
+			<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.5em">
+				<h4 style="margin:0">{_("Bridge-mode MQTT access")}</h4>
+				<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+					{renderStateBadge(bridge.state)}
+					<span class={`fttr-badge ${bridge.rule_installed ? "fttr-badge-info" : "fttr-badge-neutral"}`}>
+						{bridge.rule_installed ? _("Rule installed") : _("No redirect rule")}
+					</span>
+					<span
+						class={`fttr-badge ${bridge.telemetry_verified ? "fttr-badge-success" : "fttr-badge-warning"}`}
+					>
+						{bridge.telemetry_verified ? _("Telemetry verified") : _("Telemetry unverified")}
+					</span>
+				</div>
+			</div>
+			<div class="fttr-card">
+				<div class="fttr-grid-3">
+					<div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Address origin")}</span>
+							<span>{renderOriginLabel(bridge.address_origin)}</span>
+						</div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Access mode")}</span>
+							<code>{text(bridge.mode)}</code>
+						</div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Optical port")}</span>
+							<code>{text(bridge.interface)}</code>
+						</div>
+					</div>
+					<div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Client MAC")}</span>
+							<code>{text(bridge.client_mac)}</code>
+						</div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Client IPv4")}</span>
+							<code>{text(bridge.client_ip)}</code>
+						</div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Target broker")}</span>
+							<code style="font-size:80%">{text(bridge.target_broker)}</code>
+						</div>
+					</div>
+					<div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Identity source")}</span>
+							<code>{text(bridge.binding_source)}</code>
+						</div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Address evidence")}</span>
+							<code>{text(bridge.evidence_source)}</code>
+						</div>
+						<div class="fttr-kv-row">
+							<span class="fttr-kv-label">{_("Evidence / Telemetry")}</span>
+							<span style="font-size:85%">
+								{date(bridge.evidence_updated_at)} / {date(bridge.mqtt_last_seen)}
+							</span>
+						</div>
+					</div>
+				</div>
+				{bridge.reason ? (
+					<div style="font-size:85%;color:#666;margin-top:6px;border-top:1px dashed rgba(127,140,141,0.15);padding-top:6px;overflow-wrap:anywhere">
+						{bridge.reason}
+					</div>
+				) : null}
+			</div>
 		</div>
 	);
 }
@@ -623,6 +723,10 @@ function deviceCard(
 					</div>
 				</details>
 			</section>
+
+			{device.mqtt_bridge ? (
+				<section aria-label={_("Bridge-mode MQTT access")}>{mqttBridgeDeviceCard(device.mqtt_bridge)}</section>
+			) : null}
 		</div>
 	);
 }
@@ -648,6 +752,7 @@ const main = L.view.extend({
 		) as HTMLSelectElement;
 		const content = <div />;
 		const managementContent = <div />;
+		const mqttBridgeContent = <div />;
 		let current = initial;
 		let committed = initialCheck;
 		let busy = false;
@@ -785,6 +890,13 @@ const main = L.view.extend({
 			</div>
 		);
 
+		const mqttBridgePanel = (
+			<div class="cbi-section">
+				<h3>{_("Bridge-mode MQTT access")}</h3>
+				{mqttBridgeContent}
+			</div>
+		);
+
 		const manual = (
 			<div class="cbi-section">
 				<h3>{_("Manual synchronization")}</h3>
@@ -810,6 +922,7 @@ const main = L.view.extend({
 				<h2>{_("FTTR synchronization")}</h2>
 				{heading}
 				{error}
+				{mqttBridgePanel}
 				{managementPanel}
 				{manual}
 				{result}
@@ -937,6 +1050,51 @@ const main = L.view.extend({
 				(!!committed.revision && committed.revision !== status.revision) ||
 				!businessDevices.length;
 			apply.disabled = plan.disabled || !status.enabled;
+
+			const mb = status.mqtt_bridge;
+			mqttBridgePanel.hidden = !mb;
+			if (mb) {
+				mqttBridgeContent.replaceChildren(
+					<div>
+						<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+							<span>
+								<span class="fttr-pill-label">{_("Switch")}:</span>{" "}
+								<span class={`fttr-badge ${mb.enabled ? "fttr-badge-success" : "fttr-badge-neutral"}`}>
+									{mb.enabled ? _("Enabled") : _("Disabled")}
+								</span>
+							</span>
+							<span>
+								<span class="fttr-pill-label">{_("State")}:</span> {renderStateBadge(mb.state)}
+							</span>
+							<span>
+								<span class="fttr-pill-label">{_("LAN origin")}:</span>{" "}
+								<span>{renderOriginLabel(mb.lan_origin)}</span>
+							</span>
+							<span>
+								<span class="fttr-pill-label">{_("Active rules")}:</span>{" "}
+								<strong>{mb.active_rules}</strong>
+							</span>
+							<span>
+								<span class="fttr-pill-label">{_("Broker")}:</span>{" "}
+								<code>{text(mb.broker_listen)}</code>
+							</span>
+							{mb.upstream_gateway ? (
+								<span>
+									<span class="fttr-pill-label">{_("Upstream gateway")}:</span>{" "}
+									<code>{mb.upstream_gateway}</code>
+								</span>
+							) : null}
+						</div>
+						{mb.error ? (
+							<div class="alert-message danger" style="margin-top:6px;overflow-wrap:anywhere">
+								{mb.error}
+							</div>
+						) : mb.reason ? (
+							<div style="font-size:85%;color:#666;overflow-wrap:anywhere">{mb.reason}</div>
+						) : null}
+					</div>,
+				);
+			}
 
 			const host = status.management_network;
 			managementPlan.disabled =
