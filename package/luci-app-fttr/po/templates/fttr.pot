@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-23 19:05+0800\n"
+"POT-Creation-Date: 2026-11-24 10:13+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -143,6 +143,9 @@ msgstr ""
 msgid "About FTTR"
 msgstr ""
 
+msgid "Access mode"
+msgstr ""
+
 msgid "Account data is unavailable."
 msgstr ""
 
@@ -155,10 +158,16 @@ msgstr ""
 msgid "ACS URL"
 msgstr ""
 
+msgid "Active"
+msgstr ""
+
 msgid "Active allocation"
 msgstr ""
 
 msgid "Active hardware offload flows (PPE FOE Bound)"
+msgstr ""
+
+msgid "Active rules"
 msgstr ""
 
 msgid "Actual OMCI GEM / VLAN inventory"
@@ -171,6 +180,12 @@ msgid "Add this device on the configuration page before fixing its interface."
 msgstr ""
 
 msgid "Address"
+msgstr ""
+
+msgid "Address evidence"
+msgstr ""
+
+msgid "Address origin"
 msgstr ""
 
 msgid "Address unavailable"
@@ -413,6 +428,12 @@ msgstr ""
 msgid "Bridge offload mask"
 msgstr ""
 
+msgid "Bridge-mode MQTT access"
+msgstr ""
+
+msgid "Broker"
+msgstr ""
+
 msgid ""
 "Built-in data may be explicitly selected or chosen by automatic fallback. A "
 "sample hash does not establish calibration accuracy for this device."
@@ -528,6 +549,9 @@ msgstr ""
 msgid "Chip discriminator"
 msgstr ""
 
+msgid "Cleanup failed"
+msgstr ""
+
 msgid "Clear backoff delays and retry safe difference synchronization"
 msgstr ""
 
@@ -546,6 +570,12 @@ msgid "Click to copy full SHA-256"
 msgstr ""
 
 msgid "Click to select or drag a %s file here"
+msgstr ""
+
+msgid "Client IPv4"
+msgstr ""
+
+msgid "Client MAC"
 msgstr ""
 
 msgid "Close"
@@ -864,6 +894,12 @@ msgstr ""
 msgid "Diagnostic measurement channel"
 msgstr ""
 
+msgid "Direct"
+msgstr ""
+
+msgid "Direct (verified)"
+msgstr ""
+
 msgid "Direction admission"
 msgstr ""
 
@@ -972,6 +1008,9 @@ msgstr ""
 msgid "Enable ACS"
 msgstr ""
 
+msgid "Enable bridge-mode MQTT redirect"
+msgstr ""
+
 msgid "Enable FTTR hardware offload"
 msgstr ""
 
@@ -1046,6 +1085,9 @@ msgid "Ethernet / MAC"
 msgstr ""
 
 msgid "EtherType code"
+msgstr ""
+
+msgid "Evidence / Telemetry"
 msgstr ""
 
 msgid "Evidence freshness"
@@ -1454,6 +1496,9 @@ msgstr ""
 msgid "LAN / WLAN port bindings"
 msgstr ""
 
+msgid "LAN origin"
+msgstr ""
+
 msgid "Laser bias current"
 msgstr ""
 
@@ -1567,6 +1612,9 @@ msgstr ""
 msgid "Local interfaces"
 msgstr ""
 
+msgid "Local NAT (direct)"
+msgstr ""
+
 msgid ""
 "Logical interface, not a physical splitter port. Counters do not prove "
 "current end-to-end connectivity."
@@ -1676,6 +1724,9 @@ msgid "Manual synchronization"
 msgstr ""
 
 msgid "Map"
+msgstr ""
+
+msgid "Master LAN DHCP (NAT)"
 msgstr ""
 
 msgid "Master switch for FTTR port NPU hardware acceleration admission"
@@ -1866,6 +1917,9 @@ msgid ""
 "the backend result after Save & Apply."
 msgstr ""
 
+msgid "No redirect rule"
+msgstr ""
+
 msgid "No registered sub-gateways."
 msgstr ""
 
@@ -1897,6 +1951,9 @@ msgid "None (Open)"
 msgstr ""
 
 msgid "Not admitted"
+msgstr ""
+
+msgid "Not applicable"
 msgstr ""
 
 msgid "Not applied"
@@ -1990,6 +2047,13 @@ msgid "Observed identity and relationship"
 msgstr ""
 
 msgid "Observed object"
+msgstr ""
+
+msgid ""
+"Off by default. In pure bridge mode where the upstream router assigns LAN "
+"IPv4 via DHCP, selectively redirects verified HL202 sub-gateways' upstream "
+"MQTT (TCP 1883) connections to this controller's embedded broker without "
+"altering NAT-mode ONUs or downstream clients."
 msgstr ""
 
 msgid "Offline"
@@ -2104,6 +2168,9 @@ msgid "Optical online"
 msgstr ""
 
 msgid "Optical physical layer and link parameters"
+msgstr ""
+
+msgid "Optical port"
 msgstr ""
 
 msgid "Optical RX power"
@@ -2402,6 +2469,9 @@ msgstr ""
 msgid "Recovering"
 msgstr ""
 
+msgid "Redirect installed"
+msgstr ""
+
 msgid "Refresh"
 msgstr ""
 
@@ -2540,6 +2610,9 @@ msgid "Routed offload mask"
 msgstr ""
 
 msgid "rows"
+msgstr ""
+
+msgid "Rule installed"
 msgstr ""
 
 msgid "RX wavelength"
@@ -2855,6 +2928,9 @@ msgstr ""
 msgid "Supports Connection Request"
 msgstr ""
 
+msgid "Switch"
+msgstr ""
+
 msgid "Sync now"
 msgstr ""
 
@@ -2881,6 +2957,9 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
+msgid "Target broker"
+msgstr ""
+
 msgid "Target code"
 msgstr ""
 
@@ -2888,6 +2967,12 @@ msgid "Target storage path"
 msgstr ""
 
 msgid "Task"
+msgstr ""
+
+msgid "Telemetry unverified"
+msgstr ""
+
+msgid "Telemetry verified"
 msgstr ""
 
 msgid "Temperature"
@@ -3103,6 +3188,12 @@ msgstr ""
 msgid "Transport observations"
 msgstr ""
 
+msgid "Trial cooldown"
+msgstr ""
+
+msgid "Trial redirect (15s)"
+msgstr ""
+
 msgid "Triggers"
 msgstr ""
 
@@ -3215,6 +3306,12 @@ msgstr ""
 msgid "Uploading to %s..."
 msgstr ""
 
+msgid "Upstream DHCP (Bridge)"
+msgstr ""
+
+msgid "Upstream gateway"
+msgstr ""
+
 msgid "Uptime"
 msgstr ""
 
@@ -3306,6 +3403,12 @@ msgstr ""
 msgid "Waiting ACS listener"
 msgstr ""
 
+msgid "Waiting broker"
+msgstr ""
+
+msgid "Waiting evidence"
+msgstr ""
+
 msgid "Waiting for device reset recovery"
 msgstr ""
 
@@ -3325,6 +3428,9 @@ msgid "Waiting management"
 msgstr ""
 
 msgid "Waiting Management"
+msgstr ""
+
+msgid "Waiting optical"
 msgstr ""
 
 msgid "Waiting task"

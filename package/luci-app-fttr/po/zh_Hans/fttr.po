@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-23 19:06+0800\n"
+"POT-Creation-Date: 2026-11-24 10:13+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -143,6 +143,9 @@ msgstr "关于"
 msgid "About FTTR"
 msgstr "关于 FTTR"
 
+msgid "Access mode"
+msgstr "接入模式"
+
 msgid "Account data is unavailable."
 msgstr "账户数据不可用。"
 
@@ -155,11 +158,17 @@ msgstr "ACS 状态文件"
 msgid "ACS URL"
 msgstr "ACS URL"
 
+msgid "Active"
+msgstr "已启用"
+
 msgid "Active allocation"
 msgstr "当前生效分配"
 
 msgid "Active hardware offload flows (PPE FOE Bound)"
 msgstr "硬件绑定流明细（PPE FOE BND）"
+
+msgid "Active rules"
+msgstr "生效规则"
 
 msgid "Actual OMCI GEM / VLAN inventory"
 msgstr "实际 OMCI GEM / VLAN 清单"
@@ -172,6 +181,12 @@ msgstr "请先在配置页添加此设备，再固定接口。"
 
 msgid "Address"
 msgstr "地址"
+
+msgid "Address evidence"
+msgstr "地址证据"
+
+msgid "Address origin"
+msgstr "地址来源"
 
 msgid "Address unavailable"
 msgstr "地址不可用"
@@ -413,6 +428,12 @@ msgstr "桥接成员"
 msgid "Bridge offload mask"
 msgstr "桥接卸载掩码"
 
+msgid "Bridge-mode MQTT access"
+msgstr "桥接模式 MQTT 定向接入"
+
+msgid "Broker"
+msgstr "Broker"
+
 msgid ""
 "Built-in data may be explicitly selected or chosen by automatic fallback. A "
 "sample hash does not establish calibration accuracy for this device."
@@ -528,6 +549,9 @@ msgstr "检查管理配置差异（只读）"
 msgid "Chip discriminator"
 msgstr "芯片标识码"
 
+msgid "Cleanup failed"
+msgstr ""
+
 msgid "Clear backoff delays and retry safe difference synchronization"
 msgstr "清除退避延迟并重试安全的差异同步"
 
@@ -547,6 +571,12 @@ msgstr "点击复制完整 SHA-256"
 
 msgid "Click to select or drag a %s file here"
 msgstr "点击选择或将 %s 文件拖放到此处"
+
+msgid "Client IPv4"
+msgstr "客户端 IPv4"
+
+msgid "Client MAC"
+msgstr "客户端 MAC"
 
 msgid "Close"
 msgstr "关闭"
@@ -864,6 +894,12 @@ msgstr "DHCP 起始偏移"
 msgid "Diagnostic measurement channel"
 msgstr "诊断测量通道"
 
+msgid "Direct"
+msgstr "直连"
+
+msgid "Direct (verified)"
+msgstr "直连（已验证）"
+
 msgid "Direction admission"
 msgstr "方向准入"
 
@@ -972,6 +1008,9 @@ msgstr "启用"
 msgid "Enable ACS"
 msgstr "启用 ACS"
 
+msgid "Enable bridge-mode MQTT redirect"
+msgstr "启用桥接模式 MQTT 重定向"
+
 msgid "Enable FTTR hardware offload"
 msgstr "启用 FTTR 硬件加速"
 
@@ -1047,6 +1086,9 @@ msgstr "以太网 / MAC"
 
 msgid "EtherType code"
 msgstr "以太网类型码 (EtherType)"
+
+msgid "Evidence / Telemetry"
+msgstr "证据 / 遥测"
 
 msgid "Evidence freshness"
 msgstr "凭据新鲜度"
@@ -1459,6 +1501,9 @@ msgstr "已知子网关"
 msgid "LAN / WLAN port bindings"
 msgstr "LAN / WLAN 端口绑定"
 
+msgid "LAN origin"
+msgstr "LAN 地址来源"
+
 msgid "Laser bias current"
 msgstr "激光偏置电流"
 
@@ -1572,6 +1617,9 @@ msgstr "本地 ACS 监听服务"
 msgid "Local interfaces"
 msgstr "本地接口"
 
+msgid "Local NAT (direct)"
+msgstr "本地 NAT（直连）"
+
 msgid ""
 "Logical interface, not a physical splitter port. Counters do not prove "
 "current end-to-end connectivity."
@@ -1682,6 +1730,9 @@ msgstr "手动同步"
 
 msgid "Map"
 msgstr "地图"
+
+msgid "Master LAN DHCP (NAT)"
+msgstr "主路由 LAN DHCP（NAT）"
 
 msgid "Master switch for FTTR port NPU hardware acceleration admission"
 msgstr "FTTR 端口 NPU 硬件加速与流表绑定的总准入开关"
@@ -1871,6 +1922,9 @@ msgid ""
 "the backend result after Save & Apply."
 msgstr "本地配置检查未发现问题。请在“保存并应用”后点击“检查”，确认后端检查结果。"
 
+msgid "No redirect rule"
+msgstr "无重定向规则"
+
 msgid "No registered sub-gateways."
 msgstr "无已注册的从网关。"
 
@@ -1903,6 +1957,9 @@ msgstr "无（开放网络）"
 
 msgid "Not admitted"
 msgstr "未准入"
+
+msgid "Not applicable"
+msgstr "不适用"
 
 msgid "Not applied"
 msgstr "未应用"
@@ -1996,6 +2053,16 @@ msgstr "观测到的身份和关系"
 
 msgid "Observed object"
 msgstr "观测对象"
+
+msgid ""
+"Off by default. In pure bridge mode where the upstream router assigns LAN "
+"IPv4 via DHCP, selectively redirects verified HL202 sub-gateways' upstream "
+"MQTT (TCP 1883) connections to this controller's embedded broker without "
+"altering NAT-mode ONUs or downstream clients."
+msgstr ""
+"默认关闭。在主路由 LAN 通过上游 DHCP 获取 IPv4 的纯桥接模式下，仅对已验证的 "
+"HL202 子猫定向重定向其上行 MQTT（TCP 1883）连接到本控制器内置 Broker，不"
+"影响 NAT 模式 ONU 或普通下挂终端。"
 
 msgid "Offline"
 msgstr "离线"
@@ -2112,6 +2179,9 @@ msgstr "光路在线"
 
 msgid "Optical physical layer and link parameters"
 msgstr "光物理层与链路参数"
+
+msgid "Optical port"
+msgstr "光口接口"
 
 msgid "Optical RX power"
 msgstr "接收光功率"
@@ -2409,6 +2479,9 @@ msgstr "记录 / 诊断信息"
 msgid "Recovering"
 msgstr "恢复中"
 
+msgid "Redirect installed"
+msgstr "已安装重定向"
+
 msgid "Refresh"
 msgstr "刷新"
 
@@ -2548,6 +2621,9 @@ msgstr "路由卸载掩码"
 
 msgid "rows"
 msgstr "行"
+
+msgid "Rule installed"
+msgstr "规则已安装"
 
 msgid "RX wavelength"
 msgstr "接收波长"
@@ -2864,6 +2940,9 @@ msgstr "支持的文件："
 msgid "Supports Connection Request"
 msgstr "支持连接请求"
 
+msgid "Switch"
+msgstr "开关"
+
 msgid "Sync now"
 msgstr "立即同步"
 
@@ -2890,6 +2969,9 @@ msgstr "校准表 / 载荷字节数"
 msgid "Target"
 msgstr "目标"
 
+msgid "Target broker"
+msgstr "目标 Broker"
+
 msgid "Target code"
 msgstr "目标代码"
 
@@ -2898,6 +2980,12 @@ msgstr "目标存储路径"
 
 msgid "Task"
 msgstr "任务"
+
+msgid "Telemetry unverified"
+msgstr "遥测未验证"
+
+msgid "Telemetry verified"
+msgstr "遥测已验证"
 
 msgid "Temperature"
 msgstr "温度"
@@ -3112,6 +3200,12 @@ msgstr "发射器"
 msgid "Transport observations"
 msgstr "传输观测"
 
+msgid "Trial cooldown"
+msgstr "试探冷却中"
+
+msgid "Trial redirect (15s)"
+msgstr "试探重定向（15 秒）"
+
 msgid "Triggers"
 msgstr "触发机制"
 
@@ -3224,6 +3318,12 @@ msgstr "上传写入失败"
 msgid "Uploading to %s..."
 msgstr "正在上传至 %s..."
 
+msgid "Upstream DHCP (Bridge)"
+msgstr "上游 DHCP（桥接）"
+
+msgid "Upstream gateway"
+msgstr "上游网关"
+
 msgid "Uptime"
 msgstr "运行时间"
 
@@ -3315,6 +3415,12 @@ msgstr "等待中"
 msgid "Waiting ACS listener"
 msgstr "等待 ACS 监听器"
 
+msgid "Waiting broker"
+msgstr "等待 Broker"
+
+msgid "Waiting evidence"
+msgstr "等待证据"
+
 msgid "Waiting for device reset recovery"
 msgstr "等待设备重置恢复"
 
@@ -3335,6 +3441,9 @@ msgstr "等待管理"
 
 msgid "Waiting Management"
 msgstr "等待管理"
+
+msgid "Waiting optical"
+msgstr "等待光口就绪"
 
 msgid "Waiting task"
 msgstr "等待任务"
