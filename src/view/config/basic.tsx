@@ -191,7 +191,7 @@ export function addBasic(
 	option = field(p, L.form.Value, "freshness", _("CWMP freshness (seconds)"), "range(1,86400)");
 	option.default = "180";
 
-	if (capabilities?.features.mqtt ?? true) {
+	if (capabilities?.features["mqtt-bridge"] ?? capabilities?.features.mqtt ?? true) {
 		const mqttBridge = section.taboption(
 			"basic",
 			L.form.SectionValue,

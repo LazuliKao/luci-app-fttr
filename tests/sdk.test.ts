@@ -54,6 +54,7 @@ test("generated wire validation retains required false flags, nullable progress 
 		features: {
 			acs: false,
 			mqtt: false,
+			"mqtt-bridge": false,
 			npu: false,
 			"device-hl202": false,
 			"device-hwtc": false,
