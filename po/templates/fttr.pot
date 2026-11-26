@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 19:12+0800\n"
+"POT-Creation-Date: 2026-11-26 09:47+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -143,6 +143,9 @@ msgstr ""
 msgid "About FTTR"
 msgstr ""
 
+msgid "Accepted CWMP POST paths"
+msgstr ""
+
 msgid "Access mode"
 msgstr ""
 
@@ -150,6 +153,9 @@ msgid "Account data is unavailable."
 msgstr ""
 
 msgid "ACS bootstrap"
+msgstr ""
+
+msgid "ACS redirect rules (FTTR ONUs)"
 msgstr ""
 
 msgid "ACS state file"
@@ -212,6 +218,16 @@ msgstr ""
 msgid "Advanced Settings"
 msgstr ""
 
+msgid "Advertise isolated management gateway (DHCP Option 3)"
+msgstr ""
+
+msgid ""
+"Advertises the management bridge IP as default gateway (DHCP Option 3) on "
+"br-tr069 while keeping firewall forwarding rejected, so FTTR ONUs pointing "
+"to arbitrary external ACS IPs (e.g. 10.x.x.x) send packets to prerouting "
+"DNAT without modifying ONU settings."
+msgstr ""
+
 msgid "ago"
 msgstr ""
 
@@ -224,6 +240,12 @@ msgstr ""
 msgid ""
 "All listed VLANs share one management bridge and DHCP pool. Retain an "
 "existing listed management VLAN; the first VLAN is the fallback."
+msgstr ""
+
+msgid "All online FTTR ONUs (fttrN / br-tr069)"
+msgstr ""
+
+msgid "All online FTTR ONUs (scope-filtered)"
 msgstr ""
 
 msgid ""
@@ -286,6 +308,9 @@ msgid "Apply selected calibration"
 msgstr ""
 
 msgid "Applying…"
+msgstr ""
+
+msgid "Arbitrary-IP ACS hijack & redirect"
 msgstr ""
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
@@ -408,7 +433,13 @@ msgstr ""
 msgid "BOSA hardware register initialization table (first %s bytes, %s)"
 msgstr ""
 
+msgid "Both (fttrN + br-tr069)"
+msgstr ""
+
 msgid "Bound hardware flows"
+msgstr ""
+
+msgid "Bridge / LAN (fttrN port)"
 msgstr ""
 
 msgid "Bridge interface"
@@ -553,6 +584,12 @@ msgid "Checking"
 msgstr ""
 
 msgid "Chip discriminator"
+msgstr ""
+
+msgid "CIDR host bits must be zero (e.g. 10.20.30.0/24)."
+msgstr ""
+
+msgid "CIDR prefix must be between 1 and 32."
 msgstr ""
 
 msgid "Cleanup failed"
@@ -798,6 +835,12 @@ msgstr ""
 msgid "CWMP path"
 msgstr ""
 
+msgid "CWMP path matching"
+msgstr ""
+
+msgid "CWMP POST path"
+msgstr ""
+
 msgid "CWMP Settings"
 msgstr ""
 
@@ -817,6 +860,9 @@ msgid "Data sources"
 msgstr ""
 
 msgid "Decoded"
+msgstr ""
+
+msgid "Default only"
 msgstr ""
 
 msgid "Definition"
@@ -1002,6 +1048,13 @@ msgid ""
 "item and correct its fields, or delete it if it is no longer needed."
 msgstr ""
 
+msgid ""
+"Each rule matches FTTR ONU traffic toward an arbitrary operator ACS "
+"IPv4/CIDR and TCP port. Exact path is default/recommended (e.g. '/tr069'); "
+"enter '*' explicitly to wildcard any valid CWMP POST path. Path policies "
+"apply per active listener (LAN vs br-tr069) once rules are installed."
+msgstr ""
+
 msgid "Edit to repair"
 msgstr ""
 
@@ -1020,6 +1073,9 @@ msgstr ""
 msgid "Enable ACS"
 msgstr ""
 
+msgid "Enable arbitrary-IP ACS hijack & redirect"
+msgstr ""
+
 msgid "Enable bridge-mode MQTT redirect"
 msgstr ""
 
@@ -1036,6 +1092,9 @@ msgid "Enable ONU bridge offload"
 msgstr ""
 
 msgid "Enable provisioning"
+msgstr ""
+
+msgid "Enable rule"
 msgstr ""
 
 msgid "Enable WAN downstream offload (experimental)"
@@ -1061,7 +1120,13 @@ msgstr ""
 msgid "Enter a non-empty UTF-8 script up to 64 KiB without NUL characters."
 msgstr ""
 
+msgid "Enter a valid IPv4 address."
+msgstr ""
+
 msgid "Enter a VLAN ID in 1–4094."
+msgstr ""
+
+msgid "Enter an IPv4 address or CIDR prefix (e.g. 10.0.0.1 or 10.20.30.0/24)."
 msgstr ""
 
 msgid "Enter at least one VLAN ID in 1–4094."
@@ -1105,6 +1170,21 @@ msgstr ""
 msgid "Evidence freshness"
 msgstr ""
 
+msgid "Exact"
+msgstr ""
+
+msgid "Exact path must not contain whitespace, query, fragment, backslash, or '..'."
+msgstr ""
+
+msgid "Exact path must start with '/' (or enter '*' explicitly for wildcard)."
+msgstr ""
+
+msgid "Exact path only"
+msgstr ""
+
+msgid "Exact path: %s"
+msgstr ""
+
 msgid "Execute on selected HL202"
 msgstr ""
 
@@ -1129,6 +1209,9 @@ msgid "Expected LOID"
 msgstr ""
 
 msgid "Expected password"
+msgstr ""
+
+msgid "Explicit wildcard (* — any valid path)"
 msgstr ""
 
 msgid "Export JSON"
@@ -1358,6 +1441,12 @@ msgstr ""
 msgid "Header, payload CRC and chip discriminator"
 msgstr ""
 
+msgid "High (> -3 dBm; normal -8 to -27 dBm)"
+msgstr ""
+
+msgid "High RX power"
+msgstr ""
+
 msgid "Historical stock sample match"
 msgstr ""
 
@@ -1484,6 +1573,12 @@ msgstr ""
 msgid "Invalid"
 msgstr ""
 
+msgid "Invalid CIDR prefix length."
+msgstr ""
+
+msgid "Invalid IPv4 or CIDR format."
+msgstr ""
+
 msgid "Invalid MIB snapshot"
 msgstr ""
 
@@ -1512,6 +1607,9 @@ msgid "Known ONUs"
 msgstr ""
 
 msgid "LAN / WLAN port bindings"
+msgstr ""
+
+msgid "LAN ACS listener"
 msgstr ""
 
 msgid "LAN origin"
@@ -1693,10 +1791,16 @@ msgstr ""
 msgid "Management & cache"
 msgstr ""
 
+msgid "Management ACS listener"
+msgstr ""
+
 msgid "Management application mode"
 msgstr ""
 
 msgid "Management fresh"
+msgstr ""
+
+msgid "Management gateway (Option 3)"
 msgstr ""
 
 msgid "Management grant"
@@ -1772,6 +1876,9 @@ msgid "MIB request timed out; check the FTTR service and retry."
 msgstr ""
 
 msgid "MIB snapshot cannot be serialized"
+msgstr ""
+
+msgid "Missing path (edit required)"
 msgstr ""
 
 msgid "Missing template"
@@ -2078,6 +2185,15 @@ msgid ""
 msgstr ""
 
 msgid ""
+"Off by default. Intercepts configured target ACS IP/CIDR and port "
+"connections on FTTR ONU bridge ports (fttrN on br-lan, excluding router "
+"eth/wlan ports) or the isolated br-tr069 management VLAN, and redirects them "
+"to this controller's embedded ACS. Note: hosts bridged behind the same fttrN "
+"port share that L2 port; use br-tr069 management scope for per-device source "
+"IP isolation."
+msgstr ""
+
+msgid ""
 "Off by default. Logs up to three RX register snapshots at 30-second "
 "intervals after restart. Restart FTTR to apply changes."
 msgstr ""
@@ -2217,6 +2333,9 @@ msgstr ""
 msgid ""
 "Optional for wired-only networks. Only SSIDs from the selected template are "
 "listed. Changing the template clears the SSID selection."
+msgstr ""
+
+msgid "Original ACS target"
 msgstr ""
 
 msgid "Original endpoints"
@@ -2495,6 +2614,9 @@ msgstr ""
 msgid "Recovering"
 msgstr ""
 
+msgid "Redirect ACS target"
+msgstr ""
+
 msgid "Redirect installed"
 msgstr ""
 
@@ -2583,6 +2705,13 @@ msgstr ""
 msgid "Request ID"
 msgstr ""
 
+msgid ""
+"Required. Enter an exact path starting with '/' (e.g. '/tr069') to restrict "
+"to that path, or enter '*' explicitly to wildcard any valid CWMP POST path. "
+"Active rules share the accepted path set of their target listener (LAN vs "
+"br-tr069)."
+msgstr ""
+
 msgid "Reserved"
 msgstr ""
 
@@ -2617,6 +2746,12 @@ msgstr ""
 msgid "Restart"
 msgstr ""
 
+msgid ""
+"Restricts LAN interception to the ONU's fttrN port (never router eth/wlan "
+"ports; bridged downstream hosts behind fttrN share the L2 port) and isolates "
+"br-tr069 management rules by unique ONU management IPv4."
+msgstr ""
+
 msgid "Retry"
 msgstr ""
 
@@ -2641,7 +2776,13 @@ msgstr ""
 msgid "rows"
 msgstr ""
 
+msgid "Rule"
+msgstr ""
+
 msgid "Rule installed"
+msgstr ""
+
+msgid "Rule name"
 msgstr ""
 
 msgid "RX wavelength"
@@ -2718,6 +2859,12 @@ msgid "Saving…"
 msgstr ""
 
 msgid "Schema"
+msgstr ""
+
+msgid "Scope"
+msgstr ""
+
+msgid "Scope & FTTR ONUs"
 msgstr ""
 
 msgid "Search ME name or Class ID…"
@@ -2873,6 +3020,11 @@ msgid ""
 "atomic."
 msgstr ""
 
+msgid ""
+"Specify an exact path starting with '/' (e.g. '/cwmp') or '*' explicitly for "
+"wildcard."
+msgstr ""
+
 msgid "SSID"
 msgstr ""
 
@@ -2939,6 +3091,13 @@ msgstr ""
 msgid "Sub-gateway %s — %s"
 msgstr ""
 
+msgid ""
+"Sub-gateway optical RX power exceeds -3 dBm (%s). Excessively strong optical "
+"input can saturate or damage the receiver; the reasonable operating range "
+"for sub-gateway RX power is typically -8 dBm to -27 dBm (recommended -10 dBm "
+"to -25 dBm)."
+msgstr ""
+
 msgid "Sub-gateways"
 msgstr ""
 
@@ -2989,13 +3148,22 @@ msgstr ""
 msgid "Target"
 msgstr ""
 
+msgid "Target ACS IPv4 / CIDR"
+msgstr ""
+
 msgid "Target broker"
 msgstr ""
 
 msgid "Target code"
 msgstr ""
 
+msgid "Target FTTR ONU"
+msgstr ""
+
 msgid "Target storage path"
+msgstr ""
+
+msgid "Target TCP port"
 msgstr ""
 
 msgid "Task"
@@ -3182,6 +3350,9 @@ msgid "Topology is not available yet."
 msgstr ""
 
 msgid "Total code words"
+msgstr ""
+
+msgid "TR069 management (br-tr069)"
 msgstr ""
 
 msgid "TR069 VLANs"
@@ -3525,6 +3696,12 @@ msgid "Wi-Fi stage"
 msgstr ""
 
 msgid "Wi-Fi sync"
+msgstr ""
+
+msgid "Wildcard (*)"
+msgstr ""
+
+msgid "Wildcard (any valid path)"
 msgstr ""
 
 msgid "Wireless association"
