@@ -145,6 +145,7 @@ const NativeElement = new Function(
 	"baseclass",
 	`${uiSource.slice(uiSource.indexOf("const UIElement ="), uiSource.indexOf("const UITextfield ="))}; return UIElement;`,
 )(baseclass);
+const { addBasic } = await import("../src/view/config/basic");
 const { addServices } = await import("../src/view/config/services");
 const { addDevices } = await import("../src/view/config/devices");
 const { saveConfiguration } = await import("../src/view/config/save");
@@ -604,4 +605,66 @@ test("device adapter validation uses modal selections, not persisted UCI values"
 	assert.equal(omci.isValid("dev1"), true);
 	assert.equal(bootstrap.isValid("dev1"), true);
 	assert.equal(provisioning.isValid("dev1"), false);
+});
+
+test("acs_bridge config exposes wildcard vs exact CWMP path validation and FTTR-only device scope", () => {
+	rows.set("provisioning", { ".name": "provisioning", ".type": "provisioning" });
+	rows.set("acs_bridge", { ".name": "acs_bridge", ".type": "acs_bridge", enabled: "1", management_gateway: "0" });
+	rows.set("dev_onu", { ".name": "dev_onu", ".type": "device", name: "Hallway ONU", optical_sn: "H3CT00000001" });
+	rows.set("r_wild", {
+		".name": "r_wild",
+		".type": "acs_redirect",
+		enabled: "1",
+		scope: "both",
+		target_ip: "10.20.30.0/24",
+		target_port: "7547",
+		path: "*",
+		device: "dev_onu",
+	});
+	rows.set("r_exact", {
+		".name": "r_exact",
+		".type": "acs_redirect",
+		enabled: "1",
+		scope: "lan",
+		target_ip: "198.51.100.1",
+		target_port: "8080",
+		path: "/tr069",
+	});
+
+	const map = new L.form.Map("fttr");
+	map.findElement = () => null;
+	const root = map.section(L.form.NamedSection, "acs", "acs");
+	addBasic(root, "Basic", "provisioning", { platform_id: "h3c", onus: [] } as any, {
+		schema_version: 1,
+		version: "test",
+		features: { acs: true, "acs-bridge": true, mqtt: true, "mqtt-bridge": true },
+	} as any);
+
+	const acsBridge = root.children.find((opt: any) => opt.option === "_acs_bridge")?.subsection;
+	assert.ok(acsBridge);
+	assert.ok(acsBridge.children.some((opt: any) => opt.option === "enabled"));
+	assert.ok(acsBridge.children.some((opt: any) => opt.option === "management_gateway"));
+
+	const grid = root.children.find((opt: any) => opt.option === "_acs_redirect")?.subsection;
+	assert.ok(grid);
+	const pathModePreview = grid.children.find((opt: any) => opt.option === "_path_mode_preview");
+	assert.match(String(pathModePreview.textvalue("r_wild")), /Explicit wildcard/);
+	assert.equal(pathModePreview.textvalue("r_exact"), "Exact path: /tr069");
+
+	const devicePreview = grid.children.find((opt: any) => opt.option === "_device_preview");
+	assert.equal(devicePreview.textvalue("r_wild"), "Hallway ONU (H3CT00000001)");
+	assert.equal(devicePreview.textvalue("r_exact"), "All online FTTR ONUs (scope-filtered)");
+
+	const targetOpt = grid.children.find((opt: any) => opt.option === "target_ip");
+	assert.equal(targetOpt.validate("r_wild", "10.20.30.0/24"), true);
+	assert.equal(targetOpt.validate("r_wild", "10.20.30.1"), true);
+	assert.notEqual(targetOpt.validate("r_wild", "10.20.30.1/24"), true);
+
+	const pathOpt = grid.children.find((opt: any) => opt.option === "path");
+	assert.notEqual(pathOpt.validate("r_wild", ""), true);
+	assert.equal(pathOpt.validate("r_wild", "*"), true);
+	assert.equal(pathOpt.validate("r_wild", "/cwmp/custom"), true);
+	assert.notEqual(pathOpt.validate("r_wild", "no-slash"), true);
+	assert.notEqual(pathOpt.validate("r_wild", "/bad?query=1"), true);
+	assert.notEqual(pathOpt.validate("r_wild", "/bad/../path"), true);
 });

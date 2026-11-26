@@ -404,6 +404,194 @@ function mqttBridgeGlobalCard(
 	);
 }
 
+function renderAcsPathModeBadge(pathMode: string): HTMLElement {
+	if (pathMode === "wildcard") {
+		return <span class="fttr-badge fttr-badge-info">{_("Wildcard (any valid path)")}</span>;
+	}
+	if (pathMode === "exact") {
+		return <span class="fttr-badge fttr-badge-success">{_("Exact path only")}</span>;
+	}
+	return <span class="fttr-badge fttr-badge-neutral">{_("Default only")}</span>;
+}
+
+function renderAcsScopeLabel(scope: string): string {
+	if (scope === "management") return _("TR069 management (br-tr069)");
+	if (scope === "both") return _("Both (fttrN + br-tr069)");
+	return _("Bridge / LAN (fttrN port)");
+}
+
+function acsBridgeGlobalCard(
+	ab: NonNullable<SyncStatus["acs_bridge"]>,
+	devices: DeviceSync[],
+	rawRulesOpen = false,
+): HTMLElement {
+	const rules = ab.rules ?? [];
+	const bridgeLines = rules.flatMap((r) => r.bridge_rules ?? []);
+	const ipLines = rules.flatMap((r) => r.ip_rules ?? []);
+	const deviceNameFor = (rule: (typeof rules)[number]): string | null => {
+		if (!rule.device && !rule.optical_sn) return null;
+		const matched = devices.find(
+			(d) => (rule.device && d.device === rule.device) || (rule.optical_sn && d.optical_sn === rule.optical_sn),
+		);
+		return matched?.name || rule.device || rule.optical_sn || null;
+	};
+	return (
+		<div>
+			<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+				<span>
+					<span class="fttr-pill-label">{_("Switch")}:</span>{" "}
+					<span class={`fttr-badge ${ab.enabled ? "fttr-badge-success" : "fttr-badge-neutral"}`}>
+						{ab.enabled ? _("Enabled") : _("Disabled")}
+					</span>
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("State")}:</span> {renderStateBadge(ab.state)}
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("LAN origin")}:</span>{" "}
+					<span>{renderOriginLabel(ab.lan_origin)}</span>
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("CWMP path matching")}:</span>{" "}
+					{renderAcsPathModeBadge(ab.path_mode)}
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("Management gateway (Option 3)")}:</span>{" "}
+					<span class={`fttr-badge ${ab.management_gateway ? "fttr-badge-success" : "fttr-badge-neutral"}`}>
+						{ab.management_gateway ? _("Enabled") : _("Disabled")}
+					</span>
+				</span>
+				<span>
+					<span class="fttr-pill-label">{_("Active rules")}:</span> <strong>{ab.active_rules}</strong>
+				</span>
+				{ab.lan_listen ? (
+					<span>
+						<span class="fttr-pill-label">{_("LAN ACS listener")}:</span> <code>{ab.lan_listen}</code>
+					</span>
+				) : null}
+				{ab.management_listen ? (
+					<span>
+						<span class="fttr-pill-label">{_("Management ACS listener")}:</span>{" "}
+						<code>{ab.management_listen}</code>
+					</span>
+				) : null}
+			</div>
+			{(ab.accepted_paths ?? []).length ? (
+				<div style="font-size:85%;color:#666;margin-bottom:6px">
+					<span class="fttr-pill-label">{_("Accepted CWMP POST paths")}:</span>{" "}
+					<code>{ab.accepted_paths.join(", ")}</code>
+				</div>
+			) : null}
+			{ab.error ? (
+				<div class="alert-message danger" style="margin-top:6px;overflow-wrap:anywhere">
+					{ab.error}
+				</div>
+			) : ab.reason ? (
+				<div style="font-size:85%;color:#666;overflow-wrap:anywhere">{ab.reason}</div>
+			) : null}
+			{rules.length ? (
+				<div style="margin-top:10px">
+					<div class="table-wrapper">
+						<table class="table" style="font-size:85%">
+							<thead>
+								<tr>
+									<th>{_("Rule")}</th>
+									<th>{_("Scope & FTTR ONUs")}</th>
+									<th>{_("Original ACS target")}</th>
+									<th>{_("CWMP path matching")}</th>
+									<th>{_("Redirect ACS target")}</th>
+									<th>{_("State")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{rules.map((rule) => {
+									const devLabel = deviceNameFor(rule);
+									const ifaces = rule.interfaces ?? [];
+									return (
+										<tr>
+											<td>
+												<strong>{rule.name || rule.id}</strong>
+												{rule.name ? (
+													<div style="font-size:85%;color:#888">
+														<code>{rule.id}</code>
+													</div>
+												) : null}
+											</td>
+											<td>
+												<div>{renderAcsScopeLabel(rule.scope)}</div>
+												<div style="font-size:85%;color:#666;margin-top:2px">
+													{devLabel ? (
+														<span>
+															{devLabel}
+															{rule.optical_sn && rule.optical_sn !== devLabel
+																? ` (${rule.optical_sn})`
+																: ""}
+														</span>
+													) : (
+														<span>{_("All online FTTR ONUs (fttrN / br-tr069)")}</span>
+													)}
+												</div>
+												{ifaces.length ? (
+													<div style="font-size:85%;color:#888;margin-top:2px">
+														<code>{ifaces.join(", ")}</code>
+													</div>
+												) : null}
+											</td>
+											<td>
+												<code>{`${rule.target_ip}:${rule.target_port}`}</code>
+											</td>
+											<td>
+												{rule.path_mode === "wildcard" ? (
+													<span class="fttr-badge fttr-badge-info">{_("Wildcard (*)")}</span>
+												) : (
+													<span>
+														<span class="fttr-badge fttr-badge-success">{_("Exact")}</span>{" "}
+														<code>{text(rule.path)}</code>
+													</span>
+												)}
+											</td>
+											<td>
+												<code>{text(rule.acs_target)}</code>
+											</td>
+											<td>
+												<div>{renderStateBadge(rule.state)}</div>
+												{rule.reason ? (
+													<div style="font-size:85%;color:#888;margin-top:2px">
+														{rule.reason}
+													</div>
+												) : null}
+											</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+					</div>
+					{bridgeLines.length || ipLines.length ? (
+						<details open={rawRulesOpen} style="margin-top:8px">
+							<summary style="cursor:pointer;user-select:none;font-size:85%;color:#666">
+								{_("nftables redirect rules")}
+							</summary>
+							<pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:80%;max-height:220px;overflow-y:auto;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px;margin-top:6px">
+								{[
+									bridgeLines.length
+										? `table bridge fttr_acs_redirect\n${bridgeLines.map((l) => `  ${l}`).join("\n")}`
+										: "",
+									ipLines.length
+										? `table ip fttr_acs_redirect\n${ipLines.map((l) => `  ${l}`).join("\n")}`
+										: "",
+								]
+									.filter(Boolean)
+									.join("\n\n")}
+							</pre>
+						</details>
+					) : null}
+				</div>
+			) : null}
+		</div>
+	);
+}
+
 function bootstrapCard(
 	bootstrap: AcsBootstrap | undefined,
 	applyManagement: () => Promise<void>,
@@ -857,6 +1045,7 @@ const main = L.view.extend({
 		const content = <div />;
 		const managementContent = <div />;
 		const mqttBridgeContent = <div />;
+		const acsBridgeContent = <div />;
 		let current = initial;
 		let committed = initialCheck;
 		let busy = false;
@@ -1001,6 +1190,13 @@ const main = L.view.extend({
 			</div>
 		);
 
+		const acsBridgePanel = (
+			<div class="cbi-section">
+				<h3>{_("Arbitrary-IP ACS hijack & redirect")}</h3>
+				{acsBridgeContent}
+			</div>
+		);
+
 		const manual = (
 			<div class="cbi-section">
 				<h3>{_("Manual synchronization")}</h3>
@@ -1027,6 +1223,7 @@ const main = L.view.extend({
 				{heading}
 				{error}
 				{mqttBridgePanel}
+				{acsBridgePanel}
 				{managementPanel}
 				{manual}
 				{result}
@@ -1160,6 +1357,13 @@ const main = L.view.extend({
 			if (mb) {
 				const rawRulesOpen = Boolean(mqttBridgeContent.querySelector("details[open]"));
 				mqttBridgeContent.replaceChildren(mqttBridgeGlobalCard(mb, status.devices ?? [], rawRulesOpen));
+			}
+
+			const ab = status.acs_bridge;
+			acsBridgePanel.hidden = !ab;
+			if (ab) {
+				const rawRulesOpen = Boolean(acsBridgeContent.querySelector("details[open]"));
+				acsBridgeContent.replaceChildren(acsBridgeGlobalCard(ab, status.devices ?? [], rawRulesOpen));
 			}
 
 			const host = status.management_network;
@@ -1357,4 +1561,4 @@ const main = L.view.extend({
 	handleReset: null,
 });
 
-export { deviceCard, main, mqttBridgeGlobalCard };
+export { acsBridgeGlobalCard, deviceCard, main, mqttBridgeGlobalCard };

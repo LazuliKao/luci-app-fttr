@@ -27,7 +27,7 @@ import {
 	WifiSyncBadge,
 } from "./badge";
 import badgeCss from "./badge.css?inline";
-import { formatPower, formatUptime, text } from "./formatters";
+import { formatPower, formatUptime, isSubGatewayRxHigh, text } from "./formatters";
 import onuDetailsCss from "./onu-details.css?inline";
 import { createTabMenu } from "./tabs";
 import { ViewStyle } from "./view-style";
@@ -372,7 +372,17 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 			rows: [
 				[_("Registration"), <RegistrationBadge state={initial.state} />],
 				[_("Business"), <BusinessBadge status={initial.business_status} />],
-				[_("Receive optical power"), formatPower(initial.optical_rx_power_dbm)],
+				[
+					_("Receive optical power"),
+					isSubGatewayRxHigh(initial.optical_rx_power_dbm) ? (
+						<span>
+							{formatPower(initial.optical_rx_power_dbm)}{" "}
+							<Badge tone="warning">{_("High (> -3 dBm; normal -8 to -27 dBm)")}</Badge>
+						</span>
+					) : (
+						formatPower(initial.optical_rx_power_dbm)
+					),
+				],
 				[_("Transmit optical power"), formatPower(initial.optical_tx_power_dbm)],
 				[
 					_("Equalization delay (EQD)"),

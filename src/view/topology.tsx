@@ -2,7 +2,7 @@
 import { getFttrClient } from "../api/client";
 import type { TopologyReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
-import { formatAge } from "./components/formatters";
+import { formatAge, formatSubGatewayRxWarning, isSubGatewayRxHigh } from "./components/formatters";
 import { ViewStyle } from "./components/view-style";
 import {
 	countFilteredNodes,
@@ -484,6 +484,17 @@ function createTopologyPage(initial: LoadResult): TopologyPage {
 			if (snapshot.issues.length)
 				messages.push(`${_("Backend topology issues")}: ${snapshot.issues.map((i) => i.code).join(", ")}`);
 			if (!count.known) messages.push(_("No known sub-gateways in this snapshot."));
+			const highRxLinks = snapshot.links
+				.filter((link) => isSubGatewayRxHigh(link.onu_rx_power_dbm))
+				.map((link) => {
+					const node = snapshot.nodes.find((n) => n.id === link.target);
+					return {
+						label: node?.label || link.target,
+						rxPower: link.onu_rx_power_dbm as number,
+					};
+				});
+			const rxWarning = formatSubGatewayRxWarning(highRxLinks);
+			if (rxWarning) messages.push(rxWarning);
 			const hasFilter = Boolean(filter.query.trim()) || filter.status !== "all";
 			searchClear.hidden = !filter.query;
 			if (hasFilter) {

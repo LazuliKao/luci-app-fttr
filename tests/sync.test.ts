@@ -241,3 +241,76 @@ test("global bridge-mode MQTT panel renders active redirect rules and nftables e
 	assert.match(card.textContent, /192\.0\.2\.1:1883 -> 192\.0\.2\.44:1883.*d4:a0:29:03:20:94/);
 	assert.match(card.textContent, /table bridge fttr_mqtt_redirect.*table ip fttr_mqtt_redirect/s);
 });
+
+test("global ACS bridge panel shows wildcard vs exact CWMP path matching and FTTR-only interfaces", async () => {
+	const { acsBridgeGlobalCard } = await import("../src/view/sync");
+	const card = acsBridgeGlobalCard(
+		{
+			enabled: true,
+			management_gateway: true,
+			state: "active",
+			lan_origin: "upstream",
+			lan_listen: "192.0.2.44:7547",
+			management_listen: "192.0.2.1:7547",
+			path_mode: "wildcard",
+			accepted_paths: ["*", "/cwmp", "/tr069"],
+			active_rules: 2,
+			rules: [
+				{
+					id: "rule_wild",
+					name: "Any Operator ACS",
+					scope: "both",
+					target_ip: "10.20.30.0/24",
+					target_port: 7547,
+					path: null,
+					path_mode: "wildcard",
+					device: "onu_1",
+					optical_sn: "H3CT1234ABCD",
+					interfaces: ["fttr0", "br-tr069"],
+					acs_target: "192.0.2.44:7547, 192.0.2.1:7547",
+					bridge_rules: [
+						'iifname "fttr0" ip daddr 10.20.30.0/24 tcp dport 7547 meta pkttype set host ether daddr set 02:00:00:00:00:aa meta mark set 0x00ac5001 counter',
+					],
+					ip_rules: [
+						'iifname "br-lan" meta mark 0x00ac5001 ip daddr 10.20.30.0/24 tcp dport 7547 counter dnat to 192.0.2.44:7547',
+					],
+					state: "active",
+					reason: null,
+				},
+				{
+					id: "rule_exact",
+					name: "Exact Only",
+					scope: "lan",
+					target_ip: "198.51.100.5",
+					target_port: 8080,
+					path: "/tr069",
+					path_mode: "exact",
+					device: null,
+					optical_sn: null,
+					interfaces: ["fttr0", "fttr1"],
+					acs_target: "192.0.2.44:7547",
+					bridge_rules: [],
+					ip_rules: [],
+					state: "active",
+					reason: null,
+				},
+			],
+		},
+		[
+			{
+				device: "onu_1",
+				name: "Living Room ONU",
+				optical_sn: "H3CT1234ABCD",
+			} as DeviceSync,
+		],
+	) as unknown as TestNode;
+
+	assert.match(card.textContent, /Wildcard \(any valid path\)/);
+	assert.match(card.textContent, /Management gateway \(Option 3\)\s*:.*Enabled/);
+	assert.match(card.textContent, /Living Room ONU\s*\(H3CT1234ABCD\)/);
+	assert.match(card.textContent, /fttr0, br-tr069/);
+	assert.match(card.textContent, /Wildcard \(\*\)/);
+	assert.match(card.textContent, /Exact.*\/tr069/);
+	assert.match(card.textContent, /All online FTTR ONUs \(fttrN \/ br-tr069\)/);
+	assert.match(card.textContent, /table bridge fttr_acs_redirect.*table ip fttr_acs_redirect/s);
+});

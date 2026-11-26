@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-24 19:12+0800\n"
+"POT-Creation-Date: 2026-11-26 09:47+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -143,6 +143,9 @@ msgstr "关于"
 msgid "About FTTR"
 msgstr "关于 FTTR"
 
+msgid "Accepted CWMP POST paths"
+msgstr "允许的 CWMP POST 路径"
+
 msgid "Access mode"
 msgstr "接入模式"
 
@@ -151,6 +154,9 @@ msgstr "账户数据不可用。"
 
 msgid "ACS bootstrap"
 msgstr "ACS 引导配置"
+
+msgid "ACS redirect rules (FTTR ONUs)"
+msgstr "ACS 重定向规则（FTTR ONU）"
 
 msgid "ACS state file"
 msgstr "ACS 状态文件"
@@ -212,6 +218,18 @@ msgstr "高级诊断 / 原始配置（JSON）"
 msgid "Advanced Settings"
 msgstr "高级设置"
 
+msgid "Advertise isolated management gateway (DHCP Option 3)"
+msgstr "下发隔离管理网关（DHCP Option 3）"
+
+msgid ""
+"Advertises the management bridge IP as default gateway (DHCP Option 3) on "
+"br-tr069 while keeping firewall forwarding rejected, so FTTR ONUs pointing "
+"to arbitrary external ACS IPs (e.g. 10.x.x.x) send packets to prerouting "
+"DNAT without modifying ONU settings."
+msgstr ""
+"在 br-tr069 管理桥下发控制器管理 IP 作为默认网关（DHCP Option 3），同时保持防火墙 forward 为 "
+"REJECT，使指向外部任意 ACS IP（如 10.x.x.x）的 FTTR ONU 无需改配即可进入 prerouting DNAT 劫持。"
+
 msgid "ago"
 msgstr "之前"
 
@@ -225,6 +243,12 @@ msgid ""
 "All listed VLANs share one management bridge and DHCP pool. Retain an "
 "existing listed management VLAN; the first VLAN is the fallback."
 msgstr "所有列出的 VLAN 共享同一个管理网桥和 DHCP 地址池。请保留已列出的管理 VLAN；第一个 VLAN 将作为回退默认值。"
+
+msgid "All online FTTR ONUs (fttrN / br-tr069)"
+msgstr "全部在线 FTTR ONU（fttrN / br-tr069）"
+
+msgid "All online FTTR ONUs (scope-filtered)"
+msgstr "全部在线 FTTR ONU（按作用域）"
 
 msgid ""
 "All parameters were parsed successfully and are previewed below. Verify "
@@ -287,6 +311,9 @@ msgstr "应用选定校准"
 
 msgid "Applying…"
 msgstr "应用中…"
+
+msgid "Arbitrary-IP ACS hijack & redirect"
+msgstr "任意 IP ACS 劫持重定向"
 
 msgid "Are you sure you want to reset the synchronization state for %s?"
 msgstr "确定要重置 %s 的同步状态吗？"
@@ -408,8 +435,14 @@ msgstr "BOSA 下行光路校准管理（UX3326）"
 msgid "BOSA hardware register initialization table (first %s bytes, %s)"
 msgstr "BOSA 硬件寄存器初始化表（前 %s 字节，%s）"
 
+msgid "Both (fttrN + br-tr069)"
+msgstr "同时启用（fttrN + br-tr069）"
+
 msgid "Bound hardware flows"
 msgstr "硬件绑定流数"
+
+msgid "Bridge / LAN (fttrN port)"
+msgstr "桥接 / LAN 侧（fttrN 端口）"
 
 msgid "Bridge interface"
 msgstr "桥接接口"
@@ -554,6 +587,12 @@ msgstr "检查中"
 
 msgid "Chip discriminator"
 msgstr "芯片标识码"
+
+msgid "CIDR host bits must be zero (e.g. 10.20.30.0/24)."
+msgstr "CIDR 主机位必须为 0（例如 10.20.30.0/24）。"
+
+msgid "CIDR prefix must be between 1 and 32."
+msgstr "CIDR 前缀长度必须在 1 至 32 之间。"
 
 msgid "Cleanup failed"
 msgstr "清理失败"
@@ -798,6 +837,12 @@ msgstr "CWMP 接口引用"
 msgid "CWMP path"
 msgstr "CWMP 路径"
 
+msgid "CWMP path matching"
+msgstr "CWMP 路径匹配"
+
+msgid "CWMP POST path"
+msgstr "CWMP POST 路径"
+
 msgid "CWMP Settings"
 msgstr "CWMP 设置"
 
@@ -818,6 +863,9 @@ msgstr "数据来源"
 
 msgid "Decoded"
 msgstr "已解析"
+
+msgid "Default only"
+msgstr "仅默认路径"
 
 msgid "Definition"
 msgstr "定义"
@@ -1002,6 +1050,15 @@ msgid ""
 "item and correct its fields, or delete it if it is no longer needed."
 msgstr "下面列出了存在问题的配置。需要保留的条目可点击“编辑修复”修正字段；不再需要的条目可删除。"
 
+msgid ""
+"Each rule matches FTTR ONU traffic toward an arbitrary operator ACS "
+"IPv4/CIDR and TCP port. Exact path is default/recommended (e.g. '/tr069'); "
+"enter '*' explicitly to wildcard any valid CWMP POST path. Path policies "
+"apply per active listener (LAN vs br-tr069) once rules are installed."
+msgstr ""
+"每条规则匹配去往指定任意 ACS IPv4/CIDR 与 TCP 端口的 FTTR ONU 流量。默认推荐精确路径（如 '/tr069'）；输入 '*' "
+"表示显式通配任意合法 CWMP POST 路径。路径策略在规则生效后分别应用于对应的活跃监听器（LAN 与 br-tr069 互不影响）。"
+
 msgid "Edit to repair"
 msgstr "编辑修复"
 
@@ -1020,6 +1077,9 @@ msgstr "启用"
 msgid "Enable ACS"
 msgstr "启用 ACS"
 
+msgid "Enable arbitrary-IP ACS hijack & redirect"
+msgstr "启用任意 IP ACS 劫持重定向"
+
 msgid "Enable bridge-mode MQTT redirect"
 msgstr "启用桥接模式 MQTT 重定向"
 
@@ -1037,6 +1097,9 @@ msgstr "启用从网关桥接硬件加速"
 
 msgid "Enable provisioning"
 msgstr "启用配置下发"
+
+msgid "Enable rule"
+msgstr "启用规则"
 
 msgid "Enable WAN downstream offload (experimental)"
 msgstr "启用 WAN 下行加速（实验性）"
@@ -1061,8 +1124,14 @@ msgstr "请输入非空密码。"
 msgid "Enter a non-empty UTF-8 script up to 64 KiB without NUL characters."
 msgstr "请输入非空 UTF-8 脚本，大小不超过 64 KiB，且不含 NUL 字符。"
 
+msgid "Enter a valid IPv4 address."
+msgstr "请输入有效的 IPv4 地址。"
+
 msgid "Enter a VLAN ID in 1–4094."
 msgstr "请输入 1–4094 之间的 VLAN ID。"
+
+msgid "Enter an IPv4 address or CIDR prefix (e.g. 10.0.0.1 or 10.20.30.0/24)."
+msgstr "请输入 IPv4 地址或 CIDR 网段（例如 10.0.0.1 或 10.20.30.0/24）。"
 
 msgid "Enter at least one VLAN ID in 1–4094."
 msgstr "请至少输入一个 1–4094 之间的 VLAN ID。"
@@ -1105,6 +1174,21 @@ msgstr "证据 / 遥测"
 msgid "Evidence freshness"
 msgstr "凭据新鲜度"
 
+msgid "Exact"
+msgstr "精确路径"
+
+msgid "Exact path must not contain whitespace, query, fragment, backslash, or '..'."
+msgstr "精确路径不能包含空白字符、查询参数、片段标记、反斜杠或 '..'。"
+
+msgid "Exact path must start with '/' (or enter '*' explicitly for wildcard)."
+msgstr "精确路径必须以 '/' 开头（或显式输入 '*' 表示通配）。"
+
+msgid "Exact path only"
+msgstr "仅精确路径"
+
+msgid "Exact path: %s"
+msgstr "精确路径：%s"
+
 msgid "Execute on selected HL202"
 msgstr "在所选 HL202 上执行"
 
@@ -1130,6 +1214,9 @@ msgstr "期望 LOID"
 
 msgid "Expected password"
 msgstr "期望密码"
+
+msgid "Explicit wildcard (* — any valid path)"
+msgstr "显式通配（* — 任意合法路径）"
 
 msgid "Export JSON"
 msgstr "导出 JSON"
@@ -1359,6 +1446,12 @@ msgstr "硬件版本"
 msgid "Header, payload CRC and chip discriminator"
 msgstr "表头、载荷 CRC 和芯片标识校验"
 
+msgid "High (> -3 dBm; normal -8 to -27 dBm)"
+msgstr "过高（> -3 dBm；正常 -8 至 -27 dBm）"
+
+msgid "High RX power"
+msgstr "收光过高"
+
 msgid "Historical stock sample match"
 msgstr "历史库存样本匹配"
 
@@ -1489,6 +1582,12 @@ msgstr "间隔（毫秒）"
 msgid "Invalid"
 msgstr "无效"
 
+msgid "Invalid CIDR prefix length."
+msgstr "无效的 CIDR 前缀长度。"
+
+msgid "Invalid IPv4 or CIDR format."
+msgstr "无效的 IPv4 或 CIDR 格式。"
+
 msgid "Invalid MIB snapshot"
 msgstr "无效的 MIB 快照"
 
@@ -1518,6 +1617,9 @@ msgstr "已知子网关"
 
 msgid "LAN / WLAN port bindings"
 msgstr "LAN / WLAN 端口绑定"
+
+msgid "LAN ACS listener"
+msgstr "LAN 侧 ACS 监听"
 
 msgid "LAN origin"
 msgstr "LAN 地址来源"
@@ -1698,11 +1800,17 @@ msgstr "受管对象与生命周期意图"
 msgid "Management & cache"
 msgstr "管理与缓存"
 
+msgid "Management ACS listener"
+msgstr "管理网 ACS 监听"
+
 msgid "Management application mode"
 msgstr "管理应用模式"
 
 msgid "Management fresh"
 msgstr "管理有效"
+
+msgid "Management gateway (Option 3)"
+msgstr "管理网关下发（Option 3）"
 
 msgid "Management grant"
 msgstr "管理授权"
@@ -1778,6 +1886,9 @@ msgstr "MIB 请求超时；请检查 FTTR 服务并重试。"
 
 msgid "MIB snapshot cannot be serialized"
 msgstr "MIB 快照无法序列化"
+
+msgid "Missing path (edit required)"
+msgstr "缺少路径（需编辑补全）"
 
 msgid "Missing template"
 msgstr "未指定模板"
@@ -2085,6 +2196,18 @@ msgstr ""
 "1883）连接到本控制器内置 Broker，不影响 NAT 模式 ONU 或普通下挂终端。"
 
 msgid ""
+"Off by default. Intercepts configured target ACS IP/CIDR and port "
+"connections on FTTR ONU bridge ports (fttrN on br-lan, excluding router "
+"eth/wlan ports) or the isolated br-tr069 management VLAN, and redirects them "
+"to this controller's embedded ACS. Note: hosts bridged behind the same fttrN "
+"port share that L2 port; use br-tr069 management scope for per-device source "
+"IP isolation."
+msgstr ""
+"默认关闭。在 FTTR ONU 桥接端口（br-lan 上的 fttrN，排除主路由 eth/wlan 口）或隔离的 br-tr069 管理 VLAN "
+"上按配置的目标 ACS IP/CIDR 与端口劫持重定向至本控制器内置 ACS。注意：同一 fttrN 口后方桥接下挂的终端共用同一二层口；如需按设备源 "
+"IP 精确隔离请使用 br-tr069 管理网作用域。"
+
+msgid ""
 "Off by default. Logs up to three RX register snapshots at 30-second "
 "intervals after restart. Restart FTTR to apply changes."
 msgstr "默认关闭。重启后每隔 30 秒记录一次接收寄存器快照，最多三次。修改后须重启 FTTR 才能生效。"
@@ -2227,6 +2350,9 @@ msgid ""
 "Optional for wired-only networks. Only SSIDs from the selected template are "
 "listed. Changing the template clears the SSID selection."
 msgstr "仅使用有线端口的网络可留空。这里只列出所选模板中的 SSID。切换模板会清空已选的 SSID。"
+
+msgid "Original ACS target"
+msgstr "原始 ACS 目标"
 
 msgid "Original endpoints"
 msgstr "原始端点"
@@ -2504,6 +2630,9 @@ msgstr "记录 / 诊断信息"
 msgid "Recovering"
 msgstr "恢复中"
 
+msgid "Redirect ACS target"
+msgstr "重定向 ACS 目标"
+
 msgid "Redirect installed"
 msgstr "已安装重定向"
 
@@ -2592,6 +2721,15 @@ msgstr "请求失败"
 msgid "Request ID"
 msgstr "请求 ID"
 
+msgid ""
+"Required. Enter an exact path starting with '/' (e.g. '/tr069') to restrict "
+"to that path, or enter '*' explicitly to wildcard any valid CWMP POST path. "
+"Active rules share the accepted path set of their target listener (LAN vs "
+"br-tr069)."
+msgstr ""
+"必填。输入以 '/' 开头的精确路径（如 '/tr069'）以仅匹配该路径，或显式输入 '*' 通配任意合法 CWMP POST "
+"路径。已生效规则按目标监听器（LAN 与 br-tr069 独立）共享其允许路径集合。"
+
 msgid "Reserved"
 msgstr "已预留"
 
@@ -2626,6 +2764,14 @@ msgstr "RESET_N、GPON MAC TX 和测量的光发射是独立状态。补偿代�
 msgid "Restart"
 msgstr "重启"
 
+msgid ""
+"Restricts LAN interception to the ONU's fttrN port (never router eth/wlan "
+"ports; bridged downstream hosts behind fttrN share the L2 port) and isolates "
+"br-tr069 management rules by unique ONU management IPv4."
+msgstr ""
+"将 LAN 侧劫持限制在对应 ONU 的 fttrN 端口（绝不匹配主路由 eth/wlan 口；同 fttrN 口后方桥接下挂主机共享该二层口），并对 "
+"br-tr069 管理网规则按 ONU 唯一管理 IPv4 地址进行来源隔离。"
+
 msgid "Retry"
 msgstr "重试"
 
@@ -2650,8 +2796,14 @@ msgstr "路由卸载掩码"
 msgid "rows"
 msgstr "行"
 
+msgid "Rule"
+msgstr "规则"
+
 msgid "Rule installed"
 msgstr "规则已安装"
+
+msgid "Rule name"
+msgstr "规则名称"
 
 msgid "RX wavelength"
 msgstr "接收波长"
@@ -2728,6 +2880,12 @@ msgstr "保存中…"
 
 msgid "Schema"
 msgstr "数据模式"
+
+msgid "Scope"
+msgstr "生效作用域"
+
+msgid "Scope & FTTR ONUs"
+msgstr "作用域与 FTTR ONU"
 
 msgid "Search ME name or Class ID…"
 msgstr "搜索 ME 名称或 Class ID…"
@@ -2884,6 +3042,11 @@ msgstr ""
 "来源：PPE debugfs 的 bind/entries 与驱动 sysfs。这是全局 PPE 快照，并非仅 FTTR "
 "流量合计或表容量。各数据源依次读取，并非原子快照。"
 
+msgid ""
+"Specify an exact path starting with '/' (e.g. '/cwmp') or '*' explicitly for "
+"wildcard."
+msgstr "请填写以 '/' 开头的精确路径（如 '/cwmp'），或显式填写 '*' 启用通配。"
+
 msgid "SSID"
 msgstr "SSID"
 
@@ -2950,6 +3113,15 @@ msgstr "存储的文件（选择和应用是分开的）"
 msgid "Sub-gateway %s — %s"
 msgstr "从网关 %s — %s"
 
+msgid ""
+"Sub-gateway optical RX power exceeds -3 dBm (%s). Excessively strong optical "
+"input can saturate or damage the receiver; the reasonable operating range "
+"for sub-gateway RX power is typically -8 dBm to -27 dBm (recommended -10 dBm "
+"to -25 dBm)."
+msgstr ""
+"从猫收光功率高于 -3 dBm（%s）。过强的光功率可能导致光接收机过载或损坏；从猫收光的合理工作范围通常为 -8 dBm 至 -27 dBm（建议 "
+"-10 dBm 至 -25 dBm）。"
+
 msgid "Sub-gateways"
 msgstr "从网关"
 
@@ -3000,14 +3172,23 @@ msgstr "校准表 / 载荷字节数"
 msgid "Target"
 msgstr "目标"
 
+msgid "Target ACS IPv4 / CIDR"
+msgstr "目标 ACS IPv4 / CIDR"
+
 msgid "Target broker"
 msgstr "目标 Broker"
 
 msgid "Target code"
 msgstr "目标代码"
 
+msgid "Target FTTR ONU"
+msgstr "目标 FTTR ONU"
+
 msgid "Target storage path"
 msgstr "目标存储路径"
+
+msgid "Target TCP port"
+msgstr "目标 TCP 端口"
 
 msgid "Task"
 msgstr "任务"
@@ -3194,6 +3375,9 @@ msgstr "拓扑图尚未可用。"
 
 msgid "Total code words"
 msgstr "总码字"
+
+msgid "TR069 management (br-tr069)"
+msgstr "TR069 管理网（br-tr069）"
 
 msgid "TR069 VLANs"
 msgstr "TR069 VLAN 列表"
@@ -3537,6 +3721,12 @@ msgstr "Wi-Fi 阶段"
 
 msgid "Wi-Fi sync"
 msgstr "Wi-Fi 同步"
+
+msgid "Wildcard (*)"
+msgstr "通配（*）"
+
+msgid "Wildcard (any valid path)"
+msgstr "通配（任意合法路径）"
 
 msgid "Wireless association"
 msgstr "无线关联"

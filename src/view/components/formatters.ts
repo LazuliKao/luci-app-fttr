@@ -18,6 +18,20 @@ export function formatPower(power: number | null | undefined, precision = 3): st
 	return `${power.toFixed(precision)} dBm`;
 }
 
+export const SUB_GATEWAY_RX_OVERLOAD_DBM = -3;
+
+export function isSubGatewayRxHigh(power: number | null | undefined): boolean {
+	return power != null && Number.isFinite(power) && power > SUB_GATEWAY_RX_OVERLOAD_DBM;
+}
+
+export function formatSubGatewayRxWarning(devices: Array<{ label: string; rxPower: number }>): string | null {
+	if (!devices.length) return null;
+	const list = devices.map((d) => `${d.label} (${formatPower(d.rxPower, 2)})`).join(", ");
+	return _(
+		"Sub-gateway optical RX power exceeds -3 dBm (%s). Excessively strong optical input can saturate or damage the receiver; the reasonable operating range for sub-gateway RX power is typically -8 dBm to -27 dBm (recommended -10 dBm to -25 dBm).",
+	).format(list);
+}
+
 /**
  * Human-readable duration (e.g. "2d 2h 11m 40s").
  */

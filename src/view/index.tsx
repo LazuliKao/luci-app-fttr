@@ -16,6 +16,8 @@ import {
 	formatLinkSpeed,
 	formatPackets,
 	formatPower,
+	formatSubGatewayRxWarning,
+	isSubGatewayRxHigh,
 	text,
 } from "./components/formatters";
 import { showOnuDetails } from "./components/onu-details";
@@ -471,6 +473,7 @@ function createStatusView(
 			{_("Live status is unavailable. The displayed data may be stale.")}
 		</p>
 	);
+	const rxWarningNotice = <p class="alert-message warning" role="status" hidden />;
 	const opticalControl = createOpticalControl(platform.platform_id);
 	poll.add(async () => {
 		if (!isPageHidden() && opticalControl.element.isConnected) await opticalControl.refresh();
@@ -510,6 +513,7 @@ function createStatusView(
 			</div>
 			<div class="cbi-section">
 				<h3>{_("Sub-gateways")}</h3>
+				{rxWarningNotice}
 				{onuTable.element}
 			</div>
 			<div class="cbi-section">
@@ -551,6 +555,16 @@ function createStatusView(
 		biasNode.textContent =
 			optical.laser_bias_current_ma == null ? "—" : `${optical.laser_bias_current_ma.toFixed(3)} mA`;
 		txPowerNode.textContent = formatPower(optical.tx_power_dbm);
+
+		const highRxDevices = (status.sub_gateways ?? [])
+			.filter((onu) => isSubGatewayRxHigh(onu.optical_rx_power_dbm))
+			.map((onu) => ({
+				label: `${_("ONU")} ${onu.onu_id} (${onu.serial_number})`,
+				rxPower: onu.optical_rx_power_dbm as number,
+			}));
+		const rxWarning = formatSubGatewayRxWarning(highRxDevices);
+		rxWarningNotice.textContent = rxWarning ?? "";
+		rxWarningNotice.hidden = !rxWarning;
 
 		onuTable.update(status.sub_gateways ?? [], status.onu_pinning, status.switch_ports ?? []);
 		const currentPorts = new Set<number>();

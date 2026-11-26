@@ -62,3 +62,25 @@ test("controller identity and optical PHY survive unsupported advanced diagnosti
 	assert.match(live, /1\.234 dBm/);
 	assert.doesNotMatch(live, /CDR lock/);
 });
+
+test("sub-gateway optical RX power > -3 dBm triggers threshold warning", async () => {
+	Object.assign(globalThis, {
+		_: (value: string) =>
+			Object.assign(new String(value), {
+				format: (...args: string[]) => value.replace(/%s/g, () => args.shift() ?? ""),
+			}),
+	});
+	const { isSubGatewayRxHigh, formatSubGatewayRxWarning } = await import("../src/view/components/formatters");
+	assert.equal(isSubGatewayRxHigh(null), false);
+	assert.equal(isSubGatewayRxHigh(undefined), false);
+	assert.equal(isSubGatewayRxHigh(-15), false);
+	assert.equal(isSubGatewayRxHigh(-3), false);
+	assert.equal(isSubGatewayRxHigh(-2.9), true);
+	assert.equal(isSubGatewayRxHigh(0), true);
+
+	assert.equal(formatSubGatewayRxWarning([]), null);
+	const msg = formatSubGatewayRxWarning([{ label: "ONU 1 (TEST00000001)", rxPower: -1.5 }]);
+	assert.ok(msg);
+	assert.match(msg, /ONU 1 \(TEST00000001\) \(-1\.50 dBm\)/);
+	assert.match(msg, /-8 dBm to -27 dBm/);
+});

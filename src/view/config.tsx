@@ -55,6 +55,11 @@ const main = view.extend({
 			uci.add("fttr", "mqtt_bridge", "mqtt_bridge");
 			uci.set("fttr", "mqtt_bridge", "enabled", "0");
 		}
+		if (!uci.sections("fttr", "acs_bridge").length) {
+			uci.add("fttr", "acs_bridge", "acs_bridge");
+			uci.set("fttr", "acs_bridge", "enabled", "0");
+			uci.set("fttr", "acs_bridge", "management_gateway", "0");
+		}
 		if (!uci.sections("fttr", "omci_auth").length) {
 			uci.add("fttr", "omci_auth", "omci_auth_global");
 			uci.set("fttr", "omci_auth_global", "schema_version", "1");

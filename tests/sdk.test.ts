@@ -53,6 +53,7 @@ test("generated wire validation retains required false flags, nullable progress 
 		version: "test",
 		features: {
 			acs: false,
+			"acs-bridge": false,
 			mqtt: false,
 			"mqtt-bridge": false,
 			npu: false,

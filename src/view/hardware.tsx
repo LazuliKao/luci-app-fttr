@@ -4,7 +4,14 @@ import type { PlatformInfoReply } from "../api/generated/types";
 import { isPageHidden } from "../visibility";
 import badgeCss from "./components/badge.css?inline";
 import { createFecMonitor } from "./components/fec-monitor";
-import { formatAge, formatFirmware, formatPower, text } from "./components/formatters";
+import {
+	formatAge,
+	formatFirmware,
+	formatPower,
+	formatSubGatewayRxWarning,
+	isSubGatewayRxHigh,
+	text,
+} from "./components/formatters";
 import { createFpgaDiagnostics } from "./components/fpga-diagnostics";
 import { showOnuDetails } from "./components/onu-details";
 import { capturePanelState } from "./components/panel-state";
@@ -180,8 +187,21 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 		);
 	}
 
+	const highRxDevices = onus
+		.filter((onu) => isSubGatewayRxHigh(onu.optical_rx_power_dbm))
+		.map((onu) => ({
+			label: `${_("ONU")} ${onu.onu_id} (${onu.serial_number})`,
+			rxPower: onu.optical_rx_power_dbm as number,
+		}));
+	const rxWarning = formatSubGatewayRxWarning(highRxDevices);
+
 	return (
 		<div class="fttr-panel-subgateways">
+			{rxWarning ? (
+				<p class="alert-message warning" role="status">
+					{rxWarning}
+				</p>
+			) : null}
 			{onus.map((onu) => {
 				const identity = onu.identity;
 				const softwareImages = identity?.software_images ?? [];
@@ -233,7 +253,15 @@ function createSubgatewaysPanel(onus: SubGateway[]): HTMLElement {
 								</h4>
 								<div class="fttr-kv-row">
 									<span class="fttr-kv-label">{_("Optical RX power")}</span>
-									<strong>{formatPower(onu.optical_rx_power_dbm)}</strong>
+									<strong>
+										{formatPower(onu.optical_rx_power_dbm)}
+										{isSubGatewayRxHigh(onu.optical_rx_power_dbm) ? (
+											<>
+												{" "}
+												<span class="fttr-badge fttr-badge-warning">{_("High RX power")}</span>
+											</>
+										) : null}
+									</strong>
 								</div>
 								<div class="fttr-kv-row">
 									<span class="fttr-kv-label">{_("Optical TX power")}</span>
