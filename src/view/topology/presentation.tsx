@@ -13,7 +13,7 @@ import {
 	getRegistrationBadgeSpec,
 	getWifiSyncBadgeSpec,
 } from "../components/badge";
-import { formatUptime } from "../components/formatters";
+import { formatOffload, formatUptime } from "../components/formatters";
 import { TOPOLOGY_ICONS, type TopologyIconName } from "./icons";
 import { addressSummary, clientKey, linkFor, measurementAge, type Selection } from "./model";
 import type { ClientState, TopologyStore } from "./store";
@@ -234,9 +234,18 @@ function opticalDetails(node: TopologyNode, snapshot: TopologyReply, link?: Topo
 				_("Equalization delay"),
 				measured(snapshot, link.equalization_delay_bits, "bits", link.measurements.equalization_delay_bits, 0),
 			)}
+			{row(_("PON mode"), node.detail.pon_mode ?? null)}
+			{row(
+				_("Upstream PHY rate"),
+				node.detail.upstream_phy_rate_gbps == null
+					? null
+					: `${node.detail.upstream_phy_rate_gbps.toFixed(3)} Gbps`,
+			)}
 		</dl>,
 	);
 }
+
+const hexEntity = (value: number): string => `0x${value.toString(16).padStart(4, "0")}`;
 
 function networkDetails(node: TopologyNode, snapshot: TopologyReply, link?: TopologyLink): HTMLElement {
 	if (node.detail.kind === "controller") {
@@ -302,6 +311,7 @@ function networkDetails(node: TopologyNode, snapshot: TopologyReply, link?: Topo
 						)}
 						{row(_("Received bytes"), path.rx_bytes?.toLocaleString())}
 						{row(_("Transmitted bytes"), path.tx_bytes?.toLocaleString())}
+						{row(_("Offload"), formatOffload(path.offload))}
 					</>
 				) : null}
 			</dl>
@@ -313,7 +323,84 @@ function networkDetails(node: TopologyNode, snapshot: TopologyReply, link?: Topo
 			{inventory ? (
 				<details>
 					<summary>{_("Actual OMCI GEM / VLAN inventory")}</summary>
-					<pre>{JSON.stringify(inventory, null, 2)}</pre>
+					<p class="topo-muted">
+						{_("Inventory age")}: {inventory.age_seconds} s
+					</p>
+					<h4>{_("GEM ports")}</h4>
+					{inventory.gem_ports.length ? (
+						<table class="table">
+							<thead>
+								<tr>
+									<th>{_("Entity")}</th>
+									<th>{_("Port ID")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{inventory.gem_ports.map((gem) => (
+									<tr>
+										<td>{hexEntity(gem.entity_id)}</td>
+										<td>{gem.port_id ?? "—"}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					) : (
+						<p class="topo-muted">{_("No GEM ports reported.")}</p>
+					)}
+					<h4>{_("VLAN filters")}</h4>
+					{inventory.vlan_filters.length ? (
+						<table class="table">
+							<thead>
+								<tr>
+									<th>{_("Entity")}</th>
+									<th>{_("Forward operation")}</th>
+									<th>{_("Entries")}</th>
+									<th>{_("Filter list")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{inventory.vlan_filters.map((filter) => (
+									<tr>
+										<td>{hexEntity(filter.entity_id)}</td>
+										<td>{filter.forward_operation ?? "—"}</td>
+										<td>{filter.number_of_entries ?? "—"}</td>
+										<td>
+											<code style="font-size:90%">{filter.filter_list_hex ?? "—"}</code>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					) : (
+						<p class="topo-muted">{_("No VLAN filters reported.")}</p>
+					)}
+					<h4>{_("VLAN operations")}</h4>
+					{inventory.vlan_operations.length ? (
+						<table class="table">
+							<thead>
+								<tr>
+									<th>{_("Entity")}</th>
+									<th>{_("Received frame rules")}</th>
+									<th>{_("Read error")}</th>
+								</tr>
+							</thead>
+							<tbody>
+								{inventory.vlan_operations.map((operation) => (
+									<tr>
+										<td>{hexEntity(operation.entity_id)}</td>
+										<td>
+											<code style="font-size:90%">
+												{operation.received_frame_rules_hex?.join(" ") ?? "—"}
+											</code>
+										</td>
+										<td>{operation.error ?? "—"}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					) : (
+						<p class="topo-muted">{_("No VLAN operations reported.")}</p>
+					)}
 				</details>
 			) : null}
 		</>,

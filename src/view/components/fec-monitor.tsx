@@ -22,6 +22,8 @@ export function createFecMonitor(initial: FttrStatus) {
 						<tr>
 							<th>{_("ONU")}</th>
 							<th>{_("OMCI status")}</th>
+							<th>{_("ONU FEC (↓ / ↑)")}</th>
+							<th>{_("ANI entity")}</th>
 							<th>{_("Interval")}</th>
 							<th>{_("Corrected bytes")}</th>
 							<th>{_("Corrected code words")}</th>
@@ -48,6 +50,14 @@ export function createFecMonitor(initial: FttrStatus) {
 			...onus.map((onu) => {
 				const fec = onu.fec;
 				const pm = fec?.downstream_pm;
+				const tri = (value: boolean | null | undefined) =>
+					value == null ? _("Unknown") : value ? _("Enabled") : _("Disabled");
+				const control =
+					fec == null
+						? "—"
+						: fec.control_supported === false
+							? _("Not supported")
+							: `${tri(fec.downstream_enabled)} / ${tri(fec.upstream_enabled)}`;
 				return (
 					<tr>
 						<td>{`${onu.onu_id} · ${onu.model || onu.vendor}`}</td>
@@ -57,6 +67,10 @@ export function createFecMonitor(initial: FttrStatus) {
 								: pm
 									? _("Ready")
 									: fec?.measurement.reason || _("Awaiting OMCI preparation")}
+						</td>
+						<td>{control}</td>
+						<td>
+							{fec?.ani_entity_id == null ? "—" : `0x${fec.ani_entity_id.toString(16).padStart(4, "0")}`}
 						</td>
 						<td>{pm?.interval_end_time ?? "—"}</td>
 						<td>{pm?.corrected_bytes ?? "—"}</td>

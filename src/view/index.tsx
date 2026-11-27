@@ -269,6 +269,7 @@ function createOnuRow(onu: SubGateway, platform: PlatformInfoReply, onSaved: (st
 	const businessNode = <span class="fttr-badge" />;
 	const firmwareNode = <span style="font-size:90%" />;
 	const dataInterfaceNode = <code style="font-size:90%" />;
+	const ponModeNode = <div style="font-size:85%" />;
 	const cwmpNode = <span class="fttr-badge" />;
 	const provisioningNode = <span class="fttr-badge" />;
 	const wifiSyncNode = <span class="fttr-badge" />;
@@ -285,7 +286,10 @@ function createOnuRow(onu: SubGateway, platform: PlatformInfoReply, onSaved: (st
 			<td>{registrationNode}</td>
 			<td>{businessNode}</td>
 			<td>{firmwareNode}</td>
-			<td>{dataInterfaceNode}</td>
+			<td>
+				{dataInterfaceNode}
+				{ponModeNode}
+			</td>
 			<td>{cwmpNode}</td>
 			<td>{provisioningNode}</td>
 			<td>{wifiSyncNode}</td>
@@ -347,6 +351,12 @@ function createOnuRow(onu: SubGateway, platform: PlatformInfoReply, onSaved: (st
 			}
 
 			dataInterfaceNode.textContent = text(value.data_path?.interface);
+			const ponParts: string[] = [];
+			if (value.pon_mode) ponParts.push(value.pon_mode);
+			if (value.upstream_phy_rate_gbps != null) {
+				ponParts.push(`↑ ${value.upstream_phy_rate_gbps.toFixed(3)} Gbps`);
+			}
+			ponModeNode.textContent = ponParts.join(" · ");
 
 			const cwmpSpec = getCwmpBadgeSpec(value.management);
 			updateBadge(cwmpNode, cwmpSpec.tone, cwmpSpec.label, cwmpSpec.title);

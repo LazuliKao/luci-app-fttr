@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
+import type { DataPathOffloadStatus } from "../../api/generated/types";
 
 export const text = (value: unknown): string =>
 	value === null || value === undefined || value === "" ? "—" : String(value);
+
+export function formatOffload(offload: DataPathOffloadStatus): string {
+	const tri = (value: boolean | null | undefined) => (value == null ? _("Unknown") : value ? _("Yes") : _("No"));
+	return [
+		`${_("Enabled")}: ${tri(offload.enabled)}`,
+		`${_("Routed")}: ${tri(offload.routed_enabled)}`,
+		`${_("Bridge")}: ${tri(offload.bridge_enabled)}`,
+		`${_("Engine attached")}: ${tri(offload.engine_attached)}`,
+		`${_("Forwarding verified")}: ${tri(offload.forwarding_verified)}`,
+	].join(" · ");
+}
 
 /**
  * Format timestamp (in epoch seconds) to local date-time string.

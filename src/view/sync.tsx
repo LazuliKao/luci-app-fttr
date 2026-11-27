@@ -764,6 +764,33 @@ function deviceCard(
 			service_type: "wifi",
 		})),
 	];
+	const recovery: Array<[string, HTMLElement | string]> = [];
+	if (op.phase) recovery.push([_("Phase"), text(op.phase)]);
+	if (op.outcome) recovery.push([_("Outcome"), renderStateBadge(op.outcome)]);
+	if (op.recovery_state) recovery.push([_("Recovery"), renderStateBadge(op.recovery_state)]);
+	if (op.error_stage) recovery.push([_("Failed stage"), text(op.error_stage)]);
+	if (op.manual_action) recovery.push([_("Manual action"), text(op.manual_action)]);
+	if (op.publication_state) recovery.push([_("Publication"), renderStateBadge(op.publication_state)]);
+	if (op.remote_execution_state) {
+		recovery.push([_("Remote execution"), renderStateBadge(op.remote_execution_state)]);
+	}
+	if (op.automatic_write_admission) {
+		recovery.push([_("Automatic writes"), text(op.automatic_write_admission)]);
+	}
+	const writeFlags: Array<[string, boolean | undefined]> = [
+		[_("Write attempted"), op.write_attempted],
+		[_("Write verified"), op.write_verified],
+		[_("Readback verified"), op.readback_verified],
+		[_("Terminal reply"), op.terminal_received],
+	];
+	for (const [label, value] of writeFlags) {
+		if (value != null) recovery.push([label, value ? _("Yes") : _("No")]);
+	}
+	if (op.affected_items?.length) {
+		recovery.push([_("Affected items"), op.affected_items.join(", ")]);
+	}
+	if (op.last_verified_at) recovery.push([_("Last verified"), date(op.last_verified_at)]);
+	if (op.verified_revision) recovery.push([_("Verified revision"), op.verified_revision]);
 
 	const confirmReset = () => {
 		const label = device.name || device.optical_sn;
@@ -937,6 +964,18 @@ function deviceCard(
 				{op.reconcile_reason ? (
 					<div class="alert-message info" style="margin:8px 0;font-size:85%">
 						{op.reconcile_reason}
+					</div>
+				) : null}
+
+				{recovery.length ? (
+					<div class="fttr-card" style="margin:8px 0">
+						<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:90%">
+							{recovery.map(([label, value]) => (
+								<span>
+									<span style="color:#888">{label}:</span> {value}
+								</span>
+							))}
+						</div>
 					</div>
 				) : null}
 

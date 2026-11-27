@@ -27,7 +27,7 @@ import {
 	WifiSyncBadge,
 } from "./badge";
 import badgeCss from "./badge.css?inline";
-import { formatPower, formatUptime, isSubGatewayRxHigh, text } from "./formatters";
+import { formatOffload, formatPower, formatUptime, isSubGatewayRxHigh, text } from "./formatters";
 import onuDetailsCss from "./onu-details.css?inline";
 import { createTabMenu } from "./tabs";
 import { ViewStyle } from "./view-style";
@@ -373,6 +373,14 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 				[_("Registration"), <RegistrationBadge state={initial.state} />],
 				[_("Business"), <BusinessBadge status={initial.business_status} />],
 				[
+					_("PON mode"),
+					initial.pon_mode == null ? null : <code style="font-size:90%">{initial.pon_mode}</code>,
+				],
+				[
+					_("Upstream PHY rate"),
+					initial.upstream_phy_rate_gbps == null ? null : `${initial.upstream_phy_rate_gbps.toFixed(3)} Gbps`,
+				],
+				[
 					_("Receive optical power"),
 					isSubGatewayRxHigh(initial.optical_rx_power_dbm) ? (
 						<span>
@@ -398,6 +406,30 @@ export function showOnuDetails(initial: OnuDetails, initialTab = "basic"): void 
 						<code style="font-size:90%">{initial.data_path.interface}</code>
 					) : null,
 				],
+				[
+					_("OLT channel GEM"),
+					initial.data_path?.olt_channel_gem == null ? null : (
+						<code style="font-size:90%">
+							0x{initial.data_path.olt_channel_gem.toString(16).padStart(3, "0")}
+						</code>
+					),
+				],
+				[_("Data VLAN"), initial.data_path?.vlan_id ?? null],
+				[
+					_("GEM ports"),
+					initial.data_path?.gem_ports?.length
+						? initial.data_path.gem_ports.map((gem) => `0x${gem.toString(16).padStart(3, "0")}`).join(", ")
+						: null,
+				],
+				[
+					_("Forwarding verified"),
+					initial.data_path?.forwarding_verified == null
+						? null
+						: initial.data_path.forwarding_verified
+							? _("Verified")
+							: _("Not verified"),
+				],
+				[_("Offload"), initial.data_path ? formatOffload(initial.data_path.offload) : null],
 				[
 					_("Uptime"),
 					initial.uptime_seconds == null
