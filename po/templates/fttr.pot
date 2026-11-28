@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-26 09:47+0800\n"
+"POT-Creation-Date: 2026-11-28 00:52+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -228,6 +228,9 @@ msgid ""
 "DNAT without modifying ONU settings."
 msgstr ""
 
+msgid "Affected items"
+msgstr ""
+
 msgid "ago"
 msgstr ""
 
@@ -263,6 +266,9 @@ msgid "Alternate temperature parameters (Alt Temp)"
 msgstr ""
 
 msgid "AN4475-G2 factory optical calibration"
+msgstr ""
+
+msgid "ANI entity"
 msgstr ""
 
 msgid "Another operation is in progress."
@@ -363,6 +369,9 @@ msgstr ""
 msgid "Automatic triggers"
 msgstr ""
 
+msgid "Automatic writes"
+msgstr ""
+
 msgid ""
 "Automatically provision standard G.988 transparent Layer 2 bridge for "
 "unrecognized or third-party GPON ONUs in O5 state."
@@ -437,6 +446,9 @@ msgid "Both (fttrN + br-tr069)"
 msgstr ""
 
 msgid "Bound hardware flows"
+msgstr ""
+
+msgid "Bridge"
 msgstr ""
 
 msgid "Bridge / LAN (fttrN port)"
@@ -859,6 +871,9 @@ msgstr ""
 msgid "Data sources"
 msgstr ""
 
+msgid "Data VLAN"
+msgstr ""
+
 msgid "Decoded"
 msgstr ""
 
@@ -1109,6 +1124,9 @@ msgstr ""
 msgid "Engine and admission status"
 msgstr ""
 
+msgid "Engine attached"
+msgstr ""
+
 msgid ""
 "Enter a complete LANDevice.1 interface reference, without trailing dot or "
 "comma."
@@ -1141,6 +1159,9 @@ msgid ""
 msgstr ""
 
 msgid "Entity"
+msgstr ""
+
+msgid "Entries"
 msgstr ""
 
 msgid "Equalization delay"
@@ -1237,6 +1258,9 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
+msgid "Failed stage"
+msgstr ""
+
 msgid "Failed to parse calibration file"
 msgstr ""
 
@@ -1271,6 +1295,9 @@ msgid "Filter by name, serial, MAC or IP…"
 msgstr ""
 
 msgid "Filter devices by name, serial, MAC or IP"
+msgstr ""
+
+msgid "Filter list"
 msgstr ""
 
 msgid "Firewall hooks"
@@ -1309,6 +1336,12 @@ msgstr ""
 msgid ""
 "Flow table is unavailable. A failed read must not be interpreted as an empty "
 "table."
+msgstr ""
+
+msgid "Forward operation"
+msgstr ""
+
+msgid "Forwarding verified"
 msgstr ""
 
 msgid "FPGA"
@@ -1365,6 +1398,9 @@ msgid "FTTR topology graph"
 msgstr ""
 
 msgid "G.988 encoded field values"
+msgstr ""
+
+msgid "GEM ports"
 msgstr ""
 
 msgid "General Settings"
@@ -1588,6 +1624,9 @@ msgstr ""
 msgid "Invalid MIB snapshot size"
 msgstr ""
 
+msgid "Inventory age"
+msgstr ""
+
 msgid "Inventory unavailable for this node."
 msgstr ""
 
@@ -1646,6 +1685,9 @@ msgid "Last telemetry"
 msgstr ""
 
 msgid "Last update / task"
+msgstr ""
+
+msgid "Last verified"
 msgstr ""
 
 msgid "Last write: %s"
@@ -1825,6 +1867,9 @@ msgid "Management VLAN"
 msgstr ""
 
 msgid "Manual"
+msgstr ""
+
+msgid "Manual action"
 msgstr ""
 
 msgid ""
@@ -2019,6 +2064,9 @@ msgstr ""
 msgid "No entities recorded for this ME class."
 msgstr ""
 
+msgid "No GEM ports reported."
+msgstr ""
+
 msgid "No HL202 optical devices were found."
 msgstr ""
 
@@ -2061,6 +2109,12 @@ msgid "No successful snapshot yet"
 msgstr ""
 
 msgid "No valid data"
+msgstr ""
+
+msgid "No VLAN filters reported."
+msgstr ""
+
+msgid "No VLAN operations reported."
 msgstr ""
 
 msgid "Node and link details"
@@ -2112,6 +2166,12 @@ msgid "Not started"
 msgstr ""
 
 msgid "Not Started"
+msgstr ""
+
+msgid "Not supported"
+msgstr ""
+
+msgid "Not verified"
 msgstr ""
 
 msgid "Note: Register"
@@ -2207,6 +2267,12 @@ msgstr ""
 msgid "Offline sample at raw 0x5980:"
 msgstr ""
 
+msgid "Offload"
+msgstr ""
+
+msgid "OLT channel GEM"
+msgstr ""
+
 msgid "OMCC version"
 msgstr ""
 
@@ -2238,6 +2304,9 @@ msgid "ONU authentication"
 msgstr ""
 
 msgid "ONU bridge offload"
+msgstr ""
+
+msgid "ONU FEC (↓ / ↑)"
 msgstr ""
 
 msgid "ONU FEC monitoring"
@@ -2341,6 +2410,9 @@ msgstr ""
 msgid "Original endpoints"
 msgstr ""
 
+msgid "Outcome"
+msgstr ""
+
 msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr ""
 
@@ -2409,6 +2481,9 @@ msgstr ""
 msgid "Periodic synchronization interval (minutes)"
 msgstr ""
 
+msgid "Phase"
+msgstr ""
+
 msgid "Physical link speed"
 msgstr ""
 
@@ -2430,6 +2505,9 @@ msgstr ""
 msgid "Platform"
 msgstr ""
 
+msgid "PON mode"
+msgstr ""
+
 msgid "PONWrt Firmware"
 msgstr ""
 
@@ -2437,6 +2515,9 @@ msgid "Port admission"
 msgstr ""
 
 msgid "Port bindings"
+msgstr ""
+
+msgid "Port ID"
 msgstr ""
 
 msgid "Port status"
@@ -2487,6 +2568,9 @@ msgstr ""
 msgid "Provisioning is disabled"
 msgstr ""
 
+msgid "Publication"
+msgstr ""
+
 msgid "Quick diagnostic commands"
 msgstr ""
 
@@ -2522,6 +2606,9 @@ msgstr ""
 msgid "Read duration"
 msgstr ""
 
+msgid "Read error"
+msgstr ""
+
 msgid "Read MIB"
 msgstr ""
 
@@ -2546,6 +2633,9 @@ msgstr ""
 msgid ""
 "Read-only observed register diagnostics. Sampling is limited to 120 samples "
 "and 60 seconds; it stops when this panel becomes inactive."
+msgstr ""
+
+msgid "Readback verified"
 msgstr ""
 
 msgid "Reading"
@@ -2593,6 +2683,9 @@ msgstr ""
 msgid "Received bytes"
 msgstr ""
 
+msgid "Received frame rules"
+msgstr ""
+
 msgid "Received multicast"
 msgstr ""
 
@@ -2612,6 +2705,9 @@ msgid "Records / diagnostics"
 msgstr ""
 
 msgid "Recovering"
+msgstr ""
+
+msgid "Recovery"
 msgstr ""
 
 msgid "Redirect ACS target"
@@ -2668,6 +2764,9 @@ msgid "Relationship"
 msgstr ""
 
 msgid "Reload"
+msgstr ""
+
+msgid "Remote execution"
 msgstr ""
 
 msgid "Remote shell command"
@@ -2768,6 +2867,9 @@ msgid "Review and repair configuration"
 msgstr ""
 
 msgid "Revision"
+msgstr ""
+
+msgid "Routed"
 msgstr ""
 
 msgid "Routed offload mask"
@@ -3190,6 +3292,9 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
+msgid "Terminal reply"
+msgstr ""
+
 msgid "Text omitted at the shared byte limit."
 msgstr ""
 
@@ -3515,6 +3620,9 @@ msgstr ""
 msgid "Upstream gateway"
 msgstr ""
 
+msgid "Upstream PHY rate"
+msgstr ""
+
 msgid "Uptime"
 msgstr ""
 
@@ -3570,6 +3678,9 @@ msgstr ""
 msgid "Verified"
 msgstr ""
 
+msgid "Verified revision"
+msgstr ""
+
 msgid "Verifying"
 msgstr ""
 
@@ -3589,6 +3700,12 @@ msgid "View OMCI / MIB details"
 msgstr ""
 
 msgid "VLAN"
+msgstr ""
+
+msgid "VLAN filters"
+msgstr ""
+
+msgid "VLAN operations"
 msgstr ""
 
 msgid "VLAN tables collected"
@@ -3707,7 +3824,13 @@ msgstr ""
 msgid "Wireless association"
 msgstr ""
 
+msgid "Write attempted"
+msgstr ""
+
 msgid "Write settings and execution"
+msgstr ""
+
+msgid "Write verified"
 msgstr ""
 
 msgid "Writing"

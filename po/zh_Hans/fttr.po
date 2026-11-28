@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: luci-app-fttr\n"
-"POT-Creation-Date: 2026-11-26 09:47+0800\n"
+"POT-Creation-Date: 2026-11-28 00:52+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: LazuliKao\n"
@@ -230,6 +230,9 @@ msgstr ""
 "在 br-tr069 管理桥下发控制器管理 IP 作为默认网关（DHCP Option 3），同时保持防火墙 forward 为 "
 "REJECT，使指向外部任意 ACS IP（如 10.x.x.x）的 FTTR ONU 无需改配即可进入 prerouting DNAT 劫持。"
 
+msgid "Affected items"
+msgstr "受影响条目"
+
 msgid "ago"
 msgstr "之前"
 
@@ -266,6 +269,9 @@ msgstr "备用温度参数（Alt Temp）"
 
 msgid "AN4475-G2 factory optical calibration"
 msgstr "AN4475-G2 原厂光路校准"
+
+msgid "ANI entity"
+msgstr "ANI 实体"
 
 msgid "Another operation is in progress."
 msgstr "另一个操作正在进行中。"
@@ -365,6 +371,9 @@ msgstr "自动分配"
 msgid "Automatic triggers"
 msgstr "自动触发机制"
 
+msgid "Automatic writes"
+msgstr "自动写入"
+
 msgid ""
 "Automatically provision standard G.988 transparent Layer 2 bridge for "
 "unrecognized or third-party GPON ONUs in O5 state."
@@ -440,6 +449,9 @@ msgstr "同时启用（fttrN + br-tr069）"
 
 msgid "Bound hardware flows"
 msgstr "硬件绑定流数"
+
+msgid "Bridge"
+msgstr "桥接"
 
 msgid "Bridge / LAN (fttrN port)"
 msgstr "桥接 / LAN 侧（fttrN 端口）"
@@ -861,6 +873,9 @@ msgstr "数据大小"
 msgid "Data sources"
 msgstr "数据来源"
 
+msgid "Data VLAN"
+msgstr "数据 VLAN"
+
 msgid "Decoded"
 msgstr "已解析"
 
@@ -1113,6 +1128,9 @@ msgstr "已启用"
 msgid "Engine and admission status"
 msgstr "引擎与准入状态"
 
+msgid "Engine attached"
+msgstr "引擎已挂接"
+
 msgid ""
 "Enter a complete LANDevice.1 interface reference, without trailing dot or "
 "comma."
@@ -1146,6 +1164,9 @@ msgstr "请输入此 CPE 现有的连接请求凭据，而非 ACS 入站 HTTP Ba
 
 msgid "Entity"
 msgstr "实体"
+
+msgid "Entries"
+msgstr "条目数"
 
 msgid "Equalization delay"
 msgstr "均衡延迟"
@@ -1241,6 +1262,9 @@ msgstr "原厂工具"
 msgid "Failed"
 msgstr "失败"
 
+msgid "Failed stage"
+msgstr "失败阶段"
+
 msgid "Failed to parse calibration file"
 msgstr "校准文件解析失败"
 
@@ -1276,6 +1300,9 @@ msgstr "按名称、序列号、MAC 或 IP 筛选…"
 
 msgid "Filter devices by name, serial, MAC or IP"
 msgstr "按名称、序列号、MAC 或 IP 筛选设备"
+
+msgid "Filter list"
+msgstr "过滤表"
 
 msgid "Firewall hooks"
 msgstr "防火墙钩子"
@@ -1314,6 +1341,12 @@ msgid ""
 "Flow table is unavailable. A failed read must not be interpreted as an empty "
 "table."
 msgstr "流表不可用。读取失败不应被视为空表。"
+
+msgid "Forward operation"
+msgstr "转发操作"
+
+msgid "Forwarding verified"
+msgstr "转发已验证"
 
 msgid "FPGA"
 msgstr "FPGA"
@@ -1371,6 +1404,9 @@ msgstr "FTTR 拓扑图画布"
 
 msgid "G.988 encoded field values"
 msgstr "G.988 编码字段值"
+
+msgid "GEM ports"
+msgstr "GEM 端口"
 
 msgid "General Settings"
 msgstr "通用设置"
@@ -1597,6 +1633,9 @@ msgstr "无效的 MIB 快照数据分片"
 msgid "Invalid MIB snapshot size"
 msgstr "无效的 MIB 快照大小"
 
+msgid "Inventory age"
+msgstr "清单采集时间"
+
 msgid "Inventory unavailable for this node."
 msgstr "此节点的库存不可用。"
 
@@ -1656,6 +1695,9 @@ msgstr "最后遥测时间"
 
 msgid "Last update / task"
 msgstr "最后更新 / 任务"
+
+msgid "Last verified"
+msgstr "最近校验"
 
 msgid "Last write: %s"
 msgstr "上次写入：%s"
@@ -1835,6 +1877,9 @@ msgstr "管理 VLAN"
 
 msgid "Manual"
 msgstr "手动"
+
+msgid "Manual action"
+msgstr "人工处置"
 
 msgid ""
 "Manual mode only discovers and plans. Use Apply management configuration on "
@@ -2028,6 +2073,9 @@ msgstr "所选平台未报告任何下行端口。"
 msgid "No entities recorded for this ME class."
 msgstr "该 ME 类无实体记录。"
 
+msgid "No GEM ports reported."
+msgstr "未上报 GEM 端口。"
+
 msgid "No HL202 optical devices were found."
 msgstr "未找到 HL202 光设备。"
 
@@ -2071,6 +2119,12 @@ msgstr "尚未成功生成快照"
 
 msgid "No valid data"
 msgstr "无有效数据"
+
+msgid "No VLAN filters reported."
+msgstr "未上报 VLAN 过滤器。"
+
+msgid "No VLAN operations reported."
+msgstr "未上报 VLAN 操作规则。"
 
 msgid "Node and link details"
 msgstr "节点与链路详情"
@@ -2122,6 +2176,12 @@ msgstr "未开始"
 
 msgid "Not Started"
 msgstr "未开始"
+
+msgid "Not supported"
+msgstr "不支持"
+
+msgid "Not verified"
+msgstr "未验证"
 
 msgid "Note: Register"
 msgstr "注意：寄存器"
@@ -2221,6 +2281,12 @@ msgstr "离线或过期"
 msgid "Offline sample at raw 0x5980:"
 msgstr "原始值 0x5980 处的离线样本："
 
+msgid "Offload"
+msgstr "卸载"
+
+msgid "OLT channel GEM"
+msgstr "OLT 通道 GEM"
+
 msgid "OMCC version"
 msgstr "OMCC 版本"
 
@@ -2253,6 +2319,9 @@ msgstr "子猫 OMCI 认证"
 
 msgid "ONU bridge offload"
 msgstr "从网关桥接加速"
+
+msgid "ONU FEC (↓ / ↑)"
+msgstr "ONU FEC（↓ / ↑）"
 
 msgid "ONU FEC monitoring"
 msgstr "ONU FEC 监测"
@@ -2357,6 +2426,9 @@ msgstr "原始 ACS 目标"
 msgid "Original endpoints"
 msgstr "原始端点"
 
+msgid "Outcome"
+msgstr "结果"
+
 msgid "Outer filter (priority / VID / TPID-DEI)"
 msgstr "外层过滤（优先级 / VID / TPID-DEI）"
 
@@ -2425,6 +2497,9 @@ msgstr "周期性触发"
 msgid "Periodic synchronization interval (minutes)"
 msgstr "周期性同步间隔（分钟）"
 
+msgid "Phase"
+msgstr "阶段"
+
 msgid "Physical link speed"
 msgstr "物理链路速率"
 
@@ -2446,6 +2521,9 @@ msgstr "固定 ONU ID"
 msgid "Platform"
 msgstr "平台"
 
+msgid "PON mode"
+msgstr "PON 模式"
+
 msgid "PONWrt Firmware"
 msgstr "PONWrt 固件"
 
@@ -2454,6 +2532,9 @@ msgstr "端口准入"
 
 msgid "Port bindings"
 msgstr "端口绑定"
+
+msgid "Port ID"
+msgstr "端口 ID"
 
 msgid "Port status"
 msgstr "端口状态"
@@ -2503,6 +2584,9 @@ msgstr "配置详情"
 msgid "Provisioning is disabled"
 msgstr "配置下发已禁用"
 
+msgid "Publication"
+msgstr "发布状态"
+
 msgid "Quick diagnostic commands"
 msgstr "快捷诊断命令"
 
@@ -2538,6 +2622,9 @@ msgstr "读取设备当前参数并自动校验匹配的设置，不写入设备
 msgid "Read duration"
 msgstr "读取耗时"
 
+msgid "Read error"
+msgstr "读取错误"
+
 msgid "Read MIB"
 msgstr "读取 MIB"
 
@@ -2563,6 +2650,9 @@ msgid ""
 "Read-only observed register diagnostics. Sampling is limited to 120 samples "
 "and 60 seconds; it stops when this panel becomes inactive."
 msgstr "只读寄存器诊断。最多采集 120 个样本、持续 60 秒；离开此面板时停止采样。"
+
+msgid "Readback verified"
+msgstr "回读已验证"
 
 msgid "Reading"
 msgstr "读取中"
@@ -2609,6 +2699,9 @@ msgstr "接收功率（下行）"
 msgid "Received bytes"
 msgstr "接收字节数"
 
+msgid "Received frame rules"
+msgstr "接收帧规则"
+
 msgid "Received multicast"
 msgstr "接收组播包数"
 
@@ -2629,6 +2722,9 @@ msgstr "记录 / 诊断信息"
 
 msgid "Recovering"
 msgstr "恢复中"
+
+msgid "Recovery"
+msgstr "恢复状态"
 
 msgid "Redirect ACS target"
 msgstr "重定向 ACS 目标"
@@ -2685,6 +2781,9 @@ msgstr "关系"
 
 msgid "Reload"
 msgstr "重新加载"
+
+msgid "Remote execution"
+msgstr "远端执行"
 
 msgid "Remote shell command"
 msgstr "远程 Shell 命令"
@@ -2789,6 +2888,9 @@ msgstr "检查并修复配置"
 
 msgid "Revision"
 msgstr "版本"
+
+msgid "Routed"
+msgstr "路由"
 
 msgid "Routed offload mask"
 msgstr "路由卸载掩码"
@@ -3214,6 +3316,9 @@ msgstr "模板正在使用中。"
 msgid "Templates"
 msgstr "模板配置"
 
+msgid "Terminal reply"
+msgstr "终态回复"
+
 msgid "Text omitted at the shared byte limit."
 msgstr "已因达到共享字节上限而省略文本。"
 
@@ -3539,6 +3644,9 @@ msgstr "上游 DHCP（桥接）"
 msgid "Upstream gateway"
 msgstr "上游网关"
 
+msgid "Upstream PHY rate"
+msgstr "上行 PHY 速率"
+
 msgid "Uptime"
 msgstr "运行时间"
 
@@ -3594,6 +3702,9 @@ msgstr "供应商"
 msgid "Verified"
 msgstr "已校验"
 
+msgid "Verified revision"
+msgstr "已验证版本"
+
 msgid "Verifying"
 msgstr "校验中"
 
@@ -3614,6 +3725,12 @@ msgstr "查看 OMCI / MIB 详情"
 
 msgid "VLAN"
 msgstr "VLAN"
+
+msgid "VLAN filters"
+msgstr "VLAN 过滤器"
+
+msgid "VLAN operations"
+msgstr "VLAN 操作"
 
 msgid "VLAN tables collected"
 msgstr "已收集 VLAN 表"
@@ -3731,8 +3848,14 @@ msgstr "通配（任意合法路径）"
 msgid "Wireless association"
 msgstr "无线关联"
 
+msgid "Write attempted"
+msgstr "已尝试写入"
+
 msgid "Write settings and execution"
 msgstr "写入设置与执行"
+
+msgid "Write verified"
+msgstr "写入已验证"
 
 msgid "Writing"
 msgstr "写入中"
